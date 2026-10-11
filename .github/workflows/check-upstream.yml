@@ -1,0 +1,37 @@
+name: Check Terraink updates
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch upstream
+        run: |
+          git remote add upstream https://github.com/yousifamanuel/terraink.git
+          git fetch upstream main
+
+      - name: Open an issue if there are new commits
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COUNT=$(git rev-list --count HEAD..upstream/main)
+          echo "New commits: $COUNT"
+          if [ "$COUNT" -eq 0 ]; then exit 0; fi
+          gh label create upstream-update --color 0E8A16 --description "New changes in Terraink" 2>/dev/null || true
+          OPEN=$(gh issue list --state open --label upstream-update --json number --jq length)
+          if [ "$OPEN" -gt 0 ]; then echo "Issue already open"; exit 0; fi
+          LIST=$(git log HEAD..upstream/main --oneline -n 50)
+          printf 'The original Terraink repo has %s new commit(s) on main.\n\nLatest commits:\n\n%s\n\nTo update MAPARTE, run in PowerShell: git fetch upstream, then git merge upstream/main. Then run the rename script, test with bun run dev, and push. Close this issue when done.\n' "$COUNT" "$LIST" > body.md
+          gh issue create --title "Terraink has $COUNT new update(s)" --label upstream-update --body-file body.md
