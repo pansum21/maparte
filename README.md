@@ -1,16 +1,16 @@
 ![](./public/assets/banner.png)
 
-# Terraink
+# MAPARTE
 
-[![Website Badge](https://img.shields.io/badge/Website-fff?logo=appveyor&logoColor=000&style=for-the-badge)](https://terraink.app)
-[![Email Badge](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=fff&style=for-the-badge)](mailto:hello@terraink.app)
-[![LinkedIn Badge](https://img.shields.io/badge/LinkedIn-0A66C2?logo=linkedin&logoColor=fff&style=for-the-badge)](https://www.linkedin.com/company/terraink/)
-[![Instagram](https://img.shields.io/badge/Instagram-E4405F?logo=instagram&logoColor=fff&style=for-the-badge)](https://instagram.com/terraink.app)
-[![YouTube](https://img.shields.io/badge/YouTube-FF0000?logo=youtube&logoColor=fff&style=for-the-badge)](https://www.youtube.com/@terrainkapp)
-[![Threads](https://img.shields.io/badge/Threads-000?logo=threads&logoColor=fff&style=for-the-badge)](https://www.threads.net/@terraink.app)
-[![Reddit](https://img.shields.io/badge/Reddit-FF4500?logo=reddit&logoColor=fff&style=for-the-badge)](https://www.reddit.com/r/terraink)
-[![TikTok](https://img.shields.io/badge/TikTok-000?logo=tiktok&logoColor=fff&style=for-the-badge)](https://www.tiktok.com/@terraink.app)
-[![Product Hunt](https://img.shields.io/badge/Product%20Hunt-DA552F?logo=producthunt&logoColor=fff&style=for-the-badge)](https://www.producthunt.com/products/terraink)
+[![Website Badge](https://img.shields.io/badge/Website-fff?logo=appveyor&logoColor=000&style=for-the-badge)](https://maparte.app)
+[![Email Badge](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=fff&style=for-the-badge)](mailto:hello@maparte.app)
+[![LinkedIn Badge](https://img.shields.io/badge/LinkedIn-0A66C2?logo=linkedin&logoColor=fff&style=for-the-badge)](https://www.linkedin.com/company/maparte/)
+[![Instagram](https://img.shields.io/badge/Instagram-E4405F?logo=instagram&logoColor=fff&style=for-the-badge)](https://instagram.com/maparte.app)
+[![YouTube](https://img.shields.io/badge/YouTube-FF0000?logo=youtube&logoColor=fff&style=for-the-badge)](https://www.youtube.com/@maparteapp)
+[![Threads](https://img.shields.io/badge/Threads-000?logo=threads&logoColor=fff&style=for-the-badge)](https://www.threads.net/@maparte.app)
+[![Reddit](https://img.shields.io/badge/Reddit-FF4500?logo=reddit&logoColor=fff&style=for-the-badge)](https://www.reddit.com/r/maparte)
+[![TikTok](https://img.shields.io/badge/TikTok-000?logo=tiktok&logoColor=fff&style=for-the-badge)](https://www.tiktok.com/@maparte.app)
+[![Product Hunt](https://img.shields.io/badge/Product%20Hunt-DA552F?logo=producthunt&logoColor=fff&style=for-the-badge)](https://www.producthunt.com/products/maparte)
 
 [![Bun Badge](https://img.shields.io/badge/Bun-000?logo=bun&logoColor=fff&style=for-the-badge)](https://bun.sh)
 [![Vite Badge](https://img.shields.io/badge/Vite-9135FF?logo=vite&logoColor=fff&style=for-the-badge)](https://vitejs.dev)
@@ -19,11 +19,11 @@
 [![TypeScript Badge](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=fff&style=for-the-badge)](https://www.typescriptlang.org)
 [![OpenStreetMap Badge](https://img.shields.io/badge/OpenStreetMap-7EBC6F?logo=openstreetmap&logoColor=fff&style=for-the-badge)](https://www.openstreetmap.org)
 [![MapLibre Badge](https://img.shields.io/badge/MapLibre-000?logo=maplibre&logoColor=fff&style=for-the-badge)](https://maplibre.org/)
-[![GitHub Badge](https://img.shields.io/badge/GitHub-fff?logo=github&logoColor=000&style=for-the-badge)](https://github.com/yousifamanuel/terraink)
+[![GitHub Badge](https://img.shields.io/badge/GitHub-fff?logo=github&logoColor=000&style=for-the-badge)](https://github.com/yousifamanuel/maparte)
 [![Cloudflare Badge](https://img.shields.io/badge/Cloudflare-F38020?logo=cloudflare&logoColor=fff&style=for-the-badge)](https://www.cloudflare.com)
 [![Docker Badge](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff&style=for-the-badge)](https://www.docker.com)
 
-> Note: Terraink is still in development. Every feedback is appreciated. This is an open-source project, and community contributions are very welcome.
+> Note: MAPARTE is still in development. Every feedback is appreciated. This is an open-source project, and community contributions are very welcome.
 
 > **License & Trademark Notice:** This project is licensed under AGPL-3.0 and includes trademark protections. See the [License](#license) and [Trademark](#trademark) sections for details.
 
@@ -46,7 +46,7 @@
 
 ## User Interface
 
-![Terraink web UI](./docs/images/Web_UI.png)
+![MAPARTE web UI](./docs/images/Web_UI.png)
 
 ## Showcase
 
@@ -61,17 +61,17 @@
 
 As of **April 3rd 2026**, all new changes to this repository are licensed under [AGPL-3.0](LICENSE). Code released before that date remains under the [MIT License](LICENSE-OLD).
 
-The hosted Terraink service includes attribution and branding as part of the user interface.
+The hosted MAPARTE service includes attribution and branding as part of the user interface.
 
 If you deploy or modify the open-source version, you are responsible for complying with the AGPL-3.0 license, including preserving license and copyright notices.
 
-For access to the hosted version with additional features and support, see Terraink Business or contact: [business@terraink.app](mailto:business@terraink.app).
+For access to the hosted version with additional features and support, see MAPARTE Business or contact: [business@maparte.app](mailto:business@maparte.app).
 
 ## Trademark
 
-Terraink™ is a trademark of Yousuf Amanuel. An application for registration has been filed with the German Patent and Trade Mark Office (DPMA). This filing establishes priority rights under the Paris Convention, allowing international trademark registration to be pursued within six months of the original filing date. The Terraink logo, visual identity, and branding assets are copyright © 2026 Yousuf Amanuel. All rights reserved.
+MAPARTE™ is a trademark of Yousuf Amanuel. An application for registration has been filed with the German Patent and Trade Mark Office (DPMA). This filing establishes priority rights under the Paris Convention, allowing international trademark registration to be pursued within six months of the original filing date. The MAPARTE logo, visual identity, and branding assets are copyright © 2026 Yousuf Amanuel. All rights reserved.
 
-Unauthorized use of the Terraink name in connection with similar software, map services, or related commercial products may be restricted. For licensing inquiries, contact [business@terraink.app](mailto:business@terraink.app).
+Unauthorized use of the MAPARTE name in connection with similar software, map services, or related commercial products may be restricted. For licensing inquiries, contact [business@maparte.app](mailto:business@maparte.app).
 
 See [TRADEMARK.md](./TRADEMARK.md) for details.
 
@@ -128,13 +128,13 @@ docker compose down
 ### 3) Optional: build and run without Compose
 
 ```bash
-docker build -t terraink:latest .
-docker run -d --name terraink -p 7200:80 --restart unless-stopped terraink:latest
+docker build -t maparte:latest .
+docker run -d --name maparte -p 7200:80 --restart unless-stopped maparte:latest
 ```
 
 ## Contributing
 
-> The contribution guidelines are meant to keep Terraink easy to extend, review, and maintain over time. They are here to support a durable architecture, not to add unnecessary friction.
+> The contribution guidelines are meant to keep MAPARTE easy to extend, review, and maintain over time. They are here to support a durable architecture, not to add unnecessary friction.
 
 Read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a PR.
 
@@ -154,8 +154,8 @@ Read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a PR.
 
 ## Acknowledgment
 
-Terraink was inspired by [MapToPoster](https://github.com/originalankur/maptoposter) by [Ankur Gupta](https://github.com/originalankur), originally released under the MIT license. Terraink is an independent reimplementation built from scratch using Bun, React, and TypeScript, and has since evolved significantly beyond the original concept.
+MAPARTE was inspired by [MapToPoster](https://github.com/originalankur/maptoposter) by [Ankur Gupta](https://github.com/originalankur), originally released under the MIT license. MAPARTE is an independent reimplementation built from scratch using Bun, React, and TypeScript, and has since evolved significantly beyond the original concept.
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yousifamanuel/terraink&type=Date)](https://star-history.com/#yousifamanuel/terraink&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=yousifamanuel/maparte&type=Date)](https://star-history.com/#yousifamanuel/maparte&Date)

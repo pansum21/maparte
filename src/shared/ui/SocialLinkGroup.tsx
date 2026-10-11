@@ -26,7 +26,7 @@ export default function SocialLinkGroup({ variant }: SocialLinkGroupProps) {
           href={repoUrl}
           target="_blank"
           rel="noreferrer"
-          aria-label="Open Terraink repository on GitHub"
+          aria-label="Open MAPARTE repository on GitHub"
           title="GitHub repository"
           onClick={() => trackEvent("github_click")}
         >
@@ -43,7 +43,7 @@ export default function SocialLinkGroup({ variant }: SocialLinkGroupProps) {
           href={instagramUrl}
           target="_blank"
           rel="noreferrer"
-          aria-label="Follow Terraink on Instagram"
+          aria-label="Follow MAPARTE on Instagram"
           title="Instagram"
           onClick={() => trackEvent("follow_click")}
         >
@@ -56,8 +56,8 @@ export default function SocialLinkGroup({ variant }: SocialLinkGroupProps) {
           href={kofiUrl}
           target="_blank"
           rel="noreferrer"
-          aria-label="Support Terraink and donate to keep it free"
-          title="Support Terraink and donate to keep it free"
+          aria-label="Support MAPARTE and donate to keep it free"
+          title="Support MAPARTE and donate to keep it free"
           onClick={() => trackEvent("donate_click")}
         >
           <span className="general-header-btn-label">Donate</span>

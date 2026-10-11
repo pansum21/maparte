@@ -17,7 +17,7 @@ export default function AdUnit({
   enabled = true,
   format = "auto",
   layoutKey,
-  label = "Ads keep Terraink free",
+  label = "Ads keep MAPARTE free",
   className,
 }: AdUnitProps) {
   const slotRef = useRef<HTMLDivElement>(null);
