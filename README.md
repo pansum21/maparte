@@ -2,15 +2,6 @@
 
 # MAPARTE
 
-[![Website Badge](https://img.shields.io/badge/Website-fff?logo=appveyor&logoColor=000&style=for-the-badge)](https://maparte.app)
-[![Email Badge](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=fff&style=for-the-badge)](mailto:hello@maparte.app)
-[![LinkedIn Badge](https://img.shields.io/badge/LinkedIn-0A66C2?logo=linkedin&logoColor=fff&style=for-the-badge)](https://www.linkedin.com/company/maparte/)
-[![Instagram](https://img.shields.io/badge/Instagram-E4405F?logo=instagram&logoColor=fff&style=for-the-badge)](https://instagram.com/maparte.app)
-[![YouTube](https://img.shields.io/badge/YouTube-FF0000?logo=youtube&logoColor=fff&style=for-the-badge)](https://www.youtube.com/@maparteapp)
-[![Threads](https://img.shields.io/badge/Threads-000?logo=threads&logoColor=fff&style=for-the-badge)](https://www.threads.net/@maparte.app)
-[![Reddit](https://img.shields.io/badge/Reddit-FF4500?logo=reddit&logoColor=fff&style=for-the-badge)](https://www.reddit.com/r/maparte)
-[![TikTok](https://img.shields.io/badge/TikTok-000?logo=tiktok&logoColor=fff&style=for-the-badge)](https://www.tiktok.com/@maparte.app)
-[![Product Hunt](https://img.shields.io/badge/Product%20Hunt-DA552F?logo=producthunt&logoColor=fff&style=for-the-badge)](https://www.producthunt.com/products/maparte)
 
 [![Bun Badge](https://img.shields.io/badge/Bun-000?logo=bun&logoColor=fff&style=for-the-badge)](https://bun.sh)
 [![Vite Badge](https://img.shields.io/badge/Vite-9135FF?logo=vite&logoColor=fff&style=for-the-badge)](https://vitejs.dev)
@@ -19,7 +10,7 @@
 [![TypeScript Badge](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=fff&style=for-the-badge)](https://www.typescriptlang.org)
 [![OpenStreetMap Badge](https://img.shields.io/badge/OpenStreetMap-7EBC6F?logo=openstreetmap&logoColor=fff&style=for-the-badge)](https://www.openstreetmap.org)
 [![MapLibre Badge](https://img.shields.io/badge/MapLibre-000?logo=maplibre&logoColor=fff&style=for-the-badge)](https://maplibre.org/)
-[![GitHub Badge](https://img.shields.io/badge/GitHub-fff?logo=github&logoColor=000&style=for-the-badge)](https://github.com/yousifamanuel/maparte)
+[![GitHub Badge](https://img.shields.io/badge/GitHub-fff?logo=github&logoColor=000&style=for-the-badge)](https://github.com/pansum21/maparte)
 [![Cloudflare Badge](https://img.shields.io/badge/Cloudflare-F38020?logo=cloudflare&logoColor=fff&style=for-the-badge)](https://www.cloudflare.com)
 [![Docker Badge](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff&style=for-the-badge)](https://www.docker.com)
 
@@ -46,15 +37,12 @@
 
 ## User Interface
 
-![MAPARTE web UI](./docs/images/Web_UI.png)
 
 ## Showcase
 
 ### Featured Examples
 
 <p align="center">
-  <img src="./docs/images/showcase_1.png" alt="Featured showcase example 1" width="100%" />
-  <img src="./docs/images/showcase_2.png" alt="Featured showcase example 2" width="100%" />
 </p>
 
 ## License
@@ -158,4 +146,4 @@ MAPARTE was inspired by [MapToPoster](https://github.com/originalankur/maptopost
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yousifamanuel/maparte&type=Date)](https://star-history.com/#yousifamanuel/maparte&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=pansum21/maparte&type=Date)](https://star-history.com/#pansum21/maparte&Date)
