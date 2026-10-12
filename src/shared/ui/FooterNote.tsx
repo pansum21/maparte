@@ -98,15 +98,6 @@ export default function FooterNote() {
           {" | "}
           <a
             className="source-link"
-            href="https://github.com/yousifamanuel/terraink"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Based on Terraink
-          </a>
-          {" | "}
-          <a
-            className="source-link"
             href="https://github.com/pansum21/maparte"
             target="_blank"
             rel="noreferrer"
