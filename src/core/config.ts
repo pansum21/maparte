@@ -34,10 +34,10 @@ export const DEFAULT_CONTAINER_PX = 600;
 export const FLY_TO_DURATION_MS = 1800;
 
 /** Hanover, Germany — default fallback when geolocation is denied. */
-export const DEFAULT_LAT = 52.3759;
-export const DEFAULT_LON = 9.732;
-export const DEFAULT_CITY = "Hanover";
-export const DEFAULT_COUNTRY = "Germany";
+export const DEFAULT_LAT = 30.3165;
+export const DEFAULT_LON = 78.0322;
+export const DEFAULT_CITY = "Dehradun";
+export const DEFAULT_COUNTRY = "India";
 
 /**
  * The sidebar ad in the poster preview panel is OFF unless

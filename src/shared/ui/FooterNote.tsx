@@ -100,8 +100,8 @@ export default function FooterNote() {
 
       <div className="desktop-footer-middle">
         <p className="made-note">
-          MAPARTE™ v{appVersion} | © 2026 | Made with{" "}
-          <span className="heart">❤︎</span> in Hannover, Germany
+          MAPARTE v{appVersion} | © 2026 | Made with{" "}
+          <span className="heart">❤︎</span> in Dehradun, India
         </p>
       </div>
 
