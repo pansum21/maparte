@@ -183,7 +183,7 @@ export function useExport() {
             : {}),
         };
 
-        const size = resolveCanvasSize(widthInches, heightInches);
+        const size = resolveCanvasSize(widthInches, heightInches, dpi);
 
         const lat = Number(form.latitude) || 0;
         const lon = Number(form.longitude) || 0;

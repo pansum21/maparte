@@ -30,7 +30,7 @@ export function createPdfBlobFromCanvas(
   const pageWidthPt = (widthCm / 2.54) * 72;
   const pageHeightPt = (heightCm / 2.54) * 72;
 
-  const jpegDataUrl = canvas.toDataURL("image/jpeg", 0.94);
+  const jpegDataUrl = canvas.toDataURL("image/jpeg", 0.98);
   const base64 = jpegDataUrl.split(",")[1] || "";
   const imageBytes = base64ToBytes(base64);
 

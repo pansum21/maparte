@@ -162,7 +162,7 @@ export default function DownloadModal({
               <p className="tier-price">$0</p>
             </div>
             <ul className="tier-feature-list">
-              <li>✓ 96 DPI screen quality</li>
+              <li>✓ 150 DPI HD quality (Sharp & Clear)</li>
               <li>✓ Includes {selectedFormat.toUpperCase()} export</li>
               <li>✓ Perfect for digital wallpapers</li>
               <li>ℹ Includes MAPARTE watermark</li>
@@ -186,14 +186,14 @@ export default function DownloadModal({
           <div className="download-tier-card tier-pro is-featured">
             <div className="tier-featured-pill">🎁 BUY 1 GET 1 FREE</div>
             <div className="tier-card-header">
-              <span className="tier-badge badge-pro">⭐ 300 DPI Duo Pack</span>
+              <span className="tier-badge badge-pro">⭐ 300 DPI Ultra-HD</span>
               <h4>Ultra-HD Art (2 Maps)</h4>
               <p className="tier-price">
                 $4.99 <span className="tier-price-period">for 2 posters ($2.50 ea)</span>
               </p>
             </div>
             <ul className="tier-feature-list">
-              <li>✓ <strong>2 Ultra-HD 300 DPI Posters</strong> (BOGO Offer)</li>
+              <li>✓ <strong>2 Ultra-HD 300 DPI Posters</strong> (Up to 50MP / 8K Clarity)</li>
               <li>✓ <strong>NO Center Watermark</strong> (100% Clean)</li>
               <li>✓ Best for matching couple & living room frames</li>
               <li>✓ High-res PDF, PNG & Vector SVG</li>

@@ -7,7 +7,7 @@
 const PLAN_KEY = "maparte_plan";
 const CREDITS_KEY = "maparte_pro_credits";
 const FULL_DPI = 300;
-export const FREE_DPI = 96;
+export const FREE_DPI = 150;
 
 /** Watermark look. Change these numbers to taste. */
 const WATERMARK_TEXT = "MAPARTE";
@@ -184,19 +184,14 @@ function drawWatermark(
   ctx.restore();
 }
 
-/** Shrinks the finished poster and stamps the watermark on it. */
+/** Applies the watermark to the finished free poster without blurry downsampling. */
 export function applyFreeTier(source: HTMLCanvasElement): HTMLCanvasElement {
-  const factor = FREE_DPI / FULL_DPI;
-  const width = Math.max(300, Math.round(source.width * factor));
-  const height = Math.max(300, Math.round(source.height * factor));
   const out = document.createElement("canvas");
-  out.width = width;
-  out.height = height;
+  out.width = source.width;
+  out.height = source.height;
   const ctx = out.getContext("2d");
   if (!ctx) return source;
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(source, 0, 0, width, height);
-  drawWatermark(ctx, width, height);
+  ctx.drawImage(source, 0, 0);
+  drawWatermark(ctx, out.width, out.height);
   return out;
 }
