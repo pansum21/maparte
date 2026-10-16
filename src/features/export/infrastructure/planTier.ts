@@ -6,8 +6,12 @@
  */
 const PLAN_KEY = "maparte_plan";
 const CREDITS_KEY = "maparte_pro_credits";
+const ADMIN_MODE_KEY = "maparte_admin_mode";
 const FULL_DPI = 500;
 export const FREE_DPI = 200;
+
+export const BOGO_PRO_CODE = "maparte.bogo.in@bogo";
+export const MASTER_ADMIN_KEY = "admin@maparte.boss";
 
 /** Watermark look. Change these numbers to taste. */
 const WATERMARK_TEXT = "MAPARTE";
@@ -15,7 +19,34 @@ const WATERMARK_WIDTH_FRACTION = 0.8; // share of the poster width the word cove
 const WATERMARK_OPACITY = 0.22; // 0 = invisible, 1 = solid
 const WATERMARK_ANGLE = -Math.PI / 7; // slight diagonal; use 0 for straight
 
+export function isAdminUser(): boolean {
+  try {
+    return window.localStorage.getItem(ADMIN_MODE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+export function setAdminMode(enabled: boolean): void {
+  try {
+    if (enabled) {
+      window.localStorage.setItem(ADMIN_MODE_KEY, "true");
+      window.localStorage.setItem(CREDITS_KEY, "999999");
+      window.localStorage.setItem(PLAN_KEY, "pro");
+    } else {
+      window.localStorage.removeItem(ADMIN_MODE_KEY);
+      window.localStorage.removeItem(CREDITS_KEY);
+      window.localStorage.removeItem(PLAN_KEY);
+    }
+  } catch {
+    // ignore
+  }
+}
+
 export function getProCredits(): number {
+  if (isAdminUser()) {
+    return 999999;
+  }
   try {
     const raw = window.localStorage.getItem(CREDITS_KEY);
     if (raw !== null) {
@@ -47,6 +78,9 @@ export function setProCredits(count: number): void {
 }
 
 export function addProCredits(count: number = 2): number {
+  if (isAdminUser()) {
+    return 999999;
+  }
   const current = getProCredits();
   const next = current + count;
   setProCredits(next);
@@ -54,6 +88,9 @@ export function addProCredits(count: number = 2): number {
 }
 
 export function consumeProCredit(): number {
+  if (isAdminUser()) {
+    return 999999;
+  }
   const current = getProCredits();
   const next = Math.max(0, current - 1);
   setProCredits(next);
@@ -61,7 +98,7 @@ export function consumeProCredit(): number {
 }
 
 export function isProUser(): boolean {
-  return getProCredits() > 0;
+  return isAdminUser() || getProCredits() > 0;
 }
 
 export function setProUser(isPro: boolean): void {
@@ -71,23 +108,46 @@ export function setProUser(isPro: boolean): void {
     }
   } else {
     setProCredits(0);
+    setAdminMode(false);
   }
 }
 
-export const BOGO_PRO_CODE = "maparte.bogo.in@bogo";
+export interface ActivationResult {
+  success: boolean;
+  isAdmin?: boolean;
+}
 
-export function activateProWithKey(key: string): boolean {
+export function activateProWithKey(key: string): ActivationResult {
   const normalized = key.trim().toLowerCase();
+  if (
+    normalized === MASTER_ADMIN_KEY.toLowerCase() ||
+    normalized === "maparte.admin@boss" ||
+    normalized === "admin@boss" ||
+    normalized === "maparteboss"
+  ) {
+    setAdminMode(true);
+    return { success: true, isAdmin: true };
+  }
   if (normalized === BOGO_PRO_CODE.toLowerCase()) {
     addProCredits(2);
-    return true;
+    return { success: true, isAdmin: false };
   }
-  return false;
+  return { success: false };
 }
 
 export function checkPaymentReturnUrl(): boolean {
   try {
     const url = new URL(window.location.href);
+    const adminParam = url.searchParams.get("admin");
+    if (adminParam === "boss" || adminParam === "true" || adminParam === "maparte") {
+      setAdminMode(true);
+      url.searchParams.delete("admin");
+      const cleanPath =
+        url.pathname + (url.search ? url.search : "") + (url.hash ? url.hash : "");
+      window.history.replaceState({}, document.title, cleanPath);
+      return true;
+    }
+
     const hasSuccess =
       url.searchParams.get("payment") === "success" ||
       url.searchParams.get("unlocked") === "pro" ||

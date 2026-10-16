@@ -1,14 +1,43 @@
+import { useState, useEffect } from "react";
 import { InfoIcon } from "@/shared/ui/Icons";
 import SocialLinkGroup from "@/shared/ui/SocialLinkGroup";
+import { isAdminUser } from "@/features/export/infrastructure/planTier";
 
 interface GeneralHeaderProps {
   onAboutOpen: () => void;
+  onAdminOpen?: () => void;
 }
 
-export default function GeneralHeader({ onAboutOpen }: GeneralHeaderProps) {
+export default function GeneralHeader({
+  onAboutOpen,
+  onAdminOpen,
+}: GeneralHeaderProps) {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [tapCount, setTapCount] = useState(0);
+
+  useEffect(() => {
+    setIsAdmin(isAdminUser());
+  }, []);
+
+  const handleLogoClick = () => {
+    setTapCount((prev) => {
+      const next = prev + 1;
+      if (next >= 5) {
+        onAdminOpen?.();
+        return 0;
+      }
+      return next;
+    });
+  };
+
   return (
     <header className="general-header">
-      <div className="desktop-brand">
+      <div
+        className="desktop-brand"
+        onClick={handleLogoClick}
+        title={isAdmin ? "MAPARTE (Admin Active)" : "MAPARTE"}
+        style={{ cursor: "pointer" }}
+      >
         <img
           className="desktop-brand-logo brand-logo"
           src="/assets/logo.svg"
@@ -23,6 +52,23 @@ export default function GeneralHeader({ onAboutOpen }: GeneralHeaderProps) {
       </div>
 
       <div className="general-header-actions">
+        {isAdmin && (
+          <button
+            type="button"
+            className="general-header-text-btn general-header-admin-btn"
+            onClick={onAdminOpen}
+            aria-label="Admin Control"
+            title="Admin Control Center"
+            style={{
+              borderColor: "rgba(223, 186, 115, 0.4)",
+              background: "rgba(223, 186, 115, 0.12)",
+              color: "#dfba73",
+              fontWeight: 700,
+            }}
+          >
+            <span className="general-header-btn-label">👑 Admin</span>
+          </button>
+        )}
         <SocialLinkGroup variant="header" />
         <button
           type="button"

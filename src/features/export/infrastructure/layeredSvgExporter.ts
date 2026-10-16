@@ -9,7 +9,23 @@ import type { Route } from "@/features/routes/domain/types";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
 import { applyFades } from "@/features/poster/infrastructure/renderer/layers";
-import { drawPosterText } from "@/features/poster/infrastructure/renderer/typography";
+import { formatCoordinates } from "@/shared/geo/posterBounds";
+import { APP_CREDIT_URL } from "@/core/config";
+import {
+  TEXT_DIMENSION_REFERENCE_PX,
+  TEXT_CITY_Y_RATIO,
+  TEXT_DIVIDER_Y_RATIO,
+  TEXT_COUNTRY_Y_RATIO,
+  TEXT_COORDS_Y_RATIO,
+  TEXT_EDGE_MARGIN_RATIO,
+  CITY_FONT_BASE_PX,
+  COUNTRY_FONT_BASE_PX,
+  COORDS_FONT_BASE_PX,
+  ATTRIBUTION_FONT_BASE_PX,
+  formatCityLabel,
+  computeCityFontScale,
+  computeAttributionColor,
+} from "@/features/poster/domain/textLayout";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import {
   waitForMapIdle,
@@ -70,6 +86,15 @@ function canvasToDataUrl(
 
 function sanitizeLayerId(id: string): string {
   return id.replace(/[^a-zA-Z0-9_-]/g, "-");
+}
+
+function escapeXml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
 
 export async function createLayeredSvgBlobFromMap({
@@ -242,24 +267,59 @@ export async function createLayeredSvgBlobFromMap({
       }
     }
 
-    overlayLayers.push({
-      id: "text",
-      dataUrl: canvasToDataUrl(exportWidth, exportHeight, (ctx) => {
-        drawPosterText(
-          ctx,
-          exportWidth,
-          exportHeight,
-          theme,
-          { lat: center.lat, lon: center.lon },
-          displayCity,
-          displayCountry,
-          fontFamily,
-          showPosterText,
-          showOverlay,
-          includeCredits,
-        );
-      }),
-    });
+    const textColor = theme.ui?.text || "#111111";
+    const landColor = theme.map?.land || "#808080";
+    const attributionColor = computeAttributionColor(textColor, landColor, showOverlay);
+    const attributionAlpha = showOverlay ? 0.55 : 0.9;
+    const titleFontFamily = fontFamily
+      ? `"${fontFamily}", "Space Grotesk", sans-serif`
+      : '"Space Grotesk", sans-serif';
+    const bodyFontFamily = fontFamily
+      ? `"${fontFamily}", "IBM Plex Mono", monospace`
+      : '"IBM Plex Mono", monospace';
+
+    const dimScale = Math.max(
+      0.45,
+      Math.min(exportWidth, exportHeight) / TEXT_DIMENSION_REFERENCE_PX,
+    );
+    const attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale;
+
+    let vectorTypographySvg = "";
+
+    if (showPosterText) {
+      const cityLabel = formatCityLabel(displayCity);
+      const cityFontSize = CITY_FONT_BASE_PX * dimScale * computeCityFontScale(displayCity);
+      const countryFontSize = COUNTRY_FONT_BASE_PX * dimScale;
+      const coordinateFontSize = COORDS_FONT_BASE_PX * dimScale;
+      const cityY = exportHeight * TEXT_CITY_Y_RATIO;
+      const lineY = exportHeight * TEXT_DIVIDER_Y_RATIO;
+      const countryY = exportHeight * TEXT_COUNTRY_Y_RATIO;
+      const coordinatesY = exportHeight * TEXT_COORDS_Y_RATIO;
+      const coordsText = formatCoordinates(center.lat, center.lon);
+      const lineW = 3 * dimScale;
+      const lineX1 = exportWidth * 0.4;
+      const lineX2 = exportWidth * 0.6;
+
+      vectorTypographySvg += `
+  <text x="${exportWidth * 0.5}" y="${cityY}" text-anchor="middle" dominant-baseline="central" font-family=${JSON.stringify(titleFontFamily)} font-size="${cityFontSize}" font-weight="700" fill="${textColor}">${escapeXml(cityLabel)}</text>
+  <line x1="${lineX1}" y1="${lineY}" x2="${lineX2}" y2="${lineY}" stroke="${textColor}" stroke-width="${lineW}" stroke-linecap="round" />
+  <text x="${exportWidth * 0.5}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family=${JSON.stringify(titleFontFamily)} font-size="${countryFontSize}" font-weight="300" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
+  <text x="${exportWidth * 0.5}" y="${coordinatesY}" text-anchor="middle" dominant-baseline="central" font-family=${JSON.stringify(bodyFontFamily)} font-size="${coordinateFontSize}" font-weight="400" opacity="0.75" fill="${textColor}">${escapeXml(coordsText)}</text>
+`;
+    }
+
+    const attrY = exportHeight * (1 - TEXT_EDGE_MARGIN_RATIO);
+    const osmX = exportWidth * (1 - TEXT_EDGE_MARGIN_RATIO);
+    vectorTypographySvg += `
+  <text x="${osmX}" y="${attrY}" text-anchor="end" dominant-baseline="auto" font-family=${JSON.stringify(bodyFontFamily)} font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">© OpenStreetMap contributors</text>
+`;
+
+    if (includeCredits) {
+      const credX = exportWidth * TEXT_EDGE_MARGIN_RATIO;
+      vectorTypographySvg += `
+  <text x="${credX}" y="${attrY}" text-anchor="start" dominant-baseline="auto" font-family=${JSON.stringify(bodyFontFamily)} font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">✦ MAPARTE • ${escapeXml(APP_CREDIT_URL)}</text>
+`;
+    }
 
     const mapLayerGroups = mapLayerDataUrls
       .map(
@@ -281,6 +341,9 @@ export async function createLayeredSvgBlobFromMap({
 <svg xmlns="http://www.w3.org/2000/svg" width="${exportWidth}" height="${exportHeight}" viewBox="0 0 ${exportWidth} ${exportHeight}">
 ${mapLayerGroups}
 ${overlayGroups}
+<g id="vector-typography">
+${vectorTypographySvg}
+</g>
 </svg>`;
 
     return new Blob([svg], { type: "image/svg+xml;charset=utf-8" });

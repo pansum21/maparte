@@ -33,6 +33,9 @@ const AnnouncementModal = lazy(
 );
 const ExportFab = lazy(() => import("@/features/export/ui/ExportFab"));
 const DesktopLocationBar = lazy(() => import("@/shared/ui/DesktopLocationBar"));
+const AdminControlModal = lazy(
+  () => import("@/features/admin/ui/AdminControlModal"),
+);
 
 function SettingsDrawer({
   mobileTab,
@@ -96,6 +99,7 @@ export default function AppShell() {
   const [desktopLocationRowVisible, setDesktopLocationRowVisible] =
     useState(true);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
   const [supportPrompt, setSupportPrompt] = useState<SupportPromptState | null>(null);
   const [legalDoc, setLegalDoc] = useState<LegalDocType | null>(null);
 
@@ -216,7 +220,10 @@ export default function AppShell() {
       data-mobile-tab={mobileTab}
       data-desktop-tab={desktopTab}
     >
-      <GeneralHeader onAboutOpen={() => setAboutOpen(true)} />
+      <GeneralHeader
+        onAboutOpen={() => setAboutOpen(true)}
+        onAdminOpen={() => setAdminOpen(true)}
+      />
       <InstallPrompt />
       <StartupLocationModal />
 
@@ -333,6 +340,14 @@ export default function AppShell() {
       {legalDoc ? (
         <Suspense fallback={null}>
           <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />
+        </Suspense>
+      ) : null}
+      {adminOpen ? (
+        <Suspense fallback={null}>
+          <AdminControlModal
+            isOpen={adminOpen}
+            onClose={() => setAdminOpen(false)}
+          />
         </Suspense>
       ) : null}
     </div>

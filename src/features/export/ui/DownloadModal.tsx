@@ -3,6 +3,7 @@ import { useExport } from "@/features/export/application/useExport";
 import type { ExportFormat } from "@/features/export/domain/types";
 import {
   isProUser,
+  isAdminUser,
   getProCredits,
   activateProWithKey,
   checkPaymentReturnUrl,
@@ -29,6 +30,8 @@ export default function DownloadModal({
   const { isExporting, exportPoster } = useExport();
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(defaultFormat);
   const [credits, setCredits] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [simulateCustomer, setSimulateCustomer] = useState(false);
   const [includeCredits, setIncludeCredits] = useState(false);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [licenseKey, setLicenseKey] = useState("");
@@ -40,6 +43,7 @@ export default function DownloadModal({
       checkPaymentReturnUrl();
       const currentCredits = getProCredits();
       setCredits(currentCredits);
+      setIsAdmin(isAdminUser());
       setSelectedFormat(defaultFormat);
       setBonusNotice(null);
     }
@@ -47,7 +51,8 @@ export default function DownloadModal({
 
   if (!isOpen) return null;
 
-  const isPro = credits > 0 || isProUser();
+  const effectiveAdmin = isAdmin && !simulateCustomer;
+  const isPro = effectiveAdmin || (!simulateCustomer && (credits > 0 || isProUser()));
 
   const handleFreeDownload = () => {
     void exportPoster(selectedFormat, { asPro: false, includeCredits: true });
@@ -55,6 +60,12 @@ export default function DownloadModal({
   };
 
   const handleProDownload = async () => {
+    if (effectiveAdmin) {
+      await exportPoster(selectedFormat, { asPro: true, includeCredits });
+      setBonusNotice("👑 Ultra-HD poster downloaded! Unlimited Admin downloads remain active.");
+      return;
+    }
+
     const currentCredits = credits;
     await exportPoster(selectedFormat, { asPro: true, includeCredits });
     const remaining = Math.max(0, currentCredits - 1);
@@ -73,16 +84,25 @@ export default function DownloadModal({
   };
 
   const handleActivateKey = () => {
-    if (activateProWithKey(licenseKey)) {
+    const result = activateProWithKey(licenseKey);
+    if (result.success) {
       const updatedCredits = getProCredits();
       setCredits(updatedCredits);
       setShowKeyInput(false);
       setKeyError("");
-      setBonusNotice(
-        "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo. You now have 2 Ultra-HD downloads active!",
-      );
+      if (result.isAdmin) {
+        setIsAdmin(true);
+        setSimulateCustomer(false);
+        setBonusNotice(
+          "👑 Welcome Boss! Permanent Super Admin access activated. Unlimited 500 DPI downloads enabled!",
+        );
+      } else {
+        setBonusNotice(
+          "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo. You now have 2 Ultra-HD downloads active!",
+        );
+      }
     } else {
-      setKeyError("Invalid code. Please enter the paid access code.");
+      setKeyError("Invalid code. Please enter the paid access code or master admin key.");
     }
   };
 
@@ -94,13 +114,23 @@ export default function DownloadModal({
       const code = prompt(
         "Please complete payment to receive your access code. If you have already paid, enter your access code:",
       );
-      if (code && activateProWithKey(code)) {
-        setCredits(getProCredits());
-        setBonusNotice(
-          "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo",
-        );
-      } else if (code) {
-        alert("Invalid code. Please enter a valid paid access code.");
+      if (code) {
+        const result = activateProWithKey(code);
+        if (result.success) {
+          setCredits(getProCredits());
+          if (result.isAdmin) {
+            setIsAdmin(true);
+            setBonusNotice(
+              "👑 Permanent Super Admin access activated. Unlimited downloads enabled!",
+            );
+          } else {
+            setBonusNotice(
+              "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo",
+            );
+          }
+        } else {
+          alert("Invalid code. Please enter a valid paid access code.");
+        }
       }
     }
   };
@@ -138,6 +168,37 @@ export default function DownloadModal({
         {bonusNotice && (
           <div className="pro-bonus-alert">
             <span>{bonusNotice}</span>
+          </div>
+        )}
+
+        {isAdmin && !simulateCustomer && (
+          <div className="admin-status-banner">
+            <div className="admin-status-info">
+              <span className="admin-status-title">👑 Store Owner / Super Admin Mode Active</span>
+              <span className="admin-status-desc">
+                Unlimited 500 DPI Ultra-HD downloads enabled for you. Zero watermarks.
+              </span>
+            </div>
+            <button
+              type="button"
+              className="admin-sim-toggle-btn"
+              onClick={() => setSimulateCustomer(true)}
+            >
+              Test Customer View
+            </button>
+          </div>
+        )}
+
+        {isAdmin && simulateCustomer && (
+          <div className="admin-sim-alert">
+            <span>👀 Simulating Customer View (Paywall is active for testing)</span>
+            <button
+              type="button"
+              className="admin-sim-exit-btn"
+              onClick={() => setSimulateCustomer(false)}
+            >
+              Exit Test Mode
+            </button>
           </div>
         )}
 
@@ -209,22 +270,35 @@ export default function DownloadModal({
 
             {isPro ? (
               <div className="tier-pro-active-box">
-                <div className="pro-unlocked-banner">
-                  <span>
-                    🎁 {credits} Ultra-HD {credits === 1 ? "Credit" : "Credits"} Available
-                  </span>
-                </div>
-                <div className="pro-code-badge">
-                  <span>2nd Poster Free Code: <strong>maparte.bogo.in@bogo</strong></span>
-                </div>
-                {credits > 1 ? (
-                  <p className="tier-bogo-hint">
-                    Download this poster now. Your 2nd bonus poster can be created and downloaded next!
-                  </p>
+                {effectiveAdmin ? (
+                  <>
+                    <div className="pro-unlocked-banner admin-unlocked-banner">
+                      <span>👑 Master Admin Access: Unlimited Free Ultra-HD Downloads</span>
+                    </div>
+                    <p className="tier-bogo-hint" style={{ color: "#dfba73" }}>
+                      Store Owner Mode active. All 500 DPI formats (PDF, PNG, SVG) are free, unmetered, and clean.
+                    </p>
+                  </>
                 ) : (
-                  <p className="tier-bogo-hint">
-                    🎉 This is your 2nd bonus poster download! Enjoy your matching set.
-                  </p>
+                  <>
+                    <div className="pro-unlocked-banner">
+                      <span>
+                        🎁 {credits} Ultra-HD {credits === 1 ? "Credit" : "Credits"} Available
+                      </span>
+                    </div>
+                    <div className="pro-code-badge">
+                      <span>2nd Poster Free Code: <strong>maparte.bogo.in@bogo</strong></span>
+                    </div>
+                    {credits > 1 ? (
+                      <p className="tier-bogo-hint">
+                        Download this poster now. Your 2nd bonus poster can be created and downloaded next!
+                      </p>
+                    ) : (
+                      <p className="tier-bogo-hint">
+                        🎉 This is your 2nd bonus poster download! Enjoy your matching set.
+                      </p>
+                    )}
+                  </>
                 )}
                 <label className="branding-toggle-label">
                   <input
