@@ -190,33 +190,19 @@ export default function DownloadModal({
       // ignore
     }
 
-    const checkoutUrl = import.meta.env.VITE_CHECKOUT_URL;
-    if (checkoutUrl) {
+    const fallbackCheckoutUrl =
+      "https://checkout.dodopayments.com/buy/pdt_0NptYWPjBtVnJxgyRkwI4?quantity=1";
+    const checkoutUrl = import.meta.env.VITE_CHECKOUT_URL || fallbackCheckoutUrl;
+
+    try {
       const targetUrl = new URL(checkoutUrl, window.location.origin);
-      targetUrl.searchParams.set("email", email.trim());
-      targetUrl.searchParams.set("tier", tier.id);
-      targetUrl.searchParams.set("price", tier.price.replace("$", ""));
+      targetUrl.searchParams.set("customer_email", email.trim());
+      const returnUrl = `${window.location.origin}${window.location.pathname}?payment=success&status=paid&unlocked=pro`;
+      targetUrl.searchParams.set("redirect_url", returnUrl);
+      targetUrl.searchParams.set("metadata_tier", tier.id);
       window.open(targetUrl.toString(), "_blank");
-    } else {
-      const code = prompt(
-        `Thank you for selecting ${tier.label} (${tier.price})!\n\nYour receipt and 1-Time BOGO code will be delivered to: ${email.trim()}\n\nIf you already have your access code, enter it below:`,
-      );
-      if (code) {
-        const result = activateProWithKey(code);
-        if (result.success) {
-          setCredits(getProCredits());
-          if (result.isAdmin) {
-            setIsAdmin(true);
-            setBonusNotice("👑 Permanent Admin access activated!");
-          } else {
-            setBonusNotice(
-              `🎉 Payment verified! Your 1-Time BOGO code is MAPARTE.B01G01.2026. Code sent to ${email.trim()}`,
-            );
-          }
-        } else {
-          alert("Invalid code. Please check and try again.");
-        }
-      }
+    } catch {
+      window.open(fallbackCheckoutUrl, "_blank");
     }
   };
 

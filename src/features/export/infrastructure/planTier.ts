@@ -152,16 +152,27 @@ export function checkPaymentReturnUrl(): boolean {
       return true;
     }
 
+    const paymentParam = url.searchParams.get("payment");
+    const statusParam = url.searchParams.get("status") || url.searchParams.get("payment_status");
+    const unlockedParam = url.searchParams.get("unlocked");
+    const hasDodoPayment = url.searchParams.has("payment_id") || url.searchParams.has("checkout_id");
+
     const hasSuccess =
-      url.searchParams.get("payment") === "success" ||
-      url.searchParams.get("unlocked") === "pro" ||
-      url.searchParams.get("status") === "paid";
+      paymentParam === "success" ||
+      unlockedParam === "pro" ||
+      statusParam === "paid" ||
+      statusParam === "succeeded" ||
+      statusParam === "success" ||
+      hasDodoPayment;
 
     if (hasSuccess) {
       addProCredits(2);
       url.searchParams.delete("payment");
       url.searchParams.delete("unlocked");
       url.searchParams.delete("status");
+      url.searchParams.delete("payment_status");
+      url.searchParams.delete("payment_id");
+      url.searchParams.delete("checkout_id");
       const cleanPath =
         url.pathname + (url.search ? url.search : "") + (url.hash ? url.hash : "");
       window.history.replaceState({}, document.title, cleanPath);
