@@ -271,12 +271,9 @@ export async function createLayeredSvgBlobFromMap({
     const landColor = theme.map?.land || "#808080";
     const attributionColor = computeAttributionColor(textColor, landColor, showOverlay);
     const attributionAlpha = showOverlay ? 0.55 : 0.9;
-    const titleFontFamily = fontFamily
-      ? `"${fontFamily}", "Space Grotesk", sans-serif`
-      : '"Space Grotesk", sans-serif';
-    const bodyFontFamily = fontFamily
-      ? `"${fontFamily}", "IBM Plex Mono", monospace`
-      : '"IBM Plex Mono", monospace';
+    const cleanFont = (fontFamily || "Space Grotesk").replace(/['"]/g, "").trim();
+    const titleFontFamily = cleanFont ? `'${cleanFont}', 'Space Grotesk', sans-serif` : "'Space Grotesk', sans-serif";
+    const bodyFontFamily = "'IBM Plex Mono', 'Space Grotesk', monospace";
 
     const dimScale = Math.max(
       0.45,
@@ -301,23 +298,23 @@ export async function createLayeredSvgBlobFromMap({
       const lineX2 = exportWidth * 0.6;
 
       vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${cityY}" text-anchor="middle" dominant-baseline="central" font-family=${JSON.stringify(titleFontFamily)} font-size="${cityFontSize}" font-weight="700" fill="${textColor}">${escapeXml(cityLabel)}</text>
+  <text x="${exportWidth * 0.5}" y="${cityY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" fill="${textColor}">${escapeXml(cityLabel)}</text>
   <line x1="${lineX1}" y1="${lineY}" x2="${lineX2}" y2="${lineY}" stroke="${textColor}" stroke-width="${lineW}" stroke-linecap="round" />
-  <text x="${exportWidth * 0.5}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family=${JSON.stringify(titleFontFamily)} font-size="${countryFontSize}" font-weight="300" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
-  <text x="${exportWidth * 0.5}" y="${coordinatesY}" text-anchor="middle" dominant-baseline="central" font-family=${JSON.stringify(bodyFontFamily)} font-size="${coordinateFontSize}" font-weight="400" opacity="0.75" fill="${textColor}">${escapeXml(coordsText)}</text>
+  <text x="${exportWidth * 0.5}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="300" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
+  <text x="${exportWidth * 0.5}" y="${coordinatesY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="400" opacity="0.75" fill="${textColor}">${escapeXml(coordsText)}</text>
 `;
     }
 
     const attrY = exportHeight * (1 - TEXT_EDGE_MARGIN_RATIO);
     const osmX = exportWidth * (1 - TEXT_EDGE_MARGIN_RATIO);
     vectorTypographySvg += `
-  <text x="${osmX}" y="${attrY}" text-anchor="end" dominant-baseline="auto" font-family=${JSON.stringify(bodyFontFamily)} font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">© OpenStreetMap contributors</text>
+  <text x="${osmX}" y="${attrY}" text-anchor="end" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">© OpenStreetMap contributors</text>
 `;
 
     if (includeCredits) {
       const credX = exportWidth * TEXT_EDGE_MARGIN_RATIO;
       vectorTypographySvg += `
-  <text x="${credX}" y="${attrY}" text-anchor="start" dominant-baseline="auto" font-family=${JSON.stringify(bodyFontFamily)} font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">✦ MAPARTE • ${escapeXml(APP_CREDIT_URL)}</text>
+  <text x="${credX}" y="${attrY}" text-anchor="start" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">✦ MAPARTE • ${escapeXml(APP_CREDIT_URL)}</text>
 `;
     }
 
