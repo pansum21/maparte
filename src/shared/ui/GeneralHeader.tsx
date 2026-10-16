@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { InfoIcon, SunIcon, MoonIcon } from "@/shared/ui/Icons";
+import { InfoIcon } from "@/shared/ui/Icons";
 import SocialLinkGroup from "@/shared/ui/SocialLinkGroup";
-import { useUiTheme } from "@/shared/hooks/useUiTheme";
 
 interface GeneralHeaderProps {
   onAboutOpen: () => void;
@@ -12,7 +11,6 @@ export default function GeneralHeader({
   onAboutOpen,
   onAdminOpen,
 }: GeneralHeaderProps) {
-  const { uiTheme, toggleUiTheme } = useUiTheme();
   const [tapCount, setTapCount] = useState(0);
 
   const handleLogoClick = () => {
@@ -48,23 +46,6 @@ export default function GeneralHeader({
       </div>
 
       <div className="general-header-actions">
-        {/* Light / Dark Mode Switcher */}
-        <button
-          type="button"
-          className="general-header-text-btn general-header-theme-toggle-btn"
-          onClick={toggleUiTheme}
-          aria-label={`Switch to ${uiTheme === "dark" ? "Light" : "Dark"} Mode`}
-          title={`Switch to ${uiTheme === "dark" ? "Light" : "Dark"} Mode`}
-          style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
-        >
-          <span style={{ display: "inline-flex", fontSize: "0.95rem" }} aria-hidden="true">
-            {uiTheme === "dark" ? <SunIcon /> : <MoonIcon />}
-          </span>
-          <span className="general-header-btn-label">
-            {uiTheme === "dark" ? "Light" : "Dark"}
-          </span>
-        </button>
-
         <SocialLinkGroup variant="header" />
         <button
           type="button"
