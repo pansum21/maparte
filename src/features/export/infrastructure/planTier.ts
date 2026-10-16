@@ -22,6 +22,32 @@ export function isProUser(): boolean {
   }
 }
 
+export function setProUser(isPro: boolean): void {
+  try {
+    if (isPro) {
+      window.localStorage.setItem(PLAN_KEY, "pro");
+    } else {
+      window.localStorage.removeItem(PLAN_KEY);
+    }
+  } catch {
+    // ignore
+  }
+}
+
+export function activateProWithKey(key: string): boolean {
+  const normalized = key.trim().toUpperCase();
+  if (
+    normalized === "MAPARTEPRO" ||
+    normalized === "MAPARTE2026" ||
+    normalized === "PRO2026" ||
+    normalized.startsWith("PRO-")
+  ) {
+    setProUser(true);
+    return true;
+  }
+  return false;
+}
+
 /** One large word made of dots, centred on the poster. */
 function drawWatermark(
   ctx: CanvasRenderingContext2D,

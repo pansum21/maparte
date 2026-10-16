@@ -124,7 +124,10 @@ export function useExport() {
   }, []);
 
   const exportPoster = useCallback(
-    async (format: ExportFormat) => {
+    async (
+      format: ExportFormat,
+      options?: { asPro?: boolean; includeCredits?: boolean },
+    ) => {
       const map = mapRef.current;
       if (!map) {
         dispatch({ type: "SET_ERROR", error: "Map is not ready." });
@@ -141,10 +144,17 @@ export function useExport() {
 
         const widthCm = Number(form.width) || DEFAULT_POSTER_WIDTH_CM;
         const heightCm = Number(form.height) || DEFAULT_POSTER_HEIGHT_CM;
-        const isPro = isProUser();
+        const isPro =
+          options?.asPro !== undefined ? options.asPro : isProUser();
         const dpi = isPro ? 300 : FREE_DPI;
         const widthInches = widthCm / CM_PER_INCH;
         const heightInches = heightCm / CM_PER_INCH;
+        const includeCredits =
+          options?.includeCredits !== undefined
+            ? options.includeCredits
+            : isPro
+              ? (form.includeCredits ?? false)
+              : true;
 
         // Aggregate, non-personal export data. Use only the structured city /
         // country — never raw input (form.location) or coordinates.
@@ -173,15 +183,6 @@ export function useExport() {
         const lat = Number(form.latitude) || 0;
         const lon = Number(form.longitude) || 0;
 
-        if (format === "svg" && !isPro) {
-          dispatch({
-            type: "SET_EXPORT_STATUS",
-            exporting: false,
-            error: "SVG download is a Pro feature.",
-          });
-          return;
-        }
-
         if (format === "svg") {
           const svgBlob = await createLayeredSvgBlobFromMap({
             map,
@@ -194,7 +195,7 @@ export function useExport() {
             fontFamily: form.fontFamily.trim(),
             showPosterText: form.showPosterText,
             showOverlay: form.showMarkers,
-            includeCredits: form.includeCredits,
+            includeCredits,
             markers: hasVisibleMarkers ? state.markers : [],
             markerIcons: hasVisibleOverlays
               ? getAllMarkerIcons(state.customMarkerIcons)
@@ -233,7 +234,7 @@ export function useExport() {
           fontFamily: form.fontFamily.trim(),
           showPosterText: form.showPosterText,
           showOverlay: form.showMarkers,
-          includeCredits: form.includeCredits,
+          includeCredits,
           markers: hasVisibleMarkers ? state.markers : [],
           markerIcons: hasVisibleOverlays
             ? getAllMarkerIcons(state.customMarkerIcons)

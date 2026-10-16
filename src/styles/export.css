@@ -232,3 +232,296 @@
   width: 16px;
   height: 16px;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   Download Paywall Modal (Free vs Paid $4.99)
+   ═══════════════════════════════════════════════════════════════ */
+
+.export-modal.download-paywall-modal {
+  width: min(100%, 660px);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 22px 24px;
+  background: rgba(10, 20, 30, 0.98);
+  border: 1px solid rgba(165, 198, 221, 0.22);
+}
+
+.download-modal-subtitle {
+  margin: 3px 0 0;
+  font-family: system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: rgba(160, 185, 205, 0.75);
+}
+
+.download-format-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 16px 0 20px;
+}
+
+.download-format-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(140, 175, 200, 0.2);
+  background: rgba(16, 31, 45, 0.6);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.download-format-pill:hover {
+  background: rgba(22, 42, 60, 0.85);
+  border-color: rgba(160, 200, 230, 0.4);
+}
+
+.download-format-pill.is-active {
+  background: rgba(30, 58, 82, 0.9);
+  border-color: #dfba73;
+  box-shadow: 0 0 12px rgba(223, 186, 115, 0.2);
+}
+
+.download-format-pill .format-name {
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.download-format-pill .format-desc {
+  font-size: 0.68rem;
+  color: rgba(160, 185, 205, 0.7);
+  margin-top: 2px;
+  text-align: center;
+}
+
+.download-tier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 580px) {
+  .download-tier-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.download-tier-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(140, 175, 200, 0.2);
+  background: rgba(14, 27, 40, 0.7);
+}
+
+.download-tier-card.is-featured {
+  border-color: #dfba73;
+  background: linear-gradient(180deg, rgba(25, 45, 65, 0.85) 0%, rgba(14, 27, 40, 0.95) 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 0 15px rgba(223, 186, 115, 0.12);
+}
+
+.tier-featured-pill {
+  position: absolute;
+  top: -11px;
+  right: 16px;
+  background: linear-gradient(90deg, #dfba73, #f5d697);
+  color: #0c1824;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 9px;
+  border-radius: 12px;
+}
+
+.tier-card-header {
+  margin-bottom: 12px;
+}
+
+.tier-badge {
+  display: inline-block;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.tier-badge.badge-free {
+  background: rgba(140, 175, 200, 0.15);
+  color: #9cbccc;
+}
+
+.tier-badge.badge-pro {
+  background: rgba(223, 186, 115, 0.2);
+  color: #dfba73;
+}
+
+.tier-card-header h4 {
+  margin: 4px 0 2px;
+  font-size: 1.15rem;
+  color: #fff;
+}
+
+.tier-price {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.tier-price-period {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(160, 185, 205, 0.7);
+}
+
+.tier-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: rgba(205, 225, 240, 0.88);
+}
+
+.tier-btn {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.84rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.tier-btn--free {
+  background: rgba(26, 45, 62, 0.8);
+  border-color: rgba(140, 175, 200, 0.3);
+  color: #e5f1fa;
+}
+
+.tier-btn--free:hover {
+  background: rgba(35, 60, 82, 0.95);
+}
+
+.tier-btn--pro {
+  background: linear-gradient(135deg, #dfba73 0%, #c49d56 100%);
+  color: #0b1722;
+  box-shadow: 0 4px 14px rgba(223, 186, 115, 0.3);
+}
+
+.tier-btn--pro:hover {
+  background: linear-gradient(135deg, #ebd095 0%, #d4ac63 100%);
+  box-shadow: 0 6px 18px rgba(223, 186, 115, 0.45);
+}
+
+.tier-pro-active-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pro-unlocked-banner {
+  padding: 6px 10px;
+  background: rgba(46, 125, 50, 0.25);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  border-radius: 6px;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.72rem;
+  color: #81c784;
+  text-align: center;
+}
+
+.branding-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: rgba(180, 205, 225, 0.85);
+  cursor: pointer;
+  user-select: none;
+}
+
+.branding-toggle-label input {
+  accent-color: #dfba73;
+}
+
+.tier-redeem-row {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.redeem-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 0.72rem;
+  color: rgba(180, 205, 225, 0.7);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.redeem-input-group {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.redeem-input-group input {
+  flex: 1;
+  padding: 6px 10px;
+  background: rgba(9, 18, 27, 0.8);
+  border: 1px solid rgba(140, 175, 200, 0.3);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.78rem;
+}
+
+.redeem-input-group button {
+  padding: 6px 12px;
+  background: #dfba73;
+  color: #0b1722;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.redeem-error {
+  margin: 4px 0 0;
+  font-size: 0.7rem;
+  color: #e57373;
+}
+
+.download-modal-footer {
+  margin-top: 14px;
+  text-align: center;
+}
+
+.download-modal-footer p {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgba(140, 175, 200, 0.6);
+  letter-spacing: 0.02em;
+}

@@ -1,31 +1,14 @@
 import { useEffect, useState } from "react";
-import { useExport } from "@/features/export/application/useExport";
-import type { ExportFormat } from "@/features/export/domain/types";
-import { CloseIcon, DownloadIcon, LoaderIcon } from "@/shared/ui/Icons";
-import SocialLinkGroup from "@/shared/ui/SocialLinkGroup";
-
-const FORMAT_OPTIONS: { format: ExportFormat; label: string }[] = [
-  { format: "png", label: "PNG" },
-  { format: "pdf", label: "PDF" },
-  { format: "svg", label: "RSVG" },
-];
+import { DownloadIcon } from "@/shared/ui/Icons";
+import DownloadModal from "./DownloadModal";
 
 interface ExportFabProps {
   isMobile: boolean;
 }
 
 export default function ExportFab({ isMobile }: ExportFabProps) {
-  const { isExporting, exportPoster } = useExport();
   const [isOpen, setIsOpen] = useState(false);
-  const [activeFormat, setActiveFormat] = useState<ExportFormat | null>(null);
   const [isTriggerVisible, setIsTriggerVisible] = useState(true);
-
-  useEffect(() => {
-    if (!isExporting && activeFormat) {
-      setActiveFormat(null);
-      setIsOpen(false);
-    }
-  }, [isExporting, activeFormat]);
 
   useEffect(() => {
     if (!isMobile) return;
@@ -49,11 +32,6 @@ export default function ExportFab({ isMobile }: ExportFabProps) {
     };
   }, [isMobile]);
 
-  const runExport = (format: ExportFormat) => {
-    setActiveFormat(format);
-    void exportPoster(format);
-  };
-
   const triggerClass = isMobile
     ? `mobile-export-fab-trigger${isTriggerVisible ? "" : " is-hidden"}`
     : "export-fab-trigger-desktop";
@@ -73,55 +51,7 @@ export default function ExportFab({ isMobile }: ExportFabProps) {
         {!isMobile && <span>Download</span>}
       </button>
 
-      {isOpen ? (
-        <div
-          className="export-modal-backdrop"
-          role="presentation"
-          onClick={() => !isExporting && setIsOpen(false)}
-        >
-          <div
-            className="export-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="export-modal-title"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="export-modal-header">
-              <h3 id="export-modal-title">Download Poster</h3>
-              <button
-                type="button"
-                className="export-modal-close"
-                onClick={() => !isExporting && setIsOpen(false)}
-                aria-label="Close export options"
-              >
-                <CloseIcon />
-              </button>
-            </div>
-            <div className="export-modal-actions">
-              {FORMAT_OPTIONS.map(({ format, label }) => (
-                <button
-                  key={format}
-                  type="button"
-                  className={`export-modal-option export-modal-option--${format}`}
-                  onClick={() => runExport(format)}
-                  disabled={isExporting}
-                >
-                  {isExporting && activeFormat === format ? (
-                    <LoaderIcon className="export-modal-option-icon is-spinning" />
-                  ) : (
-                    <DownloadIcon className="export-modal-option-icon" />
-                  )}
-                  <span>{label}</span>
-                </button>
-              ))}
-            </div>
-            <p className="export-modal-support-label">
-              Support the project <span className="heart">❤︎</span>
-            </p>
-            <SocialLinkGroup variant="mobile-export" />
-          </div>
-        </div>
-      ) : null}
+      <DownloadModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   );
 }

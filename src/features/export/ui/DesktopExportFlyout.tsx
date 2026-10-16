@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useExport } from "@/features/export/application/useExport";
+import { useState } from "react";
 import type { ExportFormat } from "@/features/export/domain/types";
-import { DownloadIcon, LoaderIcon } from "@/shared/ui/Icons";
+import { DownloadIcon } from "@/shared/ui/Icons";
+import DownloadModal from "./DownloadModal";
 
 const FLYOUT_FORMATS: { format: ExportFormat; label: string }[] = [
   { format: "svg", label: "RSVG" },
@@ -9,49 +9,47 @@ const FLYOUT_FORMATS: { format: ExportFormat; label: string }[] = [
 ];
 
 export default function DesktopExportFlyout() {
-  const { isExporting, exportPoster } = useExport();
-  const [activeFormat, setActiveFormat] = useState<ExportFormat | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeFormat, setActiveFormat] = useState<ExportFormat>("png");
 
-  useEffect(() => {
-    if (!isExporting) setActiveFormat(null);
-  }, [isExporting]);
-
-  const runExport = (format: ExportFormat) => {
+  const openModal = (format: ExportFormat) => {
     setActiveFormat(format);
-    void exportPoster(format);
+    setIsOpen(true);
   };
 
   return (
-    <div className={`desktop-export-fab${isExporting ? " is-exporting" : ""}`}>
-      <div className="desktop-export-flyout">
-        {FLYOUT_FORMATS.map(({ format, label }) => (
-          <button
-            key={format}
-            type="button"
-            className={`desktop-export-btn desktop-export-btn--${format}`}
-            disabled={isExporting}
-            onClick={() => runExport(format)}
-          >
-            {isExporting && activeFormat === format
-              ? <LoaderIcon className="desktop-export-btn-icon is-spinning" />
-              : <DownloadIcon className="desktop-export-btn-icon" />}
-            <span>{label}</span>
-          </button>
-        ))}
+    <>
+      <div className="desktop-export-fab">
+        <div className="desktop-export-flyout">
+          {FLYOUT_FORMATS.map(({ format, label }) => (
+            <button
+              key={format}
+              type="button"
+              className={`desktop-export-btn desktop-export-btn--${format}`}
+              onClick={() => openModal(format)}
+            >
+              <DownloadIcon className="desktop-export-btn-icon" />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className="desktop-export-btn desktop-export-btn--primary"
+          onClick={() => openModal("png")}
+        >
+          <DownloadIcon className="desktop-export-btn-icon" />
+          <span className="desktop-export-label-default">Download</span>
+          <span className="desktop-export-label-hover">PNG</span>
+        </button>
       </div>
 
-      <button
-        type="button"
-        className="desktop-export-btn desktop-export-btn--primary"
-        disabled={isExporting}
-        onClick={() => runExport("png")}
-      >
-        {isExporting && activeFormat === "png"
-          ? <LoaderIcon className="desktop-export-btn-icon is-spinning" />
-          : <DownloadIcon className="desktop-export-btn-icon" />}
-        <span className="desktop-export-label-default">Download</span>
-        <span className="desktop-export-label-hover">PNG</span>
-      </button>
-    </div>
+      <DownloadModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        defaultFormat={activeFormat}
+      />
+    </>
   );
 }
