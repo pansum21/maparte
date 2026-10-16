@@ -31,7 +31,6 @@ export default function DownloadModal({
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(defaultFormat);
   const [credits, setCredits] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [simulateCustomer, setSimulateCustomer] = useState(false);
   const [includeCredits, setIncludeCredits] = useState(false);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [licenseKey, setLicenseKey] = useState("");
@@ -51,8 +50,7 @@ export default function DownloadModal({
 
   if (!isOpen) return null;
 
-  const effectiveAdmin = isAdmin && !simulateCustomer;
-  const isPro = effectiveAdmin || (!simulateCustomer && (credits > 0 || isProUser()));
+  const isPro = isAdmin || credits > 0 || isProUser();
 
   const handleFreeDownload = () => {
     void exportPoster(selectedFormat, { asPro: false, includeCredits: true });
@@ -60,9 +58,9 @@ export default function DownloadModal({
   };
 
   const handleProDownload = async () => {
-    if (effectiveAdmin) {
+    if (isAdmin) {
       await exportPoster(selectedFormat, { asPro: true, includeCredits });
-      setBonusNotice("👑 Ultra-HD poster downloaded! Unlimited Admin downloads remain active.");
+      setBonusNotice("🎉 Ultra-HD poster downloaded!");
       return;
     }
 
@@ -76,7 +74,7 @@ export default function DownloadModal({
         "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo. Save this code to design your matching poster anytime!",
       );
     } else {
-      setBonusNotice("🎉 Ultra-HD poster downloaded! Both BOGO downloads have been successfully used. Enjoy your prints!");
+      setBonusNotice("🎉 Ultra-HD poster downloaded! Enjoy your prints!");
       setTimeout(() => {
         onClose();
       }, 2000);
@@ -92,17 +90,14 @@ export default function DownloadModal({
       setKeyError("");
       if (result.isAdmin) {
         setIsAdmin(true);
-        setSimulateCustomer(false);
-        setBonusNotice(
-          "👑 Welcome Boss! Permanent Super Admin access activated. Unlimited 500 DPI downloads enabled!",
-        );
+        setBonusNotice("🎉 Ultra-HD 500 DPI access unlocked!");
       } else {
         setBonusNotice(
           "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo. You now have 2 Ultra-HD downloads active!",
         );
       }
     } else {
-      setKeyError("Invalid code. Please enter the paid access code or master admin key.");
+      setKeyError("Invalid code. Please enter the paid access code.");
     }
   };
 
@@ -168,37 +163,6 @@ export default function DownloadModal({
         {bonusNotice && (
           <div className="pro-bonus-alert">
             <span>{bonusNotice}</span>
-          </div>
-        )}
-
-        {isAdmin && !simulateCustomer && (
-          <div className="admin-status-banner">
-            <div className="admin-status-info">
-              <span className="admin-status-title">👑 Store Owner / Super Admin Mode Active</span>
-              <span className="admin-status-desc">
-                Unlimited 500 DPI Ultra-HD downloads enabled for you. Zero watermarks.
-              </span>
-            </div>
-            <button
-              type="button"
-              className="admin-sim-toggle-btn"
-              onClick={() => setSimulateCustomer(true)}
-            >
-              Test Customer View
-            </button>
-          </div>
-        )}
-
-        {isAdmin && simulateCustomer && (
-          <div className="admin-sim-alert">
-            <span>👀 Simulating Customer View (Paywall is active for testing)</span>
-            <button
-              type="button"
-              className="admin-sim-exit-btn"
-              onClick={() => setSimulateCustomer(false)}
-            >
-              Exit Test Mode
-            </button>
           </div>
         )}
 
@@ -270,35 +234,27 @@ export default function DownloadModal({
 
             {isPro ? (
               <div className="tier-pro-active-box">
-                {effectiveAdmin ? (
-                  <>
-                    <div className="pro-unlocked-banner admin-unlocked-banner">
-                      <span>👑 Master Admin Access: Unlimited Free Ultra-HD Downloads</span>
-                    </div>
-                    <p className="tier-bogo-hint" style={{ color: "#dfba73" }}>
-                      Store Owner Mode active. All 500 DPI formats (PDF, PNG, SVG) are free, unmetered, and clean.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <div className="pro-unlocked-banner">
-                      <span>
-                        🎁 {credits} Ultra-HD {credits === 1 ? "Credit" : "Credits"} Available
-                      </span>
-                    </div>
-                    <div className="pro-code-badge">
-                      <span>2nd Poster Free Code: <strong>maparte.bogo.in@bogo</strong></span>
-                    </div>
-                    {credits > 1 ? (
-                      <p className="tier-bogo-hint">
-                        Download this poster now. Your 2nd bonus poster can be created and downloaded next!
-                      </p>
-                    ) : (
-                      <p className="tier-bogo-hint">
-                        🎉 This is your 2nd bonus poster download! Enjoy your matching set.
-                      </p>
-                    )}
-                  </>
+                <div className="pro-unlocked-banner">
+                  <span>
+                    {isAdmin
+                      ? "🎁 Ultra-HD Art Unlocked (500 DPI)"
+                      : `🎁 ${credits} Ultra-HD ${credits === 1 ? "Credit" : "Credits"} Available`}
+                  </span>
+                </div>
+                {!isAdmin && credits > 0 && (
+                  <div className="pro-code-badge">
+                    <span>2nd Poster Free Code: <strong>maparte.bogo.in@bogo</strong></span>
+                  </div>
+                )}
+                {!isAdmin && credits > 1 && (
+                  <p className="tier-bogo-hint">
+                    Download this poster now. Your 2nd bonus poster can be created and downloaded next!
+                  </p>
+                )}
+                {!isAdmin && credits === 1 && (
+                  <p className="tier-bogo-hint">
+                    🎉 This is your 2nd bonus poster download! Enjoy your matching set.
+                  </p>
                 )}
                 <label className="branding-toggle-label">
                   <input

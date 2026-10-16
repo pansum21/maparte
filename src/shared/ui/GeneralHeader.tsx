@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { InfoIcon } from "@/shared/ui/Icons";
+import { useState } from "react";
+import { InfoIcon, SunIcon, MoonIcon } from "@/shared/ui/Icons";
 import SocialLinkGroup from "@/shared/ui/SocialLinkGroup";
-import { isAdminUser } from "@/features/export/infrastructure/planTier";
+import { useUiTheme } from "@/shared/hooks/useUiTheme";
 
 interface GeneralHeaderProps {
   onAboutOpen: () => void;
@@ -12,12 +12,8 @@ export default function GeneralHeader({
   onAboutOpen,
   onAdminOpen,
 }: GeneralHeaderProps) {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { uiTheme, toggleUiTheme } = useUiTheme();
   const [tapCount, setTapCount] = useState(0);
-
-  useEffect(() => {
-    setIsAdmin(isAdminUser());
-  }, []);
 
   const handleLogoClick = () => {
     setTapCount((prev) => {
@@ -35,7 +31,7 @@ export default function GeneralHeader({
       <div
         className="desktop-brand"
         onClick={handleLogoClick}
-        title={isAdmin ? "MAPARTE (Admin Active)" : "MAPARTE"}
+        title="MAPARTE"
         style={{ cursor: "pointer" }}
       >
         <img
@@ -52,23 +48,23 @@ export default function GeneralHeader({
       </div>
 
       <div className="general-header-actions">
-        {isAdmin && (
-          <button
-            type="button"
-            className="general-header-text-btn general-header-admin-btn"
-            onClick={onAdminOpen}
-            aria-label="Admin Control"
-            title="Admin Control Center"
-            style={{
-              borderColor: "rgba(223, 186, 115, 0.4)",
-              background: "rgba(223, 186, 115, 0.12)",
-              color: "#dfba73",
-              fontWeight: 700,
-            }}
-          >
-            <span className="general-header-btn-label">👑 Admin</span>
-          </button>
-        )}
+        {/* Light / Dark Mode Switcher */}
+        <button
+          type="button"
+          className="general-header-text-btn general-header-theme-toggle-btn"
+          onClick={toggleUiTheme}
+          aria-label={`Switch to ${uiTheme === "dark" ? "Light" : "Dark"} Mode`}
+          title={`Switch to ${uiTheme === "dark" ? "Light" : "Dark"} Mode`}
+          style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+        >
+          <span style={{ display: "inline-flex", fontSize: "0.95rem" }} aria-hidden="true">
+            {uiTheme === "dark" ? <SunIcon /> : <MoonIcon />}
+          </span>
+          <span className="general-header-btn-label">
+            {uiTheme === "dark" ? "Light" : "Dark"}
+          </span>
+        </button>
+
         <SocialLinkGroup variant="header" />
         <button
           type="button"
