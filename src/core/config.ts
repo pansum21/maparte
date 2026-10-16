@@ -48,7 +48,8 @@ export const ADS_SIDEBAR_ENABLED =
     .trim()
     .toLowerCase() === "true";
 
-export const ADSENSE_AD_CLIENT = import.meta.env.VITE_ADSENSE_AD_CLIENT ?? "";
+export const ADSENSE_AD_CLIENT =
+  import.meta.env.VITE_ADSENSE_AD_CLIENT || "ca-pub-6768042074394876";
 export const AD_SLOT_SIDEBAR = import.meta.env.VITE_AD_SLOT_SIDEBAR ?? "";
 
 export const REPO_URL = import.meta.env.VITE_REPO_URL ?? "";

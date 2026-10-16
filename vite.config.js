@@ -65,14 +65,8 @@ function adsensePlugin() {
     },
     closeBundle() {
       const publisherId = String(
-        resolvedConfig.env.VITE_ADSENSE_PUBLISHER_ID ?? "",
+        resolvedConfig.env.VITE_ADSENSE_PUBLISHER_ID ?? "pub-6768042074394876",
       ).trim();
-      if (!publisherId) {
-        console.warn(
-          "[adsense] VITE_ADSENSE_PUBLISHER_ID is not set — skipping ads.txt",
-        );
-        return;
-      }
       const outDir = path.resolve(
         resolvedConfig.root,
         resolvedConfig.build.outDir,
