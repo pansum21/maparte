@@ -5,6 +5,7 @@
  * payments exist.
  */
 const PLAN_KEY = "maparte_plan";
+const CREDITS_KEY = "maparte_pro_credits";
 const FULL_DPI = 300;
 export const FREE_DPI = 96;
 
@@ -14,23 +15,62 @@ const WATERMARK_WIDTH_FRACTION = 0.8; // share of the poster width the word cove
 const WATERMARK_OPACITY = 0.22; // 0 = invisible, 1 = solid
 const WATERMARK_ANGLE = -Math.PI / 7; // slight diagonal; use 0 for straight
 
-export function isProUser(): boolean {
+export function getProCredits(): number {
   try {
-    return window.localStorage.getItem(PLAN_KEY) === "pro";
+    const raw = window.localStorage.getItem(CREDITS_KEY);
+    if (raw !== null) {
+      const parsed = parseInt(raw, 10);
+      return Number.isNaN(parsed) || parsed < 0 ? 0 : parsed;
+    }
+    // If legacy pro plan was set without explicit credits, grant default 2 BOGO credits
+    if (window.localStorage.getItem(PLAN_KEY) === "pro") {
+      return 2;
+    }
+    return 0;
   } catch {
-    return false;
+    return 0;
   }
 }
 
-export function setProUser(isPro: boolean): void {
+export function setProCredits(count: number): void {
   try {
-    if (isPro) {
+    const safeCount = Math.max(0, Math.floor(count));
+    window.localStorage.setItem(CREDITS_KEY, safeCount.toString());
+    if (safeCount > 0) {
       window.localStorage.setItem(PLAN_KEY, "pro");
     } else {
       window.localStorage.removeItem(PLAN_KEY);
     }
   } catch {
     // ignore
+  }
+}
+
+export function addProCredits(count: number = 2): number {
+  const current = getProCredits();
+  const next = current + count;
+  setProCredits(next);
+  return next;
+}
+
+export function consumeProCredit(): number {
+  const current = getProCredits();
+  const next = Math.max(0, current - 1);
+  setProCredits(next);
+  return next;
+}
+
+export function isProUser(): boolean {
+  return getProCredits() > 0;
+}
+
+export function setProUser(isPro: boolean): void {
+  if (isPro) {
+    if (getProCredits() <= 0) {
+      setProCredits(2);
+    }
+  } else {
+    setProCredits(0);
   }
 }
 
@@ -42,8 +82,32 @@ export function activateProWithKey(key: string): boolean {
     normalized === "PRO2026" ||
     normalized.startsWith("PRO-")
   ) {
-    setProUser(true);
+    addProCredits(2);
     return true;
+  }
+  return false;
+}
+
+export function checkPaymentReturnUrl(): boolean {
+  try {
+    const url = new URL(window.location.href);
+    const hasSuccess =
+      url.searchParams.get("payment") === "success" ||
+      url.searchParams.get("unlocked") === "pro" ||
+      url.searchParams.get("status") === "paid";
+
+    if (hasSuccess) {
+      addProCredits(2);
+      url.searchParams.delete("payment");
+      url.searchParams.delete("unlocked");
+      url.searchParams.delete("status");
+      const cleanPath =
+        url.pathname + (url.search ? url.search : "") + (url.hash ? url.hash : "");
+      window.history.replaceState({}, document.title, cleanPath);
+      return true;
+    }
+  } catch {
+    // ignore
   }
   return false;
 }

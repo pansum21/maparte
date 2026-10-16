@@ -525,3 +525,25 @@
   color: rgba(140, 175, 200, 0.6);
   letter-spacing: 0.02em;
 }
+
+.pro-bonus-alert {
+  padding: 10px 14px;
+  margin: 0 0 14px;
+  background: linear-gradient(90deg, rgba(223, 186, 115, 0.18), rgba(46, 125, 50, 0.22));
+  border: 1px solid #dfba73;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: #fce8bd;
+  text-align: center;
+  line-height: 1.4;
+  animation: fadeInModal 0.3s ease;
+}
+
+.tier-bogo-hint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgba(223, 186, 115, 0.9);
+  line-height: 1.35;
+  text-align: center;
+}
+

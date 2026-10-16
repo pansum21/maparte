@@ -3,7 +3,12 @@ import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
 import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
-import { isProUser, applyFreeTier, FREE_DPI } from "@/features/export/infrastructure/planTier";
+import {
+  isProUser,
+  applyFreeTier,
+  FREE_DPI,
+  consumeProCredit,
+} from "@/features/export/infrastructure/planTier";
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { getAllMarkerIcons } from "@/features/markers/infrastructure/iconRegistry";
@@ -208,6 +213,9 @@ export function useExport() {
             "svg",
           );
           await triggerDownloadBlob(svgBlob, svgFilename);
+          if (isPro) {
+            consumeProCredit();
+          }
           reportExportSuccess(nextCount, exportParams);
           registerSuccessfulExport(nextCount);
           dispatch({ type: "SET_EXPORT_STATUS", exporting: false });
@@ -264,6 +272,10 @@ export function useExport() {
         } else {
           const pngBlob = await createPngBlob(canvas, dpi);
           await triggerDownloadBlob(pngBlob, filename);
+        }
+
+        if (isPro) {
+          consumeProCredit();
         }
 
         reportExportSuccess(nextCount, exportParams);

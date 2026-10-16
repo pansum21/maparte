@@ -3,8 +3,9 @@ import { useExport } from "@/features/export/application/useExport";
 import type { ExportFormat } from "@/features/export/domain/types";
 import {
   isProUser,
+  getProCredits,
   activateProWithKey,
-  setProUser,
+  checkPaymentReturnUrl,
 } from "@/features/export/infrastructure/planTier";
 import { CloseIcon, DownloadIcon, LoaderIcon } from "@/shared/ui/Icons";
 
@@ -27,34 +28,54 @@ export default function DownloadModal({
 }: DownloadModalProps) {
   const { isExporting, exportPoster } = useExport();
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(defaultFormat);
-  const [isPro, setIsPro] = useState(false);
+  const [credits, setCredits] = useState(0);
   const [includeCredits, setIncludeCredits] = useState(false);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [licenseKey, setLicenseKey] = useState("");
   const [keyError, setKeyError] = useState("");
+  const [bonusNotice, setBonusNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      setIsPro(isProUser());
+      checkPaymentReturnUrl();
+      const currentCredits = getProCredits();
+      setCredits(currentCredits);
       setSelectedFormat(defaultFormat);
+      setBonusNotice(null);
     }
   }, [isOpen, defaultFormat]);
 
   if (!isOpen) return null;
+
+  const isPro = credits > 0 || isProUser();
 
   const handleFreeDownload = () => {
     void exportPoster(selectedFormat, { asPro: false, includeCredits: true });
     onClose();
   };
 
-  const handleProDownload = () => {
-    void exportPoster(selectedFormat, { asPro: true, includeCredits });
-    onClose();
+  const handleProDownload = async () => {
+    const currentCredits = credits;
+    await exportPoster(selectedFormat, { asPro: true, includeCredits });
+    const remaining = Math.max(0, currentCredits - 1);
+    setCredits(remaining);
+
+    if (remaining > 0) {
+      setBonusNotice(
+        `🎉 1st poster downloaded! You still have ${remaining} FREE Bonus Ultra-HD download left for your next poster.`,
+      );
+    } else {
+      setBonusNotice("🎉 Ultra-HD poster downloaded successfully!");
+      setTimeout(() => {
+        onClose();
+      }, 1600);
+    }
   };
 
   const handleActivateKey = () => {
     if (activateProWithKey(licenseKey)) {
-      setIsPro(true);
+      const updatedCredits = getProCredits();
+      setCredits(updatedCredits);
       setShowKeyInput(false);
       setKeyError("");
     } else {
@@ -67,13 +88,13 @@ export default function DownloadModal({
     if (checkoutUrl) {
       window.open(checkoutUrl, "_blank");
     } else {
-      // Demo / fallback prompt
+      // Demo / fallback prompt for testing Buy 1 Get 1 Free
       const code = prompt(
-        "Enter your $4.99 Purchase Code or Pro Passcode to unlock Ultra-HD downloads immediately (e.g., MAPARTEPRO):",
+        "Enter your $4.99 Purchase Code to unlock Buy 1 Get 1 Free (2 Ultra-HD Posters). Test code: MAPARTEPRO",
       );
       if (code && activateProWithKey(code)) {
-        setIsPro(true);
-        alert("🎉 Pro Ultra-HD unlocked successfully!");
+        setCredits(getProCredits());
+        alert("🎉 Buy 1 Get 1 Free Activated! You have 2 Ultra-HD Poster credits.");
       }
     }
   };
@@ -95,7 +116,7 @@ export default function DownloadModal({
           <div>
             <h3 id="download-modal-title">Download Your Poster</h3>
             <p className="download-modal-subtitle">
-              Choose your format and export quality
+              Choose your format & export quality
             </p>
           </div>
           <button
@@ -107,6 +128,12 @@ export default function DownloadModal({
             <CloseIcon />
           </button>
         </div>
+
+        {bonusNotice && (
+          <div className="pro-bonus-alert">
+            <span>{bonusNotice}</span>
+          </div>
+        )}
 
         {/* Format Selector */}
         <div className="download-format-selector">
@@ -137,7 +164,7 @@ export default function DownloadModal({
             <ul className="tier-feature-list">
               <li>✓ 96 DPI screen quality</li>
               <li>✓ Includes {selectedFormat.toUpperCase()} export</li>
-              <li>✓ Perfect for mobile/screen use</li>
+              <li>✓ Perfect for digital wallpapers</li>
               <li>ℹ Includes MAPARTE watermark</li>
             </ul>
             <button
@@ -155,35 +182,47 @@ export default function DownloadModal({
             </button>
           </div>
 
-          {/* Pro Card */}
+          {/* Pro Card (Buy 1 Get 1 Free) */}
           <div className="download-tier-card tier-pro is-featured">
-            <div className="tier-featured-pill">Best for Wall Framing</div>
+            <div className="tier-featured-pill">🎁 BUY 1 GET 1 FREE</div>
             <div className="tier-card-header">
-              <span className="tier-badge badge-pro">⭐ 300 DPI Print</span>
-              <h4>Ultra-HD Art</h4>
+              <span className="tier-badge badge-pro">⭐ 300 DPI Duo Pack</span>
+              <h4>Ultra-HD Art (2 Maps)</h4>
               <p className="tier-price">
-                $4.99 <span className="tier-price-period">/ poster</span>
+                $4.99 <span className="tier-price-period">for 2 posters ($2.50 ea)</span>
               </p>
             </div>
             <ul className="tier-feature-list">
-              <li>✓ <strong>300 DPI Ultra-HD resolution</strong></li>
+              <li>✓ <strong>2 Ultra-HD 300 DPI Posters</strong> (BOGO Offer)</li>
               <li>✓ <strong>NO Center Watermark</strong> (100% Clean)</li>
-              <li>✓ Print-ready at 50×70cm, A3, A4</li>
+              <li>✓ Best for matching couple & living room frames</li>
               <li>✓ High-res PDF, PNG & Vector SVG</li>
+              <li>✓ Use your 2nd bonus poster anytime</li>
             </ul>
 
             {isPro ? (
               <div className="tier-pro-active-box">
                 <div className="pro-unlocked-banner">
-                  <span>✓ Ultra-HD License Active</span>
+                  <span>
+                    🎁 {credits} Ultra-HD {credits === 1 ? "Credit" : "Credits"} Available
+                  </span>
                 </div>
+                {credits > 1 ? (
+                  <p className="tier-bogo-hint">
+                    Download this poster now. Your 2nd bonus poster can be created and downloaded next!
+                  </p>
+                ) : (
+                  <p className="tier-bogo-hint">
+                    🎉 This is your 2nd bonus poster download! Enjoy your matching set.
+                  </p>
+                )}
                 <label className="branding-toggle-label">
                   <input
                     type="checkbox"
                     checked={includeCredits}
                     onChange={(e) => setIncludeCredits(e.target.checked)}
                   />
-                  <span>Include discreet MAPARTE signature at bottom</span>
+                  <span>Discreet MAPARTE signature at bottom</span>
                 </label>
                 <button
                   type="button"
@@ -196,7 +235,9 @@ export default function DownloadModal({
                   ) : (
                     <DownloadIcon />
                   )}
-                  <span>Download Ultra-HD ({selectedFormat.toUpperCase()})</span>
+                  <span>
+                    Download Ultra-HD ({selectedFormat.toUpperCase()})
+                  </span>
                 </button>
               </div>
             ) : (
@@ -207,7 +248,7 @@ export default function DownloadModal({
                   disabled={isExporting}
                   onClick={handlePaymentClick}
                 >
-                  <span>Pay $4.99 & Get Ultra-HD</span>
+                  <span>Pay $4.99 & Get 2 Posters</span>
                 </button>
                 <div className="tier-redeem-row">
                   {!showKeyInput ? (
@@ -239,7 +280,7 @@ export default function DownloadModal({
         </div>
 
         <div className="download-modal-footer">
-          <p>Instant digital download • 100% secure payment • High-resolution files</p>
+          <p>Instant digital download • Buy 1 Get 1 Free • 100% secure payment</p>
         </div>
       </div>
     </div>
