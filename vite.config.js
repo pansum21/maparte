@@ -150,11 +150,28 @@ ${body}
 
   async function buildPage(doc) {
     const url = resolvedConfig.env[doc.envVar];
-    if (!url) {
-      console.warn(
-        `[legal-pages] ${doc.envVar} is not set — skipping /${doc.slug}`,
+    let markdown = "";
+    if (url) {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      markdown = await response.text();
+    } else {
+      const localPath = path.resolve(
+        resolvedConfig.root,
+        "public",
+        "docs",
+        `${doc.slug}.md`,
       );
-      return null;
+      if (fs.existsSync(localPath)) {
+        markdown = fs.readFileSync(localPath, "utf8");
+      } else {
+        console.warn(
+          `[legal-pages] ${doc.envVar} is not set — skipping /${doc.slug}`,
+        );
+        return null;
+      }
     }
 
     if (!renderMarkdown) {
@@ -179,15 +196,11 @@ ${body}
         .use(remarkBreaks.default)
         .use(remarkRehype.default)
         .use(rehypeStringify.default);
-      renderMarkdown = async (markdown) =>
-        String(await processor.process(markdown));
+      renderMarkdown = async (md) =>
+        String(await processor.process(md));
     }
 
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    return pageTemplate(doc.title, await renderMarkdown(await response.text()));
+    return pageTemplate(doc.title, await renderMarkdown(markdown));
   }
 
   return {

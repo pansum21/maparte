@@ -23,7 +23,7 @@ import LocationSuggestionsDropdown from "./LocationSuggestionsDropdown";
 import type { SearchResult } from "@/features/location/domain/types";
 
 const CLOSE_ANIMATION_MS = 220;
-const DEFAULT_LOCATION_LABEL = "Hanover, Region Hannover, Lower Saxony, Germany";
+const DEFAULT_LOCATION_LABEL = "Dehradun, Uttarakhand, India";
 
 interface PendingLocation {
   label: string;
@@ -125,7 +125,7 @@ export default function StartupLocationModal({
         maxAttempts: 2,
       });
 
-      if (!positionResult.ok) {
+      if ("reason" in positionResult) {
         setErrorMessage(
           getGeolocationFailureMessage(positionResult.reason, {
             includeManualFallback: true,

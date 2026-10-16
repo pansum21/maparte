@@ -1,0 +1,4 @@
+# Google AdSense ads.txt
+# When VITE_ADSENSE_PUBLISHER_ID is configured during build,
+# vite.config.js automatically generates the production direct seller line:
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

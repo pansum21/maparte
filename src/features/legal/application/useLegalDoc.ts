@@ -4,8 +4,8 @@ import { PRIVACY_URL, LEGAL_NOTICE_URL } from "@/core/config";
 import type { LegalDocType } from "@/features/legal/application/legalDoc";
 
 const DOC_URLS: Record<LegalDocType, string> = {
-  privacy: PRIVACY_URL,
-  imprint: LEGAL_NOTICE_URL,
+  privacy: PRIVACY_URL || "/docs/privacy.md",
+  imprint: LEGAL_NOTICE_URL || "/docs/imprint.md",
 };
 
 interface LegalDocState {

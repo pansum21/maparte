@@ -3,6 +3,7 @@ import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
 import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
+import { isProUser, applyFreeTier, FREE_DPI } from "@/features/export/infrastructure/planTier";
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { getAllMarkerIcons } from "@/features/markers/infrastructure/iconRegistry";
@@ -140,7 +141,8 @@ export function useExport() {
 
         const widthCm = Number(form.width) || DEFAULT_POSTER_WIDTH_CM;
         const heightCm = Number(form.height) || DEFAULT_POSTER_HEIGHT_CM;
-        const dpi = 300;
+        const isPro = isProUser();
+        const dpi = isPro ? 300 : FREE_DPI;
         const widthInches = widthCm / CM_PER_INCH;
         const heightInches = heightCm / CM_PER_INCH;
 
@@ -170,6 +172,15 @@ export function useExport() {
 
         const lat = Number(form.latitude) || 0;
         const lon = Number(form.longitude) || 0;
+
+        if (format === "svg" && !isPro) {
+          dispatch({
+            type: "SET_EXPORT_STATUS",
+            exporting: false,
+            error: "SVG download is a Pro feature.",
+          });
+          return;
+        }
 
         if (format === "svg") {
           const svgBlob = await createLayeredSvgBlobFromMap({
@@ -212,7 +223,7 @@ export function useExport() {
         } = await captureMapAsCanvas(map, size.width, size.height);
 
         // 2. Composite fades + text
-        const { canvas } = await compositeExport(mapCanvas, {
+        const { canvas: fullCanvas } = await compositeExport(mapCanvas, {
           theme: effectiveTheme,
           center: { lat, lon },
           widthInches,
@@ -233,6 +244,8 @@ export function useExport() {
           markerSizeScale: hasVisibleOverlays ? markerSizeScale : undefined,
           routes: visibleRoutes,
         });
+
+        const canvas = isPro ? fullCanvas : applyFreeTier(fullCanvas);
 
         // 3. Download
         const filename = createPosterFilename(
