@@ -6,8 +6,8 @@
  */
 const PLAN_KEY = "maparte_plan";
 const CREDITS_KEY = "maparte_pro_credits";
-const FULL_DPI = 300;
-export const FREE_DPI = 150;
+const FULL_DPI = 500;
+export const FREE_DPI = 200;
 
 /** Watermark look. Change these numbers to taste. */
 const WATERMARK_TEXT = "MAPARTE";
@@ -74,14 +74,11 @@ export function setProUser(isPro: boolean): void {
   }
 }
 
+export const BOGO_PRO_CODE = "maparte.bogo.in@bogo";
+
 export function activateProWithKey(key: string): boolean {
-  const normalized = key.trim().toUpperCase();
-  if (
-    normalized === "MAPARTEPRO" ||
-    normalized === "MAPARTE2026" ||
-    normalized === "PRO2026" ||
-    normalized.startsWith("PRO-")
-  ) {
+  const normalized = key.trim().toLowerCase();
+  if (normalized === BOGO_PRO_CODE.toLowerCase()) {
     addProCredits(2);
     return true;
   }

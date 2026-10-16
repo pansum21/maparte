@@ -62,13 +62,13 @@ export default function DownloadModal({
 
     if (remaining > 0) {
       setBonusNotice(
-        `🎉 1st poster downloaded! You still have ${remaining} FREE Bonus Ultra-HD download left for your next poster.`,
+        "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo. Save this code to design your matching poster anytime!",
       );
     } else {
-      setBonusNotice("🎉 Ultra-HD poster downloaded successfully!");
+      setBonusNotice("🎉 Ultra-HD poster downloaded! Both BOGO downloads have been successfully used. Enjoy your prints!");
       setTimeout(() => {
         onClose();
-      }, 1600);
+      }, 2000);
     }
   };
 
@@ -78,8 +78,11 @@ export default function DownloadModal({
       setCredits(updatedCredits);
       setShowKeyInput(false);
       setKeyError("");
+      setBonusNotice(
+        "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo. You now have 2 Ultra-HD downloads active!",
+      );
     } else {
-      setKeyError("Invalid code. Please check and try again.");
+      setKeyError("Invalid code. Please enter the paid access code.");
     }
   };
 
@@ -88,13 +91,16 @@ export default function DownloadModal({
     if (checkoutUrl) {
       window.open(checkoutUrl, "_blank");
     } else {
-      // Demo / fallback prompt for testing Buy 1 Get 1 Free
       const code = prompt(
-        "Enter your $4.99 Purchase Code to unlock Buy 1 Get 1 Free (2 Ultra-HD Posters). Test code: MAPARTEPRO",
+        "Please complete payment to receive your access code. If you have already paid, enter your access code:",
       );
       if (code && activateProWithKey(code)) {
         setCredits(getProCredits());
-        alert("🎉 Buy 1 Get 1 Free Activated! You have 2 Ultra-HD Poster credits.");
+        setBonusNotice(
+          "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo",
+        );
+      } else if (code) {
+        alert("Invalid code. Please enter a valid paid access code.");
       }
     }
   };
@@ -186,15 +192,16 @@ export default function DownloadModal({
           <div className="download-tier-card tier-pro is-featured">
             <div className="tier-featured-pill">🎁 BUY 1 GET 1 FREE</div>
             <div className="tier-card-header">
-              <span className="tier-badge badge-pro">⭐ 300 DPI Ultra-HD</span>
+              <span className="tier-badge badge-pro">⭐ 500 DPI Ultra-HD</span>
               <h4>Ultra-HD Art (2 Maps)</h4>
               <p className="tier-price">
                 $4.99 <span className="tier-price-period">for 2 posters ($2.50 ea)</span>
               </p>
             </div>
             <ul className="tier-feature-list">
-              <li>✓ <strong>2 Ultra-HD 300 DPI Posters</strong> (Up to 50MP / 8K Clarity)</li>
+              <li>✓ <strong>2 Ultra-HD 500 DPI Posters</strong> (Up to 80MP / 8K+ Clarity)</li>
               <li>✓ <strong>NO Center Watermark</strong> (100% Clean)</li>
+              <li>✓ Razor-sharp zoom up to 1000% in PDF & PNG</li>
               <li>✓ Best for matching couple & living room frames</li>
               <li>✓ High-res PDF, PNG & Vector SVG</li>
               <li>✓ Use your 2nd bonus poster anytime</li>
@@ -206,6 +213,9 @@ export default function DownloadModal({
                   <span>
                     🎁 {credits} Ultra-HD {credits === 1 ? "Credit" : "Credits"} Available
                   </span>
+                </div>
+                <div className="pro-code-badge">
+                  <span>2nd Poster Free Code: <strong>maparte.bogo.in@bogo</strong></span>
                 </div>
                 {credits > 1 ? (
                   <p className="tier-bogo-hint">
@@ -263,7 +273,7 @@ export default function DownloadModal({
                     <div className="redeem-input-group">
                       <input
                         type="text"
-                        placeholder="Enter code (e.g. MAPARTEPRO)"
+                        placeholder="Enter paid access code"
                         value={licenseKey}
                         onChange={(e) => setLicenseKey(e.target.value)}
                       />

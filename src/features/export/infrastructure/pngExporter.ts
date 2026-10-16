@@ -79,7 +79,7 @@ function injectDpiChunk(pngBytes: Uint8Array, dpi: number): Uint8Array {
 
 export async function createPngBlob(
   canvas: HTMLCanvasElement,
-  dpi: number = 300,
+  dpi: number = 500,
 ): Promise<Blob> {
   const baseBlob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((blob) => {

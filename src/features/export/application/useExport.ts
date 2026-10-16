@@ -146,12 +146,13 @@ export function useExport() {
         if (form.showPosterText && form.fontFamily.trim()) {
           await ensureFont(form.fontFamily.trim());
         }
+        await document.fonts.ready;
 
         const widthCm = Number(form.width) || DEFAULT_POSTER_WIDTH_CM;
         const heightCm = Number(form.height) || DEFAULT_POSTER_HEIGHT_CM;
         const isPro =
           options?.asPro !== undefined ? options.asPro : isProUser();
-        const dpi = isPro ? 300 : FREE_DPI;
+        const dpi = isPro ? 500 : FREE_DPI;
         const widthInches = widthCm / CM_PER_INCH;
         const heightInches = heightCm / CM_PER_INCH;
         const includeCredits =

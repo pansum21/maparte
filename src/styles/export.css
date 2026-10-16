@@ -547,3 +547,21 @@
   text-align: center;
 }
 
+.pro-code-badge {
+  padding: 8px 12px;
+  background: rgba(223, 186, 115, 0.12);
+  border: 1px dashed #dfba73;
+  border-radius: 8px;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.74rem;
+  color: #dfba73;
+  text-align: center;
+  word-break: break-all;
+}
+
+.pro-code-badge strong {
+  color: #fff;
+  text-decoration: underline;
+}
+
+
