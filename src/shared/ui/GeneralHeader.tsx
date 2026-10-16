@@ -45,6 +45,14 @@ export default function GeneralHeader({
         </div>
       </div>
 
+      <div className="header-steps-guide" role="note" aria-label="Quick 3-step guide">
+        <span className="step-item"><span className="step-num">1</span> Pick City</span>
+        <span className="step-arrow" aria-hidden="true">➔</span>
+        <span className="step-item"><span className="step-num">2</span> Style Poster</span>
+        <span className="step-arrow" aria-hidden="true">➔</span>
+        <span className="step-item"><span className="step-num">3</span> Download Ultra-HD</span>
+      </div>
+
       <div className="general-header-actions">
         <SocialLinkGroup variant="header" />
         <button

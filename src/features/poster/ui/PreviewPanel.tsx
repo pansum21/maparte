@@ -77,6 +77,7 @@ export default function PreviewPanel() {
   const frameRef = useRef<HTMLDivElement | null>(null);
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isWallMockup, setIsWallMockup] = useState(false);
   const [mapBearing, setMapBearing] = useState(0);
   const [isRotationEnabled, setIsRotationEnabled] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
@@ -379,7 +380,12 @@ export default function PreviewPanel() {
 
   return (
     <section className="preview-panel">
-      <div className="poster-viewport">
+      <div className={`poster-viewport${isWallMockup ? " is-wall-mockup" : ""}`}>
+        {isWallMockup ? (
+          <div className="wall-mockup-badge" aria-label="Living room gallery mockup">
+            <span>🖼️ Gallery Frame • Living Room View</span>
+          </div>
+        ) : null}
         {/* Desktop ghost layer: canvas clone of the main map at reduced opacity */}
         <div className="poster-ghost-layer" aria-hidden="true">
           <canvas
@@ -468,6 +474,20 @@ export default function PreviewPanel() {
                     onStartEditing={handleStartEditing}
                     onFinishEditing={handleFinishEditing}
                   />
+                  <button
+                    type="button"
+                    className={`map-control-btn wall-mockup-btn${isWallMockup ? " is-active" : ""}`}
+                    onClick={() => setIsWallMockup((prev) => !prev)}
+                    title={
+                      isWallMockup
+                        ? "Switch back to flat poster canvas"
+                        : "Preview this poster framed on a living room wall"
+                    }
+                    aria-pressed={isWallMockup}
+                  >
+                    <span className="wall-btn-icon" aria-hidden="true">🖼️</span>
+                    <span>{isWallMockup ? "Canvas View" : "Wall Preview"}</span>
+                  </button>
                 </div>
               </>
             ) : (
@@ -482,6 +502,25 @@ export default function PreviewPanel() {
                     onStartEditing={handleStartEditing}
                     onFinishEditing={handleFinishEditing}
                   />
+                  <button
+                    type="button"
+                    className={`map-control-btn wall-mockup-btn${isWallMockup ? " is-active" : ""}`}
+                    onClick={() => {
+                      if (!isWallMockup) {
+                        setIsEditing(false);
+                      }
+                      setIsWallMockup((prev) => !prev);
+                    }}
+                    title={
+                      isWallMockup
+                        ? "Switch back to flat poster canvas"
+                        : "Preview this poster framed on a living room wall"
+                    }
+                    aria-pressed={isWallMockup}
+                  >
+                    <span className="wall-btn-icon" aria-hidden="true">🖼️</span>
+                    <span>{isWallMockup ? "Canvas View" : "Wall Preview"}</span>
+                  </button>
                   {isMobileViewport ? (
                     <button
                       type="button"

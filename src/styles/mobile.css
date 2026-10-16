@@ -1028,6 +1028,63 @@
     gap: 8px;
   }
 
+  .mobile-location-row-wrap .dsk-loc-bar .popular-cities-bar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+    padding: 0 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-location-row-wrap .dsk-loc-bar .popular-cities-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-location-row-wrap .dsk-loc-bar .popular-cities-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(180, 205, 225, 0.65);
+    white-space: nowrap;
+    margin-right: 2px;
+  }
+
+  .mobile-location-row-wrap .dsk-loc-bar .popular-cities-list {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+
+  .mobile-location-row-wrap .dsk-loc-bar .popular-city-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 7px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #e2e8f0;
+    background: rgba(22, 38, 55, 0.85);
+    border: 1px solid rgba(171, 201, 224, 0.25);
+    border-radius: 9999px;
+    white-space: nowrap;
+    touch-action: manipulation;
+  }
+
+  .mobile-location-row-wrap .dsk-loc-bar .popular-city-pill:active {
+    background: rgba(38, 65, 94, 0.95);
+    color: #ffffff;
+  }
+
+  .mobile-location-row-wrap .dsk-loc-bar .popular-city-flag {
+    font-size: 11px;
+    line-height: 1;
+  }
+
   .mobile-location-row-wrap .dsk-loc-bar .location-search-icon {
     flex-shrink: 0;
     width: 24px;
@@ -1410,6 +1467,12 @@
   }
 
   /* ── Tab-driven section visibility ── */
+
+  /* Templates tab: show only templates section */
+  [data-mobile-tab="templates"]
+    .mobile-section:not(.mobile-section--templates) {
+    display: none;
+  }
 
   /* Location tab: show only location section */
   [data-mobile-tab="location"] .mobile-section:not(.mobile-section--location) {

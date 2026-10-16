@@ -44,6 +44,106 @@
     0 8px 14px rgba(0, 0, 0, 0.42);
 }
 
+/* ── Wall Mockup View ── */
+
+.poster-viewport.is-wall-mockup {
+  background:
+    radial-gradient(ellipse 95% 60% at 50% 6%, rgba(255, 238, 215, 0.26) 0%, transparent 65%),
+    linear-gradient(180deg, #1c2027 0%, #13161c 65%, #0b0d10 100%) !important;
+  transition: background 0.4s ease;
+}
+
+.poster-viewport.is-wall-mockup::before {
+  background-image: none !important;
+  background: radial-gradient(circle at 50% 20%, rgba(255, 245, 230, 0.1), transparent 70%) !important;
+}
+
+.poster-viewport.is-wall-mockup .poster-ghost-layer {
+  opacity: 0 !important;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.poster-viewport.is-wall-mockup .desktop-layout-label {
+  opacity: 0.3;
+}
+
+.poster-viewport.is-wall-mockup .poster-frame {
+  transform: scale(0.92);
+  border: 15px solid #111317;
+  outline: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    inset 0 0 0 10px #f7f4ee,
+    inset 0 0 0 11px rgba(0, 0, 0, 0.22),
+    0 45px 90px -15px rgba(0, 0, 0, 0.88),
+    0 22px 42px -10px rgba(0, 0, 0, 0.65);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border 0.35s ease;
+}
+
+/* Glass reflection shine across framed artwork */
+.poster-viewport.is-wall-mockup .poster-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    transparent 55%
+  );
+}
+
+.wall-mockup-badge {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #f1f5f9;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  animation: fadeInDown 0.3s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.wall-mockup-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+}
+
+.wall-mockup-btn.is-active {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+  border-color: rgba(96, 165, 250, 0.6) !important;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.5) !important;
+}
+
 /* ── Ghost canvas: covers ghost layer, preserving poster aspect ratio ── */
 
 .poster-ghost-canvas {

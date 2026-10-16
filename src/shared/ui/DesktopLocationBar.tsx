@@ -12,6 +12,7 @@ import {
   PLACEHOLDER_EXAMPLE_LONGITUDE,
 } from "@/features/location/ui/constants";
 import type { SearchResult } from "@/features/location/domain/types";
+import { POPULAR_CITIES, type PopularCity } from "@/features/location/domain/popularCities";
 import { MyLocationIcon, LocationIcon, SearchIcon } from "@/shared/ui/Icons";
 
 /**
@@ -44,6 +45,33 @@ export default function DesktopLocationBar() {
   const onLocationSelect = (location: SearchResult) => {
     handleLocationSelectBase(location);
     flyToLocation(location.lat, location.lon);
+  };
+
+  const onPopularCityClick = (city: PopularCity) => {
+    const fullLabel = `${city.name}, ${city.country}`;
+    const searchResult: SearchResult = {
+      id: `popular:${city.id}`,
+      label: fullLabel,
+      city: city.name,
+      country: city.country,
+      continent: city.continent,
+      lat: city.lat,
+      lon: city.lon,
+    };
+    handleLocationSelectBase(searchResult);
+    dispatch({
+      type: "SET_FORM_FIELDS",
+      resetDisplayNameOverrides: true,
+      fields: {
+        location: fullLabel,
+        latitude: city.lat.toFixed(6),
+        longitude: city.lon.toFixed(6),
+        displayCity: city.name,
+        displayCountry: city.country,
+        displayContinent: city.continent,
+      },
+    });
+    flyToLocation(city.lat, city.lon);
   };
 
   return (
@@ -117,6 +145,24 @@ export default function DesktopLocationBar() {
             onRecentRemove={removeRecent}
             onClearRecent={clearRecent}
           />
+        </div>
+
+        <div className="popular-cities-bar" role="toolbar" aria-label="Quick city suggestions">
+          <span className="popular-cities-label">Quick:</span>
+          <div className="popular-cities-list">
+            {POPULAR_CITIES.map((city) => (
+              <button
+                key={city.id}
+                type="button"
+                className="popular-city-pill"
+                onClick={() => onPopularCityClick(city)}
+                title={`Explore ${city.name}, ${city.country}`}
+              >
+                <span className="popular-city-flag">{city.flag}</span>
+                <span className="popular-city-name">{city.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {locationPermissionMessage ? (
