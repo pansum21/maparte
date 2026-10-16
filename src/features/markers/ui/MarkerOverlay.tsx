@@ -133,7 +133,7 @@ export default function MarkerOverlay({
 
   const updateMarkerByClientPoint = useCallback(
     (markerId: string, clientX: number, clientY: number) => {
-      if (!isMarkerEditMode || !onMarkerPositionChange) {
+      if (!onMarkerPositionChange) {
         return;
       }
 
@@ -160,12 +160,12 @@ export default function MarkerOverlay({
         // Ignore projection failures during drag.
       }
     },
-    [isMarkerEditMode, mapRef, onMarkerPositionChange],
+    [mapRef, onMarkerPositionChange, overzoomScale],
   );
 
   const nudgeMarkerByScreenDelta = useCallback(
     (marker: MarkerItem, deltaX: number, deltaY: number) => {
-      if (!isMarkerEditMode || !onMarkerPositionChange) {
+      if (!onMarkerPositionChange) {
         return;
       }
 
@@ -201,13 +201,13 @@ export default function MarkerOverlay({
         // Ignore projection failures during keyboard nudging.
       }
     },
-    [isMarkerEditMode, mapRef, onMarkerPositionChange],
+    [mapRef, onMarkerPositionChange, overzoomScale],
   );
 
   const handleMarkerPointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
       const markerId = event.currentTarget.dataset.id;
-      if (!markerId || !isMarkerEditMode || !onMarkerPositionChange) {
+      if (!markerId || !onMarkerPositionChange) {
         return;
       }
 
@@ -233,7 +233,6 @@ export default function MarkerOverlay({
       updateMarkerByClientPoint(markerId, event.clientX, event.clientY);
     },
     [
-      isMarkerEditMode,
       onActiveMarkerChange,
       onMarkerPositionChange,
       updateMarkerByClientPoint,
@@ -347,7 +346,7 @@ export default function MarkerOverlay({
   );
 
   useEffect(() => {
-    if (!draggingMarkerId || !isMarkerEditMode) {
+    if (!draggingMarkerId) {
       return;
     }
 
@@ -369,10 +368,10 @@ export default function MarkerOverlay({
       window.removeEventListener("pointerup", stopDrag);
       window.removeEventListener("pointercancel", stopDrag);
     };
-  }, [draggingMarkerId, isMarkerEditMode, updateMarkerByClientPoint]);
+  }, [draggingMarkerId, updateMarkerByClientPoint]);
 
   useEffect(() => {
-    if (!draggingMarkerId || !isMarkerEditMode || !isMobileTouchInput()) {
+    if (!draggingMarkerId || !isMobileTouchInput()) {
       return;
     }
 
@@ -398,7 +397,7 @@ export default function MarkerOverlay({
       window.removeEventListener("touchend", stopDrag);
       window.removeEventListener("touchcancel", stopDrag);
     };
-  }, [draggingMarkerId, isMarkerEditMode, updateMarkerByClientPoint]);
+  }, [draggingMarkerId, updateMarkerByClientPoint]);
 
   useEffect(() => {
     if (isMarkerEditMode) {
@@ -532,7 +531,7 @@ export default function MarkerOverlay({
         <div
           key={marker.id}
           data-id={marker.id}
-          className={`poster-marker${isMarkerEditMode ? " is-draggable" : ""}${
+          className={`poster-marker is-draggable${
             draggingMarkerId === marker.id ? " is-dragging" : ""
           }${activeMarkerId === marker.id ? " is-selected" : ""}${
             touchResizeState?.markerId === marker.id ? " is-resizing" : ""

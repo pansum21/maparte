@@ -31,6 +31,7 @@ interface DesktopNavBarProps {
   onTabChange: (tab: MobileTab) => void;
   isLocationVisible: boolean;
   onLocationToggle: () => void;
+  onSettingsClick?: () => void;
 }
 
 export default function DesktopNavBar({
@@ -39,6 +40,7 @@ export default function DesktopNavBar({
   onTabChange,
   isLocationVisible,
   onLocationToggle,
+  onSettingsClick,
 }: DesktopNavBarProps) {
   return (
     <nav className="desktop-nav-bar" aria-label="Settings sections">
@@ -72,8 +74,9 @@ export default function DesktopNavBar({
       <button
         type="button"
         className="desktop-nav-tab desktop-nav-tab--settings"
-        aria-label="Settings"
-        disabled
+        aria-label="Settings & Tools"
+        title="Settings & Tools"
+        onClick={onSettingsClick}
       >
         <SettingsIcon className="desktop-nav-icon" />
         <span className="desktop-nav-label">Settings</span>

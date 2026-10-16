@@ -36,6 +36,7 @@ const DesktopLocationBar = lazy(() => import("@/shared/ui/DesktopLocationBar"));
 const AdminControlModal = lazy(
   () => import("@/features/admin/ui/AdminControlModal"),
 );
+const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
 
 function SettingsDrawer({
   mobileTab,
@@ -100,6 +101,7 @@ export default function AppShell() {
     useState(true);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [supportPrompt, setSupportPrompt] = useState<SupportPromptState | null>(null);
   const [legalDoc, setLegalDoc] = useState<LegalDocType | null>(null);
 
@@ -235,6 +237,7 @@ export default function AppShell() {
         onLocationToggle={() =>
           setDesktopLocationRowVisible((isVisible) => !isVisible)
         }
+        onSettingsClick={() => setSettingsOpen(true)}
       />
 
       <div
@@ -347,6 +350,15 @@ export default function AppShell() {
           <AdminControlModal
             isOpen={adminOpen}
             onClose={() => setAdminOpen(false)}
+          />
+        </Suspense>
+      ) : null}
+      {settingsOpen ? (
+        <Suspense fallback={null}>
+          <AppSettingsModal
+            isOpen={settingsOpen}
+            onClose={() => setSettingsOpen(false)}
+            onAdminOpen={() => setAdminOpen(true)}
           />
         </Suspense>
       ) : null}
