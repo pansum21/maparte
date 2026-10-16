@@ -16,10 +16,69 @@ interface DownloadModalProps {
   defaultFormat?: ExportFormat;
 }
 
-const FORMAT_OPTIONS: { format: ExportFormat; label: string; desc: string }[] = [
-  { format: "pdf", label: "PDF", desc: "Best for home & print shops" },
-  { format: "png", label: "PNG", desc: "High-res image for screen/print" },
-  { format: "svg", label: "SVG", desc: "Infinite vector for designers" },
+export type SelectedTier = "png" | "pdf" | "svg" | "combo";
+
+interface TierConfig {
+  id: SelectedTier;
+  format: ExportFormat;
+  label: string;
+  price: string;
+  badge?: string;
+  desc: string;
+  details: string[];
+}
+
+const TIERS: TierConfig[] = [
+  {
+    id: "png",
+    format: "png",
+    label: "PNG Image",
+    price: "$2.99",
+    desc: "Best for Phone & 4K/8K Wallpapers",
+    details: [
+      "500 DPI Ultra-HD clarity (Up to 80 Megapixels)",
+      "Zero center watermark",
+      "Perfect for high-res screens & smartphones",
+    ],
+  },
+  {
+    id: "pdf",
+    format: "pdf",
+    label: "PDF Document",
+    price: "$3.99",
+    desc: "Best for Home & Print Shops",
+    details: [
+      "500 DPI print-ready document",
+      "Standard A4/A3/A2 framing ready",
+      "Razor-sharp edges for professional printing",
+    ],
+  },
+  {
+    id: "svg",
+    format: "svg",
+    label: "SVG Vector",
+    price: "$4.99",
+    desc: "Infinite Vector • Unlimited Zoom",
+    details: [
+      "Pure mathematical vector graphics",
+      "0% quality loss • Never blurs at 10,000% zoom",
+      "Best for designers, plotters & large flex boards",
+    ],
+  },
+  {
+    id: "combo",
+    format: "svg",
+    label: "All-in-One Master Bundle",
+    price: "$5.99",
+    badge: "🎁 BUY 1 GET 1 FREE",
+    desc: "All 3 Formats + 2nd Poster Free (BOGO)",
+    details: [
+      "Includes ALL 3: PNG + PDF + SVG Vector",
+      "🎁 BUY 1 GET 1 FREE: 2nd Matching SVG Poster Free",
+      "1-Time BOGO bonus code delivered to your Gmail",
+      "Cheaper than a single cup of coffee! (Save 60%)",
+    ],
+  },
 ];
 
 export default function DownloadModal({
@@ -28,6 +87,9 @@ export default function DownloadModal({
   defaultFormat = "png",
 }: DownloadModalProps) {
   const { isExporting, exportPoster } = useExport();
+  const [selectedTier, setSelectedTier] = useState<SelectedTier>(
+    defaultFormat === "pdf" ? "pdf" : defaultFormat === "svg" ? "svg" : "combo",
+  );
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(defaultFormat);
   const [credits, setCredits] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -37,6 +99,13 @@ export default function DownloadModal({
   const [keyError, setKeyError] = useState("");
   const [bonusNotice, setBonusNotice] = useState<string | null>(null);
 
+  // Email capture state
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  // Quality comparison table toggle
+  const [showComparison, setShowComparison] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       checkPaymentReturnUrl();
@@ -45,6 +114,9 @@ export default function DownloadModal({
       setIsAdmin(isAdminUser());
       setSelectedFormat(defaultFormat);
       setBonusNotice(null);
+      setEmailError("");
+      const savedEmail = window.localStorage.getItem("maparte_customer_email") || "";
+      if (savedEmail) setEmail(savedEmail);
     }
   }, [isOpen, defaultFormat]);
 
@@ -57,21 +129,21 @@ export default function DownloadModal({
     onClose();
   };
 
-  const handleProDownload = async () => {
+  const handleProDownload = async (formatToExport: ExportFormat = selectedFormat) => {
     if (isAdmin) {
-      await exportPoster(selectedFormat, { asPro: true, includeCredits });
+      await exportPoster(formatToExport, { asPro: true, includeCredits });
       setBonusNotice("🎉 Ultra-HD poster downloaded!");
       return;
     }
 
     const currentCredits = credits;
-    await exportPoster(selectedFormat, { asPro: true, includeCredits });
+    await exportPoster(formatToExport, { asPro: true, includeCredits });
     const remaining = Math.max(0, currentCredits - 1);
     setCredits(remaining);
 
     if (remaining > 0) {
       setBonusNotice(
-        "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo. Save this code to design your matching poster anytime!",
+        "🎉 1st poster downloaded! Check your Gmail for your 1-Time BOGO code: MAPARTE.B01G01.2026 to create your 2nd poster anytime!",
       );
     } else {
       setBonusNotice("🎉 Ultra-HD poster downloaded! Enjoy your prints!");
@@ -90,24 +162,44 @@ export default function DownloadModal({
       setKeyError("");
       if (result.isAdmin) {
         setIsAdmin(true);
-        setBonusNotice("🎉 Ultra-HD 500 DPI access unlocked!");
+        setBonusNotice("👑 Permanent Admin access active. Unlimited Ultra-HD downloads!");
       } else {
         setBonusNotice(
-          "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo. You now have 2 Ultra-HD downloads active!",
+          "🎉 BOGO Code verified! You have 2 Ultra-HD downloads unlocked.",
         );
       }
     } else {
-      setKeyError("Invalid code. Please enter the paid access code.");
+      setKeyError("Invalid code. Please enter your valid paid BOGO access code.");
     }
   };
 
-  const handlePaymentClick = () => {
+  const validateEmail = (val: string): boolean => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(val.trim());
+  };
+
+  const handlePaymentClick = (tier: TierConfig) => {
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid Gmail / Email to receive your order receipt & BOGO code.");
+      return;
+    }
+    setEmailError("");
+    try {
+      window.localStorage.setItem("maparte_customer_email", email.trim());
+    } catch {
+      // ignore
+    }
+
     const checkoutUrl = import.meta.env.VITE_CHECKOUT_URL;
     if (checkoutUrl) {
-      window.open(checkoutUrl, "_blank");
+      const targetUrl = new URL(checkoutUrl, window.location.origin);
+      targetUrl.searchParams.set("email", email.trim());
+      targetUrl.searchParams.set("tier", tier.id);
+      targetUrl.searchParams.set("price", tier.price.replace("$", ""));
+      window.open(targetUrl.toString(), "_blank");
     } else {
       const code = prompt(
-        "Please complete payment to receive your access code. If you have already paid, enter your access code:",
+        `Thank you for selecting ${tier.label} (${tier.price})!\n\nYour receipt and 1-Time BOGO code will be delivered to: ${email.trim()}\n\nIf you already have your access code, enter it below:`,
       );
       if (code) {
         const result = activateProWithKey(code);
@@ -115,20 +207,20 @@ export default function DownloadModal({
           setCredits(getProCredits());
           if (result.isAdmin) {
             setIsAdmin(true);
-            setBonusNotice(
-              "👑 Permanent Super Admin access activated. Unlimited downloads enabled!",
-            );
+            setBonusNotice("👑 Permanent Admin access activated!");
           } else {
             setBonusNotice(
-              "🎉 Alright, this is your second credit code for free download: maparte.bogo.in@bogo",
+              `🎉 Payment verified! Your 1-Time BOGO code is MAPARTE.B01G01.2026. Code sent to ${email.trim()}`,
             );
           }
         } else {
-          alert("Invalid code. Please enter a valid paid access code.");
+          alert("Invalid code. Please check and try again.");
         }
       }
     }
   };
+
+  const activeTier = TIERS.find((t) => t.id === selectedTier) || TIERS[3];
 
   return (
     <div
@@ -143,11 +235,18 @@ export default function DownloadModal({
         aria-labelledby="download-modal-title"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Header */}
         <div className="export-modal-header">
           <div>
-            <h3 id="download-modal-title">Download Your Poster</h3>
+            <div className="coffee-tagline-badge">
+              <span className="coffee-emoji">☕</span>
+              <span className="coffee-tagline-text">
+                Buy your wallpaper cheaper than your cup of coffee!
+              </span>
+            </div>
+            <h3 id="download-modal-title">Download Custom Map Art</h3>
             <p className="download-modal-subtitle">
-              Choose your format & export quality
+              Choose your format & print quality • Clean, watermark-free art
             </p>
           </div>
           <button
@@ -166,41 +265,201 @@ export default function DownloadModal({
           </div>
         )}
 
-        {/* Format Selector */}
-        <div className="download-format-selector">
-          {FORMAT_OPTIONS.map((opt) => (
-            <button
-              key={opt.format}
-              type="button"
-              className={`download-format-pill ${
-                selectedFormat === opt.format ? "is-active" : ""
-              }`}
-              onClick={() => setSelectedFormat(opt.format)}
-            >
-              <span className="format-name">{opt.label}</span>
-              <span className="format-desc">{opt.desc}</span>
-            </button>
-          ))}
+        {/* Pricing & Tier Selector Cards */}
+        <div className="download-pricing-tabs">
+          {TIERS.map((tier) => {
+            const isSelected = selectedTier === tier.id;
+            return (
+              <button
+                key={tier.id}
+                type="button"
+                className={`pricing-tab-card ${isSelected ? "is-selected" : ""} ${
+                  tier.id === "combo" ? "is-combo-tab" : ""
+                }`}
+                onClick={() => {
+                  setSelectedTier(tier.id);
+                  setSelectedFormat(tier.format);
+                }}
+              >
+                {tier.badge && <span className="tab-pill-badge">{tier.badge}</span>}
+                <div className="tab-top-row">
+                  <span className="tab-format-name">{tier.label}</span>
+                  <span className="tab-price-tag">{tier.price}</span>
+                </div>
+                <span className="tab-desc-text">{tier.desc}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Pricing & Quality Cards */}
-        <div className="download-tier-grid">
-          {/* Free Card */}
-          <div className="download-tier-card tier-free">
-            <div className="tier-card-header">
-              <span className="tier-badge badge-free">Standard</span>
-              <h4>Free Download</h4>
-              <p className="tier-price">$0</p>
+        {/* Active Tier Details Box */}
+        <div className="active-tier-details-card">
+          <div className="active-tier-header">
+            <div>
+              <span className="active-tier-title">{activeTier.label}</span>
+              <span className="active-tier-price">{activeTier.price}</span>
             </div>
-            <ul className="tier-feature-list">
-              <li>✓ 150 DPI HD quality (Sharp & Clear)</li>
-              <li>✓ Includes {selectedFormat.toUpperCase()} export</li>
-              <li>✓ Perfect for digital wallpapers</li>
-              <li>ℹ Includes MAPARTE watermark</li>
-            </ul>
+            {activeTier.id === "combo" && (
+              <span className="combo-savings-tag">🔥 Best Value • Save 60%</span>
+            )}
+          </div>
+
+          <ul className="tier-feature-bullets">
+            {activeTier.details.map((detail, idx) => (
+              <li key={idx}>✓ {detail}</li>
+            ))}
+          </ul>
+
+          {/* Mandatory Gmail Capture (Only needed for checkout) */}
+          {!isPro && (
+            <div className="download-gmail-section">
+              <label htmlFor="customer-email-input" className="gmail-input-label">
+                <span>Enter your Gmail / Email address:</span>
+                <span className="gmail-required-badge">Required for delivery</span>
+              </label>
+              <div className="gmail-input-wrap">
+                <input
+                  id="customer-email-input"
+                  type="email"
+                  placeholder="name@gmail.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailError) setEmailError("");
+                  }}
+                  className={`gmail-text-field ${emailError ? "has-error" : ""}`}
+                />
+              </div>
+              <p className="gmail-delivery-notice">
+                🔒 Your order receipt and 1-Time BOGO code will be sent to your Gmail for your 2nd free poster.
+              </p>
+              {emailError && <p className="gmail-error-msg">{emailError}</p>}
+            </div>
+          )}
+
+          {/* Pro Unlocked State vs Buy Button */}
+          {isPro ? (
+            <div className="tier-pro-active-box">
+              <div className="pro-unlocked-banner">
+                <span>
+                  {isAdmin
+                    ? "👑 Ultra-HD 500 DPI & Vector Engine Active"
+                    : `🎁 ${credits} Ultra-HD ${credits === 1 ? "Poster" : "Posters"} Available`}
+                </span>
+              </div>
+              {!isAdmin && credits > 0 && (
+                <div className="pro-code-badge">
+                  <span>
+                    Your 1-Time BOGO Code: <strong>MAPARTE.B01G01.2026</strong>
+                  </span>
+                  <p className="bogo-single-use-note">
+                    (Use this code 1 time whenever you want to design and download your 2nd matching SVG poster for free!)
+                  </p>
+                </div>
+              )}
+              {!isAdmin && credits > 1 && (
+                <p className="tier-bogo-hint">
+                  Download this poster now. Your 2nd matching poster can be customized and downloaded next!
+                </p>
+              )}
+
+              {/* Format pills if Combo was unlocked */}
+              <div className="unlocked-format-row">
+                <span className="unlocked-format-label">Select format to export:</span>
+                <div className="unlocked-format-btns">
+                  {(["png", "pdf", "svg"] as ExportFormat[]).map((fmt) => (
+                    <button
+                      key={fmt}
+                      type="button"
+                      className={`unlocked-format-chip ${
+                        selectedFormat === fmt ? "is-active" : ""
+                      }`}
+                      onClick={() => setSelectedFormat(fmt)}
+                    >
+                      {fmt.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <label className="branding-toggle-label">
+                <input
+                  type="checkbox"
+                  checked={includeCredits}
+                  onChange={(e) => setIncludeCredits(e.target.checked)}
+                />
+                <span>Discreet MAPARTE signature at bottom</span>
+              </label>
+
+              <button
+                type="button"
+                className="tier-btn tier-btn--pro"
+                disabled={isExporting}
+                onClick={() => handleProDownload(selectedFormat)}
+              >
+                {isExporting ? (
+                  <LoaderIcon className="is-spinning" />
+                ) : (
+                  <DownloadIcon />
+                )}
+                <span>
+                  Download Ultra-HD ({selectedFormat.toUpperCase()})
+                </span>
+              </button>
+            </div>
+          ) : (
+            <div className="tier-purchase-action-wrap">
+              <button
+                type="button"
+                className="tier-btn tier-btn--pro tier-btn--buy-action"
+                disabled={isExporting}
+                onClick={() => handlePaymentClick(activeTier)}
+              >
+                <span>
+                  Get {activeTier.label} ({activeTier.price})
+                </span>
+              </button>
+
+              <div className="tier-redeem-row">
+                {!showKeyInput ? (
+                  <button
+                    type="button"
+                    className="redeem-toggle-btn"
+                    onClick={() => setShowKeyInput(true)}
+                  >
+                    Already paid or have a 1-Time BOGO code?
+                  </button>
+                ) : (
+                  <div className="redeem-input-group">
+                    <input
+                      type="text"
+                      placeholder="Enter MAPARTE.B01G01.2026 or paid code"
+                      value={licenseKey}
+                      onChange={(e) => setLicenseKey(e.target.value)}
+                    />
+                    <button type="button" onClick={handleActivateKey}>
+                      Apply Code
+                    </button>
+                  </div>
+                )}
+                {keyError && <p className="redeem-error">{keyError}</p>}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Free Screen Wallpaper Option (Clean, 72 DPI, No Center Watermark) */}
+        {!isPro && (
+          <div className="free-screen-wallpaper-box">
+            <div className="free-wallpaper-info">
+              <span className="free-wallpaper-title">📱 Basic Free Mobile Wallpaper ($0)</span>
+              <p className="free-wallpaper-desc">
+                Clean screen wallpaper at 72 DPI. Zero center watermark. (Not suitable for paper printing or deep zoom).
+              </p>
+            </div>
             <button
               type="button"
-              className="tier-btn tier-btn--free"
+              className="tier-btn tier-btn--free-clean"
               disabled={isExporting}
               onClick={handleFreeDownload}
             >
@@ -209,118 +468,93 @@ export default function DownloadModal({
               ) : (
                 <DownloadIcon />
               )}
-              <span>Download Free ({selectedFormat.toUpperCase()})</span>
+              <span>Download Free Wallpaper (72 DPI)</span>
             </button>
           </div>
+        )}
 
-          {/* Pro Card (Buy 1 Get 1 Free) */}
-          <div className="download-tier-card tier-pro is-featured">
-            <div className="tier-featured-pill">🎁 BUY 1 GET 1 FREE</div>
-            <div className="tier-card-header">
-              <span className="tier-badge badge-pro">⭐ 500 DPI Ultra-HD</span>
-              <h4>Ultra-HD Art (2 Maps)</h4>
-              <p className="tier-price">
-                $4.99 <span className="tier-price-period">for 2 posters ($2.50 ea)</span>
-              </p>
+        {/* Quality Comparison Toggle */}
+        <div className="quality-comparison-section">
+          <button
+            type="button"
+            className="quality-comparison-toggle-btn"
+            onClick={() => setShowComparison(!showComparison)}
+          >
+            {showComparison ? "▲ Hide Comparison Chart" : "▼ View Full Quality & Offer Comparison Chart"}
+          </button>
+
+          {showComparison && (
+            <div className="quality-comparison-table-wrap">
+              <table className="quality-comparison-table">
+                <thead>
+                  <tr>
+                    <th>Feature</th>
+                    <th>Free ($0)</th>
+                    <th>PNG ($2.99)</th>
+                    <th>PDF ($3.99)</th>
+                    <th>SVG ($4.99)</th>
+                    <th className="th-highlight">Combo ($5.99)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Resolution / DPI</td>
+                    <td>72 DPI (Screen)</td>
+                    <td>500 DPI Ultra-HD</td>
+                    <td>500 DPI Vector Doc</td>
+                    <td>Infinite Vector</td>
+                    <td className="td-highlight">500 DPI + Infinite Vector</td>
+                  </tr>
+                  <tr>
+                    <td>Best Used For</td>
+                    <td>Phone Wallpaper</td>
+                    <td>4K/8K Screens</td>
+                    <td>Framing & Print Shops</td>
+                    <td>Designers & Plotters</td>
+                    <td className="td-highlight">All Screens + Wall Framing</td>
+                  </tr>
+                  <tr>
+                    <td>Center Watermark</td>
+                    <td>❌ None (Clean)</td>
+                    <td>❌ None (Clean)</td>
+                    <td>❌ None (Clean)</td>
+                    <td>❌ None (Clean)</td>
+                    <td className="td-highlight">❌ None (100% Clean)</td>
+                  </tr>
+                  <tr>
+                    <td>Zoom Capability</td>
+                    <td>Blurs on zoom</td>
+                    <td>Crisp up to 1000%</td>
+                    <td>Sharp Document</td>
+                    <td>Never Blurs (0% Loss)</td>
+                    <td className="td-highlight">Never Blurs (0% Loss)</td>
+                  </tr>
+                  <tr>
+                    <td>Paper Print Quality</td>
+                    <td>⚠️ Blurs on paper</td>
+                    <td>✓ Sharp Frame Print</td>
+                    <td>✓ Perfect Frame Print</td>
+                    <td>✓ Infinite Resolution</td>
+                    <td className="td-highlight">✓ World-Class Print</td>
+                  </tr>
+                  <tr>
+                    <td>1-Time BOGO Code</td>
+                    <td>✕</td>
+                    <td>✕</td>
+                    <td>✕</td>
+                    <td>✕</td>
+                    <td className="td-highlight">🎁 2nd SVG Poster Free!</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <ul className="tier-feature-list">
-              <li>✓ <strong>2 Ultra-HD 500 DPI Posters</strong> (Up to 80MP / 8K+ Clarity)</li>
-              <li>✓ <strong>NO Center Watermark</strong> (100% Clean)</li>
-              <li>✓ Razor-sharp zoom up to 1000% in PDF & PNG</li>
-              <li>✓ Best for matching couple & living room frames</li>
-              <li>✓ High-res PDF, PNG & Vector SVG</li>
-              <li>✓ Use your 2nd bonus poster anytime</li>
-            </ul>
-
-            {isPro ? (
-              <div className="tier-pro-active-box">
-                <div className="pro-unlocked-banner">
-                  <span>
-                    {isAdmin
-                      ? "🎁 Ultra-HD Art Unlocked (500 DPI)"
-                      : `🎁 ${credits} Ultra-HD ${credits === 1 ? "Credit" : "Credits"} Available`}
-                  </span>
-                </div>
-                {!isAdmin && credits > 0 && (
-                  <div className="pro-code-badge">
-                    <span>2nd Poster Free Code: <strong>maparte.bogo.in@bogo</strong></span>
-                  </div>
-                )}
-                {!isAdmin && credits > 1 && (
-                  <p className="tier-bogo-hint">
-                    Download this poster now. Your 2nd bonus poster can be created and downloaded next!
-                  </p>
-                )}
-                {!isAdmin && credits === 1 && (
-                  <p className="tier-bogo-hint">
-                    🎉 This is your 2nd bonus poster download! Enjoy your matching set.
-                  </p>
-                )}
-                <label className="branding-toggle-label">
-                  <input
-                    type="checkbox"
-                    checked={includeCredits}
-                    onChange={(e) => setIncludeCredits(e.target.checked)}
-                  />
-                  <span>Discreet MAPARTE signature at bottom</span>
-                </label>
-                <button
-                  type="button"
-                  className="tier-btn tier-btn--pro"
-                  disabled={isExporting}
-                  onClick={handleProDownload}
-                >
-                  {isExporting ? (
-                    <LoaderIcon className="is-spinning" />
-                  ) : (
-                    <DownloadIcon />
-                  )}
-                  <span>
-                    Download Ultra-HD ({selectedFormat.toUpperCase()})
-                  </span>
-                </button>
-              </div>
-            ) : (
-              <div className="tier-pro-purchase-box">
-                <button
-                  type="button"
-                  className="tier-btn tier-btn--pro"
-                  disabled={isExporting}
-                  onClick={handlePaymentClick}
-                >
-                  <span>Pay $4.99 & Get 2 Posters</span>
-                </button>
-                <div className="tier-redeem-row">
-                  {!showKeyInput ? (
-                    <button
-                      type="button"
-                      className="redeem-toggle-btn"
-                      onClick={() => setShowKeyInput(true)}
-                    >
-                      Already paid or have a code?
-                    </button>
-                  ) : (
-                    <div className="redeem-input-group">
-                      <input
-                        type="text"
-                        placeholder="Enter paid access code"
-                        value={licenseKey}
-                        onChange={(e) => setLicenseKey(e.target.value)}
-                      />
-                      <button type="button" onClick={handleActivateKey}>
-                        Apply
-                      </button>
-                    </div>
-                  )}
-                  {keyError && <p className="redeem-error">{keyError}</p>}
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
 
         <div className="download-modal-footer">
-          <p>Instant digital download • Buy 1 Get 1 Free • 100% secure payment</p>
+          <p>
+            Instant digital download • Cheaper than coffee • 100% secure checkout
+          </p>
         </div>
       </div>
     </div>

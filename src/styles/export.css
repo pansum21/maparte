@@ -564,5 +564,402 @@
   text-decoration: underline;
 }
 
+.bogo-single-use-note {
+  margin: 4px 0 0;
+  font-size: 0.68rem;
+  color: rgba(223, 186, 115, 0.8);
+  font-family: system-ui, sans-serif;
+  text-decoration: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Coffee Tagline & Pricing Tabs Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+.coffee-tagline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(90deg, rgba(223, 186, 115, 0.18), rgba(245, 158, 11, 0.12));
+  border: 1px solid rgba(223, 186, 115, 0.45);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  margin-bottom: 8px;
+}
+
+.coffee-emoji {
+  font-size: 1rem;
+}
+
+.coffee-tagline-text {
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #f7dfa5;
+  letter-spacing: 0.02em;
+}
+
+.download-pricing-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 14px 0 16px;
+}
+
+@media (max-width: 620px) {
+  .download-pricing-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pricing-tab-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 8px;
+  background: rgba(16, 31, 45, 0.6);
+  border: 1px solid rgba(140, 175, 200, 0.22);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s ease;
+}
+
+.pricing-tab-card:hover {
+  background: rgba(24, 46, 68, 0.85);
+  border-color: rgba(160, 200, 230, 0.4);
+}
+
+.pricing-tab-card.is-selected {
+  background: rgba(30, 58, 85, 0.95);
+  border-color: #dfba73;
+  box-shadow: 0 0 14px rgba(223, 186, 115, 0.25);
+}
+
+.pricing-tab-card.is-combo-tab {
+  background: linear-gradient(180deg, rgba(32, 54, 76, 0.85) 0%, rgba(18, 34, 50, 0.95) 100%);
+  border-color: rgba(223, 186, 115, 0.5);
+}
+
+.pricing-tab-card.is-combo-tab.is-selected {
+  border-color: #dfba73;
+  box-shadow: 0 0 18px rgba(223, 186, 115, 0.35);
+}
+
+.tab-pill-badge {
+  position: absolute;
+  top: -8px;
+  right: 6px;
+  background: linear-gradient(90deg, #dfba73, #f5d697);
+  color: #0c1824;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.55rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+}
+
+.tab-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.tab-format-name {
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.tab-price-tag {
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #dfba73;
+}
+
+.tab-desc-text {
+  margin-top: 4px;
+  font-size: 0.65rem;
+  color: rgba(160, 185, 205, 0.7);
+  line-height: 1.3;
+}
+
+/* Active Tier Box */
+.active-tier-details-card {
+  padding: 16px 18px;
+  background: linear-gradient(180deg, rgba(18, 34, 52, 0.85) 0%, rgba(12, 24, 38, 0.95) 100%);
+  border: 1px solid rgba(223, 186, 115, 0.35);
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.active-tier-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.active-tier-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-right: 10px;
+}
+
+.active-tier-price {
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #dfba73;
+}
+
+.combo-savings-tag {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.tier-feature-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 0.82rem;
+  color: rgba(215, 235, 250, 0.9);
+}
+
+/* Gmail Section */
+.download-gmail-section {
+  padding: 12px 14px;
+  background: rgba(10, 20, 32, 0.75);
+  border: 1px solid rgba(140, 175, 200, 0.25);
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.gmail-input-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.78rem;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.gmail-required-badge {
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.62rem;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.gmail-text-field {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(15, 28, 42, 0.9);
+  border: 1px solid rgba(140, 175, 200, 0.3);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.gmail-text-field:focus {
+  border-color: #dfba73;
+}
+
+.gmail-text-field.has-error {
+  border-color: #ef4444;
+}
+
+.gmail-delivery-notice {
+  margin: 6px 0 0;
+  font-size: 0.72rem;
+  color: rgba(160, 185, 205, 0.7);
+  line-height: 1.35;
+}
+
+.gmail-error-msg {
+  margin: 4px 0 0;
+  font-size: 0.72rem;
+  color: #f87171;
+}
+
+/* Unlocked format chips */
+.unlocked-format-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 10px;
+}
+
+.unlocked-format-label {
+  font-size: 0.76rem;
+  color: rgba(160, 185, 205, 0.8);
+}
+
+.unlocked-format-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.unlocked-format-chip {
+  padding: 4px 10px;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 6px;
+  background: rgba(20, 36, 52, 0.7);
+  border: 1px solid rgba(140, 175, 200, 0.25);
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.unlocked-format-chip:hover {
+  background: rgba(30, 52, 75, 0.9);
+  color: #ffffff;
+}
+
+.unlocked-format-chip.is-active {
+  background: #dfba73;
+  color: #0b1722;
+  border-color: #dfba73;
+}
+
+/* Free Clean Screen Wallpaper Box */
+.free-screen-wallpaper-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(14, 25, 38, 0.6);
+  border: 1px dashed rgba(140, 175, 200, 0.25);
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 520px) {
+  .free-screen-wallpaper-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.free-wallpaper-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.free-wallpaper-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.free-wallpaper-desc {
+  margin: 0;
+  font-size: 0.7rem;
+  color: rgba(140, 175, 200, 0.65);
+}
+
+.tier-btn--free-clean {
+  padding: 8px 14px;
+  min-height: 38px;
+  background: rgba(26, 45, 62, 0.75);
+  border: 1px solid rgba(140, 175, 200, 0.3);
+  color: #d1e5f5;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-family: "Spline Sans Mono", monospace;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tier-btn--free-clean:hover {
+  background: rgba(38, 64, 88, 0.95);
+  color: #ffffff;
+}
+
+/* Quality Comparison Section */
+.quality-comparison-section {
+  margin: 12px 0 6px;
+  text-align: center;
+}
+
+.quality-comparison-toggle-btn {
+  background: none;
+  border: none;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #7dd3fc;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s ease;
+}
+
+.quality-comparison-toggle-btn:hover {
+  color: #bae6fd;
+  text-decoration: underline;
+}
+
+.quality-comparison-table-wrap {
+  margin-top: 10px;
+  overflow-x: auto;
+  border: 1px solid rgba(140, 175, 200, 0.2);
+  border-radius: 8px;
+}
+
+.quality-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+  text-align: left;
+}
+
+.quality-comparison-table th,
+.quality-comparison-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(140, 175, 200, 0.12);
+  color: #cbd5e1;
+}
+
+.quality-comparison-table th {
+  background: rgba(16, 30, 44, 0.85);
+  font-family: "Spline Sans Mono", monospace;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.quality-comparison-table th.th-highlight,
+.quality-comparison-table td.td-highlight {
+  background: rgba(223, 186, 115, 0.08);
+  color: #dfba73;
+  font-weight: 700;
+}
+
+
 
 

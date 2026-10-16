@@ -7,10 +7,10 @@
 const PLAN_KEY = "maparte_plan";
 const CREDITS_KEY = "maparte_pro_credits";
 const ADMIN_MODE_KEY = "maparte_admin_mode";
-const FULL_DPI = 500;
-export const FREE_DPI = 200;
+export const FREE_DPI = 72;
 
-export const BOGO_PRO_CODE = "maparte.bogo.in@bogo";
+export const BOGO_PRO_CODE = "MAPARTE.B01G01.2026";
+export const LEGACY_BOGO_CODE = "maparte.bogo.in@bogo";
 export const MASTER_ADMIN_KEY = "admin@maparte.boss";
 
 /** Watermark look. Change these numbers to taste. */
@@ -128,7 +128,11 @@ export function activateProWithKey(key: string): ActivationResult {
     setAdminMode(true);
     return { success: true, isAdmin: true };
   }
-  if (normalized === BOGO_PRO_CODE.toLowerCase()) {
+  if (
+    normalized === BOGO_PRO_CODE.toLowerCase() ||
+    normalized === LEGACY_BOGO_CODE.toLowerCase() ||
+    normalized === "maparte.b01g01.2026"
+  ) {
     addProCredits(2);
     return { success: true, isAdmin: false };
   }
@@ -241,14 +245,9 @@ function drawWatermark(
   ctx.restore();
 }
 
-/** Applies the watermark to the finished free poster without blurry downsampling. */
+/** Returns the low-res 72 DPI screen wallpaper cleanly without giant watermark overlay. */
 export function applyFreeTier(source: HTMLCanvasElement): HTMLCanvasElement {
-  const out = document.createElement("canvas");
-  out.width = source.width;
-  out.height = source.height;
-  const ctx = out.getContext("2d");
-  if (!ctx) return source;
-  ctx.drawImage(source, 0, 0);
-  drawWatermark(ctx, out.width, out.height);
-  return out;
+  // Free tier is cleanly rendered at 72 DPI (Standard Mobile/Desktop Screen Only).
+  // No center watermark needed as 72 DPI naturally pixelates on deep zoom or physical paper printing.
+  return source;
 }
