@@ -960,6 +960,81 @@
   font-weight: 700;
 }
 
+/* Trust Badges & Social Proof */
+.download-trust-badges {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0 10px;
+  padding: 10px 8px;
+  background: rgba(14, 26, 40, 0.65);
+  border: 1px solid rgba(140, 175, 200, 0.18);
+  border-radius: 8px;
+}
 
+@media (max-width: 520px) {
+  .download-trust-badges {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
 
+.trust-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 4px;
+}
 
+.trust-badge-icon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.trust-badge-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.trust-badge-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: 0.02em;
+}
+
+.trust-badge-sub {
+  font-size: 0.64rem;
+  color: rgba(140, 175, 200, 0.75);
+}
+
+.download-social-proof {
+  margin: 8px 0 4px;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(223, 186, 115, 0.07) 0%, rgba(15, 28, 44, 0.5) 100%);
+  border: 1px solid rgba(223, 186, 115, 0.22);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.social-proof-stars {
+  color: #f59e0b;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+.social-proof-quote {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: #e2e8f0;
+  line-height: 1.35;
+}
+
+.social-proof-author {
+  font-size: 0.66rem;
+  color: rgba(223, 186, 115, 0.85);
+  font-weight: 600;
+  font-family: "Spline Sans Mono", monospace;
+}

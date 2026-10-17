@@ -90,6 +90,16 @@ export default function TypographySection({
           </label>
         </div>
         <label>
+          Special Date or Tagline (Optional)
+          <input
+            className="form-control-tall"
+            name="customDate"
+            value={form.customDate || ""}
+            onChange={onChange}
+            placeholder="e.g. 14.02.2024 • Where We Met"
+          />
+        </label>
+        <label>
           Font
           <select
             className="form-control-tall"

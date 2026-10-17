@@ -30,6 +30,7 @@ export function drawPosterText(
   showPosterText: boolean,
   showOverlay: boolean,
   includeCredits: boolean = true,
+  customDate?: string,
 ): void {
   const textColor = theme.ui?.text || "#111111";
   const landColor = theme.map?.land || "#808080";
@@ -52,12 +53,15 @@ export function drawPosterText(
     const cityLabel = formatCityLabel(city);
     const cityFontSize = CITY_FONT_BASE_PX * dimScale * computeCityFontScale(city);
 
+    const hasTagline = Boolean(customDate && customDate.trim());
     const countryFontSize = COUNTRY_FONT_BASE_PX * dimScale;
     const coordinateFontSize = COORDS_FONT_BASE_PX * dimScale;
+    const taglineFontSize = 68 * dimScale;
     const cityY = height * TEXT_CITY_Y_RATIO;
     const lineY = height * TEXT_DIVIDER_Y_RATIO;
-    const countryY = height * TEXT_COUNTRY_Y_RATIO;
-    const coordinatesY = height * TEXT_COORDS_Y_RATIO;
+    const countryY = height * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
+    const taglineY = height * 0.918;
+    const coordinatesY = height * (hasTagline ? 0.938 : TEXT_COORDS_Y_RATIO);
 
     ctx.fillStyle = textColor;
     ctx.textAlign = "center";
@@ -74,6 +78,13 @@ export function drawPosterText(
 
     ctx.font = `300 ${countryFontSize}px ${titleFontFamily}`;
     ctx.fillText(country.toUpperCase(), width * 0.5, countryY);
+
+    if (hasTagline) {
+      ctx.globalAlpha = 0.88;
+      ctx.font = `500 ${taglineFontSize}px ${bodyFontFamily}`;
+      ctx.fillText(customDate!.trim(), width * 0.5, taglineY);
+      ctx.globalAlpha = 1;
+    }
 
     ctx.globalAlpha = 0.75;
     ctx.font = `400 ${coordinateFontSize}px ${bodyFontFamily}`;

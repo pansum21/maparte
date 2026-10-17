@@ -41,6 +41,7 @@ interface LayeredSvgOptions {
   center: { lat: number; lon: number };
   displayCity: string;
   displayCountry: string;
+  customDate?: string;
   fontFamily?: string;
   showPosterText: boolean;
   showOverlay: boolean;
@@ -105,6 +106,7 @@ export async function createLayeredSvgBlobFromMap({
   center,
   displayCity,
   displayCountry,
+  customDate,
   fontFamily,
   showPosterText,
   showOverlay,
@@ -284,14 +286,17 @@ export async function createLayeredSvgBlobFromMap({
     let vectorTypographySvg = "";
 
     if (showPosterText) {
+      const hasTagline = Boolean(customDate && customDate.trim().length > 0);
       const cityLabel = formatCityLabel(displayCity);
       const cityFontSize = CITY_FONT_BASE_PX * dimScale * computeCityFontScale(displayCity);
       const countryFontSize = COUNTRY_FONT_BASE_PX * dimScale;
       const coordinateFontSize = COORDS_FONT_BASE_PX * dimScale;
+      const taglineFontSize = Math.max(12, Math.round(countryFontSize * 0.88));
       const cityY = exportHeight * TEXT_CITY_Y_RATIO;
       const lineY = exportHeight * TEXT_DIVIDER_Y_RATIO;
-      const countryY = exportHeight * TEXT_COUNTRY_Y_RATIO;
-      const coordinatesY = exportHeight * TEXT_COORDS_Y_RATIO;
+      const countryY = exportHeight * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
+      const taglineY = exportHeight * 0.918;
+      const coordinatesY = exportHeight * (hasTagline ? 0.938 : TEXT_COORDS_Y_RATIO);
       const coordsText = formatCoordinates(center.lat, center.lon);
       const lineW = 3 * dimScale;
       const lineX1 = exportWidth * 0.4;
@@ -301,6 +306,13 @@ export async function createLayeredSvgBlobFromMap({
   <text x="${exportWidth * 0.5}" y="${cityY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" fill="${textColor}">${escapeXml(cityLabel)}</text>
   <line x1="${lineX1}" y1="${lineY}" x2="${lineX2}" y2="${lineY}" stroke="${textColor}" stroke-width="${lineW}" stroke-linecap="round" />
   <text x="${exportWidth * 0.5}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="300" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
+`;
+      if (hasTagline) {
+        vectorTypographySvg += `
+  <text x="${exportWidth * 0.5}" y="${taglineY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${taglineFontSize}" font-weight="500" opacity="0.88" fill="${textColor}">${escapeXml(customDate!.trim())}</text>
+`;
+      }
+      vectorTypographySvg += `
   <text x="${exportWidth * 0.5}" y="${coordinatesY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="400" opacity="0.75" fill="${textColor}">${escapeXml(coordsText)}</text>
 `;
     }

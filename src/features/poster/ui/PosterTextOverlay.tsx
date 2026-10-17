@@ -27,6 +27,7 @@ interface PosterTextOverlayProps {
   showPosterText: boolean;
   includeCredits: boolean;
   showOverlay: boolean;
+  customDate?: string;
 }
 
 /**
@@ -45,6 +46,7 @@ export default function PosterTextOverlay({
   showPosterText,
   includeCredits,
   showOverlay,
+  customDate,
 }: PosterTextOverlayProps) {
   const toCqMin = (px: number) => (px / TEXT_DIMENSION_REFERENCE_PX) * 100;
 
@@ -59,9 +61,11 @@ export default function PosterTextOverlay({
   const cityFontSize = `${toCqMin(CITY_FONT_BASE_PX) * computeCityFontScale(city)}cqmin`;
   const countryFontSize = `${toCqMin(COUNTRY_FONT_BASE_PX)}cqmin`;
   const coordsFontSize = `${toCqMin(COORDS_FONT_BASE_PX)}cqmin`;
+  const taglineFontSize = `${toCqMin(68)}cqmin`;
   const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX)}cqmin`;
   const attributionColor = computeAttributionColor(textColor, landColor, showOverlay);
   const attributionOpacity = showOverlay ? 0.55 : 0.9;
+  const hasTagline = Boolean(customDate && customDate.trim());
 
   return (
     <div className="poster-text-overlay" style={{ color: textColor }}>
@@ -88,17 +92,30 @@ export default function PosterTextOverlay({
             className="poster-country"
             style={{
               fontFamily: titleFont,
-              top: `${TEXT_COUNTRY_Y_RATIO * 100}%`,
+              top: `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
               fontSize: countryFontSize,
             }}
           >
             {country.toUpperCase()}
           </p>
+          {hasTagline && (
+            <p
+              className="poster-tagline"
+              style={{
+                fontFamily: bodyFont,
+                top: "91.8%",
+                fontSize: taglineFontSize,
+                letterSpacing: "0.06em",
+              }}
+            >
+              {customDate}
+            </p>
+          )}
           <p
             className="poster-coords"
             style={{
               fontFamily: bodyFont,
-              top: `${TEXT_COORDS_Y_RATIO * 100}%`,
+              top: `${(hasTagline ? 0.938 : TEXT_COORDS_Y_RATIO) * 100}%`,
               fontSize: coordsFontSize,
             }}
           >

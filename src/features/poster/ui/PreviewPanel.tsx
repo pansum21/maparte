@@ -78,6 +78,7 @@ export default function PreviewPanel() {
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isWallMockup, setIsWallMockup] = useState(false);
+  const [frameStyle, setFrameStyle] = useState<"black" | "oak" | "white">("black");
   const [mapBearing, setMapBearing] = useState(0);
   const [isRotationEnabled, setIsRotationEnabled] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
@@ -382,8 +383,37 @@ export default function PreviewPanel() {
     <section className="preview-panel">
       <div className={`poster-viewport${isWallMockup ? " is-wall-mockup" : ""}`}>
         {isWallMockup ? (
-          <div className="wall-mockup-badge" aria-label="Living room gallery mockup">
-            <span>🖼️ Gallery Frame • Living Room View</span>
+          <div className="wall-mockup-controls" aria-label="Living room gallery mockup controls">
+            <span className="wall-mockup-title">🖼️ Living Room View</span>
+            <div className="wall-frame-switcher" role="radiogroup" aria-label="Select frame style">
+              <button
+                type="button"
+                className={`wall-frame-chip${frameStyle === "black" ? " is-selected" : ""}`}
+                onClick={() => setFrameStyle("black")}
+                title="Classic Black Gallery Frame"
+              >
+                <span className="frame-color-swatch swatch-black" aria-hidden="true" />
+                Black
+              </button>
+              <button
+                type="button"
+                className={`wall-frame-chip${frameStyle === "oak" ? " is-selected" : ""}`}
+                onClick={() => setFrameStyle("oak")}
+                title="Natural Oak Wood Frame"
+              >
+                <span className="frame-color-swatch swatch-oak" aria-hidden="true" />
+                Oak
+              </button>
+              <button
+                type="button"
+                className={`wall-frame-chip${frameStyle === "white" ? " is-selected" : ""}`}
+                onClick={() => setFrameStyle("white")}
+                title="Modern White Gallery Frame"
+              >
+                <span className="frame-color-swatch swatch-white" aria-hidden="true" />
+                White
+              </button>
+            </div>
           </div>
         ) : null}
         {/* Desktop ghost layer: canvas clone of the main map at reduced opacity */}
@@ -398,7 +428,7 @@ export default function PreviewPanel() {
         </div>
         <div
           ref={frameRef}
-          className="poster-frame"
+          className={`poster-frame${isWallMockup ? ` frame-${frameStyle}` : ""}`}
           style={
             {
               "--poster-aspect": `${aspect}`,
@@ -459,6 +489,7 @@ export default function PreviewPanel() {
             showPosterText={form.showPosterText}
             includeCredits={form.includeCredits}
             showOverlay={form.showMarkers}
+            customDate={form.customDate}
           />
 
           <div className="map-controls" aria-label="Map controls">

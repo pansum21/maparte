@@ -63,6 +63,7 @@ export const DEFAULT_FORM: PosterForm = {
   displayCity: "Hanover",
   displayCountry: "Germany",
   displayContinent: "Europe",
+  customDate: "",
   fontFamily: "",
   showPosterText: true,
   includeCredits: true,

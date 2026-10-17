@@ -23,6 +23,7 @@ export interface ExportOptions {
   displayCity: string;
   displayCountry: string;
   displayContinent?: string;
+  customDate?: string;
   fontFamily: string;
   showPosterText: boolean;
   showOverlay?: boolean;
@@ -40,6 +41,7 @@ export interface Typography {
   displayCity: string;
   displayCountry: string;
   displayContinent?: string;
+  customDate?: string;
   fontFamily: string;
   showPosterText: boolean;
   includeCredits?: boolean;

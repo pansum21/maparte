@@ -430,6 +430,44 @@ export default function DownloadModal({
                 )}
                 {keyError && <p className="redeem-error">{keyError}</p>}
               </div>
+
+              {/* Trust Badges */}
+              <div className="download-trust-badges">
+                <div className="trust-badge-item">
+                  <span className="trust-badge-icon" aria-hidden="true">🔒</span>
+                  <div className="trust-badge-content">
+                    <span className="trust-badge-title">256-Bit SSL</span>
+                    <span className="trust-badge-sub">Encrypted Checkout</span>
+                  </div>
+                </div>
+                <div className="trust-badge-item">
+                  <span className="trust-badge-icon" aria-hidden="true">⚡</span>
+                  <div className="trust-badge-content">
+                    <span className="trust-badge-title">Instant Access</span>
+                    <span className="trust-badge-sub">500 DPI & Vector</span>
+                  </div>
+                </div>
+                <div className="trust-badge-item">
+                  <span className="trust-badge-icon" aria-hidden="true">🛡️</span>
+                  <div className="trust-badge-content">
+                    <span className="trust-badge-title">Satisfaction</span>
+                    <span className="trust-badge-sub">100% Guaranteed</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Social Proof Review */}
+              <div className="download-social-proof">
+                <div className="social-proof-stars" aria-label="5 out of 5 stars">
+                  ★★★★★
+                </div>
+                <p className="social-proof-quote">
+                  “Bought this for our 1st anniversary in Austin. It looks so stunning framed on our living room wall!”
+                </p>
+                <span className="social-proof-author">
+                  — Jessica &amp; David M. • Verified Gift Buyer
+                </span>
+              </div>
             </div>
           )}
         </div>

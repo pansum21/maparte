@@ -77,7 +77,27 @@
     inset 0 0 0 11px rgba(0, 0, 0, 0.22),
     0 45px 90px -15px rgba(0, 0, 0, 0.88),
     0 22px 42px -10px rgba(0, 0, 0, 0.65);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border 0.35s ease;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border 0.35s ease, outline 0.35s ease;
+}
+
+.poster-viewport.is-wall-mockup .poster-frame.frame-oak {
+  border: 15px solid #94633b;
+  outline: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 0 0 10px #fcfaf7,
+    inset 0 0 0 11px rgba(0, 0, 0, 0.18),
+    0 45px 90px -15px rgba(0, 0, 0, 0.88),
+    0 22px 42px -10px rgba(0, 0, 0, 0.65);
+}
+
+.poster-viewport.is-wall-mockup .poster-frame.frame-white {
+  border: 15px solid #f8fafc;
+  outline: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow:
+    inset 0 0 0 10px #ffffff,
+    inset 0 0 0 11px rgba(0, 0, 0, 0.12),
+    0 45px 90px -15px rgba(0, 0, 0, 0.82),
+    0 22px 42px -10px rgba(0, 0, 0, 0.6);
 }
 
 /* Glass reflection shine across framed artwork */
@@ -93,6 +113,91 @@
     rgba(255, 255, 255, 0.05) 30%,
     transparent 55%
   );
+}
+
+.wall-mockup-controls {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  animation: fadeInDown 0.3s ease;
+}
+
+.wall-mockup-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #f1f5f9;
+  white-space: nowrap;
+}
+
+.wall-frame-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 4px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wall-frame-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.wall-frame-chip:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.wall-frame-chip.is-selected {
+  background: rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.frame-color-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.swatch-black {
+  background: #111317;
+}
+
+.swatch-oak {
+  background: #94633b;
+}
+
+.swatch-white {
+  background: #f8fafc;
 }
 
 .wall-mockup-badge {
@@ -298,6 +403,20 @@
   text-align: center;
   line-height: 1.2;
   transform: translateY(-50%);
+}
+
+.poster-tagline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0;
+  font-weight: 500;
+  font-size: 1.8cqh;
+  text-align: center;
+  line-height: 1.2;
+  transform: translateY(-50%);
+  opacity: 0.88;
+  letter-spacing: 0.05em;
 }
 
 .poster-coords {
