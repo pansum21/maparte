@@ -1,6 +1,5 @@
-// NOTE: additional_themes.json exists in src/data/ but is currently unused.
-// It is preserved for potential future expansion of the theme registry.
 import themesManifest from "@/data/themes.json";
+import additionalThemesManifest from "@/data/additional_themes.json";
 import { blendHex, normalizeHexColor } from "@/shared/utils/color";
 import { getThemeColorByPath } from "../domain/colorPaths";
 import type { ResolvedTheme, ThemeColorKey, ThemeOption } from "../domain/types";
@@ -279,9 +278,14 @@ const manifestThemes = isObject(themesManifest)
   ? (themesManifest as ThemeObject).themes
   : undefined;
 
-const rawThemes = isObject(manifestThemes)
-  ? (manifestThemes as Record<string, unknown>)
-  : {};
+const additionalThemes = isObject(additionalThemesManifest)
+  ? (additionalThemesManifest as ThemeObject).themes
+  : undefined;
+
+const rawThemes = {
+  ...(isObject(additionalThemes) ? (additionalThemes as Record<string, unknown>) : {}),
+  ...(isObject(manifestThemes) ? (manifestThemes as Record<string, unknown>) : {}),
+};
 
 const themesByName: Record<string, ThemeObject> = Object.entries(rawThemes).reduce(
   (acc: Record<string, ThemeObject>, [key, value]) => {
