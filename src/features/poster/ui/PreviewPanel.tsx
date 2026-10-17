@@ -43,6 +43,7 @@ import {
   formatLayoutDimensions,
   getLayoutOption,
 } from "@/features/layout/infrastructure/layoutRepository";
+import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 
 const LOCKED_HINT = "Map is locked to prevent unintended movement.";
 const UNLOCK_HINT = `${LOCKED_HINT}\nClick to unlock map editing.`;
@@ -379,6 +380,26 @@ export default function PreviewPanel() {
     [dispatch],
   );
 
+  const isPhoneWallpaper =
+    form.layout === "wallpaper_iphone_15_pro" ||
+    form.layout.startsWith("wallpaper_iphone") ||
+    form.layout === "social_instagram_story_tiktok";
+
+  const handleTogglePhoneWallpaper = useCallback(() => {
+    const targetId = isPhoneWallpaper
+      ? "print_a4_portrait"
+      : "wallpaper_iphone_15_pro";
+    const layoutOption = getLayoutOption(targetId);
+    if (!layoutOption) return;
+
+    dispatch({
+      type: "SET_LAYOUT",
+      layoutId: layoutOption.id,
+      widthCm: formatLayoutCm(layoutOption.widthCm),
+      heightCm: formatLayoutCm(layoutOption.heightCm),
+    });
+  }, [isPhoneWallpaper, dispatch]);
+
   return (
     <section className="preview-panel">
       <div className={`poster-viewport${isWallMockup ? " is-wall-mockup" : ""}`}>
@@ -518,6 +539,20 @@ export default function PreviewPanel() {
                   >
                     <span className="wall-btn-icon" aria-hidden="true">🖼️</span>
                     <span>{isWallMockup ? "Canvas View" : "Wall Preview"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`map-control-btn phone-wallpaper-btn${isPhoneWallpaper ? " is-active" : ""}`}
+                    onClick={handleTogglePhoneWallpaper}
+                    title={
+                      isPhoneWallpaper
+                        ? "Switch back to standard A4 print poster"
+                        : "One-click 9:16 vertical phone wallpaper layout"
+                    }
+                    aria-pressed={isPhoneWallpaper}
+                  >
+                    <span className="phone-btn-icon" aria-hidden="true">📱</span>
+                    <span>{isPhoneWallpaper ? "Poster View" : "Phone Wallpaper"}</span>
                   </button>
                 </div>
               </>

@@ -18,6 +18,11 @@ import {
   FaSun,
   FaTree,
   FaXmark,
+  FaRing,
+  FaGem,
+  FaChampagneGlasses,
+  FaCakeCandles,
+  FaGift,
 } from "react-icons/fa6";
 import { IoMdFlower } from "react-icons/io";
 import { SlTarget } from "react-icons/sl";
@@ -56,6 +61,11 @@ export const predefinedMarkerIcons: MarkerIconDefinition[] = [
   createImageIcon("app-marker", "MAPARTE", "/assets/marker.svg"),
   createSvgIcon("pin", "Pin", FaLocationDot),
   createSvgIcon("heart", "Heart", FaHeart),
+  createSvgIcon("ring", "Ring", FaRing),
+  createSvgIcon("gem", "Diamond", FaGem),
+  createSvgIcon("champagne", "Cheers", FaChampagneGlasses),
+  createSvgIcon("cake", "Cake", FaCakeCandles),
+  createSvgIcon("gift", "Gift", FaGift),
   createSvgIcon("home", "Home", FaHouse),
   createSvgIcon("star", "Star", FaStar),
   createSvgIcon("circle", "Circle", FaCircle),

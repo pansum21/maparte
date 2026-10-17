@@ -249,6 +249,20 @@
   box-shadow: 0 0 12px rgba(37, 99, 235, 0.5) !important;
 }
 
+.phone-wallpaper-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+}
+
+.phone-wallpaper-btn.is-active {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  color: #ffffff !important;
+  border-color: rgba(52, 211, 153, 0.6) !important;
+  box-shadow: 0 0 12px rgba(5, 150, 105, 0.5) !important;
+}
+
 /* ── Ghost canvas: covers ghost layer, preserving poster aspect ratio ── */
 
 .poster-ghost-canvas {
