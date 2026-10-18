@@ -5,11 +5,19 @@ const webFileDownloader: IFileDownloader = {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.href = url;
-    link.download = filename;
+    link.style.display = "none";
     document.body.appendChild(link);
     link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+
+    // On mobile browsers (Android Chrome, iOS Safari), the download manager reads the blob asynchronously.
+    // Revoking the object URL immediately severs the stream mid-flight, causing truncated/half downloads.
+    setTimeout(() => {
+      link.remove();
+    }, 1500);
+
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 60_000);
   },
 };
 
