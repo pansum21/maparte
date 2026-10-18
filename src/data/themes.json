@@ -493,6 +493,240 @@
           "minor_low": "#CCCCDA"
         }
       }
+    },
+    "subtle_grayscale": {
+      "name": "Subtle Grayscale",
+      "description": "Paulo Avila's iconic gallery classic — muted concrete land with deep charcoal water.",
+      "ui": {
+        "bg": "#ECECEC",
+        "text": "#2B323A"
+      },
+      "map": {
+        "land": "#ECECEC",
+        "landcover": "#E2E2E2",
+        "water": "#343A40",
+        "waterway": "#343A40",
+        "parks": "#DCDCDC",
+        "buildings": "#E0E0E0",
+        "aeroway": "#DCDCDC",
+        "rail": "#2B323A",
+        "roads": {
+          "major": "#212529",
+          "minor_high": "#495057",
+          "minor_mid": "#6C757D",
+          "minor_low": "#ADB5BD",
+          "path": "#CED4DA",
+          "outline": "#ECECEC"
+        }
+      }
+    },
+    "pale_dawn": {
+      "name": "Pale Dawn",
+      "description": "Adam Krogh's legendary warm sandstone canvas with steel-blue waters and soft sage parks.",
+      "ui": {
+        "bg": "#F2E5D4",
+        "text": "#4A3B32"
+      },
+      "map": {
+        "land": "#F2E5D4",
+        "landcover": "#EADAC5",
+        "water": "#ACBCC9",
+        "waterway": "#ACBCC9",
+        "parks": "#C5DAC6",
+        "buildings": "#E2D3BE",
+        "aeroway": "#C5DAC6",
+        "rail": "#4A3B32",
+        "roads": {
+          "major": "#7A7B7C",
+          "minor_high": "#9E9E9F",
+          "minor_mid": "#C5C6C6",
+          "minor_low": "#D8CAB8",
+          "path": "#E4D7C6",
+          "outline": "#F2E5D4"
+        }
+      }
+    },
+    "blue_water": {
+      "name": "Blue Water",
+      "description": "Xavier's high-contrast studio style — pristine silver canvas with vibrant electric cyan water.",
+      "ui": {
+        "bg": "#F2F2F2",
+        "text": "#222222"
+      },
+      "map": {
+        "land": "#F2F2F2",
+        "landcover": "#E8E8E8",
+        "water": "#46BCEC",
+        "waterway": "#46BCEC",
+        "parks": "#DCECE8",
+        "buildings": "#E0E0E0",
+        "aeroway": "#DADADA",
+        "rail": "#333333",
+        "roads": {
+          "major": "#2D3748",
+          "minor_high": "#4A5568",
+          "minor_mid": "#718096",
+          "minor_low": "#A0AEC0",
+          "path": "#CBD5E0",
+          "outline": "#F2F2F2"
+        }
+      }
+    },
+    "midnight_commander": {
+      "name": "Midnight Commander",
+      "description": "Adam Krogh's cyber navy aesthetic with obsidian waters and glowing electric cyan highways.",
+      "ui": {
+        "bg": "#08304B",
+        "text": "#FFFFFF"
+      },
+      "map": {
+        "land": "#08304B",
+        "landcover": "#0A3858",
+        "water": "#021019",
+        "waterway": "#021019",
+        "parks": "#0C4152",
+        "buildings": "#0E4A5C",
+        "aeroway": "#0C4152",
+        "rail": "#146474",
+        "roads": {
+          "major": "#00E5FF",
+          "minor_high": "#14B8A6",
+          "minor_mid": "#0D9488",
+          "minor_low": "#0F5257",
+          "path": "#0A3B40",
+          "outline": "#041926"
+        }
+      }
+    },
+    "retro_vintage": {
+      "name": "Retro Vintage",
+      "description": "Antique parchment cartography with jade-seafoam water, olive parks, and golden amber roads.",
+      "ui": {
+        "bg": "#EBE3CD",
+        "text": "#523735"
+      },
+      "map": {
+        "land": "#EBE3CD",
+        "landcover": "#E2D9BF",
+        "water": "#B9D3C2",
+        "waterway": "#B9D3C2",
+        "parks": "#A5B076",
+        "buildings": "#DFD2AE",
+        "aeroway": "#DFD2AE",
+        "rail": "#523735",
+        "roads": {
+          "major": "#F8C967",
+          "minor_high": "#E98D58",
+          "minor_mid": "#D49D6A",
+          "minor_low": "#CDBDA2",
+          "path": "#DDD0B6",
+          "outline": "#EBE3CD"
+        }
+      }
+    },
+    "ultra_light": {
+      "name": "Ultra Light",
+      "description": "Scandinavian high-key museum minimalism — pure paper white with delicate steel-blue accents.",
+      "ui": {
+        "bg": "#FAFAFA",
+        "text": "#1E293B"
+      },
+      "map": {
+        "land": "#FAFAFA",
+        "landcover": "#F3F4F6",
+        "water": "#E2E8F0",
+        "waterway": "#E2E8F0",
+        "parks": "#EDF2F7",
+        "buildings": "#EEEEEE",
+        "aeroway": "#E5E7EB",
+        "rail": "#1E293B",
+        "roads": {
+          "major": "#0F172A",
+          "minor_high": "#334155",
+          "minor_mid": "#64748B",
+          "minor_low": "#94A3B8",
+          "path": "#CBD5E1",
+          "outline": "#FAFAFA"
+        }
+      }
+    },
+    "shades_of_grey": {
+      "name": "Shades of Grey",
+      "description": "Deep monochromatic dark aesthetic — pitch obsidian terrain with crisp silvery road arteries.",
+      "ui": {
+        "bg": "#121212",
+        "text": "#E0E0E0"
+      },
+      "map": {
+        "land": "#121212",
+        "landcover": "#1A1A1A",
+        "water": "#080808",
+        "waterway": "#080808",
+        "parks": "#1E1E1E",
+        "buildings": "#242424",
+        "aeroway": "#1E1E1E",
+        "rail": "#E0E0E0",
+        "roads": {
+          "major": "#E0E0E0",
+          "minor_high": "#AAAAAA",
+          "minor_mid": "#777777",
+          "minor_low": "#444444",
+          "path": "#2C2C2C",
+          "outline": "#0D0D0D"
+        }
+      }
+    },
+    "golden_dusk": {
+      "name": "Golden Dusk",
+      "description": "Etsy bestselling art print — velvet plum-black twilight base with radiant 24K gold highway ribbons.",
+      "ui": {
+        "bg": "#131118",
+        "text": "#F3BA47"
+      },
+      "map": {
+        "land": "#131118",
+        "landcover": "#1B1822",
+        "water": "#0A090D",
+        "waterway": "#0A090D",
+        "parks": "#1F1B27",
+        "buildings": "#282333",
+        "aeroway": "#1F1B27",
+        "rail": "#F3BA47",
+        "roads": {
+          "major": "#F59E0B",
+          "minor_high": "#D97706",
+          "minor_mid": "#B45309",
+          "minor_low": "#78350F",
+          "path": "#4A2008",
+          "outline": "#131118"
+        }
+      }
+    },
+    "nordic_moss": {
+      "name": "Nordic Moss",
+      "description": "Botanical Scandinavian design — warm linen canvas with deep pine forests and clear alpine rivers.",
+      "ui": {
+        "bg": "#F6F4EE",
+        "text": "#203324"
+      },
+      "map": {
+        "land": "#F6F4EE",
+        "landcover": "#EAE7DE",
+        "water": "#B8D2D0",
+        "waterway": "#B8D2D0",
+        "parks": "#C8D9C5",
+        "buildings": "#DFDBCF",
+        "aeroway": "#D6D1C2",
+        "rail": "#203324",
+        "roads": {
+          "major": "#2A4730",
+          "minor_high": "#45664C",
+          "minor_mid": "#6A8C72",
+          "minor_low": "#9BB8A2",
+          "path": "#C4D6C9",
+          "outline": "#F6F4EE"
+        }
+      }
     }
   }
 }
