@@ -67,13 +67,13 @@ const TIERS: TierConfig[] = [
   },
   {
     id: "combo",
-    format: "svg",
+    format: "zip",
     label: "All-in-One Master Bundle",
     price: "$9.99",
     badge: "🎁 BUY 1 GET 1 FREE",
-    desc: "All 3 Formats + 2nd Poster Free (BOGO)",
+    desc: "All 3 Formats (.ZIP) + 2nd Poster Free (BOGO)",
     details: [
-      "Includes ALL 3: PNG + PDF + SVG Vector",
+      "Includes ALL 3 in 1 ZIP: PNG + PDF + SVG Vector",
       "🎁 BUY 1 GET 1 FREE: 2nd Matching SVG Poster Free",
       "1-Time BOGO bonus code delivered to your Gmail",
       "Save 50% vs Mapiful ($19.99) — Best Value!",
@@ -90,10 +90,12 @@ export default function DownloadModal({
   const [selectedTier, setSelectedTier] = useState<SelectedTier>(
     defaultFormat === "pdf" ? "pdf" : defaultFormat === "svg" ? "svg" : "combo",
   );
-  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(defaultFormat);
+  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(
+    defaultFormat === "pdf" ? "pdf" : defaultFormat === "svg" ? "svg" : "zip",
+  );
   const [credits, setCredits] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [includeCredits, setIncludeCredits] = useState(false);
+  const [includeCredits, setIncludeCredits] = useState(true);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [licenseKey, setLicenseKey] = useState("");
   const [keyError, setKeyError] = useState("");
@@ -112,7 +114,10 @@ export default function DownloadModal({
       const currentCredits = getProCredits();
       setCredits(currentCredits);
       setIsAdmin(isAdminUser());
-      setSelectedFormat(defaultFormat);
+      const initialTier = defaultFormat === "pdf" ? "pdf" : defaultFormat === "svg" ? "svg" : "combo";
+      const initialFormat = defaultFormat === "pdf" ? "pdf" : defaultFormat === "svg" ? "svg" : "zip";
+      setSelectedTier(initialTier);
+      setSelectedFormat(initialFormat);
       setBonusNotice(null);
       setEmailError("");
       const savedEmail = window.localStorage.getItem("maparte_customer_email") || "";
@@ -353,18 +358,35 @@ export default function DownloadModal({
               <div className="unlocked-format-row">
                 <span className="unlocked-format-label">Select format to export:</span>
                 <div className="unlocked-format-btns">
-                  {(["png", "pdf", "svg"] as ExportFormat[]).map((fmt) => (
+                  {selectedTier === "combo" && (
                     <button
-                      key={fmt}
                       type="button"
-                      className={`unlocked-format-chip ${
-                        selectedFormat === fmt ? "is-active" : ""
+                      className={`unlocked-format-chip combo-zip-chip ${
+                        selectedFormat === "zip" ? "is-active" : ""
                       }`}
-                      onClick={() => setSelectedFormat(fmt)}
+                      onClick={() => setSelectedFormat("zip")}
+                      title="Download PNG, PDF, and SVG all together in 1 ZIP file"
                     >
-                      {fmt.toUpperCase()}
+                      📦 ALL 3 IN 1 (.ZIP)
                     </button>
-                  ))}
+                  )}
+                  {(["png", "pdf", "svg"] as ExportFormat[]).map((fmt) => {
+                    const isBundleActive = selectedTier === "combo" && selectedFormat === "zip";
+                    const isIndividualActive = selectedFormat === fmt;
+                    return (
+                      <button
+                        key={fmt}
+                        type="button"
+                        className={`unlocked-format-chip ${
+                          isBundleActive || isIndividualActive ? "is-active" : ""
+                        }`}
+                        onClick={() => setSelectedFormat(fmt)}
+                        title={`Export as ${fmt.toUpperCase()}`}
+                      >
+                        {isBundleActive ? `✓ ${fmt.toUpperCase()}` : fmt.toUpperCase()}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -374,7 +396,10 @@ export default function DownloadModal({
                   checked={includeCredits}
                   onChange={(e) => setIncludeCredits(e.target.checked)}
                 />
-                <span>Discreet MAPARTE signature at bottom</span>
+                <span className="branding-toggle-text">
+                  <span className="branding-toggle-title">Include discreet studio signature (✦ MAPARTE • maparte.app)</span>
+                  <span className="branding-toggle-sub">Recommended: gives authentic museum-grade gallery print finish</span>
+                </span>
               </label>
 
               <button
@@ -389,7 +414,9 @@ export default function DownloadModal({
                   <DownloadIcon />
                 )}
                 <span>
-                  Download Ultra-HD ({selectedFormat.toUpperCase()})
+                  {selectedFormat === "zip"
+                    ? "Download Master Bundle (.ZIP - All 3 Formats)"
+                    : `Download Ultra-HD (${selectedFormat.toUpperCase()})`}
                 </span>
               </button>
             </div>

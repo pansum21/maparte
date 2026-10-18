@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import JSZip from "jszip";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
 import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
@@ -266,7 +267,45 @@ export function useExport() {
           format,
         );
 
-        if (format === "pdf") {
+        if (format === "zip") {
+          const svgBlob = await createLayeredSvgBlobFromMap({
+            map,
+            exportWidth: size.width,
+            exportHeight: size.height,
+            theme: effectiveTheme,
+            center: { lat, lon },
+            displayCity: form.displayCity || form.location || "",
+            displayCountry: form.displayCountry || "",
+            customDate: form.customDate,
+            fontFamily: form.fontFamily.trim(),
+            showPosterText: form.showPosterText,
+            showOverlay: form.showMarkers,
+            includeCredits,
+            markers: hasVisibleMarkers ? state.markers : [],
+            markerIcons: hasVisibleOverlays
+              ? getAllMarkerIcons(state.customMarkerIcons)
+              : [],
+            routes: visibleRoutes,
+          });
+
+          const pngBlob = await createPngBlob(canvas, dpi);
+          const pdfBlob = createPdfBlobFromCanvas(canvas, {
+            widthCm,
+            heightCm,
+          });
+
+          const zip = new JSZip();
+          const cleanCity = (form.displayCity || form.location || "City").replace(/[^a-zA-Z0-9_-]/g, "_");
+          const cleanTheme = (form.theme || "custom").replace(/[^a-zA-Z0-9_-]/g, "_");
+          const baseName = `MapArte_${cleanCity}_${cleanTheme}`;
+
+          zip.file(`${baseName}_Wallpaper_UltraHD.png`, pngBlob);
+          zip.file(`${baseName}_Print_500DPI.pdf`, pdfBlob);
+          zip.file(`${baseName}_Vector_Infinite.svg`, svgBlob);
+
+          const zipBlob = await zip.generateAsync({ type: "blob" });
+          await triggerDownloadBlob(zipBlob, `${baseName}_Master_Bundle.zip`);
+        } else if (format === "pdf") {
           const pdfBlob = createPdfBlobFromCanvas(canvas, {
             widthCm,
             heightCm,
