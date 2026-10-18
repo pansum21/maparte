@@ -292,6 +292,9 @@ export function useMapSync(
             bounds.maxZoom,
           );
 
+      lastLookupCoordsRef.current = [lat, lon];
+      lastLocationLookupAtRef.current = Date.now();
+
       map.flyTo({
         center: [lon, lat],
         zoom,

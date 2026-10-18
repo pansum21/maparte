@@ -59,16 +59,22 @@ export function normalizeLocationResult(
   }
 
   const address = entry.address ?? {};
-  const city =
+  const rawCity =
     pickFirstAddressValue(address, [
       "city",
       "town",
       "village",
-      "hamlet",
+      "city_district",
+      "state_district",
+      "district",
       "municipality",
+      "suburb",
+      "hamlet",
       "county",
-      "state",
     ]) || String(entry.city ?? "").trim();
+  const city = rawCity
+    ? rawCity.replace(/\s+(City\s+)?District$/i, "").trim()
+    : pickFirstAddressValue(address, ["state"]);
   const country =
     pickFirstAddressValue(address, ["country"]) ||
     String(entry.country ?? "").trim();

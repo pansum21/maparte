@@ -63,8 +63,8 @@ function getDeviceMaxWebGlDimension(): number {
         /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
         (navigator.maxTouchPoints > 1 && window.innerWidth < 1024);
 
-      // On mobile devices, keep a ceiling of 2560px to avoid memory clamp on budget GPUs / iOS WebKit
-      return isMobile ? Math.min(safeLimit, 2560) : Math.min(safeLimit, 8192);
+      // On mobile devices, allow up to 4096px to match device hardware capabilities
+      return isMobile ? Math.min(safeLimit, 4096) : Math.min(safeLimit, 8192);
     }
   } catch {
     // fallback

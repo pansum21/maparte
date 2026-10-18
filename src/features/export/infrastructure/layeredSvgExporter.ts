@@ -350,21 +350,26 @@ export async function createLayeredSvgBlobFromMap({
       } else if (layer.id.includes("road")) {
         let roadColor = theme.map.roads.minor_mid;
         let w = interpolateWidth(ROAD_MINOR_MID_STOPS, currentZoom);
+        let roadOpacity = 0.75;
         if (layer.id.includes("major")) {
           roadColor = theme.map.roads.major;
           w = interpolateWidth(ROAD_MAJOR_STOPS, currentZoom);
+          roadOpacity = 1.0;
         } else if (layer.id.includes("high")) {
           roadColor = theme.map.roads.minor_high;
           w = interpolateWidth(ROAD_MINOR_HIGH_STOPS, currentZoom);
+          roadOpacity = 0.92;
         } else if (layer.id.includes("low")) {
           roadColor = theme.map.roads.minor_low;
           w = interpolateWidth(ROAD_MINOR_LOW_STOPS, currentZoom);
+          roadOpacity = 0.46;
         } else if (layer.id.includes("path")) {
           roadColor = theme.map.roads.path;
           w = interpolateWidth(ROAD_PATH_STOPS, currentZoom);
+          roadOpacity = 0.82;
         }
         const strokeW = Math.max(0.4, w * scaleFactor);
-        vectorLayersSvg += `<g id="map-layer-${layerIdSanitized}">\n  <path d="${combinedD}" fill="none" stroke="${roadColor}" stroke-width="${strokeW.toFixed(2)}" stroke-linecap="round" stroke-linejoin="round" />\n</g>\n`;
+        vectorLayersSvg += `<g id="map-layer-${layerIdSanitized}">\n  <path d="${combinedD}" fill="none" stroke="${roadColor}" stroke-width="${strokeW.toFixed(2)}" stroke-opacity="${roadOpacity}" stroke-linecap="round" stroke-linejoin="round" />\n</g>\n`;
       } else {
         // Fallback for custom layers
         const fillProp = exportMap.getPaintProperty(layer.id, "fill-color");
