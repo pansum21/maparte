@@ -150,13 +150,27 @@ export function resolveExportRenderParams(
     Math.round(previewWidth * actualOverzoomScale),
   );
 
-  // Determine safe render dimensions that do NOT exceed mobile WebGL limits.
-  // Rendering directly at export dimensions (or bounded by safe WebGL limit)
-  // prevents creating oversized 4950px+ canvases on mobile GPUs that clamp viewports.
   const safeMaxGlDim = getDeviceMaxWebGlDimension();
-  let renderWidth = exportWidth;
-  let renderHeight = exportHeight;
 
+  // High-detail supersampled render target:
+  // Render the offscreen WebGL map at high resolution (up to safeMaxGlDim, target ~2560px for the larger side)
+  // so that MapLibre stays at high zoom levels (zoom 14+), preserving all fine street networks,
+  // residential roads, and building footprints, while supersampling cleanly onto the export canvas.
+  const aspect = exportHeight / exportWidth;
+  let renderWidth: number;
+  let renderHeight: number;
+
+  if (aspect >= 1) {
+    // Portrait: height is the larger dimension
+    renderHeight = Math.min(safeMaxGlDim, Math.max(exportHeight, 2560));
+    renderWidth = Math.max(1, Math.round(renderHeight / aspect));
+  } else {
+    // Landscape: width is the larger dimension
+    renderWidth = Math.min(safeMaxGlDim, Math.max(exportWidth, 2560));
+    renderHeight = Math.max(1, Math.round(renderWidth * aspect));
+  }
+
+  // Ensure neither dimension exceeds safeMaxGlDim
   const maxTargetSide = Math.max(renderWidth, renderHeight);
   if (maxTargetSide > safeMaxGlDim) {
     const scaleDown = safeMaxGlDim / maxTargetSide;

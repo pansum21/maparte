@@ -472,13 +472,13 @@ export default function DownloadModal({
           )}
         </div>
 
-        {/* Free Screen Wallpaper Option (Clean, 72 DPI, No Center Watermark) */}
+        {/* Free Screen Wallpaper Option (Clean, 160 DPI HD Retina, No Center Watermark) */}
         {!isPro && (
           <div className="free-screen-wallpaper-box">
             <div className="free-wallpaper-info">
-              <span className="free-wallpaper-title">📱 Basic Free Mobile Wallpaper ($0)</span>
+              <span className="free-wallpaper-title">📱 Free HD Phone Wallpaper ($0)</span>
               <p className="free-wallpaper-desc">
-                Clean screen wallpaper at 72 DPI. Zero center watermark. (Not suitable for paper printing or deep zoom).
+                Clean HD wallpaper for your phone screen (160 DPI Retina). Zero center watermark. Looks gorgeous on all smartphones. (Not suitable for paper printing or framing).
               </p>
             </div>
             <button
@@ -492,7 +492,7 @@ export default function DownloadModal({
               ) : (
                 <DownloadIcon />
               )}
-              <span>Download Free Wallpaper (72 DPI)</span>
+              <span>Download Free HD Wallpaper (Phone Screen)</span>
             </button>
           </div>
         )}
@@ -523,7 +523,7 @@ export default function DownloadModal({
                 <tbody>
                   <tr>
                     <td>Resolution / DPI</td>
-                    <td>72 DPI (Screen)</td>
+                    <td>160 DPI (HD Screen)</td>
                     <td>500 DPI Ultra-HD</td>
                     <td>500 DPI Vector Doc</td>
                     <td>Infinite Vector</td>
