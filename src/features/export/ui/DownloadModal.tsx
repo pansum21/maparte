@@ -33,7 +33,7 @@ const TIERS: TierConfig[] = [
     id: "png",
     format: "png",
     label: "PNG Image",
-    price: "$2.99",
+    price: "$4.99",
     desc: "Best for Phone & 4K/8K Wallpapers",
     details: [
       "500 DPI Ultra-HD clarity (Up to 80 Megapixels)",
@@ -45,7 +45,7 @@ const TIERS: TierConfig[] = [
     id: "pdf",
     format: "pdf",
     label: "PDF Document",
-    price: "$3.99",
+    price: "$6.99",
     desc: "Best for Home & Print Shops",
     details: [
       "500 DPI print-ready document",
@@ -57,7 +57,7 @@ const TIERS: TierConfig[] = [
     id: "svg",
     format: "svg",
     label: "SVG Vector",
-    price: "$4.99",
+    price: "$7.99",
     desc: "Infinite Vector • Unlimited Zoom",
     details: [
       "Pure mathematical vector graphics",
@@ -69,14 +69,14 @@ const TIERS: TierConfig[] = [
     id: "combo",
     format: "svg",
     label: "All-in-One Master Bundle",
-    price: "$5.99",
+    price: "$9.99",
     badge: "🎁 BUY 1 GET 1 FREE",
     desc: "All 3 Formats + 2nd Poster Free (BOGO)",
     details: [
       "Includes ALL 3: PNG + PDF + SVG Vector",
       "🎁 BUY 1 GET 1 FREE: 2nd Matching SVG Poster Free",
       "1-Time BOGO bonus code delivered to your Gmail",
-      "Cheaper than a single cup of coffee! (Save 60%)",
+      "Save 50% vs Mapiful ($19.99) — Best Value!",
     ],
   },
 ];
@@ -286,7 +286,7 @@ export default function DownloadModal({
               <span className="active-tier-price">{activeTier.price}</span>
             </div>
             {activeTier.id === "combo" && (
-              <span className="combo-savings-tag">🔥 Best Value • Save 60%</span>
+              <span className="combo-savings-tag">🔥 Best Value • Save 50% vs Mapiful ($19.99)</span>
             )}
           </div>
 
@@ -514,10 +514,10 @@ export default function DownloadModal({
                   <tr>
                     <th>Feature</th>
                     <th>Free ($0)</th>
-                    <th>PNG ($2.99)</th>
-                    <th>PDF ($3.99)</th>
-                    <th>SVG ($4.99)</th>
-                    <th className="th-highlight">Combo ($5.99)</th>
+                    <th>PNG ($4.99)</th>
+                    <th>PDF ($6.99)</th>
+                    <th>SVG ($7.99)</th>
+                    <th className="th-highlight">Combo ($9.99)</th>
                   </tr>
                 </thead>
                 <tbody>
