@@ -23,13 +23,17 @@ const MAP_WATERWAY_WIDTH_STOPS: [number, number][] = [
   [6, 0.34],
   [12, 0.8],
   [18, 2.4],
+  [20, 5.0],
+  [22, 10.0],
 ];
 
 const MAP_RAIL_WIDTH_STOPS: [number, number][] = [
   [3, 0.4],
   [6, 0.7],
   [10, 1],
-  [18, 1.5],
+  [18, 1.6],
+  [20, 3.2],
+  [22, 5.5],
 ];
 
 /**
@@ -90,19 +94,25 @@ const MAP_ROAD_MINOR_HIGH_DETAIL_WIDTH_STOPS: [number, number][] = [
   [6, 0.46],
   [10, 0.8],
   [14, 1.48],
-  [18, 2.7],
+  [18, 2.8],
+  [20, 5.6],
+  [22, 11.0],
 ];
 const MAP_ROAD_MINOR_MID_DETAIL_WIDTH_STOPS: [number, number][] = [
   [6, 0.34],
   [10, 0.62],
   [14, 1.2],
-  [18, 2.35],
+  [18, 2.4],
+  [20, 4.8],
+  [22, 9.5],
 ];
 const MAP_ROAD_MINOR_LOW_DETAIL_WIDTH_STOPS: [number, number][] = [
   [6, 0.24],
   [10, 0.44],
   [14, 0.84],
-  [18, 1.65],
+  [18, 1.8],
+  [20, 3.6],
+  [22, 7.2],
 ];
 
 const MAP_ROAD_PATH_OVERVIEW_WIDTH_STOPS: [number, number][] = [
@@ -114,7 +124,9 @@ const MAP_ROAD_PATH_DETAIL_WIDTH_STOPS: [number, number][] = [
   [8, 0.2],
   [12, 0.42],
   [16, 0.85],
-  [18, 1.3],
+  [18, 1.4],
+  [20, 2.6],
+  [22, 5.0],
 ];
 
 const MAP_ROAD_MAJOR_WIDTH_STOPS: [number, number][] = [
@@ -122,7 +134,9 @@ const MAP_ROAD_MAJOR_WIDTH_STOPS: [number, number][] = [
   [3, 0.52],
   [9, 1.1],
   [14, 2.05],
-  [18, 3.3],
+  [18, 3.6],
+  [20, 7.2],
+  [22, 14.0],
 ];
 
 const ROAD_MINOR_OVERVIEW_MIN_ZOOM = 0;

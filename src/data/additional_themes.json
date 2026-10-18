@@ -201,6 +201,31 @@
           "minor_low": "#C8A888"
         }
       }
+    },
+    "snazzy_pastel": {
+      "name": "Snazzy Pastel",
+      "description": "Minimalist vintage parchment with sky-blue waters and delicate clean roads.",
+      "ui": {
+        "bg": "#F9F5ED",
+        "text": "#6A6A6A"
+      },
+      "map": {
+        "land": "#F9F5ED",
+        "water": "#AEE0F4",
+        "waterway": "#AEE0F4",
+        "parks": "#E8EFE0",
+        "buildings": "#EBE5DB",
+        "aeroway": "#E8EFE0",
+        "rail": "#878787",
+        "roads": {
+          "major": "#F5F5F5",
+          "path": "#E5E1D9",
+          "outline": "#C9C9C9",
+          "minor_high": "#F0ECE4",
+          "minor_mid": "#EAE6DE",
+          "minor_low": "#E5E1D9"
+        }
+      }
     }
   }
 }
