@@ -290,6 +290,10 @@ export async function createLayeredSvgBlobFromMap({
     for (const layer of layerDefs) {
       if (layer.id === "background") continue;
 
+      // Skip layers whose zoom range does not include the current export zoom
+      if (layer.minzoom !== undefined && currentZoom < layer.minzoom) continue;
+      if (layer.maxzoom !== undefined && currentZoom >= layer.maxzoom) continue;
+
       let features: any[] = [];
       try {
         features = exportMap.queryRenderedFeatures({ layers: [layer.id] });
