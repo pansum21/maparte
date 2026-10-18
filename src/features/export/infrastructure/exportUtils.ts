@@ -36,6 +36,42 @@ export function waitForMapIdle(map: MaplibreMap): Promise<void> {
   });
 }
 
+function getDeviceMaxWebGlDimension(): number {
+  if (typeof window === "undefined") return 4096;
+  try {
+    const canvas = document.createElement("canvas");
+    const gl =
+      canvas.getContext("webgl") ||
+      (canvas.getContext("experimental-webgl") as WebGLRenderingContext | null);
+    if (gl) {
+      const maxViewportDims = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
+      const maxRenderbuffer = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
+      const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+
+      const viewportLimit =
+        Array.isArray(maxViewportDims) || maxViewportDims instanceof Int32Array
+          ? Math.min(maxViewportDims[0], maxViewportDims[1])
+          : 4096;
+
+      const safeLimit = Math.min(
+        viewportLimit || 4096,
+        maxRenderbuffer || 4096,
+        maxTextureSize || 4096,
+      );
+
+      const isMobile =
+        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints > 1 && window.innerWidth < 1024);
+
+      // On mobile devices, keep a ceiling of 2560px to avoid memory clamp on budget GPUs / iOS WebKit
+      return isMobile ? Math.min(safeLimit, 2560) : Math.min(safeLimit, 8192);
+    }
+  } catch {
+    // fallback
+  }
+  return 2560;
+}
+
 /**
  * Creates a fixed, invisible offscreen container for the export map.
  * Caller is responsible for appending to the DOM and removing when done.
@@ -46,12 +82,13 @@ export function createOffscreenContainer(
 ): HTMLDivElement {
   const el = document.createElement("div");
   el.style.position = "fixed";
-  el.style.left = "-100000px";
+  el.style.left = "0";
   el.style.top = "0";
   el.style.width = `${width}px`;
   el.style.height = `${height}px`;
   el.style.pointerEvents = "none";
   el.style.opacity = "0";
+  el.style.zIndex = "-9999";
   return el;
 }
 
@@ -102,18 +139,39 @@ export function resolveExportRenderParams(
   const previewHeight = Math.max(visiblePreviewHeight, 1);
 
   const center = map.getCenter();
-  const zoom = map.getZoom();
+  const liveZoom = map.getZoom();
   const pitch = map.getPitch();
   const bearing = map.getBearing();
   const style = map.getStyle() as StyleSpecification;
 
-  const widthScale = Math.max(exportWidth / previewWidth, 1);
-  const heightScale = Math.max(exportHeight / previewHeight, 1);
-  const basePixelRatio = Math.max(widthScale, heightScale, 1);
+  // Effective container dimensions that the live preview map rendered:
+  const effectivePreviewWidth = Math.max(
+    1,
+    Math.round(previewWidth * actualOverzoomScale),
+  );
 
-  const renderWidth = Math.max(1, Math.round(previewWidth * actualOverzoomScale));
-  const renderHeight = Math.max(1, Math.round(previewHeight * actualOverzoomScale));
-  const pixelRatio = Math.max(basePixelRatio / actualOverzoomScale, 1);
+  // Determine safe render dimensions that do NOT exceed mobile WebGL limits.
+  // Rendering directly at export dimensions (or bounded by safe WebGL limit)
+  // prevents creating oversized 4950px+ canvases on mobile GPUs that clamp viewports.
+  const safeMaxGlDim = getDeviceMaxWebGlDimension();
+  let renderWidth = exportWidth;
+  let renderHeight = exportHeight;
+
+  const maxTargetSide = Math.max(renderWidth, renderHeight);
+  if (maxTargetSide > safeMaxGlDim) {
+    const scaleDown = safeMaxGlDim / maxTargetSide;
+    renderWidth = Math.max(1, Math.round(renderWidth * scaleDown));
+    renderHeight = Math.max(1, Math.round(renderHeight * scaleDown));
+  }
+
+  // Adjust zoom so that the offscreen map at renderWidth covers the EXACT same geographical span
+  // as the live preview map did at effectivePreviewWidth.
+  // spanMeters = containerWidth * (C / (512 * 2^zoom))
+  // Setting zoom = liveZoom + log2(renderWidth / effectivePreviewWidth) ensures spanMeters is identical.
+  const deltaZoom = Math.log2(renderWidth / effectivePreviewWidth);
+  const zoom = liveZoom + deltaZoom;
+
+  const pixelRatio = 1;
 
   const markerProjection: MarkerProjectionInput = {
     centerLat: center.lat,
@@ -138,6 +196,6 @@ export function resolveExportRenderParams(
     markerProjection,
     markerScaleX: exportWidth / renderWidth,
     markerScaleY: exportHeight / renderHeight,
-    markerSizeScale: actualOverzoomScale,
+    markerSizeScale: renderWidth / previewWidth,
   };
 }

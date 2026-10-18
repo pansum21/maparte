@@ -5,6 +5,8 @@ const webFileDownloader: IFileDownloader = {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.href = url;
+    link.download = filename;
+    link.rel = "noopener";
     link.style.display = "none";
     document.body.appendChild(link);
     link.click();
