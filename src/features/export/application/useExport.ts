@@ -27,6 +27,7 @@ import {
   DEFAULT_POSTER_HEIGHT_CM,
 } from "@/core/config";
 import { trackEvent, setUserProperty } from "@/core/services";
+import { dispatchTelemetryAlert } from "@/core/telemetry/sentinel";
 
 const EXPORT_COUNT_STORAGE_KEY = "maparte.poster.count";
 
@@ -326,6 +327,21 @@ export function useExport() {
       } catch (err) {
         const message = err instanceof Error ? err.message : "Export failed.";
         trackEvent("export_failed", { format, reason: message });
+        void dispatchTelemetryAlert(
+          `Export failed for format "${format}": ${message}`,
+          "technical_bug",
+          {
+            city: form.displayCity || form.location,
+            country: form.displayCountry,
+            theme: form.theme,
+            format,
+            coordinates: {
+              lat: Number(form.latitude) || 0,
+              lon: Number(form.longitude) || 0,
+            },
+          },
+          err instanceof Error ? err.stack : undefined,
+        );
         dispatch({ type: "SET_EXPORT_STATUS", exporting: false, error: message });
       }
     },

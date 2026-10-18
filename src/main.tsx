@@ -1,7 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { isNativePlatform, onPlatformAdapterChange } from "@/core/platform";
+import { initGlobalErrorSentinel } from "@/core/telemetry/sentinel";
 import App from "./App";
+
+initGlobalErrorSentinel();
 
 // Self-hosted UI typefaces. These replace the Google Fonts stylesheet that
 // base.css used to @import, which leaked visitor IPs to Google on every load.
