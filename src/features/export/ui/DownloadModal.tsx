@@ -87,11 +87,25 @@ export default function DownloadModal({
   defaultFormat = "png",
 }: DownloadModalProps) {
   const { isExporting, exportPoster } = useExport();
+  const resolveInitialTier = (fmt: ExportFormat): SelectedTier => {
+    if (fmt === "pdf") return "pdf";
+    if (fmt === "svg") return "svg";
+    if (fmt === "zip") return "combo";
+    return "png";
+  };
+
+  const resolveInitialFormat = (fmt: ExportFormat): ExportFormat => {
+    if (fmt === "pdf") return "pdf";
+    if (fmt === "svg") return "svg";
+    if (fmt === "zip") return "zip";
+    return "png";
+  };
+
   const [selectedTier, setSelectedTier] = useState<SelectedTier>(
-    defaultFormat === "pdf" ? "pdf" : defaultFormat === "svg" ? "svg" : "combo",
+    resolveInitialTier(defaultFormat),
   );
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(
-    defaultFormat === "pdf" ? "pdf" : defaultFormat === "svg" ? "svg" : "zip",
+    resolveInitialFormat(defaultFormat),
   );
   const [credits, setCredits] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -114,10 +128,8 @@ export default function DownloadModal({
       const currentCredits = getProCredits();
       setCredits(currentCredits);
       setIsAdmin(isAdminUser());
-      const initialTier = defaultFormat === "pdf" ? "pdf" : defaultFormat === "svg" ? "svg" : "combo";
-      const initialFormat = defaultFormat === "pdf" ? "pdf" : defaultFormat === "svg" ? "svg" : "zip";
-      setSelectedTier(initialTier);
-      setSelectedFormat(initialFormat);
+      setSelectedTier(resolveInitialTier(defaultFormat));
+      setSelectedFormat(resolveInitialFormat(defaultFormat));
       setBonusNotice(null);
       setEmailError("");
       const savedEmail = window.localStorage.getItem("maparte_customer_email") || "";
@@ -130,7 +142,7 @@ export default function DownloadModal({
   const isPro = isAdmin || credits > 0 || isProUser();
 
   const handleFreeDownload = () => {
-    void exportPoster(selectedFormat, { asPro: false, includeCredits: true });
+    void exportPoster("png", { asPro: false, includeCredits: true });
     onClose();
   };
 
@@ -519,7 +531,7 @@ export default function DownloadModal({
               ) : (
                 <DownloadIcon />
               )}
-              <span>Download Free HD Wallpaper (Phone Screen)</span>
+              <span>Download Free HD Wallpaper (Phone PNG)</span>
             </button>
           </div>
         )}
