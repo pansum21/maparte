@@ -43,19 +43,36 @@ export function drawPosterText(
     ? `"${fontFamily}", "IBM Plex Mono", monospace`
     : '"IBM Plex Mono", monospace';
 
-  const dimScale = Math.max(
-    0.45,
-    Math.min(width, height) / TEXT_DIMENSION_REFERENCE_PX,
-  );
-  const attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale;
+  const dimScale = Math.min(width, height) / TEXT_DIMENSION_REFERENCE_PX;
+  const maxContentWidth = width * 0.88;
 
   if (showPosterText) {
     const cityLabel = formatCityLabel(city);
-    const cityFontSize = CITY_FONT_BASE_PX * dimScale * computeCityFontScale(city);
+    let cityFontSize = CITY_FONT_BASE_PX * dimScale * computeCityFontScale(city);
+
+    // Auto-fit city label: measure text and ensure it never overflows canvas edges
+    ctx.font = `700 ${cityFontSize}px ${titleFontFamily}`;
+    const measuredCityWidth = ctx.measureText(cityLabel).width;
+    if (measuredCityWidth > maxContentWidth && measuredCityWidth > 0) {
+      cityFontSize = Math.max(12, cityFontSize * (maxContentWidth / measuredCityWidth));
+    }
 
     const hasTagline = Boolean(customDate && customDate.trim());
-    const countryFontSize = COUNTRY_FONT_BASE_PX * dimScale;
-    const coordinateFontSize = COORDS_FONT_BASE_PX * dimScale;
+    let countryFontSize = COUNTRY_FONT_BASE_PX * dimScale;
+    ctx.font = `300 ${countryFontSize}px ${titleFontFamily}`;
+    const measuredCountryWidth = ctx.measureText(country.toUpperCase()).width;
+    if (measuredCountryWidth > maxContentWidth && measuredCountryWidth > 0) {
+      countryFontSize = Math.max(10, countryFontSize * (maxContentWidth / measuredCountryWidth));
+    }
+
+    const coordsString = formatCoordinates(center.lat, center.lon);
+    let coordinateFontSize = COORDS_FONT_BASE_PX * dimScale;
+    ctx.font = `400 ${coordinateFontSize}px ${bodyFontFamily}`;
+    const measuredCoordsWidth = ctx.measureText(coordsString).width;
+    if (measuredCoordsWidth > maxContentWidth && measuredCoordsWidth > 0) {
+      coordinateFontSize = Math.max(8, coordinateFontSize * (maxContentWidth / measuredCoordsWidth));
+    }
+
     const taglineFontSize = 68 * dimScale;
     const cityY = height * TEXT_CITY_Y_RATIO;
     const lineY = height * TEXT_DIVIDER_Y_RATIO;
@@ -70,7 +87,7 @@ export function drawPosterText(
     ctx.fillText(cityLabel, width * 0.5, cityY);
 
     ctx.strokeStyle = textColor;
-    ctx.lineWidth = 3 * dimScale;
+    ctx.lineWidth = Math.max(1, 3 * dimScale);
     ctx.beginPath();
     ctx.moveTo(width * 0.4, lineY);
     ctx.lineTo(width * 0.6, lineY);
@@ -88,12 +105,24 @@ export function drawPosterText(
 
     ctx.globalAlpha = 0.75;
     ctx.font = `400 ${coordinateFontSize}px ${bodyFontFamily}`;
-    ctx.fillText(
-      formatCoordinates(center.lat, center.lon),
-      width * 0.5,
-      coordinatesY,
-    );
+    ctx.fillText(coordsString, width * 0.5, coordinatesY);
     ctx.globalAlpha = 1;
+  }
+
+  // Attribution layout: ensure left and right attributions never collide or overlap
+  const osmText = "\u00a9 OpenStreetMap contributors";
+  const appText = `✦ MAPARTE • ${APP_CREDIT_URL}`;
+
+  let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale;
+  ctx.font = `300 ${attributionFontSize}px ${bodyFontFamily}`;
+  const osmWidth = ctx.measureText(osmText).width;
+  const appWidth = includeCredits ? ctx.measureText(appText).width : 0;
+  const edgeMargin = width * TEXT_EDGE_MARGIN_RATIO;
+  const availableAttributionWidth = width - (edgeMargin * 2) - (includeCredits ? width * 0.04 : 0);
+  const requiredAttributionWidth = osmWidth + appWidth;
+
+  if (requiredAttributionWidth > availableAttributionWidth && requiredAttributionWidth > 0) {
+    attributionFontSize = Math.max(7, attributionFontSize * (availableAttributionWidth / requiredAttributionWidth));
   }
 
   ctx.fillStyle = attributionColor;
@@ -102,7 +131,7 @@ export function drawPosterText(
   ctx.textBaseline = "bottom";
   ctx.font = `300 ${attributionFontSize}px ${bodyFontFamily}`;
   ctx.fillText(
-    "\u00a9 OpenStreetMap contributors",
+    osmText,
     width * (1 - TEXT_EDGE_MARGIN_RATIO),
     height * (1 - TEXT_EDGE_MARGIN_RATIO),
   );
@@ -115,7 +144,7 @@ export function drawPosterText(
     ctx.textBaseline = "bottom";
     ctx.font = `300 ${attributionFontSize}px ${bodyFontFamily}`;
     ctx.fillText(
-      `✦ MAPARTE • ${APP_CREDIT_URL}`,
+      appText,
       width * TEXT_EDGE_MARGIN_RATIO,
       height * (1 - TEXT_EDGE_MARGIN_RATIO),
     );

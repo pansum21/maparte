@@ -277,28 +277,43 @@ export async function createLayeredSvgBlobFromMap({
     const titleFontFamily = cleanFont ? `'${cleanFont}', 'Space Grotesk', sans-serif` : "'Space Grotesk', sans-serif";
     const bodyFontFamily = "'IBM Plex Mono', 'Space Grotesk', monospace";
 
-    const dimScale = Math.max(
-      0.45,
-      Math.min(exportWidth, exportHeight) / TEXT_DIMENSION_REFERENCE_PX,
-    );
-    const attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale;
+    const dimScale =
+      Math.min(exportWidth, exportHeight) / TEXT_DIMENSION_REFERENCE_PX;
+    const maxContentWidth = exportWidth * 0.88;
 
     let vectorTypographySvg = "";
 
     if (showPosterText) {
       const hasTagline = Boolean(customDate && customDate.trim().length > 0);
       const cityLabel = formatCityLabel(displayCity);
-      const cityFontSize = CITY_FONT_BASE_PX * dimScale * computeCityFontScale(displayCity);
-      const countryFontSize = COUNTRY_FONT_BASE_PX * dimScale;
-      const coordinateFontSize = COORDS_FONT_BASE_PX * dimScale;
+      let cityFontSize = CITY_FONT_BASE_PX * dimScale * computeCityFontScale(displayCity);
+
+      // SVG auto-fit: ensure city name never overflows export width
+      const approxCityWidth = cityLabel.length * cityFontSize * 0.65;
+      if (approxCityWidth > maxContentWidth && approxCityWidth > 0) {
+        cityFontSize = Math.max(12, cityFontSize * (maxContentWidth / approxCityWidth));
+      }
+
+      let countryFontSize = COUNTRY_FONT_BASE_PX * dimScale;
+      const approxCountryWidth = displayCountry.length * countryFontSize * 0.65;
+      if (approxCountryWidth > maxContentWidth && approxCountryWidth > 0) {
+        countryFontSize = Math.max(10, countryFontSize * (maxContentWidth / approxCountryWidth));
+      }
+
+      const coordsText = formatCoordinates(center.lat, center.lon);
+      let coordinateFontSize = COORDS_FONT_BASE_PX * dimScale;
+      const approxCoordsWidth = coordsText.length * coordinateFontSize * 0.6;
+      if (approxCoordsWidth > maxContentWidth && approxCoordsWidth > 0) {
+        coordinateFontSize = Math.max(8, coordinateFontSize * (maxContentWidth / approxCoordsWidth));
+      }
+
       const taglineFontSize = Math.max(12, Math.round(countryFontSize * 0.88));
       const cityY = exportHeight * TEXT_CITY_Y_RATIO;
       const lineY = exportHeight * TEXT_DIVIDER_Y_RATIO;
       const countryY = exportHeight * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
       const taglineY = exportHeight * 0.918;
       const coordinatesY = exportHeight * (hasTagline ? 0.938 : TEXT_COORDS_Y_RATIO);
-      const coordsText = formatCoordinates(center.lat, center.lon);
-      const lineW = 3 * dimScale;
+      const lineW = Math.max(1, 3 * dimScale);
       const lineX1 = exportWidth * 0.4;
       const lineX2 = exportWidth * 0.6;
 
@@ -315,6 +330,18 @@ export async function createLayeredSvgBlobFromMap({
       vectorTypographySvg += `
   <text x="${exportWidth * 0.5}" y="${coordinatesY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="400" opacity="0.75" fill="${textColor}">${escapeXml(coordsText)}</text>
 `;
+    }
+
+    let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale;
+    const osmText = "© OpenStreetMap contributors";
+    const appText = `✦ MAPARTE • ${APP_CREDIT_URL}`;
+    const approxOsmWidth = osmText.length * attributionFontSize * 0.6;
+    const approxAppWidth = includeCredits ? appText.length * attributionFontSize * 0.6 : 0;
+    const edgeMargin = exportWidth * TEXT_EDGE_MARGIN_RATIO;
+    const availableAttrWidth = exportWidth - (edgeMargin * 2) - (includeCredits ? exportWidth * 0.04 : 0);
+    const requiredAttrWidth = approxOsmWidth + approxAppWidth;
+    if (requiredAttrWidth > availableAttrWidth && requiredAttrWidth > 0) {
+      attributionFontSize = Math.max(7, attributionFontSize * (availableAttrWidth / requiredAttrWidth));
     }
 
     const attrY = exportHeight * (1 - TEXT_EDGE_MARGIN_RATIO);
