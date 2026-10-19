@@ -25,7 +25,8 @@ interface TierConfig {
   price: string;
   badge?: string;
   desc: string;
-  details: string[];
+  included: string[];
+  notIncluded: string[];
 }
 
 const TIERS: TierConfig[] = [
@@ -35,10 +36,16 @@ const TIERS: TierConfig[] = [
     label: "PNG Image",
     price: "$4.99",
     desc: "Best for Phone & 4K/8K Wallpapers",
-    details: [
-      "500 DPI Ultra-HD clarity (Up to 80 Megapixels)",
+    included: [
+      "500 DPI Ultra-HD resolution (up to 80 Megapixels)",
       "Zero center watermark",
-      "Perfect for high-res screens & smartphones",
+      "Perfect for high-res OLED smartphones, 4K/8K displays",
+      "Permanent MapArte studio signature branding",
+    ],
+    notIncluded: [
+      "No PDF print file for commercial print shops",
+      "No raw mathematical SVG vector source code",
+      "No BOGO 2nd poster free",
     ],
   },
   {
@@ -47,10 +54,15 @@ const TIERS: TierConfig[] = [
     label: "PDF Document",
     price: "$6.99",
     desc: "Best for Home & Print Shops",
-    details: [
-      "500 DPI print-ready document",
-      "Standard A4/A3/A2 framing ready",
-      "Razor-sharp edges for professional printing",
+    included: [
+      "500 DPI print-ready document for frame shops",
+      "Standard A4/A3/A2 framing ready with razor-sharp typography",
+      "Ideal for local printers (FedEx, Staples, Printo) & fine art paper",
+      "Permanent MapArte studio signature branding",
+    ],
+    notIncluded: [
+      "No raw SVG vector geometry for CAD/plotters",
+      "No BOGO 2nd poster free",
     ],
   },
   {
@@ -59,10 +71,15 @@ const TIERS: TierConfig[] = [
     label: "SVG Vector",
     price: "$7.99",
     desc: "Infinite Vector • Unlimited Zoom",
-    details: [
-      "Pure mathematical vector graphics",
-      "0% quality loss • Never blurs at 10,000% zoom",
-      "Best for designers, plotters & large flex boards",
+    included: [
+      "100% Pure mathematical vector graphics",
+      "Infinite zoom • 0% quality loss at 10,000% scale",
+      "Layered paths for Adobe Illustrator, CAD, CNC & laser cutters",
+      "Permanent MapArte studio signature branding",
+    ],
+    notIncluded: [
+      "Single format purchase (no pre-compiled PDF included)",
+      "No BOGO 2nd poster free",
     ],
   },
   {
@@ -72,12 +89,14 @@ const TIERS: TierConfig[] = [
     price: "$9.99",
     badge: "🎁 BUY 1 GET 1 FREE",
     desc: "All 3 Formats (.ZIP) + 2nd Poster Free (BOGO)",
-    details: [
-      "Includes ALL 3 in 1 ZIP: PNG + PDF + SVG Vector",
-      "🎁 BUY 1 GET 1 FREE: 2nd Matching SVG Poster Free",
-      "1-Time BOGO bonus code delivered to your Gmail",
-      "Save 50% vs Mapiful ($19.99) — Best Value!",
+    included: [
+      "ALL 3 Formats in 1 ZIP: PNG (500 DPI) + PDF (500 DPI) + SVG Vector",
+      "🎁 BUY 1 GET 1 FREE (BOGO): 2nd Matching Poster 100% Free!",
+      "Unique 1-Time BOGO bonus code delivered directly to your Gmail",
+      "Save 50% vs Mapiful ($19.99) — Best value complete package!",
+      "Permanent MapArte studio signature branding",
     ],
+    notIncluded: [],
   },
 ];
 
@@ -109,7 +128,6 @@ export default function DownloadModal({
   );
   const [credits, setCredits] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [includeCredits, setIncludeCredits] = useState(true);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [licenseKey, setLicenseKey] = useState("");
   const [keyError, setKeyError] = useState("");
@@ -148,19 +166,19 @@ export default function DownloadModal({
 
   const handleProDownload = async (formatToExport: ExportFormat = selectedFormat) => {
     if (isAdmin) {
-      await exportPoster(formatToExport, { asPro: true, includeCredits });
+      await exportPoster(formatToExport, { asPro: true, includeCredits: true });
       setBonusNotice("🎉 Ultra-HD poster downloaded!");
       return;
     }
 
     const currentCredits = credits;
-    await exportPoster(formatToExport, { asPro: true, includeCredits });
+    await exportPoster(formatToExport, { asPro: true, includeCredits: true });
     const remaining = Math.max(0, currentCredits - 1);
     setCredits(remaining);
 
     if (remaining > 0) {
       setBonusNotice(
-        "🎉 1st poster downloaded! Check your Gmail for your 1-Time BOGO code: MAPARTE.B01G01.2026 to create your 2nd poster anytime!",
+        "🎉 1st poster downloaded! Check your Gmail for your 1-Time BOGO code to create your 2nd poster anytime!",
       );
     } else {
       setBonusNotice("🎉 Ultra-HD poster downloaded! Enjoy your prints!");
@@ -307,11 +325,32 @@ export default function DownloadModal({
             )}
           </div>
 
-          <ul className="tier-feature-bullets">
-            {activeTier.details.map((detail, idx) => (
-              <li key={idx}>✓ {detail}</li>
-            ))}
-          </ul>
+          <div className="tier-breakdown-box">
+            <div className="tier-breakdown-col tier-breakdown-col--included">
+              <span className="tier-breakdown-heading">✓ Included (क्या मिलेगा):</span>
+              <ul className="tier-feature-bullets">
+                {activeTier.included.map((item, idx) => (
+                  <li key={idx} className="feature-item--included">
+                    <span className="bullet-check">✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {activeTier.notIncluded.length > 0 && (
+              <div className="tier-breakdown-col tier-breakdown-col--excluded">
+                <span className="tier-breakdown-heading">✕ Not Included (क्या नहीं मिलेगा):</span>
+                <ul className="tier-feature-bullets">
+                  {activeTier.notIncluded.map((item, idx) => (
+                    <li key={idx} className="feature-item--excluded">
+                      <span className="bullet-cross">✕</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
 
           {/* Mandatory Gmail Capture (Only needed for checkout) */}
           {!isPro && (
@@ -353,10 +392,10 @@ export default function DownloadModal({
               {!isAdmin && credits > 0 && (
                 <div className="pro-code-badge">
                   <span>
-                    Your 1-Time BOGO Code: <strong>MAPARTE.B01G01.2026</strong>
+                    🎁 <strong>1-Time BOGO Access Active</strong>
                   </span>
                   <p className="bogo-single-use-note">
-                    (Use this code 1 time whenever you want to design and download your 2nd matching SVG poster for free!)
+                    ({credits} {credits === 1 ? "download" : "downloads"} remaining. Customize and download your matching poster anytime!)
                   </p>
                 </div>
               )}
@@ -402,18 +441,6 @@ export default function DownloadModal({
                 </div>
               </div>
 
-              <label className="branding-toggle-label">
-                <input
-                  type="checkbox"
-                  checked={includeCredits}
-                  onChange={(e) => setIncludeCredits(e.target.checked)}
-                />
-                <span className="branding-toggle-text">
-                  <span className="branding-toggle-title">Include discreet studio signature (✦ MAPARTE • maparte.app)</span>
-                  <span className="branding-toggle-sub">Recommended: gives authentic museum-grade gallery print finish</span>
-                </span>
-              </label>
-
               <button
                 type="button"
                 className="tier-btn tier-btn--pro"
@@ -458,7 +485,7 @@ export default function DownloadModal({
                   <div className="redeem-input-group">
                     <input
                       type="text"
-                      placeholder="Enter MAPARTE.B01G01.2026 or paid code"
+                      placeholder="Enter your paid code"
                       value={licenseKey}
                       onChange={(e) => setLicenseKey(e.target.value)}
                     />
@@ -511,13 +538,16 @@ export default function DownloadModal({
           )}
         </div>
 
-        {/* Free Screen Wallpaper Option (Clean, 160 DPI HD Retina, No Center Watermark) */}
+        {/* Free Screen Wallpaper Option (Clean, 300 DPI HD Retina, No Center Watermark) */}
         {!isPro && (
           <div className="free-screen-wallpaper-box">
             <div className="free-wallpaper-info">
               <span className="free-wallpaper-title">📱 Free HD Phone Wallpaper ($0)</span>
               <p className="free-wallpaper-desc">
-                Clean HD wallpaper for your phone screen (160 DPI Retina). Zero center watermark. Looks gorgeous on all smartphones. (Not suitable for paper printing or framing).
+                <strong>✓ Included:</strong> Clean 300 DPI Retina HD wallpaper for phone screens • Zero center watermark • Permanent MapArte studio signature.
+              </p>
+              <p className="free-wallpaper-desc free-wallpaper-desc--excluded">
+                <strong>✕ Not Included:</strong> No 500 DPI print quality (blurs on physical paper) • No PDF print document • No vector SVG • No BOGO bonus poster.
               </p>
             </div>
             <button
@@ -531,7 +561,7 @@ export default function DownloadModal({
               ) : (
                 <DownloadIcon />
               )}
-              <span>Download Free HD Wallpaper (Phone PNG)</span>
+              <span>Download Free Wallpaper (PNG)</span>
             </button>
           </div>
         )}
@@ -551,7 +581,7 @@ export default function DownloadModal({
               <table className="quality-comparison-table">
                 <thead>
                   <tr>
-                    <th>Feature</th>
+                    <th>Feature &amp; Details</th>
                     <th>Free ($0)</th>
                     <th>PNG ($4.99)</th>
                     <th>PDF ($6.99)</th>
@@ -561,19 +591,27 @@ export default function DownloadModal({
                 </thead>
                 <tbody>
                   <tr>
+                    <td>Formats Included</td>
+                    <td>1 File (.PNG)</td>
+                    <td>1 File (.PNG)</td>
+                    <td>1 File (.PDF)</td>
+                    <td>1 File (.SVG)</td>
+                    <td className="td-highlight">📦 ALL 3 Files (PNG + PDF + SVG)</td>
+                  </tr>
+                  <tr>
                     <td>Resolution / DPI</td>
-                    <td>160 DPI (HD Screen)</td>
-                    <td>500 DPI Ultra-HD</td>
-                    <td>500 DPI Vector Doc</td>
+                    <td>300 DPI (Phone Screen)</td>
+                    <td>500 DPI Ultra-HD (80 MP)</td>
+                    <td>500 DPI Vector-Raster</td>
                     <td>Infinite Vector</td>
                     <td className="td-highlight">500 DPI + Infinite Vector</td>
                   </tr>
                   <tr>
                     <td>Best Used For</td>
-                    <td>Phone Wallpaper</td>
-                    <td>4K/8K Screens</td>
-                    <td>Framing & Print Shops</td>
-                    <td>Designers & Plotters</td>
+                    <td>Phone Screen Wallpaper</td>
+                    <td>4K/8K Monitors &amp; Displays</td>
+                    <td>Framing &amp; Local Print Shops</td>
+                    <td>Designers, CAD &amp; Plotters</td>
                     <td className="td-highlight">All Screens + Wall Framing</td>
                   </tr>
                   <tr>
@@ -585,28 +623,44 @@ export default function DownloadModal({
                     <td className="td-highlight">❌ None (100% Clean)</td>
                   </tr>
                   <tr>
+                    <td>Physical Paper Print Quality</td>
+                    <td>⚠️ Blurs on paper</td>
+                    <td>✓ Razor-Sharp Frame Print</td>
+                    <td>✓ Perfect Frame Print</td>
+                    <td>✓ Infinite Resolution</td>
+                    <td className="td-highlight">✓ Museum-Grade Gallery Print</td>
+                  </tr>
+                  <tr>
                     <td>Zoom Capability</td>
-                    <td>Blurs on zoom</td>
+                    <td>Blurs on deep zoom</td>
                     <td>Crisp up to 1000%</td>
                     <td>Sharp Document</td>
                     <td>Never Blurs (0% Loss)</td>
                     <td className="td-highlight">Never Blurs (0% Loss)</td>
                   </tr>
                   <tr>
-                    <td>Paper Print Quality</td>
-                    <td>⚠️ Blurs on paper</td>
-                    <td>✓ Sharp Frame Print</td>
-                    <td>✓ Perfect Frame Print</td>
-                    <td>✓ Infinite Resolution</td>
-                    <td className="td-highlight">✓ World-Class Print</td>
+                    <td>Vector Paths (Illustrator/CAD)</td>
+                    <td>✕</td>
+                    <td>✕</td>
+                    <td>✕</td>
+                    <td>✓ 100% Pure Vectors</td>
+                    <td className="td-highlight">✓ 100% Pure Vectors</td>
                   </tr>
                   <tr>
-                    <td>1-Time BOGO Code</td>
+                    <td>Studio Signature (MAPARTE)</td>
+                    <td>✓ Permanent</td>
+                    <td>✓ Permanent</td>
+                    <td>✓ Permanent</td>
+                    <td>✓ Permanent</td>
+                    <td className="td-highlight">✓ Permanent</td>
+                  </tr>
+                  <tr>
+                    <td>1-Time BOGO Code (2nd Poster)</td>
                     <td>✕</td>
                     <td>✕</td>
                     <td>✕</td>
                     <td>✕</td>
-                    <td className="td-highlight">🎁 2nd SVG Poster Free!</td>
+                    <td className="td-highlight">🎁 2nd Matching Poster FREE!</td>
                   </tr>
                 </tbody>
               </table>

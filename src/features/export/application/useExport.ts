@@ -157,12 +157,8 @@ export function useExport() {
         const dpi = isPro ? 500 : FREE_DPI;
         const widthInches = widthCm / CM_PER_INCH;
         const heightInches = heightCm / CM_PER_INCH;
-        const includeCredits =
-          options?.includeCredits !== undefined
-            ? options.includeCredits
-            : isPro
-              ? (form.includeCredits ?? false)
-              : true;
+        // Permanent branding & studio signature on ALL downloads:
+        const includeCredits = true;
 
         // Aggregate, non-personal export data. Use only the structured city /
         // country — never raw input (form.location) or coordinates.

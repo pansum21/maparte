@@ -39,7 +39,7 @@ export default function AppSettingsModal({
 
   if (!isOpen) return null;
 
-  const handleToggle = (field: "showPosterText" | "includeCredits" | "showMarkers" | "showRoutes") => {
+  const handleToggle = (field: "showPosterText" | "showMarkers" | "showRoutes") => {
     dispatch({
       type: "SET_FIELD",
       name: field,
@@ -114,19 +114,6 @@ export default function AppSettingsModal({
                   className="settings-checkbox"
                   checked={state.form.showPosterText}
                   onChange={() => handleToggle("showPosterText")}
-                />
-              </label>
-
-              <label className="settings-toggle-row">
-                <span className="toggle-label-text">
-                  <strong>Map Attribution Credits</strong>
-                  <span className="toggle-sub">OpenStreetMap & data attribution</span>
-                </span>
-                <input
-                  type="checkbox"
-                  className="settings-checkbox"
-                  checked={state.form.includeCredits}
-                  onChange={() => handleToggle("includeCredits")}
                 />
               </label>
 

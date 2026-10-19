@@ -762,12 +762,70 @@
 .tier-feature-bullets {
   list-style: none;
   padding: 0;
-  margin: 0 0 16px;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  font-size: 0.82rem;
+  gap: 6px;
+  font-size: 0.8rem;
   color: rgba(215, 235, 250, 0.9);
+}
+
+.tier-breakdown-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tier-breakdown-heading {
+  display: block;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.tier-breakdown-col--included .tier-breakdown-heading {
+  color: #4ade80;
+}
+
+.tier-breakdown-col--excluded .tier-breakdown-heading {
+  color: #f87171;
+}
+
+.feature-item--included {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: rgba(220, 240, 255, 0.92);
+  line-height: 1.35;
+}
+
+.feature-item--included .bullet-check {
+  color: #4ade80;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.feature-item--excluded {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: rgba(180, 195, 210, 0.65);
+  line-height: 1.35;
+}
+
+.feature-item--excluded .bullet-cross {
+  color: #f87171;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.free-wallpaper-desc--excluded {
+  color: rgba(248, 113, 113, 0.75);
+  margin-top: 3px;
 }
 
 /* Gmail Section */
