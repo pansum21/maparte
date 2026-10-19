@@ -56,8 +56,8 @@ jobs:
           sed -i 's/\r$//' android/gradlew
           chmod +x android/gradlew
 
-      - name: Sync Capacitor Android Project
-        run: npx cap sync android --verbose
+      - name: Copy Web Assets to Android
+        run: npx cap copy android
 
       - name: Build Debug APK
         run: |
