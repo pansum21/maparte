@@ -528,6 +528,24 @@ export default function PreviewPanel() {
                   />
                   <button
                     type="button"
+                    className="map-control-btn"
+                    onClick={handleZoomOut}
+                    title="Zoom out"
+                    aria-label="Zoom out"
+                  >
+                    <MinusIcon />
+                  </button>
+                  <button
+                    type="button"
+                    className="map-control-btn"
+                    onClick={handleZoomIn}
+                    title="Zoom in (deep vector zoom)"
+                    aria-label="Zoom in"
+                  >
+                    <PlusIcon />
+                  </button>
+                  <button
+                    type="button"
                     className={`map-control-btn wall-mockup-btn${isWallMockup ? " is-active" : ""}`}
                     onClick={() => setIsWallMockup((prev) => !prev)}
                     title={
@@ -628,37 +646,35 @@ export default function PreviewPanel() {
                     </button>
                   </div>
                 ) : null}
-                {!isMobileViewport ? (
-                  <div className="map-control-group map-control-slider-row">
-                    <button
-                      type="button"
-                      className="map-control-btn"
-                      onClick={handleZoomOut}
-                      title="Zoom out"
-                    >
-                      <MinusIcon />
-                    </button>
-                    <input
-                      className="map-control-slider"
-                      type="range"
-                      min={mapMinZoom}
-                      max={mapMaxZoom}
-                      step={0.1}
-                      value={mapZoom}
-                      onChange={handleZoomSliderChange}
-                      aria-label="Zoom level"
-                    />
-                    <button
-                      type="button"
-                      className="map-control-btn"
-                      onClick={handleZoomIn}
-                      title="Zoom in"
-                    >
-                      <PlusIcon />
-                    </button>
-                  </div>
-                ) : null}
-                {!isMobileViewport && isRotationEnabled ? (
+                <div className="map-control-group map-control-slider-row">
+                  <button
+                    type="button"
+                    className="map-control-btn"
+                    onClick={handleZoomOut}
+                    title="Zoom out"
+                  >
+                    <MinusIcon />
+                  </button>
+                  <input
+                    className="map-control-slider"
+                    type="range"
+                    min={mapMinZoom}
+                    max={mapMaxZoom}
+                    step={0.1}
+                    value={mapZoom}
+                    onChange={handleZoomSliderChange}
+                    aria-label="Zoom level"
+                  />
+                  <button
+                    type="button"
+                    className="map-control-btn"
+                    onClick={handleZoomIn}
+                    title="Zoom in"
+                  >
+                    <PlusIcon />
+                  </button>
+                </div>
+                {isRotationEnabled ? (
                   <div className="map-control-group map-control-slider-row">
                     <button
                       type="button"

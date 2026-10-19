@@ -280,6 +280,12 @@
   inset: 0;
   border-radius: inherit;
   overflow: hidden;
+  touch-action: pan-y pinch-zoom;
+}
+
+.map-container canvas {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 /* hide MapLibre's default attribution & logo */
@@ -499,9 +505,10 @@
 .map-control-slider-row {
   width: min(560px, 100%);
   display: grid;
-  grid-template-columns: auto minmax(180px, 1fr) auto;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 8px;
+  padding: 0 4px;
 }
 
 .map-control-slider {

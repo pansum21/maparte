@@ -32,6 +32,8 @@ export default function MapDimensionFields({
     Math.min(Math.max(value, MIN_DISTANCE_METERS), MAX_DISTANCE_METERS);
 
   const getDistanceStep = (distanceMeters: number) => {
+    if (distanceMeters < 100) return 5;
+    if (distanceMeters < 1_000) return 25;
     if (distanceMeters < 100_000) return 100;
     if (distanceMeters < 1_000_000) return 1_000;
     if (distanceMeters < 10_000_000) return 10_000;

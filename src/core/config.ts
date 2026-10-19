@@ -9,7 +9,7 @@ export const DEFAULT_POSTER_WIDTH_CM = 20;
 export const DEFAULT_POSTER_HEIGHT_CM = 30;
 export const LAYOUT_MATCH_TOLERANCE_CM = 0.01;
 
-export const MIN_DISTANCE_METERS = 100;
+export const MIN_DISTANCE_METERS = 15;
 export const MAX_DISTANCE_METERS = 20_000_000;
 export const DEFAULT_DISTANCE_METERS = 4_000;
 
@@ -24,8 +24,8 @@ export const TILE_SIZE_PX = 512;
 /** Min zoom level allowed for the map. */
 export const MIN_MAP_ZOOM = 0.5;
 
-/** Max zoom level allowed for the map. */
-export const MAX_MAP_ZOOM = 20;
+/** Max zoom level allowed for the map (zoom 22 allows street, alley, and building level inspection). */
+export const MAX_MAP_ZOOM = 22;
 
 /** Default container width (px) used before ResizeObserver measures the real one. */
 export const DEFAULT_CONTAINER_PX = 600;

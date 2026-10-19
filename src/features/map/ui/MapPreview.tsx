@@ -125,6 +125,9 @@ export default function MapPreview({
       zoom,
       interactive: false,
       attributionControl: false,
+      pixelRatio: 1,
+      maxCanvasSize: [4096, 4096],
+      cancelPendingTileRequestsWhileZooming: true,
       canvasContextAttributes: { preserveDrawingBuffer: true },
     });
 
@@ -180,10 +183,12 @@ export default function MapPreview({
     } else {
       map.scrollZoom.disable();
       map.dragPan.disable();
-      map.touchZoomRotate.disable();
-      map.doubleClickZoom.disable();
-      map.keyboard.disable();
+      // Allow 2-finger touch pinch zoom and double-click zoom in preview mode so mobile users
+      // trigger real WebGL vector re-rendering instead of stretching the raster canvas element.
+      map.touchZoomRotate.enable();
       map.touchZoomRotate.disableRotation();
+      map.doubleClickZoom.enable();
+      map.keyboard.disable();
       map.dragRotate.disable();
     }
   }, [interactive, allowRotation, mapRef]);
