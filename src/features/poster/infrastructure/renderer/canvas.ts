@@ -20,7 +20,7 @@ export function resolveCanvasSize(
   heightInches: number,
   targetDpi: number = OUTPUT_DPI,
 ): CanvasSize {
-  const dpi = Math.max(160, targetDpi);
+  const dpi = Math.max(300, targetDpi);
   const requestedWidth = Math.max(1080, Math.round(widthInches * dpi));
   const requestedHeight = Math.max(1080, Math.round(heightInches * dpi));
   const totalPixels = requestedWidth * requestedHeight;

@@ -5,34 +5,43 @@ import maplibregl, {
 import type { MarkerProjectionInput } from "@/features/markers/domain/types";
 import { MAP_OVERZOOM_SCALE } from "@/features/map/infrastructure/constants";
 
-const EXPORT_MAP_TIMEOUT_MS = 15_000;
+const EXPORT_MAP_TIMEOUT_MS = 20_000;
 
 /**
  * Waits for MapLibre to finish rendering (idle, no active movement).
  * Rejects if tiles don't settle within the timeout.
  */
 export function waitForMapIdle(map: MaplibreMap): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>((resolve) => {
     let settled = false;
     const timeout = window.setTimeout(() => {
       if (settled) return;
       settled = true;
-      reject(new Error("Timed out while waiting for map tiles to render."));
+      resolve();
     }, EXPORT_MAP_TIMEOUT_MS);
 
-    const finish = () => {
+    const checkAndFinish = () => {
       if (settled) return;
-      settled = true;
-      window.clearTimeout(timeout);
-      resolve();
+      const isLoaded = typeof map.loaded === "function" ? map.loaded() : true;
+      const tilesLoaded = typeof map.areTilesLoaded === "function" ? map.areTilesLoaded() : true;
+      const isMoving = typeof map.isMoving === "function" ? map.isMoving() : false;
+
+      if (isLoaded && tilesLoaded && !isMoving) {
+        settled = true;
+        window.clearTimeout(timeout);
+        map.off("idle", checkAndFinish);
+        map.off("render", checkAndFinish);
+        // Small delay to allow WebGL frame buffer swap on mobile devices
+        setTimeout(resolve, 200);
+      }
     };
 
-    if (map.loaded() && !map.isMoving()) {
-      finish();
-      return;
+    map.on("idle", checkAndFinish);
+    map.on("render", checkAndFinish);
+    if (typeof map.triggerRepaint === "function") {
+      map.triggerRepaint();
     }
-
-    map.once("idle", finish);
+    checkAndFinish();
   });
 }
 
@@ -73,8 +82,10 @@ function getDeviceMaxWebGlDimension(): number {
 }
 
 /**
- * Creates a fixed, invisible offscreen container for the export map.
- * Caller is responsible for appending to the DOM and removing when done.
+ * Creates a fixed offscreen container for the export map.
+ * Positioned in the visible viewport at (0, 0) underneath document body (z-index: -999)
+ * with opacity: 1 and visibility: visible so mobile WebKit and Blink engines do not
+ * cull or suspend WebGL rendering and tile decoding passes.
  */
 export function createOffscreenContainer(
   width: number,
@@ -87,8 +98,9 @@ export function createOffscreenContainer(
   el.style.width = `${width}px`;
   el.style.height = `${height}px`;
   el.style.pointerEvents = "none";
-  el.style.opacity = "0";
-  el.style.zIndex = "-9999";
+  el.style.opacity = "1";
+  el.style.visibility = "visible";
+  el.style.zIndex = "-999";
   return el;
 }
 

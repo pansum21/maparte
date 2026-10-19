@@ -7,7 +7,7 @@
 const PLAN_KEY = "maparte_plan";
 const CREDITS_KEY = "maparte_pro_credits";
 const ADMIN_MODE_KEY = "maparte_admin_mode";
-export const FREE_DPI = 160;
+export const FREE_DPI = 300;
 
 export const BOGO_PRO_CODE = "MAPARTE.B01G01.2026";
 export const LEGACY_BOGO_CODE = "maparte.bogo.in@bogo";

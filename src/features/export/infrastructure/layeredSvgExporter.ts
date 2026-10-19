@@ -296,9 +296,19 @@ export async function createLayeredSvgBlobFromMap({
 
       let features: any[] = [];
       try {
-        features = exportMap.queryRenderedFeatures({ layers: [layer.id] });
+        features = exportMap.queryRenderedFeatures(
+          [
+            [0, 0],
+            [renderWidth, renderHeight],
+          ],
+          { layers: [layer.id] },
+        );
       } catch {
-        features = [];
+        try {
+          features = exportMap.queryRenderedFeatures({ layers: [layer.id] });
+        } catch {
+          features = [];
+        }
       }
 
       if (!features || features.length === 0) continue;
