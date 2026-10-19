@@ -420,33 +420,53 @@
     right: 16px;
     bottom: calc(84px + env(safe-area-inset-bottom, 0px));
     z-index: 101;
-    width: 60px;
-    height: 44px;
-    border: 1px solid rgba(165, 198, 221, 0.34);
-    border-radius: 14px;
-    background: rgba(231, 242, 250, 0.96);
-    color: #0d1f2e;
+    width: 62px;
+    height: 46px;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 9999px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(224, 242, 254, 0.94) 50%,
+      rgba(186, 230, 253, 0.9) 100%
+    );
+    color: #061524;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-shadow:
-      0 8px 20px rgba(0, 0, 0, 0.4),
-      0 2px 8px rgba(0, 0, 0, 0.26);
+      inset 0 2px 3px rgba(255, 255, 255, 0.95),
+      inset 0 -2px 4px rgba(14, 165, 233, 0.25),
+      0 10px 26px rgba(0, 0, 0, 0.45),
+      0 0 22px rgba(56, 189, 248, 0.4);
     opacity: 1;
     transform: translateY(0);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     transition:
       opacity 0.22s ease,
-      transform 0.22s ease;
+      transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-export-fab-trigger:active {
+    transform: scale(0.92);
+    box-shadow:
+      inset 0 2px 3px rgba(0, 0, 0, 0.15),
+      0 4px 12px rgba(0, 0, 0, 0.35),
+      0 0 16px rgba(56, 189, 248, 0.5);
   }
 
   .mobile-export-fab-trigger svg {
     width: 18px;
     height: 18px;
+    fill: currentcolor;
   }
 
   .mobile-export-fab-trigger.is-hidden {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px) scale(0.9);
     pointer-events: none;
   }
 

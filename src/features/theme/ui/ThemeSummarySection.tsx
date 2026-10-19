@@ -34,13 +34,14 @@ export default function ThemeSummarySection({
         </div>
         <button
           type="button"
-          className="theme-customize-btn"
+          className="theme-customize-btn theme-customize-btn--pill"
           onClick={onCustomize}
           aria-label={`Customize ${selectedThemeOption.name} colors`}
         >
           <span className="theme-customize-icon" aria-hidden="true">
             <EditIcon />
           </span>
+          <span className="theme-customize-text">Customize Colors</span>
         </button>
       </div>
 
