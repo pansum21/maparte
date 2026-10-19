@@ -50,11 +50,11 @@ jobs:
       - name: Build Web Application
         run: npm run build
 
-      - name: Sync Capacitor Android Project
-        run: npx cap sync android
-
       - name: Make Gradlew Executable
         run: chmod +x android/gradlew
+
+      - name: Sync Capacitor Android Project
+        run: npx cap sync android
 
       - name: Build Debug APK
         run: |
