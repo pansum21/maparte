@@ -4,8 +4,6 @@
     <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <meta charset="UTF-8" />
     <meta name="google-site-verification" content="uE_fC8GgRdjX-67L60ts_-pyHGklurkDTV0bNyOmtnw" />
     <meta
@@ -55,7 +53,7 @@
     <meta name="google-adsense-account" content="ca-pub-6768042074394876" />
     <meta name="author" content="MAPARTE™" />
     <meta name="copyright" content="MAPARTE™" />
-    <link rel="canonical" href="https://maparte.app" />
+    <link rel="canonical" href="https://maparte.vercel.app" />
     <!-- Plain-text site summary for AI agents (llmstxt.org) -->
     <link rel="describedby" type="text/markdown" href="/llms.txt" />
 
@@ -82,10 +80,10 @@
       property="og:description"
       content="Free online map poster and wallpaper generator. Design custom, print-ready map art for any city or location — export as PNG, PDF, or SVG. No sign-up required."
     />
-    <meta property="og:url" content="https://maparte.app" />
+    <meta property="og:url" content="https://maparte.vercel.app" />
     <meta
       property="og:image"
-      content="https://maparte.app/assets/banner.png"
+      content="https://maparte.vercel.app/assets/banner.png"
     />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
@@ -107,7 +105,7 @@
     />
     <meta
       name="twitter:image"
-      content="https://maparte.app/assets/banner.png"
+      content="https://maparte.vercel.app/assets/banner.png"
     />
     <meta
       name="twitter:image:alt"
@@ -121,25 +119,25 @@
         "@graph": [
           {
             "@type": "Organization",
-            "@id": "https://maparte.app/#organization",
+            "@id": "https://maparte.vercel.app/#organization",
             "name": "MAPARTE",
-            "url": "https://maparte.app",
+            "url": "https://maparte.vercel.app",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://maparte.app/assets/icon-512.png",
+              "url": "https://maparte.vercel.app/assets/icon-512.png",
               "width": 512,
               "height": 512
             }
           },
           {
             "@type": "WebApplication",
-            "@id": "https://maparte.app/#webapp",
+            "@id": "https://maparte.vercel.app/#webapp",
             "name": "MAPARTE",
             "alternateName": [
               "MAPARTE Map Poster Creator",
               "MAPARTE Map Wallpaper Generator"
             ],
-            "url": "https://maparte.app",
+            "url": "https://maparte.vercel.app",
             "description": "Free online map poster and wallpaper generator. Design custom, print-ready map art for any city or location — export as PNG, PDF, or SVG. No sign-up required.",
             "applicationCategory": "DesignApplication",
             "operatingSystem": "Any",
@@ -149,7 +147,7 @@
               "price": "0",
               "priceCurrency": "USD"
             },
-            "screenshot": "https://maparte.app/assets/banner.png",
+            "screenshot": "https://maparte.vercel.app/assets/banner.png",
             "featureList": [
               "Free map poster creator for any city or location",
               "Map wallpaper generator with custom styles",
@@ -162,11 +160,11 @@
               "Works entirely in your browser"
             ],
             "keywords": "free map poster creator, map wallpaper generator, map poster maker, custom map art, city map print",
-            "creator": { "@id": "https://maparte.app/#organization" }
+            "creator": { "@id": "https://maparte.vercel.app/#organization" }
           },
           {
             "@type": "FAQPage",
-            "@id": "https://maparte.app/#faq",
+            "@id": "https://maparte.vercel.app/#faq",
             "mainEntity": [
               {
                 "@type": "Question",
@@ -276,20 +274,21 @@
       });
     </script>
 
-    <!-- GA4 -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA_MEASUREMENT_ID%"
-    ></script>
+    <!-- GA4 (Safely loaded only when valid ID is provided) -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "%VITE_GA_MEASUREMENT_ID%", {
-        anonymize_ip: true,
-      });
+      (function() {
+        var gaId = "%VITE_GA_MEASUREMENT_ID%";
+        if (gaId && !gaId.startsWith("%")) {
+          var s = document.createElement("script");
+          s.async = true;
+          s.src = "https://www.googletagmanager.com/gtag/js?id=" + gaId;
+          document.head.appendChild(s);
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag("js", new Date());
+          gtag("config", gaId, { anonymize_ip: true });
+        }
+      })();
     </script>
 
     <!-- Google AdSense -->

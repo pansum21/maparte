@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://maparte.app/sitemap.xml
+Sitemap: https://maparte.vercel.app/sitemap.xml

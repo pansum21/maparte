@@ -1,27 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://maparte.app</loc>
-    <lastmod>2026-08-15</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://maparte.vercel.app</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://maparte.app/privacy</loc>
-    <lastmod>2026-08-15</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://maparte.vercel.app/privacy</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://maparte.app/imprint</loc>
-    <lastmod>2026-08-15</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://maparte.app/privacy-app</loc>
-    <lastmod>2026-09-24</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://maparte.vercel.app/imprint</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>
