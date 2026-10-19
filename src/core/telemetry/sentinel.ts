@@ -224,6 +224,44 @@ ${autoFixNotice}
     }
   }
 
+  // 3. Dispatch to ntfy.sh (Instant, 100% free push notifications to phone with 0 limitations)
+  const ntfyTopic = import.meta.env.VITE_NTFY_TOPIC || "maparte_sumit_alerts";
+  try {
+    const ntfyTitle =
+      category === "technical_bug"
+        ? "MapArte: Technical Bug Detected"
+        : category === "pricing_feedback"
+          ? "MapArte: Pricing Feedback (Review Required)"
+          : "MapArte: Customer Feedback";
+
+    const autoFixNotice = autoFixAllowed
+      ? "🤖 Action: Technical bug categorized for AI patch & deployment."
+      : "🔒 Action: Strictly locked. Pricing decisions require Supriya's manual approval.";
+
+    const text = `
+📍 Location: ${payload.context?.city || "N/A"}, ${payload.context?.country || "N/A"}
+🎨 Theme: ${payload.context?.theme || "N/A"}
+📱 Device: ${payload.context?.device || "N/A"}
+
+💬 User Note:
+"${payload.message}"
+
+${autoFixNotice}
+`.trim();
+
+    await fetch(`https://ntfy.sh/${ntfyTopic}`, {
+      method: "POST",
+      headers: {
+        Title: ntfyTitle,
+        Priority: category === "technical_bug" ? "urgent" : "default",
+        Tags: category === "technical_bug" ? "warning,rotating_light" : category === "pricing_feedback" ? "moneybag" : "bulb",
+      },
+      body: text,
+    });
+  } catch {
+    // ignore
+  }
+
   return payload;
 }
 
