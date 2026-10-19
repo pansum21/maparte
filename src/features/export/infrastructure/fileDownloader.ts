@@ -2,6 +2,32 @@ import type { IFileDownloader } from "../domain/ports";
 
 const webFileDownloader: IFileDownloader = {
   async downloadBlob(blob: Blob, filename: string): Promise<void> {
+    const isMobileDevice =
+      typeof navigator !== "undefined" &&
+      (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+        (typeof window !== "undefined" && "Capacitor" in window));
+
+    if (isMobileDevice && typeof navigator !== "undefined" && navigator.canShare) {
+      try {
+        const file = new File([blob], filename, {
+          type: blob.type || "application/octet-stream",
+        });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: filename,
+            text: `MapArte Export: ${filename}`,
+          });
+          return;
+        }
+      } catch (shareErr) {
+        if ((shareErr as Error)?.name === "AbortError") {
+          return;
+        }
+        console.warn("Mobile share fallback to direct download anchor:", shareErr);
+      }
+    }
+
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.href = url;

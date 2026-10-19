@@ -1,0 +1,94 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'android/**'
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'capacitor.config.ts'
+      - '.github/workflows/build-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Package Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun Environment
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NPM Dependencies
+        run: npm install
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Sync Capacitor Android Project
+        run: npx cap sync android
+
+      - name: Make Gradlew Executable
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK
+        run: |
+          cd android
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Rename APK for Clarity
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk MapArte-v1.0-debug.apk
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MapArte-Android-APK
+          path: MapArte-v1.0-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish Direct Download Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: android-v1.0-preview
+          name: "MapArte Android App v1.0 Preview"
+          body: |
+            ### 📱 MapArte Ultra-HD Mobile Android APK (Preview Build)
+            
+            - **Direct Download**: Click `MapArte-v1.0-debug.apk` below to download directly to your Android device.
+            - **Resolution Parity**: 8,192 px canvas & ultra-dense vector tile parity with desktop.
+            - **Mobile Drive Integration**: Tapping "Download" in the app opens the native share sheet with direct Google Drive upload.
+            - **Installation Note**: Tap the downloaded APK to install. If prompted, select "Allow from this source" in your phone's Android settings.
+          files: MapArte-v1.0-debug.apk
+          draft: false
+          prerelease: false
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
