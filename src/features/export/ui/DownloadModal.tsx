@@ -16,7 +16,7 @@ interface DownloadModalProps {
   defaultFormat?: ExportFormat;
 }
 
-export type SelectedTier = "png" | "pdf" | "svg" | "combo";
+export type SelectedTier = "png" | "jpg" | "duo" | "pdf" | "svg" | "combo";
 
 interface TierConfig {
   id: SelectedTier;
@@ -38,8 +38,47 @@ const TIERS: TierConfig[] = [
     desc: "Best for Phone & 4K/8K Wallpapers",
     included: [
       "500 DPI Ultra-HD resolution (up to 80 Megapixels)",
-      "Zero center watermark",
-      "Perfect for high-res OLED smartphones, 4K/8K displays",
+      "Lossless pixel-perfect lines & crisp street fonts",
+      "Perfect for high-res OLED smartphones & 4K/8K displays",
+      "Permanent MapArte studio signature branding",
+    ],
+    notIncluded: [
+      "No JPG file included",
+      "No PDF print file for commercial print shops",
+      "No raw mathematical SVG vector source code",
+      "No BOGO 2nd poster free",
+    ],
+  },
+  {
+    id: "jpg",
+    format: "jpg",
+    label: "JPG Image",
+    price: "$4.99",
+    desc: "Compact & Light for Social Sharing",
+    included: [
+      "500 DPI Ultra-HD compact image (smaller file size)",
+      "Easy to share on WhatsApp, Instagram & digital frames",
+      "Compatible with legacy photo printing labs",
+      "Permanent MapArte studio signature branding",
+    ],
+    notIncluded: [
+      "No lossless PNG file included",
+      "No PDF print file for commercial print shops",
+      "No raw mathematical SVG vector source code",
+      "No BOGO 2nd poster free",
+    ],
+  },
+  {
+    id: "duo",
+    format: "image_bundle",
+    label: "PNG + JPG Duo Pack",
+    price: "$5.99",
+    badge: "🔥 POPULAR DUO",
+    desc: "Both Image Formats (PNG + JPG) in 1 Pack",
+    included: [
+      "BOTH 500 DPI Lossless PNG + 500 DPI Compact JPG in 1 ZIP",
+      "Perfect for both 4K/8K screens & quick mobile sharing",
+      "Save $4 compared to buying PNG and JPG separately",
       "Permanent MapArte studio signature branding",
     ],
     notIncluded: [
@@ -78,7 +117,7 @@ const TIERS: TierConfig[] = [
       "Permanent MapArte studio signature branding",
     ],
     notIncluded: [
-      "Single format purchase (no pre-compiled PDF included)",
+      "Single format purchase (no pre-compiled PDF/PNG included)",
       "No BOGO 2nd poster free",
     ],
   },
@@ -88,12 +127,12 @@ const TIERS: TierConfig[] = [
     label: "All-in-One Master Bundle",
     price: "$9.99",
     badge: "🎁 BUY 1 GET 1 FREE",
-    desc: "All 3 Formats (.ZIP) + 2nd Poster Free (BOGO)",
+    desc: "All Formats (PNG+JPG+PDF+SVG) + 2nd Poster Free",
     included: [
-      "ALL 3 Formats in 1 ZIP: PNG (500 DPI) + PDF (500 DPI) + SVG Vector",
+      "ALL Formats in 1 ZIP: PNG (500 DPI) + JPG (500 DPI) + PDF (500 DPI) + SVG Vector",
       "🎁 BUY 1 GET 1 FREE (BOGO): 2nd Matching Poster 100% Free!",
       "Unique 1-Time BOGO bonus code delivered directly to your Gmail",
-      "Save 50% vs Mapiful ($19.99) — Best value complete package!",
+      "Save 65% vs buying individual formats ($30+ value)",
       "Permanent MapArte studio signature branding",
     ],
     notIncluded: [],
@@ -107,6 +146,8 @@ export default function DownloadModal({
 }: DownloadModalProps) {
   const { isExporting, exportPoster } = useExport();
   const resolveInitialTier = (fmt: ExportFormat): SelectedTier => {
+    if (fmt === "jpg") return "jpg";
+    if (fmt === "image_bundle") return "duo";
     if (fmt === "pdf") return "pdf";
     if (fmt === "svg") return "svg";
     if (fmt === "zip") return "combo";
@@ -114,6 +155,8 @@ export default function DownloadModal({
   };
 
   const resolveInitialFormat = (fmt: ExportFormat): ExportFormat => {
+    if (fmt === "jpg") return "jpg";
+    if (fmt === "image_bundle") return "image_bundle";
     if (fmt === "pdf") return "pdf";
     if (fmt === "svg") return "svg";
     if (fmt === "zip") return "zip";
@@ -241,7 +284,7 @@ export default function DownloadModal({
     }
   };
 
-  const activeTier = TIERS.find((t) => t.id === selectedTier) || TIERS[3];
+  const activeTier = TIERS.find((t) => t.id === selectedTier) || TIERS[0];
 
   return (
     <div
@@ -405,7 +448,7 @@ export default function DownloadModal({
                 </p>
               )}
 
-              {/* Format pills if Combo was unlocked */}
+              {/* Format pills if Combo or Duo was unlocked */}
               <div className="unlocked-format-row">
                 <span className="unlocked-format-label">Select format to export:</span>
                 <div className="unlocked-format-btns">
@@ -416,13 +459,29 @@ export default function DownloadModal({
                         selectedFormat === "zip" ? "is-active" : ""
                       }`}
                       onClick={() => setSelectedFormat("zip")}
-                      title="Download PNG, PDF, and SVG all together in 1 ZIP file"
+                      title="Download PNG, JPG, PDF, and SVG all together in 1 ZIP file"
                     >
-                      📦 ALL 3 IN 1 (.ZIP)
+                      📦 ALL 4 IN 1 (.ZIP)
                     </button>
                   )}
-                  {(["png", "pdf", "svg"] as ExportFormat[]).map((fmt) => {
-                    const isBundleActive = selectedTier === "combo" && selectedFormat === "zip";
+                  {selectedTier === "duo" && (
+                    <button
+                      type="button"
+                      className={`unlocked-format-chip combo-zip-chip ${
+                        selectedFormat === "image_bundle" ? "is-active" : ""
+                      }`}
+                      onClick={() => setSelectedFormat("image_bundle")}
+                      title="Download PNG and JPG together in 1 ZIP file"
+                    >
+                      📦 DUO PACK (.ZIP - PNG + JPG)
+                    </button>
+                  )}
+                  {(["png", "jpg", "pdf", "svg"] as ExportFormat[]).map((fmt) => {
+                    const isBundleActive =
+                      (selectedTier === "combo" && selectedFormat === "zip") ||
+                      (selectedTier === "duo" &&
+                        selectedFormat === "image_bundle" &&
+                        (fmt === "png" || fmt === "jpg"));
                     const isIndividualActive = selectedFormat === fmt;
                     return (
                       <button
@@ -454,7 +513,9 @@ export default function DownloadModal({
                 )}
                 <span>
                   {selectedFormat === "zip"
-                    ? "Download Master Bundle (.ZIP - All 3 Formats)"
+                    ? "Download Master Bundle (.ZIP - All 4 Formats)"
+                    : selectedFormat === "image_bundle"
+                    ? "Download Duo Pack (.ZIP - PNG + JPG)"
                     : `Download Ultra-HD (${selectedFormat.toUpperCase()})`}
                 </span>
               </button>
@@ -584,6 +645,8 @@ export default function DownloadModal({
                     <th>Feature &amp; Details</th>
                     <th>Free ($0)</th>
                     <th>PNG ($4.99)</th>
+                    <th>JPG ($4.99)</th>
+                    <th>Duo ($5.99)</th>
                     <th>PDF ($6.99)</th>
                     <th>SVG ($7.99)</th>
                     <th className="th-highlight">Combo ($9.99)</th>
@@ -594,14 +657,18 @@ export default function DownloadModal({
                     <td>Formats Included</td>
                     <td>1 File (.PNG)</td>
                     <td>1 File (.PNG)</td>
+                    <td>1 File (.JPG)</td>
+                    <td>2 Files (.PNG + .JPG)</td>
                     <td>1 File (.PDF)</td>
                     <td>1 File (.SVG)</td>
-                    <td className="td-highlight">📦 ALL 3 Files (PNG + PDF + SVG)</td>
+                    <td className="td-highlight">📦 ALL 4 Files (PNG + JPG + PDF + SVG)</td>
                   </tr>
                   <tr>
                     <td>Resolution / DPI</td>
                     <td>300 DPI (Phone Screen)</td>
                     <td>500 DPI Ultra-HD (80 MP)</td>
+                    <td>500 DPI Ultra-HD (Compact)</td>
+                    <td>500 DPI (Lossless + Compact)</td>
                     <td>500 DPI Vector-Raster</td>
                     <td>Infinite Vector</td>
                     <td className="td-highlight">500 DPI + Infinite Vector</td>
@@ -610,6 +677,8 @@ export default function DownloadModal({
                     <td>Best Used For</td>
                     <td>Phone Screen Wallpaper</td>
                     <td>4K/8K Monitors &amp; Displays</td>
+                    <td>Social Sharing &amp; Photo Labs</td>
+                    <td>Screens &amp; Quick Mobile Sharing</td>
                     <td>Framing &amp; Local Print Shops</td>
                     <td>Designers, CAD &amp; Plotters</td>
                     <td className="td-highlight">All Screens + Wall Framing</td>
@@ -620,11 +689,15 @@ export default function DownloadModal({
                     <td>❌ None (Clean)</td>
                     <td>❌ None (Clean)</td>
                     <td>❌ None (Clean)</td>
+                    <td>❌ None (Clean)</td>
+                    <td>❌ None (Clean)</td>
                     <td className="td-highlight">❌ None (100% Clean)</td>
                   </tr>
                   <tr>
                     <td>Physical Paper Print Quality</td>
                     <td>⚠️ Blurs on paper</td>
+                    <td>✓ Razor-Sharp Frame Print</td>
+                    <td>✓ Sharp Photo Print</td>
                     <td>✓ Razor-Sharp Frame Print</td>
                     <td>✓ Perfect Frame Print</td>
                     <td>✓ Infinite Resolution</td>
@@ -634,12 +707,16 @@ export default function DownloadModal({
                     <td>Zoom Capability</td>
                     <td>Blurs on deep zoom</td>
                     <td>Crisp up to 1000%</td>
+                    <td>Crisp up to 800%</td>
+                    <td>Crisp up to 1000%</td>
                     <td>Sharp Document</td>
                     <td>Never Blurs (0% Loss)</td>
                     <td className="td-highlight">Never Blurs (0% Loss)</td>
                   </tr>
                   <tr>
                     <td>Vector Paths (Illustrator/CAD)</td>
+                    <td>✕</td>
+                    <td>✕</td>
                     <td>✕</td>
                     <td>✕</td>
                     <td>✕</td>
@@ -652,10 +729,14 @@ export default function DownloadModal({
                     <td>✓ Permanent</td>
                     <td>✓ Permanent</td>
                     <td>✓ Permanent</td>
+                    <td>✓ Permanent</td>
+                    <td>✓ Permanent</td>
                     <td className="td-highlight">✓ Permanent</td>
                   </tr>
                   <tr>
                     <td>1-Time BOGO Code (2nd Poster)</td>
+                    <td>✕</td>
+                    <td>✕</td>
                     <td>✕</td>
                     <td>✕</td>
                     <td>✕</td>

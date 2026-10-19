@@ -16,6 +16,7 @@ import { getAllMarkerIcons } from "@/features/markers/infrastructure/iconRegistr
 import { ensureFont } from "@/core/services";
 import {
   createPngBlob,
+  createJpgBlob,
   createPdfBlobFromCanvas,
   createLayeredSvgBlobFromMap,
   createPosterFilename,
@@ -286,6 +287,7 @@ export function useExport() {
           });
 
           const pngBlob = await createPngBlob(canvas, dpi);
+          const jpgBlob = await createJpgBlob(canvas, 0.95);
           const pdfBlob = createPdfBlobFromCanvas(canvas, {
             widthCm,
             heightCm,
@@ -297,17 +299,35 @@ export function useExport() {
           const baseName = `MapArte_${cleanCity}_${cleanTheme}`;
 
           zip.file(`${baseName}_Wallpaper_UltraHD.png`, pngBlob);
+          zip.file(`${baseName}_Wallpaper_Compact.jpg`, jpgBlob);
           zip.file(`${baseName}_Print_500DPI.pdf`, pdfBlob);
           zip.file(`${baseName}_Vector_Infinite.svg`, svgBlob);
 
           const zipBlob = await zip.generateAsync({ type: "blob" });
           await triggerDownloadBlob(zipBlob, `${baseName}_Master_Bundle.zip`);
+        } else if (format === "image_bundle") {
+          const pngBlob = await createPngBlob(canvas, dpi);
+          const jpgBlob = await createJpgBlob(canvas, 0.95);
+
+          const zip = new JSZip();
+          const cleanCity = (form.displayCity || form.location || "City").replace(/[^a-zA-Z0-9_-]/g, "_");
+          const cleanTheme = (form.theme || "custom").replace(/[^a-zA-Z0-9_-]/g, "_");
+          const baseName = `MapArte_${cleanCity}_${cleanTheme}`;
+
+          zip.file(`${baseName}_Wallpaper_UltraHD.png`, pngBlob);
+          zip.file(`${baseName}_Wallpaper_Compact.jpg`, jpgBlob);
+
+          const zipBlob = await zip.generateAsync({ type: "blob" });
+          await triggerDownloadBlob(zipBlob, `${baseName}_ImageDuo_Pack.zip`);
         } else if (format === "pdf") {
           const pdfBlob = createPdfBlobFromCanvas(canvas, {
             widthCm,
             heightCm,
           });
           await triggerDownloadBlob(pdfBlob, filename);
+        } else if (format === "jpg") {
+          const jpgBlob = await createJpgBlob(canvas, 0.95);
+          await triggerDownloadBlob(jpgBlob, filename);
         } else {
           const pngBlob = await createPngBlob(canvas, dpi);
           await triggerDownloadBlob(pngBlob, filename);
