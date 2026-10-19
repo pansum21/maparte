@@ -706,9 +706,9 @@
   .mobile-drawer-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(2, 6, 10, 0.22);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    background: rgba(4, 10, 18, 0.55);
+    backdrop-filter: blur(14px) saturate(170%);
+    -webkit-backdrop-filter: blur(14px) saturate(170%);
     touch-action: none;
     animation: backdrop-fadein 0.2s ease;
   }
@@ -725,8 +725,18 @@
   .mobile-drawer-sheet {
     position: relative;
     z-index: 1;
-    background: var(--sheet-bg);
-    border-top: 1px solid rgba(146, 176, 200, 0.16);
+    background: linear-gradient(
+      180deg,
+      rgba(14, 28, 44, 0.82) 0%,
+      rgba(8, 18, 30, 0.9) 100%
+    );
+    backdrop-filter: blur(24px) saturate(190%);
+    -webkit-backdrop-filter: blur(24px) saturate(190%);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+      inset 0 1.5px 1px rgba(255, 255, 255, 0.25),
+      0 -12px 36px rgba(0, 0, 0, 0.5),
+      0 0 24px rgba(56, 189, 248, 0.12);
     border-radius: 24px 24px 0 0;
     padding-bottom: env(safe-area-inset-bottom, 0px);
     height: min(38vh, 360px);
@@ -809,17 +819,17 @@
     padding: 0;
     border: none;
     border-radius: 0;
-    background: var(--sheet-bg);
+    background: transparent;
     box-shadow: none;
   }
 
   .mobile-drawer-content .accordion-item,
   .mobile-drawer-content .accordion-body {
-    background: var(--sheet-bg);
+    background: transparent;
   }
 
   .mobile-drawer-content .map-dimension-fields {
-    background: var(--sheet-bg);
+    background: transparent;
   }
 
   .mobile-drawer-content .panel-block h2 {
