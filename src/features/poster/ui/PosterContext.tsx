@@ -41,6 +41,8 @@ import {
   DEFAULT_LON,
 } from "@/core/config";
 
+import { resolveCityFromUrl } from "@/features/location/domain/cityRouteResolver";
+
 const defaultLayoutOption = getLayoutOption(defaultLayoutId);
 const defaultLayoutWidthCm = Number(
   defaultLayoutOption?.widthCm ?? DEFAULT_POSTER_WIDTH_CM,
@@ -81,32 +83,64 @@ export const DEFAULT_FORM: PosterForm = {
   showRoutes: true,
 };
 
-const INITIAL_STATE: PosterState = {
-  form: DEFAULT_FORM,
-  customColors: {},
-  markers: [],
-  customMarkerIcons: [],
-  markerDefaults: {
-    ...createDefaultMarkerSettings(),
-    color: getTheme(defaultThemeName).ui.text,
-  },
-  isMarkerEditorActive: false,
-  activeMarkerId: null,
-  routes: [],
-  routeDefaults: {
-    ...createDefaultRouteSettings(),
-    color: getTheme(defaultThemeName).ui.text,
-  },
-  error: "",
-  isExporting: false,
-  isLocationFocused: false,
-  selectedLocation: null,
-  userLocation: null,
-  displayNameOverrides: {
-    city: false,
-    country: false,
-  },
-};
+function getInitialState(): PosterState {
+  let form = { ...DEFAULT_FORM };
+  let selectedLocation = null;
+
+  if (typeof window !== "undefined") {
+    const matched = resolveCityFromUrl(window.location.pathname, window.location.search);
+    if (matched) {
+      form = {
+        ...DEFAULT_FORM,
+        location: `${matched.city}, ${matched.country}`,
+        displayCity: matched.city,
+        displayCountry: matched.country,
+        displayContinent: matched.continent,
+        latitude: matched.lat.toFixed(6),
+        longitude: matched.lon.toFixed(6),
+        distance: String(matched.distanceMeters || DEFAULT_DISTANCE_METERS),
+      };
+      selectedLocation = {
+        id: `city:${matched.slug}`,
+        label: `${matched.city}, ${matched.country}`,
+        lat: matched.lat,
+        lon: matched.lon,
+        city: matched.city,
+        country: matched.country,
+        continent: matched.continent,
+      };
+    }
+  }
+
+  return {
+    form,
+    customColors: {},
+    markers: [],
+    customMarkerIcons: [],
+    markerDefaults: {
+      ...createDefaultMarkerSettings(),
+      color: getTheme(defaultThemeName).ui.text,
+    },
+    isMarkerEditorActive: false,
+    activeMarkerId: null,
+    routes: [],
+    routeDefaults: {
+      ...createDefaultRouteSettings(),
+      color: getTheme(defaultThemeName).ui.text,
+    },
+    error: "",
+    isExporting: false,
+    isLocationFocused: false,
+    selectedLocation,
+    userLocation: null,
+    displayNameOverrides: {
+      city: false,
+      country: false,
+    },
+  };
+}
+
+const INITIAL_STATE: PosterState = getInitialState();
 
 /* ────── Context shapes ────── */
 
@@ -151,6 +185,36 @@ export function PosterProvider({ children }: { children: ReactNode }) {
     }
     return applyThemeColorOverrides(selectedTheme, state.customColors);
   }, [selectedTheme, state.customColors]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleUrlChange = () => {
+      const matched = resolveCityFromUrl(window.location.pathname, window.location.search);
+      if (matched) {
+        dispatch({
+          type: "SELECT_LOCATION",
+          location: {
+            id: `city:${matched.slug}`,
+            label: `${matched.city}, ${matched.country}`,
+            lat: matched.lat,
+            lon: matched.lon,
+            city: matched.city,
+            country: matched.country,
+            continent: matched.continent,
+          },
+        });
+        if (matched.distanceMeters) {
+          dispatch({
+            type: "SET_FORM_FIELDS",
+            fields: { distance: String(matched.distanceMeters) },
+          });
+        }
+      }
+    };
+
+    window.addEventListener("popstate", handleUrlChange);
+    return () => window.removeEventListener("popstate", handleUrlChange);
+  }, [dispatch]);
 
   useEffect(() => {
     const markerThemeColor = effectiveTheme.ui.text;
