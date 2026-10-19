@@ -50,11 +50,14 @@ jobs:
       - name: Build Web Application
         run: npm run build
 
-      - name: Make Gradlew Executable
-        run: chmod +x android/gradlew
+      - name: Prepare Android Project & Permissions
+        run: |
+          mkdir -p android/app/src/main/assets/public
+          sed -i 's/\r$//' android/gradlew
+          chmod +x android/gradlew
 
       - name: Sync Capacitor Android Project
-        run: npx cap sync android
+        run: npx cap sync android --verbose
 
       - name: Build Debug APK
         run: |
