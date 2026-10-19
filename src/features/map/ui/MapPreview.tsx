@@ -183,12 +183,10 @@ export default function MapPreview({
     } else {
       map.scrollZoom.disable();
       map.dragPan.disable();
-      // Allow 2-finger touch pinch zoom and double-click zoom in preview mode so mobile users
-      // trigger real WebGL vector re-rendering instead of stretching the raster canvas element.
-      map.touchZoomRotate.enable();
-      map.touchZoomRotate.disableRotation();
-      map.doubleClickZoom.enable();
+      map.touchZoomRotate.disable();
+      map.doubleClickZoom.disable();
       map.keyboard.disable();
+      map.touchZoomRotate.disableRotation();
       map.dragRotate.disable();
     }
   }, [interactive, allowRotation, mapRef]);

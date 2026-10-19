@@ -528,24 +528,6 @@ export default function PreviewPanel() {
                   />
                   <button
                     type="button"
-                    className="map-control-btn"
-                    onClick={handleZoomOut}
-                    title="Zoom out"
-                    aria-label="Zoom out"
-                  >
-                    <MinusIcon />
-                  </button>
-                  <button
-                    type="button"
-                    className="map-control-btn"
-                    onClick={handleZoomIn}
-                    title="Zoom in (deep vector zoom)"
-                    aria-label="Zoom in"
-                  >
-                    <PlusIcon />
-                  </button>
-                  <button
-                    type="button"
                     className={`map-control-btn wall-mockup-btn${isWallMockup ? " is-active" : ""}`}
                     onClick={() => setIsWallMockup((prev) => !prev)}
                     title={
