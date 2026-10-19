@@ -70,10 +70,10 @@ function HelpUsGrowSection({
 
   return (
     <section className="info-panel-section">
-      <h3>Help Us Grow</h3>
+      <h3>About MapArte</h3>
       <p className="hug-copy">
-        MAPARTE is 100% client-side and open-source. Help us build the future
-        of map art by contributing to our roadmap!
+        MAPARTE is 100% client-side and privacy-friendly. Create high-resolution
+        custom map posters and wallpapers right inside your browser.
       </p>
 
       <div className="hug-rows">

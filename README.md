@@ -14,7 +14,7 @@
 [![Cloudflare Badge](https://img.shields.io/badge/Cloudflare-F38020?logo=cloudflare&logoColor=fff&style=for-the-badge)](https://www.cloudflare.com)
 [![Docker Badge](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff&style=for-the-badge)](https://www.docker.com)
 
-> Note: MAPARTE is still in development. Every feedback is appreciated. This is an open-source project, and community contributions are very welcome.
+> Note: MAPARTE is actively in development. Every feedback is appreciated.
 
 > **License & Trademark Notice:** This project is licensed under AGPL-3.0 and includes trademark protections. See the [License](#license) and [Trademark](#trademark) sections for details.
 
@@ -51,7 +51,7 @@ As of **April 3rd 2026**, all new changes to this repository are licensed under 
 
 The hosted MAPARTE service includes attribution and branding as part of the user interface.
 
-If you deploy or modify the open-source version, you are responsible for complying with the AGPL-3.0 license, including preserving license and copyright notices.
+If you deploy or modify this software, you are responsible for complying with the AGPL-3.0 license, including preserving license and copyright notices.
 
 For access to the hosted version with additional features and support, see MAPARTE Business or contact: [business@maparte.app](mailto:business@maparte.app).
 
