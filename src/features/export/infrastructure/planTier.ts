@@ -7,7 +7,51 @@
 const PLAN_KEY = "maparte_plan";
 const CREDITS_KEY = "maparte_pro_credits";
 const ADMIN_MODE_KEY = "maparte_admin_mode";
+const UNLOCKED_TIER_KEY = "maparte_unlocked_tier";
 export const FREE_DPI = 300;
+
+export type PaidTier = "png" | "jpg" | "duo" | "pdf" | "svg" | "combo";
+
+export function getUnlockedTier(): PaidTier | null {
+  if (isAdminUser()) {
+    return "combo";
+  }
+  try {
+    const raw = window.localStorage.getItem(UNLOCKED_TIER_KEY);
+    if (raw && ["png", "jpg", "duo", "pdf", "svg", "combo"].includes(raw)) {
+      return raw as PaidTier;
+    }
+    // If pro user with active credits, default to combo
+    if (getProCredits() > 0) {
+      return "combo";
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function setUnlockedTier(tier: PaidTier | null): void {
+  try {
+    if (tier) {
+      window.localStorage.setItem(UNLOCKED_TIER_KEY, tier);
+    } else {
+      window.localStorage.removeItem(UNLOCKED_TIER_KEY);
+    }
+  } catch {
+    // ignore
+  }
+}
+
+export function isTierAuthorized(tier: PaidTier): boolean {
+  if (isAdminUser()) return true;
+  if (getProCredits() <= 0) return false;
+  const unlocked = getUnlockedTier();
+  if (!unlocked) return false;
+  if (unlocked === "combo") return true;
+  if (unlocked === "duo") return tier === "duo" || tier === "png" || tier === "jpg";
+  return unlocked === tier;
+}
 
 export const BOGO_PRO_CODE = "MAPARTE.B01G01.2026";
 export const LEGACY_BOGO_CODE = "maparte.bogo.in@bogo";
@@ -33,10 +77,12 @@ export function setAdminMode(enabled: boolean): void {
       window.localStorage.setItem(ADMIN_MODE_KEY, "true");
       window.localStorage.setItem(CREDITS_KEY, "999999");
       window.localStorage.setItem(PLAN_KEY, "pro");
+      window.localStorage.setItem(UNLOCKED_TIER_KEY, "combo");
     } else {
       window.localStorage.removeItem(ADMIN_MODE_KEY);
       window.localStorage.removeItem(CREDITS_KEY);
       window.localStorage.removeItem(PLAN_KEY);
+      window.localStorage.removeItem(UNLOCKED_TIER_KEY);
     }
   } catch {
     // ignore
@@ -105,10 +151,12 @@ export function setProUser(isPro: boolean): void {
   if (isPro) {
     if (getProCredits() <= 0) {
       setProCredits(2);
+      setUnlockedTier("combo");
     }
   } else {
     setProCredits(0);
     setAdminMode(false);
+    setUnlockedTier(null);
   }
 }
 
@@ -126,6 +174,7 @@ export function activateProWithKey(key: string): ActivationResult {
     normalized === "maparteboss"
   ) {
     setAdminMode(true);
+    setUnlockedTier("combo");
     return { success: true, isAdmin: true };
   }
   if (
@@ -134,6 +183,7 @@ export function activateProWithKey(key: string): ActivationResult {
     normalized === "maparte.b01g01.2026"
   ) {
     addProCredits(2);
+    setUnlockedTier("combo");
     return { success: true, isAdmin: false };
   }
   return { success: false };
@@ -145,6 +195,7 @@ export function checkPaymentReturnUrl(): boolean {
     const adminParam = url.searchParams.get("admin");
     if (adminParam === "boss" || adminParam === "true" || adminParam === "maparte") {
       setAdminMode(true);
+      setUnlockedTier("combo");
       url.searchParams.delete("admin");
       const cleanPath =
         url.pathname + (url.search ? url.search : "") + (url.hash ? url.hash : "");
@@ -167,6 +218,14 @@ export function checkPaymentReturnUrl(): boolean {
 
     if (hasSuccess) {
       addProCredits(2);
+      const tierParam = url.searchParams.get("tier") || url.searchParams.get("metadata_tier");
+      if (tierParam && ["png", "jpg", "duo", "pdf", "svg", "combo"].includes(tierParam)) {
+        setUnlockedTier(tierParam as PaidTier);
+      } else {
+        setUnlockedTier("combo");
+      }
+      url.searchParams.delete("tier");
+      url.searchParams.delete("metadata_tier");
       url.searchParams.delete("payment");
       url.searchParams.delete("unlocked");
       url.searchParams.delete("status");

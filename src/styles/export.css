@@ -893,18 +893,33 @@
 .unlocked-format-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 6px 0 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 12px;
 }
 
 .unlocked-format-label {
   font-size: 0.76rem;
-  color: rgba(160, 185, 205, 0.8);
+  color: rgba(160, 185, 205, 0.85);
+  font-weight: 600;
 }
 
 .unlocked-format-btns {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
+}
+
+.tier-upgrade-notice {
+  padding: 8px 12px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 0.76rem;
+  color: #fca5a5;
+  line-height: 1.4;
+  text-align: left;
 }
 
 .unlocked-format-chip {

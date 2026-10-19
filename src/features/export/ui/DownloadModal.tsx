@@ -7,6 +7,9 @@ import {
   getProCredits,
   activateProWithKey,
   checkPaymentReturnUrl,
+  isTierAuthorized,
+  getUnlockedTier,
+  type PaidTier,
 } from "@/features/export/infrastructure/planTier";
 import { CloseIcon, DownloadIcon, LoaderIcon } from "@/shared/ui/Icons";
 
@@ -207,7 +210,41 @@ export default function DownloadModal({
     onClose();
   };
 
+  const formatToTier = (f: ExportFormat): SelectedTier => {
+    if (f === "jpg") return "jpg";
+    if (f === "image_bundle") return "duo";
+    if (f === "pdf") return "pdf";
+    if (f === "svg") return "svg";
+    if (f === "zip") return "combo";
+    return "png";
+  };
+
+  const tierToFormat = (t: SelectedTier): ExportFormat => {
+    if (t === "jpg") return "jpg";
+    if (t === "duo") return "image_bundle";
+    if (t === "pdf") return "pdf";
+    if (t === "svg") return "svg";
+    if (t === "combo") return "zip";
+    return "png";
+  };
+
+  const handleTierSelect = (tier: TierConfig) => {
+    setSelectedTier(tier.id);
+    setSelectedFormat(tier.format);
+  };
+
+  const handleFormatSelect = (fmt: ExportFormat) => {
+    setSelectedFormat(fmt);
+    setSelectedTier(formatToTier(fmt));
+  };
+
   const handleProDownload = async (formatToExport: ExportFormat = selectedFormat) => {
+    const requiredTier = formatToTier(formatToExport);
+    if (!isAdmin && !isTierAuthorized(requiredTier)) {
+      setBonusNotice("⚠️ Your active license does not include this format. Please select your purchased tier or upgrade.");
+      return;
+    }
+
     if (isAdmin) {
       await exportPoster(formatToExport, { asPro: true, includeCredits: true });
       setBonusNotice("🎉 Ultra-HD poster downloaded!");
@@ -275,7 +312,7 @@ export default function DownloadModal({
     try {
       const targetUrl = new URL(checkoutUrl, window.location.origin);
       targetUrl.searchParams.set("customer_email", email.trim());
-      const returnUrl = `${window.location.origin}${window.location.pathname}?payment=success&status=paid&unlocked=pro`;
+      const returnUrl = `${window.location.origin}${window.location.pathname}?payment=success&status=paid&unlocked=pro&tier=${tier.id}`;
       targetUrl.searchParams.set("redirect_url", returnUrl);
       targetUrl.searchParams.set("metadata_tier", tier.id);
       window.open(targetUrl.toString(), "_blank");
@@ -285,6 +322,8 @@ export default function DownloadModal({
   };
 
   const activeTier = TIERS.find((t) => t.id === selectedTier) || TIERS[0];
+  const unlockedTier = getUnlockedTier();
+  const isTierUnlocked = isAdmin || isTierAuthorized(selectedTier);
 
   return (
     <div
@@ -340,10 +379,7 @@ export default function DownloadModal({
                 className={`pricing-tab-card ${isSelected ? "is-selected" : ""} ${
                   tier.id === "combo" ? "is-combo-tab" : ""
                 }`}
-                onClick={() => {
-                  setSelectedTier(tier.id);
-                  setSelectedFormat(tier.format);
-                }}
+                onClick={() => handleTierSelect(tier)}
               >
                 {tier.badge && <span className="tab-pill-badge">{tier.badge}</span>}
                 <div className="tab-top-row">
@@ -395,35 +431,79 @@ export default function DownloadModal({
             )}
           </div>
 
-          {/* Mandatory Gmail Capture (Only needed for checkout) */}
-          {!isPro && (
-            <div className="download-gmail-section">
-              <label htmlFor="customer-email-input" className="gmail-input-label">
-                <span>Enter your Gmail / Email address:</span>
-                <span className="gmail-required-badge">Required for delivery</span>
-              </label>
-              <div className="gmail-input-wrap">
-                <input
-                  id="customer-email-input"
-                  type="email"
-                  placeholder="name@gmail.com"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (emailError) setEmailError("");
-                  }}
-                  className={`gmail-text-field ${emailError ? "has-error" : ""}`}
-                />
-              </div>
-              <p className="gmail-delivery-notice">
-                🔒 Your order receipt and 1-Time BOGO code will be sent to your Gmail for your 2nd free poster.
-              </p>
-              {emailError && <p className="gmail-error-msg">{emailError}</p>}
+          {/* Format selection chips (100% two-way synchronized with top cards) */}
+          <div className="unlocked-format-row">
+            <span className="unlocked-format-label">Select format:</span>
+            <div className="unlocked-format-btns">
+              <button
+                type="button"
+                className={`unlocked-format-chip ${
+                  selectedFormat === "png" ? "is-active" : ""
+                }`}
+                onClick={() => handleFormatSelect("png")}
+                title="500 DPI Lossless PNG Image"
+              >
+                PNG
+              </button>
+              <button
+                type="button"
+                className={`unlocked-format-chip ${
+                  selectedFormat === "jpg" ? "is-active" : ""
+                }`}
+                onClick={() => handleFormatSelect("jpg")}
+                title="500 DPI Compact JPG Image"
+              >
+                JPG
+              </button>
+              <button
+                type="button"
+                className={`unlocked-format-chip combo-zip-chip ${
+                  selectedTier === "duo" || selectedFormat === "image_bundle"
+                    ? "is-active"
+                    : ""
+                }`}
+                onClick={() => handleFormatSelect("image_bundle")}
+                title="Both PNG + JPG in 1 ZIP"
+              >
+                📦 DUO (.ZIP)
+              </button>
+              <button
+                type="button"
+                className={`unlocked-format-chip ${
+                  selectedFormat === "pdf" ? "is-active" : ""
+                }`}
+                onClick={() => handleFormatSelect("pdf")}
+                title="500 DPI Print Document PDF"
+              >
+                PDF
+              </button>
+              <button
+                type="button"
+                className={`unlocked-format-chip ${
+                  selectedFormat === "svg" ? "is-active" : ""
+                }`}
+                onClick={() => handleFormatSelect("svg")}
+                title="Infinite Vector Graphics SVG"
+              >
+                SVG
+              </button>
+              <button
+                type="button"
+                className={`unlocked-format-chip combo-zip-chip ${
+                  selectedTier === "combo" || selectedFormat === "zip"
+                    ? "is-active"
+                    : ""
+                }`}
+                onClick={() => handleFormatSelect("zip")}
+                title="All 4 Formats in 1 Master Bundle ZIP"
+              >
+                📦 ALL 4 IN 1 (.ZIP)
+              </button>
             </div>
-          )}
+          </div>
 
-          {/* Pro Unlocked State vs Buy Button */}
-          {isPro ? (
+          {/* Action Area: Download if Authorized, else Purchase */}
+          {isTierUnlocked ? (
             <div className="tier-pro-active-box">
               <div className="pro-unlocked-banner">
                 <span>
@@ -448,58 +528,6 @@ export default function DownloadModal({
                 </p>
               )}
 
-              {/* Format pills if Combo or Duo was unlocked */}
-              <div className="unlocked-format-row">
-                <span className="unlocked-format-label">Select format to export:</span>
-                <div className="unlocked-format-btns">
-                  {selectedTier === "combo" && (
-                    <button
-                      type="button"
-                      className={`unlocked-format-chip combo-zip-chip ${
-                        selectedFormat === "zip" ? "is-active" : ""
-                      }`}
-                      onClick={() => setSelectedFormat("zip")}
-                      title="Download PNG, JPG, PDF, and SVG all together in 1 ZIP file"
-                    >
-                      📦 ALL 4 IN 1 (.ZIP)
-                    </button>
-                  )}
-                  {selectedTier === "duo" && (
-                    <button
-                      type="button"
-                      className={`unlocked-format-chip combo-zip-chip ${
-                        selectedFormat === "image_bundle" ? "is-active" : ""
-                      }`}
-                      onClick={() => setSelectedFormat("image_bundle")}
-                      title="Download PNG and JPG together in 1 ZIP file"
-                    >
-                      📦 DUO PACK (.ZIP - PNG + JPG)
-                    </button>
-                  )}
-                  {(["png", "jpg", "pdf", "svg"] as ExportFormat[]).map((fmt) => {
-                    const isBundleActive =
-                      (selectedTier === "combo" && selectedFormat === "zip") ||
-                      (selectedTier === "duo" &&
-                        selectedFormat === "image_bundle" &&
-                        (fmt === "png" || fmt === "jpg"));
-                    const isIndividualActive = selectedFormat === fmt;
-                    return (
-                      <button
-                        key={fmt}
-                        type="button"
-                        className={`unlocked-format-chip ${
-                          isBundleActive || isIndividualActive ? "is-active" : ""
-                        }`}
-                        onClick={() => setSelectedFormat(fmt)}
-                        title={`Export as ${fmt.toUpperCase()}`}
-                      >
-                        {isBundleActive ? `✓ ${fmt.toUpperCase()}` : fmt.toUpperCase()}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
               <button
                 type="button"
                 className="tier-btn tier-btn--pro"
@@ -522,6 +550,39 @@ export default function DownloadModal({
             </div>
           ) : (
             <div className="tier-purchase-action-wrap">
+              {unlockedTier && !isAdmin && (
+                <div className="tier-upgrade-notice">
+                  <span>
+                    🔒 Your active license is for <strong>{TIERS.find((t) => t.id === unlockedTier)?.label || unlockedTier.toUpperCase()}</strong>. To download <strong>{activeTier.label}</strong>, please complete checkout below.
+                  </span>
+                </div>
+              )}
+
+              {/* Mandatory Gmail Capture (Only needed for checkout) */}
+              <div className="download-gmail-section">
+                <label htmlFor="customer-email-input" className="gmail-input-label">
+                  <span>Enter your Gmail / Email address:</span>
+                  <span className="gmail-required-badge">Required for delivery</span>
+                </label>
+                <div className="gmail-input-wrap">
+                  <input
+                    id="customer-email-input"
+                    type="email"
+                    placeholder="name@gmail.com"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (emailError) setEmailError("");
+                    }}
+                    className={`gmail-text-field ${emailError ? "has-error" : ""}`}
+                  />
+                </div>
+                <p className="gmail-delivery-notice">
+                  🔒 Your order receipt and 1-Time BOGO code will be sent to your Gmail for your 2nd free poster.
+                </p>
+                {emailError && <p className="gmail-error-msg">{emailError}</p>}
+              </div>
+
               <button
                 type="button"
                 className="tier-btn tier-btn--pro tier-btn--buy-action"
