@@ -1,11 +1,4 @@
-self.options = {
-    "domain": "3nbf4.com",
-    "zoneId": 12082487
-}
-self.lary = ""
-importScripts('https://3nbf4.com/act/files/service-worker.min.js?r=sw')
-
-const CACHE_NAME = "maparte-static-v2";
+const CACHE_NAME = "maparte-static-v4";
 const TILE_CACHE_NAME = "maparte-tiles-v1";
 const TILE_ORIGINS = ["https://tiles.openfreemap.org"];
 const APP_SHELL_ASSETS = [
