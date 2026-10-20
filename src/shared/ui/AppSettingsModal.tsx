@@ -55,7 +55,7 @@ export default function AppSettingsModal({
     dispatch({ type: "CLEAR_ROUTES" });
     dispatch({
       type: "SET_THEME",
-      themeId: "carrara",
+      themeId: "midnight_blue",
     });
     setResetDone(true);
     setTimeout(() => setResetDone(false), 2500);

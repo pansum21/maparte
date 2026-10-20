@@ -107,10 +107,10 @@ const referenceAliases: Record<string, string> = {
 };
 
 const preferredThemeOrder = [
+  "midnight_blue",
   "carrara",
   "subtle_grayscale",
   "blue_water",
-  "midnight_blue",
   "midnight_commander",
   "retro_vintage",
   "golden_dusk",
@@ -330,7 +330,7 @@ export const themeOptions: ThemeOption[] = themeNames.map((name) => ({
   palette: getThemePalette(themesByName[name]),
 }));
 
-const preferredDefaultThemeName = "carrara";
+const preferredDefaultThemeName = "midnight_blue";
 
 export const defaultThemeName = themeNames.includes(preferredDefaultThemeName)
   ? preferredDefaultThemeName
