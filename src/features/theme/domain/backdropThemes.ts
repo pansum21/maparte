@@ -104,11 +104,11 @@ export const BACKDROP_PRESETS: BackdropPreset[] = [
 
 export const DEFAULT_BACKDROP_STATE: BackdropThemeState = {
   type: "preset",
-  presetId: "classic_dark",
+  presetId: "studio_light",
   custom: {
-    color1: "#0f172a",
-    color2: "#1e1b4b",
-    angle: 135,
+    color1: "#f8fafc",
+    color2: "#e2e8f0",
+    angle: 145,
   },
 };
 

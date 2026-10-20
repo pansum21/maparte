@@ -52,6 +52,63 @@ body.has-custom-backdrop {
   background-attachment: fixed !important;
 }
 
+/* Allow studio backdrop to shine directly behind the poster */
+body.has-custom-backdrop .poster-viewport:not(.is-wall-mockup),
+body.has-custom-backdrop .app-shell > .preview-panel .poster-viewport:not(.is-wall-mockup),
+:root[data-backdrop-mode="light"] .poster-viewport:not(.is-wall-mockup),
+:root[data-backdrop-mode="light"] .app-shell > .preview-panel .poster-viewport:not(.is-wall-mockup) {
+  background: transparent !important;
+}
+
+:root[data-backdrop-mode="light"] .poster-viewport::before,
+body.has-custom-backdrop .poster-viewport::before {
+  display: none !important;
+}
+
+/* In light mode, soften the ghost map canvas so the clean backdrop shows */
+:root[data-backdrop-mode="light"] .poster-ghost-layer {
+  opacity: 0.10 !important;
+  filter: blur(14px) grayscale(1) !important;
+}
+
+body.has-custom-backdrop .poster-ghost-layer {
+  opacity: 0.22;
+  filter: blur(8px) saturate(0.6) brightness(0.85);
+}
+
+/* Poster frame shadow adapts to light mode */
+:root[data-backdrop-mode="light"] .poster-frame,
+:root[data-backdrop-mode="light"] .app-shell > .preview-panel .poster-frame {
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.18),
+    0 8px 24px rgba(15, 23, 42, 0.12),
+    0 1px 3px rgba(15, 23, 42, 0.08) !important;
+  border-color: rgba(15, 23, 42, 0.16) !important;
+}
+
+/* Right settings info card adapts to light mode */
+:root[data-backdrop-mode="light"] .settings-info-card,
+:root[data-backdrop-mode="light"] .app-shell > .preview-panel .settings-info-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08) !important;
+  color: #0f172a !important;
+}
+
+:root[data-backdrop-mode="light"] .settings-info-item .info-label {
+  color: #64748b !important;
+}
+
+:root[data-backdrop-mode="light"] .settings-info-item .info-val {
+  color: #0f172a !important;
+}
+
+:root[data-backdrop-mode="light"] .desktop-layout-label {
+  color: rgba(15, 23, 42, 0.6) !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
 /* Modal layout */
 .export-modal.backdrop-theme-modal {
   width: min(100%, 720px);
