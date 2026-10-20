@@ -47,10 +47,38 @@
 /* ── Wall Mockup View ── */
 
 .poster-viewport.is-wall-mockup {
+  transition: background 0.4s ease;
+}
+
+/* Wall Background Styles */
+.poster-viewport.is-wall-mockup.wall-warm-cream {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 8%, rgba(255, 248, 235, 0.65) 0%, transparent 68%),
+    linear-gradient(180deg, #ede5d8 0%, #e2d8c7 60%, #d4c8b4 100%) !important;
+}
+
+.poster-viewport.is-wall-mockup.wall-modern-charcoal {
   background:
     radial-gradient(ellipse 95% 60% at 50% 6%, rgba(255, 238, 215, 0.26) 0%, transparent 65%),
     linear-gradient(180deg, #1c2027 0%, #13161c 65%, #0b0d10 100%) !important;
-  transition: background 0.4s ease;
+}
+
+.poster-viewport.is-wall-mockup.wall-gallery-white {
+  background:
+    radial-gradient(ellipse 85% 50% at 50% 5%, rgba(255, 255, 255, 0.95) 0%, transparent 60%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2f6 65%, #e2e8f0 100%) !important;
+}
+
+.poster-viewport.is-wall-mockup.wall-luxury-navy {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 6%, rgba(255, 235, 210, 0.28) 0%, transparent 65%),
+    linear-gradient(180deg, #111e30 0%, #0a1320 65%, #04080e 100%) !important;
+}
+
+.poster-viewport.is-wall-mockup.wall-concrete-loft {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 6%, rgba(255, 245, 230, 0.3) 0%, transparent 65%),
+    linear-gradient(180deg, #373c43 0%, #282c32 65%, #1c1e22 100%) !important;
 }
 
 .poster-viewport.is-wall-mockup::before {
@@ -90,6 +118,16 @@
     0 22px 42px -10px rgba(0, 0, 0, 0.65);
 }
 
+.poster-viewport.is-wall-mockup.wall-warm-cream .poster-frame,
+.poster-viewport.is-wall-mockup.wall-gallery-white .poster-frame {
+  box-shadow:
+    inset 0 0 0 10px #f7f4ee,
+    inset 0 0 0 11px rgba(0, 0, 0, 0.18),
+    0 38px 80px -12px rgba(25, 20, 15, 0.38),
+    0 18px 36px -8px rgba(25, 20, 15, 0.25),
+    0 6px 14px rgba(25, 20, 15, 0.14);
+}
+
 .poster-viewport.is-wall-mockup .poster-frame.frame-white {
   border: 15px solid #f8fafc;
   outline: 1px solid rgba(0, 0, 0, 0.12);
@@ -98,6 +136,16 @@
     inset 0 0 0 11px rgba(0, 0, 0, 0.12),
     0 45px 90px -15px rgba(0, 0, 0, 0.82),
     0 22px 42px -10px rgba(0, 0, 0, 0.6);
+}
+
+.poster-viewport.is-wall-mockup .poster-frame.frame-gold {
+  border: 15px solid #c9a45c;
+  outline: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 0 0 10px #fdfbf7,
+    inset 0 0 0 11px rgba(140, 95, 20, 0.24),
+    0 45px 90px -15px rgba(0, 0, 0, 0.85),
+    0 22px 42px -10px rgba(0, 0, 0, 0.62);
 }
 
 /* Glass reflection shine across framed artwork */
@@ -198,6 +246,94 @@
 
 .swatch-white {
   background: #f8fafc;
+}
+
+.swatch-gold {
+  background: linear-gradient(135deg, #e3be75 0%, #a87e35 100%);
+}
+
+.swatch-warm-cream {
+  background: #ede5d8;
+}
+
+.swatch-charcoal {
+  background: #1c2027;
+}
+
+.swatch-navy {
+  background: #111e30;
+}
+
+.swatch-concrete {
+  background: #373c43;
+}
+
+.wall-switcher-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-right: 2px;
+}
+
+.wall-exit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.wall-exit-chip:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
+
+.wall-mockup-top-toggle {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 18px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  color: #f1f5f9;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-backdrop-mode="light"] .wall-mockup-top-toggle {
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  border-color: rgba(15, 23, 42, 0.16);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.wall-mockup-top-toggle:hover {
+  transform: translateX(-50%) translateY(-2px);
+  border-color: #38bdf8;
+  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);
 }
 
 .wall-mockup-badge {

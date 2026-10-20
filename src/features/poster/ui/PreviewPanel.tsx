@@ -78,11 +78,53 @@ export default function PreviewPanel() {
   const frameRef = useRef<HTMLDivElement | null>(null);
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [isWallMockup, setIsWallMockup] = useState(false);
-  const [frameStyle, setFrameStyle] = useState<"black" | "oak" | "white">("black");
+  const [isWallMockup, setIsWallMockup] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      const stored = localStorage.getItem("maparte_wall_mockup");
+      if (stored !== null) return stored === "true";
+    } catch {}
+    return true; // Default to true as user requested living room wall view!
+  });
+  const [wallStyle, setWallStyle] = useState<
+    "warm-cream" | "modern-charcoal" | "gallery-white" | "luxury-navy" | "concrete-loft"
+  >(() => {
+    if (typeof window === "undefined") return "warm-cream";
+    try {
+      const stored = localStorage.getItem("maparte_wall_style");
+      if (stored) return stored as any;
+    } catch {}
+    return "warm-cream";
+  });
+  const [frameStyle, setFrameStyle] = useState<"black" | "oak" | "white" | "gold">(() => {
+    if (typeof window === "undefined") return "black";
+    try {
+      const stored = localStorage.getItem("maparte_frame_style");
+      if (stored) return stored as any;
+    } catch {}
+    return "black";
+  });
   const [mapBearing, setMapBearing] = useState(0);
   const [isRotationEnabled, setIsRotationEnabled] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("maparte_wall_mockup", String(isWallMockup));
+    } catch {}
+  }, [isWallMockup]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("maparte_wall_style", wallStyle);
+    } catch {}
+  }, [wallStyle]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("maparte_frame_style", frameStyle);
+    } catch {}
+  }, [frameStyle]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -402,16 +444,71 @@ export default function PreviewPanel() {
 
   return (
     <section className="preview-panel">
-      <div className={`poster-viewport${isWallMockup ? " is-wall-mockup" : ""}`}>
+      <div
+        className={`poster-viewport${isWallMockup ? ` is-wall-mockup wall-${wallStyle}` : ""}`}
+      >
         {isWallMockup ? (
           <div className="wall-mockup-controls" aria-label="Living room gallery mockup controls">
-            <span className="wall-mockup-title">🖼️ Living Room View</span>
+            <span className="wall-mockup-title">🖼️ Living Room Wall</span>
+
+            {/* Wall background switcher */}
+            <div className="wall-frame-switcher" role="radiogroup" aria-label="Select wall background">
+              <span className="wall-switcher-label">Wall</span>
+              <button
+                type="button"
+                className={`wall-frame-chip${wallStyle === "warm-cream" ? " is-selected" : ""}`}
+                onClick={() => setWallStyle("warm-cream")}
+                title="Warm Cream Living Room"
+              >
+                <span className="frame-color-swatch swatch-warm-cream" aria-hidden="true" />
+                Cream
+              </button>
+              <button
+                type="button"
+                className={`wall-frame-chip${wallStyle === "modern-charcoal" ? " is-selected" : ""}`}
+                onClick={() => setWallStyle("modern-charcoal")}
+                title="Modern Charcoal Accent Wall"
+              >
+                <span className="frame-color-swatch swatch-charcoal" aria-hidden="true" />
+                Charcoal
+              </button>
+              <button
+                type="button"
+                className={`wall-frame-chip${wallStyle === "gallery-white" ? " is-selected" : ""}`}
+                onClick={() => setWallStyle("gallery-white")}
+                title="Museum Gallery White Wall"
+              >
+                <span className="frame-color-swatch swatch-white" aria-hidden="true" />
+                White
+              </button>
+              <button
+                type="button"
+                className={`wall-frame-chip${wallStyle === "luxury-navy" ? " is-selected" : ""}`}
+                onClick={() => setWallStyle("luxury-navy")}
+                title="Luxury Navy Wall"
+              >
+                <span className="frame-color-swatch swatch-navy" aria-hidden="true" />
+                Navy
+              </button>
+              <button
+                type="button"
+                className={`wall-frame-chip${wallStyle === "concrete-loft" ? " is-selected" : ""}`}
+                onClick={() => setWallStyle("concrete-loft")}
+                title="Industrial Concrete Loft Wall"
+              >
+                <span className="frame-color-swatch swatch-concrete" aria-hidden="true" />
+                Loft
+              </button>
+            </div>
+
+            {/* Frame style switcher */}
             <div className="wall-frame-switcher" role="radiogroup" aria-label="Select frame style">
+              <span className="wall-switcher-label">Frame</span>
               <button
                 type="button"
                 className={`wall-frame-chip${frameStyle === "black" ? " is-selected" : ""}`}
                 onClick={() => setFrameStyle("black")}
-                title="Classic Black Gallery Frame"
+                title="Classic Black Frame"
               >
                 <span className="frame-color-swatch swatch-black" aria-hidden="true" />
                 Black
@@ -429,14 +526,43 @@ export default function PreviewPanel() {
                 type="button"
                 className={`wall-frame-chip${frameStyle === "white" ? " is-selected" : ""}`}
                 onClick={() => setFrameStyle("white")}
-                title="Modern White Gallery Frame"
+                title="Modern White Frame"
               >
                 <span className="frame-color-swatch swatch-white" aria-hidden="true" />
                 White
               </button>
+              <button
+                type="button"
+                className={`wall-frame-chip${frameStyle === "gold" ? " is-selected" : ""}`}
+                onClick={() => setFrameStyle("gold")}
+                title="Brushed Brass / Gold Frame"
+              >
+                <span className="frame-color-swatch swatch-gold" aria-hidden="true" />
+                Gold
+              </button>
             </div>
+
+            {/* Exit to canvas view */}
+            <button
+              type="button"
+              className="wall-exit-chip"
+              onClick={() => setIsWallMockup(false)}
+              title="Switch back to flat poster canvas"
+            >
+              <span>✕ Canvas View</span>
+            </button>
           </div>
-        ) : null}
+        ) : (
+          <button
+            type="button"
+            className="wall-mockup-top-toggle"
+            onClick={() => setIsWallMockup(true)}
+            title="Preview this poster framed on a living room wall"
+          >
+            <span aria-hidden="true">🖼️</span>
+            <span>View on Living Room Wall</span>
+          </button>
+        )}
         {/* Desktop ghost layer: canvas clone of the main map at reduced opacity */}
         <div className="poster-ghost-layer" aria-hidden="true">
           <canvas
