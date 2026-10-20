@@ -6,12 +6,14 @@ interface GeneralHeaderProps {
   onAboutOpen: () => void;
   onAdminOpen?: () => void;
   onBackdropOpen?: () => void;
+  onCinemaToggle?: () => void;
 }
 
 export default function GeneralHeader({
   onAboutOpen,
   onAdminOpen,
   onBackdropOpen,
+  onCinemaToggle,
 }: GeneralHeaderProps) {
   const [tapCount, setTapCount] = useState(0);
 
@@ -66,6 +68,19 @@ export default function GeneralHeader({
           <span className="general-header-btn-label">Wall Color</span>
           <span className="general-header-btn-icon" aria-hidden="true" style={{ fontSize: "0.85rem" }}>
             🏠
+          </span>
+        </button>
+
+        <button
+          type="button"
+          className="general-header-text-btn general-header-cinema-btn"
+          onClick={onCinemaToggle}
+          aria-label="Fullscreen Wall Preview"
+          title="Fullscreen Wall Preview (Cinema Mode • Press Esc to exit)"
+        >
+          <span className="general-header-btn-label">Fullscreen</span>
+          <span className="general-header-btn-icon" aria-hidden="true" style={{ fontSize: "0.92rem" }}>
+            ⛶
           </span>
         </button>
 

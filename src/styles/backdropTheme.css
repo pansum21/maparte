@@ -882,3 +882,635 @@ body.has-custom-backdrop .poster-ghost-layer {
     display: none; /* Mobile has it in header and settings */
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   CINEMA / FULLSCREEN WALL PREVIEW MODE (CINEMA ROOM VIEW)
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Header & Modal Buttons */
+.general-header-cinema-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.general-header-cinema-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
+}
+
+:root[data-backdrop-mode="light"] .general-header-cinema-btn {
+  background: rgba(2, 132, 199, 0.08);
+  border-color: rgba(2, 132, 199, 0.3);
+  color: #0284c7;
+}
+
+:root[data-backdrop-mode="light"] .general-header-cinema-btn:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}
+
+.backdrop-modal-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.backdrop-cinema-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(14, 165, 233, 0.3));
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 999px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.2);
+  transition: all 0.2s ease;
+}
+
+.backdrop-cinema-pill-btn:hover {
+  background: #0284c7;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4);
+}
+
+/* Preview Top Toggles Row */
+.preview-top-toggles-row {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.cinema-preview-trigger-btn {
+  background: rgba(15, 28, 44, 0.85) !important;
+  border-color: rgba(56, 189, 248, 0.4) !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 16px rgba(56, 189, 248, 0.2) !important;
+}
+
+.cinema-preview-trigger-btn:hover {
+  border-color: #38bdf8 !important;
+  background: rgba(20, 44, 70, 0.95) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) scale(1.02);
+}
+
+:root[data-backdrop-mode="light"] .cinema-preview-trigger-btn {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(2, 132, 199, 0.35) !important;
+  color: #0284c7 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ── Fullscreen Cinema Shell ── */
+.app-shell.is-cinema-mode {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
+
+/* Hide all distractions in Cinema Mode */
+.app-shell.is-cinema-mode .general-header,
+.app-shell.is-cinema-mode .desktop-nav-bar,
+.app-shell.is-cinema-mode .desktop-left-panel,
+.app-shell.is-cinema-mode .desktop-location-row-wrap,
+.app-shell.is-cinema-mode .mobile-nav-bar,
+.app-shell.is-cinema-mode .mobile-location-row-wrap,
+.app-shell.is-cinema-mode .mobile-drawer,
+.app-shell.is-cinema-mode .desktop-export-fab,
+.app-shell.is-cinema-mode .export-fab,
+.app-shell.is-cinema-mode .export-fab-wrap,
+.app-shell.is-cinema-mode .footer-note,
+.app-shell.is-cinema-mode .install-prompt,
+.app-shell.is-cinema-mode .mobile-marker-size-bar,
+.app-shell.is-cinema-mode .mobile-marker-edit-done,
+.app-shell.is-cinema-mode .desktop-layout-label,
+.app-shell.is-cinema-mode .preview-top-toggles-row,
+.app-shell.is-cinema-mode .wall-mockup-top-toggle,
+.app-shell.is-cinema-mode .wall-mockup-controls,
+.app-shell.is-cinema-mode .settings-info-card,
+.app-shell.is-cinema-mode .map-primary-controls,
+.app-shell.is-cinema-mode .ad-unit,
+.app-shell.is-cinema-mode ins.adsbygoogle {
+  display: none !important;
+}
+
+.app-shell.is-cinema-mode .preview-panel {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  overflow: hidden !important;
+  z-index: 10 !important;
+}
+
+.app-shell.is-cinema-mode .poster-viewport {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  padding-bottom: 40px !important; /* give room for the floating dock */
+}
+
+/* Poster Frame in Cinema Mode: Scaled, majestic, realistic depth */
+.app-shell.is-cinema-mode .poster-frame {
+  max-height: calc(88vh - 60px) !important;
+  width: min(calc(100vw - 64px), calc((88vh - 60px) * var(--poster-aspect, 0.6666667))) !important;
+  margin: 0 auto !important;
+  transform: scale(0.96);
+  box-shadow:
+    0 32px 72px rgba(0, 0, 0, 0.65),
+    0 12px 28px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border 0.4s ease !important;
+}
+
+:root[data-backdrop-mode="light"] .app-shell.is-cinema-mode .poster-frame {
+  box-shadow:
+    0 32px 72px rgba(15, 23, 42, 0.22),
+    0 12px 28px rgba(15, 23, 42, 0.14),
+    0 0 0 1px rgba(15, 23, 42, 0.12) !important;
+}
+
+.app-shell.is-cinema-mode .poster-ghost-layer {
+  opacity: 0.10 !important;
+  filter: blur(24px) !important;
+}
+
+/* ── Cinema Overlay Controls ── */
+.cinema-overlay-controls {
+  pointer-events: auto;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  z-index: 10000;
+}
+
+.cinema-overlay-controls.is-dimmed {
+  opacity: 0.28;
+}
+
+.cinema-overlay-controls.is-dimmed:hover {
+  opacity: 1;
+}
+
+/* Top Left Brand Pill */
+.cinema-top-left-pill {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(10, 20, 32, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+:root[data-backdrop-mode="light"] .cinema-top-left-pill {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #0f172a;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.cinema-brand-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.cinema-brand-text {
+  font-family: "Spline Sans Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+}
+
+.cinema-brand-sep {
+  opacity: 0.4;
+}
+
+.cinema-brand-sub {
+  font-size: 0.76rem;
+  opacity: 0.85;
+}
+
+/* Top Right Exit Button */
+.cinema-top-exit-btn {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(10, 20, 32, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+:root[data-backdrop-mode="light"] .cinema-top-exit-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(15, 23, 42, 0.16);
+  color: #0f172a;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.cinema-top-exit-btn:hover {
+  background: #ef4444;
+  border-color: #f87171;
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+}
+
+.cinema-exit-icon {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.cinema-esc-kbd {
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+:root[data-backdrop-mode="light"] .cinema-esc-kbd {
+  background: rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 23, 42, 0.15);
+  color: #0f172a;
+}
+
+/* ── Cinema Bottom Floating Dock ── */
+.cinema-bottom-dock {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: linear-gradient(
+    165deg,
+    rgba(15, 28, 44, 0.88) 0%,
+    rgba(10, 20, 32, 0.85) 100%
+  );
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    0 16px 44px rgba(0, 0, 0, 0.65),
+    0 0 24px rgba(56, 189, 248, 0.15);
+  max-width: 95vw;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+:root[data-backdrop-mode="light"] .cinema-bottom-dock {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.94) 0%,
+    rgba(248, 250, 252, 0.92) 100%
+  );
+  border-color: rgba(15, 23, 42, 0.14);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    0 16px 44px rgba(0, 0, 0, 0.15);
+}
+
+.cinema-dock-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cinema-dock-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.16);
+  margin: 0 4px;
+}
+
+:root[data-backdrop-mode="light"] .cinema-dock-divider {
+  background: rgba(15, 23, 42, 0.12);
+}
+
+.cinema-dock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+:root[data-backdrop-mode="light"] .cinema-dock-btn {
+  background: rgba(15, 23, 42, 0.05);
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #0f172a;
+}
+
+.cinema-dock-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  transform: translateY(-1px);
+}
+
+.cinema-dock-arrow {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+/* Active Wall Button in Dock */
+.cinema-active-wall-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(20, 44, 70, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 999px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.2);
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+:root[data-backdrop-mode="light"] .cinema-active-wall-btn {
+  background: #ffffff;
+  border-color: rgba(2, 132, 199, 0.35);
+  color: #0284c7;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cinema-active-wall-btn:hover {
+  border-color: #38bdf8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
+}
+
+.cinema-wall-swatch-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.cinema-wall-name {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cinema-wall-dropdown-icon {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+/* Quick Wall Chips */
+.cinema-quick-walls {
+  display: inline-flex;
+  gap: 5px;
+}
+
+@media (max-width: 1100px) {
+  .cinema-quick-walls {
+    display: none; /* Hide to avoid dock overflowing */
+  }
+}
+
+.cinema-quick-wall-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  background: rgba(18, 36, 56, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: rgba(195, 220, 240, 0.8);
+  font-size: 0.74rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+:root[data-backdrop-mode="light"] .cinema-quick-wall-chip {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(15, 23, 42, 0.1);
+  color: #475569;
+}
+
+.cinema-quick-wall-chip:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.cinema-quick-wall-chip.is-selected {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+}
+
+.quick-wall-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.cinema-palette-btn {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(14, 165, 233, 0.28));
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Frame Selector Group */
+.cinema-frame-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cinema-group-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: rgba(195, 220, 240, 0.7);
+  margin-right: 2px;
+}
+
+:root[data-backdrop-mode="light"] .cinema-group-label {
+  color: #64748b;
+}
+
+.cinema-frame-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  color: rgba(195, 220, 240, 0.85);
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+:root[data-backdrop-mode="light"] .cinema-frame-btn {
+  background: rgba(15, 23, 42, 0.05);
+  border-color: rgba(15, 23, 42, 0.1);
+  color: #475569;
+}
+
+.cinema-frame-btn:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.cinema-frame-btn.is-selected {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+}
+
+.cinema-frame-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.cinema-frame-dot.dot-black { background: #1a1816; }
+.cinema-frame-dot.dot-oak { background: #b58555; }
+.cinema-frame-dot.dot-white { background: #f8fafc; }
+.cinema-frame-dot.dot-gold { background: #d4af37; }
+
+.cinema-native-fs-btn {
+  font-size: 1rem;
+  padding: 6px 10px;
+}
+
+.cinema-exit-dock-btn {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  font-weight: 700;
+}
+
+.cinema-exit-dock-btn:hover {
+  background: #ef4444;
+  border-color: #f87171;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .cinema-bottom-dock {
+    bottom: 16px;
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  .cinema-frame-group {
+    display: none;
+  }
+  .cinema-wall-name {
+    max-width: 90px;
+  }
+}
+

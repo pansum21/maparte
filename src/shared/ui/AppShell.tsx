@@ -25,6 +25,7 @@ import {
   type LegalDocType,
 } from "@/features/legal/application/legalDoc";
 import { initBackdropThemeFromStorage } from "@/features/theme/application/useBackdropTheme";
+import CinemaWallDock from "@/features/theme/ui/CinemaWallDock";
 
 const AboutModal = lazy(() => import("@/shared/ui/AboutModal"));
 const LegalModal = lazy(() => import("@/features/legal/ui/LegalModal"));
@@ -110,6 +111,58 @@ export default function AppShell() {
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [isCinemaMode, setIsCinemaMode] = useState(false);
+
+  const handleToggleCinema = useCallback((forceState?: boolean) => {
+    setIsCinemaMode((prev) => {
+      const next = typeof forceState === "boolean" ? forceState : !prev;
+      if (next) {
+        if (
+          typeof document !== "undefined" &&
+          document.documentElement.requestFullscreen &&
+          !document.fullscreenElement
+        ) {
+          void document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        if (typeof document !== "undefined" && document.fullscreenElement) {
+          void document.exitFullscreen().catch(() => {});
+        }
+      }
+      return next;
+    });
+  }, []);
+
+  // Keyboard shortcut: Escape exits cinema mode
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isCinemaMode) {
+        if (backdropOpen || aboutOpen || adminOpen || settingsOpen) return;
+        handleToggleCinema(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    isCinemaMode,
+    backdropOpen,
+    aboutOpen,
+    adminOpen,
+    settingsOpen,
+    handleToggleCinema,
+  ]);
+
+  // Sync when user exits browser native fullscreen (e.g. browser Esc key)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && isCinemaMode) {
+        setIsCinemaMode(false);
+      }
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, [isCinemaMode]);
   const [supportPrompt, setSupportPrompt] = useState<SupportPromptState | null>(null);
   const [legalDoc, setLegalDoc] = useState<LegalDocType | null>(null);
 
@@ -226,7 +279,7 @@ export default function AppShell() {
 
   return (
     <div
-      className="app-shell"
+      className={`app-shell${isCinemaMode ? " is-cinema-mode" : ""}`}
       data-mobile-tab={mobileTab}
       data-desktop-tab={desktopTab}
     >
@@ -234,6 +287,7 @@ export default function AppShell() {
         onAboutOpen={() => setAboutOpen(true)}
         onAdminOpen={() => setAdminOpen(true)}
         onBackdropOpen={() => setBackdropOpen(true)}
+        onCinemaToggle={() => handleToggleCinema()}
       />
       <InstallPrompt />
       <StartupLocationModal />
@@ -300,7 +354,10 @@ export default function AppShell() {
         </div>
       </div>
 
-      <PreviewPanel />
+      <PreviewPanel
+        isCinemaMode={isCinemaMode}
+        onToggleCinema={() => handleToggleCinema()}
+      />
 
       {mobileDrawerOpen ? (
         <SettingsDrawer
@@ -369,6 +426,7 @@ export default function AppShell() {
             onClose={() => setSettingsOpen(false)}
             onAdminOpen={() => setAdminOpen(true)}
         onBackdropOpen={() => setBackdropOpen(true)}
+        onCinemaToggle={() => handleToggleCinema()}
           />
         </Suspense>
       ) : null}
@@ -378,9 +436,17 @@ export default function AppShell() {
           <BackdropThemeModal
             isOpen={backdropOpen}
             onClose={() => setBackdropOpen(false)}
+            onEnterCinema={() => handleToggleCinema(true)}
           />
         </Suspense>
       ) : null}
+
+      {isCinemaMode && (
+        <CinemaWallDock
+          onExit={() => handleToggleCinema(false)}
+          onOpenWallModal={() => setBackdropOpen(true)}
+        />
+      )}
     </div>
   );
 }

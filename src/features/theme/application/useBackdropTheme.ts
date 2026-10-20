@@ -128,6 +128,33 @@ export function useBackdropTheme() {
     }));
   }, []);
 
+  const selectNextPreset = useCallback(() => {
+    setBackdropState((prev) => {
+      const idx = BACKDROP_PRESETS.findIndex((p) => p.id === prev.presetId);
+      const nextIdx = idx >= 0 ? (idx + 1) % BACKDROP_PRESETS.length : 0;
+      return {
+        ...prev,
+        type: "preset",
+        presetId: BACKDROP_PRESETS[nextIdx].id,
+      };
+    });
+  }, []);
+
+  const selectPrevPreset = useCallback(() => {
+    setBackdropState((prev) => {
+      const idx = BACKDROP_PRESETS.findIndex((p) => p.id === prev.presetId);
+      const prevIdx =
+        idx >= 0
+          ? (idx - 1 + BACKDROP_PRESETS.length) % BACKDROP_PRESETS.length
+          : BACKDROP_PRESETS.length - 1;
+      return {
+        ...prev,
+        type: "preset",
+        presetId: BACKDROP_PRESETS[prevIdx].id,
+      };
+    });
+  }, []);
+
   const updateCustomGradient = useCallback(
     (custom: Partial<CustomGradientConfig>) => {
       setBackdropState((prev) => ({
@@ -155,6 +182,8 @@ export function useBackdropTheme() {
     activePreset,
     presets: BACKDROP_PRESETS,
     selectPreset,
+    selectNextPreset,
+    selectPrevPreset,
     updateCustomGradient,
     resetToDefault,
   };

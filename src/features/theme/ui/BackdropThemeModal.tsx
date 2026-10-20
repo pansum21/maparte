@@ -12,6 +12,7 @@ import { useBackdropTheme } from "../application/useBackdropTheme";
 interface BackdropThemeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onEnterCinema?: () => void;
 }
 
 const DESIGNER_SWATCHES = [
@@ -32,6 +33,7 @@ const DESIGNER_SWATCHES = [
 export default function BackdropThemeModal({
   isOpen,
   onClose,
+  onEnterCinema,
 }: BackdropThemeModalProps) {
   const {
     backdropState,
@@ -147,8 +149,23 @@ export default function BackdropThemeModal({
         </button>
 
         <div className="backdrop-modal-header">
-          <div className="backdrop-modal-badge">
-            <span>🏠 Room Wall Color Studio</span>
+          <div className="backdrop-modal-badge-row">
+            <div className="backdrop-modal-badge">
+              <span>🏠 Room Wall Color Studio</span>
+            </div>
+            {onEnterCinema && (
+              <button
+                type="button"
+                className="backdrop-cinema-pill-btn"
+                onClick={() => {
+                  onClose();
+                  onEnterCinema();
+                }}
+                title="Open Framed Poster in Fullscreen Cinema Mode"
+              >
+                <span>⛶ Fullscreen Wall Mode</span>
+              </button>
+            )}
           </div>
           <h2 className="backdrop-modal-title">Room Wall Color Preview</h2>
           <p className="backdrop-modal-sub">

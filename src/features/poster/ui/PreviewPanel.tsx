@@ -53,7 +53,15 @@ const CONTINENT_VIEW_ZOOM_LEVEL = 6;
 const DEFAULT_LOCATION_LABEL =
   "Hanover, Region Hannover, Lower Saxony, Germany";
 
-export default function PreviewPanel() {
+interface PreviewPanelProps {
+  isCinemaMode?: boolean;
+  onToggleCinema?: () => void;
+}
+
+export default function PreviewPanel({
+  isCinemaMode = false,
+  onToggleCinema,
+}: PreviewPanelProps) {
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
   const {
@@ -148,6 +156,18 @@ export default function PreviewPanel() {
       localStorage.setItem("maparte_frame_style", frameStyle);
     } catch {}
   }, [frameStyle]);
+
+  useEffect(() => {
+    const handleFrameEvent = (e: Event) => {
+      const custom = e as CustomEvent<"none" | "black" | "oak" | "white" | "gold">;
+      if (custom.detail) {
+        setFrameStyle(custom.detail);
+      }
+    };
+    window.addEventListener("maparte:frame:change", handleFrameEvent);
+    return () =>
+      window.removeEventListener("maparte:frame:change", handleFrameEvent);
+  }, []);
 
   useEffect(() => {
     try {
@@ -800,15 +820,26 @@ export default function PreviewPanel() {
             </div>
           </>
         ) : (
-          <button
-            type="button"
-            className="wall-mockup-top-toggle"
-            onClick={() => setIsWallMockup(true)}
-            title="Preview this poster framed on a living room wall"
-          >
-            <span aria-hidden="true">🖼️</span>
-            <span>View on Living Room Wall</span>
-          </button>
+          <div className="preview-top-toggles-row">
+            <button
+              type="button"
+              className="wall-mockup-top-toggle cinema-preview-trigger-btn"
+              onClick={onToggleCinema}
+              title="Fullscreen Wall Preview (Hides all panels & controls. Press Esc to exit)"
+            >
+              <span aria-hidden="true">⛶</span>
+              <span>Fullscreen Wall View</span>
+            </button>
+            <button
+              type="button"
+              className="wall-mockup-top-toggle wall-mockup-secondary-toggle"
+              onClick={() => setIsWallMockup(true)}
+              title="Preview this poster framed on a 3D living room wall"
+            >
+              <span aria-hidden="true">🖼️</span>
+              <span>Living Room View</span>
+            </button>
+          </div>
         )}
         {/* Desktop ghost layer: canvas clone of the main map at reduced opacity */}
         <div className="poster-ghost-layer" aria-hidden="true">
@@ -822,7 +853,7 @@ export default function PreviewPanel() {
         </div>
         <div
           ref={frameRef}
-          className={`poster-frame${isWallMockup ? ` frame-${frameStyle}` : ""}`}
+          className={`poster-frame${isWallMockup || isCinemaMode ? ` frame-${frameStyle}` : ""}`}
           style={
             {
               "--poster-aspect": `${aspect}`,
