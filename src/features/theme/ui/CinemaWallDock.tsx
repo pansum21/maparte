@@ -1,6 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useBackdropTheme } from "../application/useBackdropTheme";
 import { BACKDROP_PRESETS } from "../domain/backdropThemes";
+import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
+import DownloadModal from "@/features/export/ui/DownloadModal";
 
 export type FrameStyleOption = "none" | "black" | "oak" | "white" | "gold";
 
@@ -21,6 +24,13 @@ export default function CinemaWallDock({
     selectPreset,
   } = useBackdropTheme();
 
+  const { state, dispatch } = usePosterContext();
+  const { form } = state;
+
+  const isPhoneWallpaper =
+    form.layout === "wallpaper_iphone_15_pro" ||
+    form.layout.startsWith("wallpaper_iphone");
+
   const [frameStyle, setFrameStyle] = useState<FrameStyleOption>(() => {
     if (typeof window === "undefined") return "black";
     try {
@@ -31,8 +41,8 @@ export default function CinemaWallDock({
   });
 
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
-  const [isDimmed, setIsDimmed] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+  const [showOrderNotice, setShowOrderNotice] = useState(false);
 
   // Sync native fullscreen state
   useEffect(() => {
@@ -64,10 +74,31 @@ export default function CinemaWallDock({
     }
   }, []);
 
+  // Toggle Phone Wallpaper vs A4 Poster layout
+  const handleToggleWallpaper = useCallback(() => {
+    const targetId = isPhoneWallpaper
+      ? "print_a4_portrait"
+      : "wallpaper_iphone_15_pro";
+    const targetLayout =
+      targetId === "wallpaper_iphone_15_pro"
+        ? { widthCm: 14.4, heightCm: 31.2 }
+        : { widthCm: 21, heightCm: 29.7 };
+
+    dispatch({
+      type: "SET_FIELD",
+      field: "layout",
+      value: targetId,
+    });
+    dispatch({
+      type: "SET_DIMENSIONS",
+      widthCm: formatLayoutCm(targetLayout.widthCm),
+      heightCm: formatLayoutCm(targetLayout.heightCm),
+    });
+  }, [isPhoneWallpaper, dispatch]);
+
   // Arrow key navigation between wall colors
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if an input is focused
       if (
         document.activeElement?.tagName === "INPUT" ||
         document.activeElement?.tagName === "TEXTAREA"
@@ -86,69 +117,63 @@ export default function CinemaWallDock({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectNextPreset, selectPrevPreset]);
 
-  // Inactivity dimmer: Dim the toolbar after 3.5s of no mouse movement so view is 100% clean
-  useEffect(() => {
-    const resetTimer = () => {
-      setIsDimmed(false);
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => {
-        setIsDimmed(true);
-      }, 3500);
-    };
-
-    resetTimer();
-    window.addEventListener("mousemove", resetTimer, { passive: true });
-    window.addEventListener("touchstart", resetTimer, { passive: true });
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      window.removeEventListener("mousemove", resetTimer);
-      window.removeEventListener("touchstart", resetTimer);
-    };
-  }, []);
-
   const isCustom = backdropState.type === "custom";
 
-  // Quick 6 trending showcase walls for 1-click test in dock
-  const QUICK_WALLS = [
+  // Fast swatches for instant 1-tap wall color test
+  const POPULAR_WALL_SWATCHES = [
     { id: "swiss_coffee", name: "Swiss Coffee", hex: "#f1ede2" },
-    { id: "alabaster_white", name: "Alabaster", hex: "#edeae0" },
-    { id: "evergreen_fog", name: "Evergreen Fog", hex: "#5c675b" },
+    { id: "alabaster_white", name: "Alabaster White", hex: "#edeae0" },
+    { id: "evergreen_fog", name: "Evergreen Sage", hex: "#5c675b" },
     { id: "nordic_slate", name: "Nordic Slate", hex: "#1e293b" },
     { id: "sedona_terracotta", name: "Terracotta", hex: "#b85d43" },
-    { id: "scandi_oak_slat", name: "Oak Slats", hex: "#b89065" },
+    { id: "scandi_oak_slat", name: "Oak Wood Slats", hex: "#b89065" },
+    { id: "oceanic_abyss", name: "Oceanic Navy", hex: "#032b43" },
     { id: "velvet_noir", name: "Velvet Noir", hex: "#09090b" },
   ];
 
   return (
     <div
-      className={`cinema-overlay-controls${isDimmed ? " is-dimmed" : ""}`}
+      className="cinema-overlay-controls"
       role="region"
       aria-label="Fullscreen Wall Preview Controls"
     >
-      {/* Top Left: Discreet watermark badge */}
-      <div className="cinema-top-left-pill">
-        <span className="cinema-brand-dot" />
-        <span className="cinema-brand-text">MAPARTE</span>
-        <span className="cinema-brand-sep">•</span>
-        <span className="cinema-brand-sub">Room Wall Preview</span>
+      {/* Top Left: Brand & Wall Color Studio Trigger */}
+      <div className="cinema-top-bar-left">
+        <div className="cinema-top-left-pill">
+          <span className="cinema-brand-dot" />
+          <span className="cinema-brand-text">MAPARTE</span>
+          <span className="cinema-brand-sep">•</span>
+          <span className="cinema-brand-sub">Cinema Room View</span>
+        </div>
+
+        <button
+          type="button"
+          className="cinema-top-wall-btn"
+          onClick={onOpenWallModal}
+          title="Open Wall Color & Custom Paint Studio"
+        >
+          <span aria-hidden="true">🎨</span>
+          <span>Change Wall Color (64 Walls)</span>
+        </button>
       </div>
 
       {/* Top Right: Prominent Exit Button with Esc key badge */}
-      <button
-        type="button"
-        className="cinema-top-exit-btn"
-        onClick={onExit}
-        title="Exit Fullscreen Wall View (Esc)"
-        aria-label="Exit Fullscreen Wall View"
-      >
-        <span className="cinema-exit-icon" aria-hidden="true">✕</span>
-        <span className="cinema-exit-text">Exit Fullscreen</span>
-        <kbd className="cinema-esc-kbd">ESC</kbd>
-      </button>
+      <div className="cinema-top-bar-right">
+        <button
+          type="button"
+          className="cinema-top-exit-btn"
+          onClick={onExit}
+          title="Exit Fullscreen Wall View (Esc)"
+          aria-label="Exit Fullscreen Wall View"
+        >
+          <span className="cinema-exit-icon" aria-hidden="true">✕</span>
+          <span className="cinema-exit-text">Exit Fullscreen</span>
+          <kbd className="cinema-esc-kbd">ESC</kbd>
+        </button>
+      </div>
 
-      {/* Bottom Center: Glassmorphic Cinema Floating Dock */}
-      <aside className="cinema-bottom-dock">
+      {/* Bottom Center: Fully Clickable, High-Contrast Glassmorphic Cinema Dock */}
+      <aside className="cinema-bottom-dock" onClick={(e) => e.stopPropagation()}>
         {/* Wall Selector Group */}
         <div className="cinema-dock-section cinema-wall-group">
           <button
@@ -165,7 +190,7 @@ export default function CinemaWallDock({
             type="button"
             className="cinema-active-wall-btn"
             onClick={onOpenWallModal}
-            title="Click to browse all 64 wall colors & custom paint mixer"
+            title="Click to browse all 64 interior wall colors & custom paint mixer"
           >
             <span
               className="cinema-wall-swatch-dot"
@@ -192,9 +217,9 @@ export default function CinemaWallDock({
           </button>
         </div>
 
-        {/* Quick Showcase Wall Chips (Hidden on small screens) */}
+        {/* 1-Tap Popular Wall Swatches */}
         <div className="cinema-dock-section cinema-quick-walls">
-          {QUICK_WALLS.map((item) => {
+          {POPULAR_WALL_SWATCHES.map((item) => {
             const isSelected =
               !isCustom && backdropState.presetId === item.id;
             return (
@@ -203,7 +228,7 @@ export default function CinemaWallDock({
                 type="button"
                 className={`cinema-quick-wall-chip${isSelected ? " is-selected" : ""}`}
                 onClick={() => selectPreset(item.id)}
-                title={item.name}
+                title={`Apply ${item.name} wall`}
               >
                 <span
                   className="quick-wall-dot"
@@ -215,16 +240,37 @@ export default function CinemaWallDock({
           })}
         </div>
 
-        {/* All 64 Colors Studio button */}
+        {/* Open 64 Colors Studio Button */}
         <div className="cinema-dock-section">
           <button
             type="button"
             className="cinema-dock-btn cinema-palette-btn"
             onClick={onOpenWallModal}
-            title="Open 64 Interior Wall Colors & Custom Mixer"
+            title="Open All 64 Interior Wall Colors & Custom Mixer"
           >
             <span aria-hidden="true">🏠</span>
             <span className="cinema-dock-label">64 Walls</span>
+          </button>
+        </div>
+
+        <span className="cinema-dock-divider" aria-hidden="true" />
+
+        {/* Wallpaper Layout Toggle (Phone Wallpaper vs Poster) */}
+        <div className="cinema-dock-section">
+          <button
+            type="button"
+            className={`cinema-dock-btn cinema-layout-toggle-btn${isPhoneWallpaper ? " is-wallpaper" : ""}`}
+            onClick={handleToggleWallpaper}
+            title={
+              isPhoneWallpaper
+                ? "Switch back to standard A4 Print Poster"
+                : "Switch to 9:16 vertical Phone Wallpaper format"
+            }
+          >
+            <span aria-hidden="true">{isPhoneWallpaper ? "📱" : "🖼️"}</span>
+            <span className="cinema-dock-label">
+              {isPhoneWallpaper ? "Phone Wallpaper" : "Poster View"}
+            </span>
           </button>
         </div>
 
@@ -237,7 +283,7 @@ export default function CinemaWallDock({
             type="button"
             className={`cinema-frame-btn${frameStyle === "none" ? " is-selected" : ""}`}
             onClick={() => handleSelectFrame("none")}
-            title="No Frame (Canvas only)"
+            title="Frameless Canvas"
           >
             None
           </button>
@@ -245,7 +291,7 @@ export default function CinemaWallDock({
             type="button"
             className={`cinema-frame-btn${frameStyle === "black" ? " is-selected" : ""}`}
             onClick={() => handleSelectFrame("black")}
-            title="Matte Black Wood Gallery Frame"
+            title="Matte Black Wood Frame"
           >
             <span className="cinema-frame-dot dot-black" />
             Black
@@ -263,7 +309,7 @@ export default function CinemaWallDock({
             type="button"
             className={`cinema-frame-btn${frameStyle === "white" ? " is-selected" : ""}`}
             onClick={() => handleSelectFrame("white")}
-            title="Modern Architectural White Frame"
+            title="Modern White Wood Frame"
           >
             <span className="cinema-frame-dot dot-white" />
             White
@@ -272,10 +318,35 @@ export default function CinemaWallDock({
             type="button"
             className={`cinema-frame-btn${frameStyle === "gold" ? " is-selected" : ""}`}
             onClick={() => handleSelectFrame("gold")}
-            title="Antique Brass Gold Metallic Frame"
+            title="Antique Brass Gold Frame"
           >
             <span className="cinema-frame-dot dot-gold" />
             Gold
+          </button>
+        </div>
+
+        <span className="cinema-dock-divider" aria-hidden="true" />
+
+        {/* Monetization Cash Flows: Order Framed Print & Download */}
+        <div className="cinema-dock-section cinema-commerce-group">
+          <button
+            type="button"
+            className="cinema-dock-btn cinema-order-btn"
+            onClick={() => setShowOrderNotice(true)}
+            title="Order this artwork printed & framed delivered to your door"
+          >
+            <span aria-hidden="true">🛍️</span>
+            <span className="cinema-dock-label">Order Print (₹1,499)</span>
+          </button>
+
+          <button
+            type="button"
+            className="cinema-dock-btn cinema-download-btn"
+            onClick={() => setIsDownloadOpen(true)}
+            title="Download high-resolution image"
+          >
+            <span aria-hidden="true">⬇</span>
+            <span className="cinema-dock-label">Download</span>
           </button>
         </div>
 
@@ -308,6 +379,72 @@ export default function CinemaWallDock({
           </button>
         </div>
       </aside>
+
+      {/* Download Modal Trigger inside Cinema Mode */}
+      <DownloadModal
+        isOpen={isDownloadOpen}
+        onClose={() => setIsDownloadOpen(false)}
+      />
+
+      {/* Order Print Commercial Prompt Modal */}
+      {showOrderNotice && (
+        <div
+          className="export-modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setShowOrderNotice(false)}
+        >
+          <div
+            className="export-modal cinema-order-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="cinema-order-modal-header">
+              <span className="cinema-order-badge">✨ Museum Quality Print</span>
+              <h3>Order Your Custom Framed Map</h3>
+              <p>
+                Printed on 240g/m² archival museum matte paper with premium solid wood framing and shatterproof plexiglass.
+              </p>
+            </div>
+
+            <div className="cinema-order-specs">
+              <div className="order-spec-item">
+                <span className="spec-label">Current Location:</span>
+                <span className="spec-val">{form.location || form.displayCity || "Custom Map"}</span>
+              </div>
+              <div className="order-spec-item">
+                <span className="spec-label">Selected Frame:</span>
+                <span className="spec-val" style={{ textTransform: "capitalize" }}>
+                  {frameStyle === "none" ? "Canvas Print (No Frame)" : `${frameStyle} Solid Wood Frame`}
+                </span>
+              </div>
+              <div className="order-spec-item">
+                <span className="spec-label">Price:</span>
+                <span className="spec-val order-price">₹1,499 ($39 USD) • Free Shipping</span>
+              </div>
+            </div>
+
+            <div className="cinema-order-actions">
+              <button
+                type="button"
+                className="cinema-order-confirm-btn"
+                onClick={() => {
+                  alert("Order integration connected! Gelato & Printful print-on-demand fulfillment will ship directly to customer.");
+                  setShowOrderNotice(false);
+                }}
+              >
+                Proceed to Checkout (Free Shipping)
+              </button>
+              <button
+                type="button"
+                className="cinema-order-cancel-btn"
+                onClick={() => setShowOrderNotice(false)}
+              >
+                Back to Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

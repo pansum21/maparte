@@ -917,7 +917,8 @@ export default function PreviewPanel({
             customDate={form.customDate}
           />
 
-          <div className="map-controls" aria-label="Map controls">
+          {!isCinemaMode && (
+            <div className="map-controls" aria-label="Map controls">
             {!isEditing ? (
               <>
                 <div className="map-control-group">
@@ -1093,6 +1094,7 @@ export default function PreviewPanel({
               </>
             )}
           </div>
+        )}
         </div>
       </div>
 

@@ -163,6 +163,7 @@ export default function AppShell() {
     return () =>
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, [isCinemaMode]);
+
   const [supportPrompt, setSupportPrompt] = useState<SupportPromptState | null>(null);
   const [legalDoc, setLegalDoc] = useState<LegalDocType | null>(null);
 
@@ -277,9 +278,45 @@ export default function AppShell() {
     [activeMarker, dispatch],
   );
 
+  // ══════════════════════════════════════════════════════════
+  // CINEMA / FULLSCREEN ROOM WALL MODE (Zero Distraction DOM)
+  // ══════════════════════════════════════════════════════════
+  if (isCinemaMode) {
+    return (
+      <div
+        className="app-shell is-cinema-mode"
+        data-mobile-tab={mobileTab}
+        data-desktop-tab={desktopTab}
+      >
+        <PreviewPanel
+          isCinemaMode={true}
+          onToggleCinema={() => handleToggleCinema(false)}
+        />
+
+        <CinemaWallDock
+          onExit={() => handleToggleCinema(false)}
+          onOpenWallModal={() => setBackdropOpen(true)}
+        />
+
+        {backdropOpen ? (
+          <Suspense fallback={null}>
+            <BackdropThemeModal
+              isOpen={backdropOpen}
+              onClose={() => setBackdropOpen(false)}
+              onEnterCinema={() => handleToggleCinema(true)}
+            />
+          </Suspense>
+        ) : null}
+      </div>
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // STANDARD EDITOR MODE
+  // ══════════════════════════════════════════════════════════
   return (
     <div
-      className={`app-shell${isCinemaMode ? " is-cinema-mode" : ""}`}
+      className="app-shell"
       data-mobile-tab={mobileTab}
       data-desktop-tab={desktopTab}
     >
@@ -287,7 +324,7 @@ export default function AppShell() {
         onAboutOpen={() => setAboutOpen(true)}
         onAdminOpen={() => setAdminOpen(true)}
         onBackdropOpen={() => setBackdropOpen(true)}
-        onCinemaToggle={() => handleToggleCinema()}
+        onCinemaToggle={() => handleToggleCinema(true)}
       />
       <InstallPrompt />
       <StartupLocationModal />
@@ -318,6 +355,7 @@ export default function AppShell() {
           <DesktopLocationBar />
         </Suspense>
       </div>
+
       {isMobileViewport && isMarkerEditorActive && activeMarker ? (
         <div
           className="mobile-marker-size-bar"
@@ -355,8 +393,8 @@ export default function AppShell() {
       </div>
 
       <PreviewPanel
-        isCinemaMode={isCinemaMode}
-        onToggleCinema={() => handleToggleCinema()}
+        isCinemaMode={false}
+        onToggleCinema={() => handleToggleCinema(true)}
       />
 
       {mobileDrawerOpen ? (
@@ -425,8 +463,8 @@ export default function AppShell() {
             isOpen={settingsOpen}
             onClose={() => setSettingsOpen(false)}
             onAdminOpen={() => setAdminOpen(true)}
-        onBackdropOpen={() => setBackdropOpen(true)}
-        onCinemaToggle={() => handleToggleCinema()}
+            onBackdropOpen={() => setBackdropOpen(true)}
+            onCinemaToggle={() => handleToggleCinema(true)}
           />
         </Suspense>
       ) : null}
@@ -440,13 +478,6 @@ export default function AppShell() {
           />
         </Suspense>
       ) : null}
-
-      {isCinemaMode && (
-        <CinemaWallDock
-          onExit={() => handleToggleCinema(false)}
-          onOpenWallModal={() => setBackdropOpen(true)}
-        />
-      )}
     </div>
   );
 }
