@@ -372,17 +372,6 @@ export default function AppShell() {
           />
         </Suspense>
       ) : null}
-      {/* Floating Backdrop Theme Button */}
-      <button
-        type="button"
-        className="backdrop-floating-corner-btn"
-        onClick={() => setBackdropOpen(true)}
-        aria-label="Studio Backdrop Theme"
-        title="Customize Studio Backdrop Theme"
-      >
-        <span aria-hidden="true">🎨</span>
-        <span>Backdrop</span>
-      </button>
 
       {backdropOpen ? (
         <Suspense fallback={null}>

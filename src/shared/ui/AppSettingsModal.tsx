@@ -102,11 +102,11 @@ export default function AppSettingsModal({
         </div>
 
         <div className="app-settings-content">
-          {/* Section 1: Studio Ambient Backdrop */}
+          {/* Section 1: Room Wall Color & Preview */}
           <div className="app-settings-card">
-            <h3 className="app-settings-card-title">Studio Ambient Backdrop</h3>
+            <h3 className="app-settings-card-title">Room Wall Color Preview</h3>
             <p className="toggle-sub" style={{ marginBottom: "12px" }}>
-              Switch the workspace background between Dark Aurora, Gallery Studio Light, or mix a custom gradient.
+              Switch the background wall color to preview how your framed poster looks on different room paint colors (Warm White, Nordic Slate, Velvet Noir, or custom wall paint).
             </p>
             <button
               type="button"
@@ -121,7 +121,7 @@ export default function AppSettingsModal({
                 onBackdropOpen?.();
               }}
             >
-              🎨 Customize Studio Backdrop
+              🏠 Choose Wall Color
             </button>
           </div>
 

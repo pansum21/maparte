@@ -60,12 +60,12 @@ export default function GeneralHeader({
           type="button"
           className="general-header-text-btn general-header-backdrop-text-btn"
           onClick={onBackdropOpen}
-          aria-label="Studio Backdrop Theme"
-          title="Customize Studio Backdrop"
+          aria-label="Room Wall Color & Preview"
+          title="Choose Wall Color & Room Preview"
         >
-          <span className="general-header-btn-label">Backdrop</span>
+          <span className="general-header-btn-label">Wall Color</span>
           <span className="general-header-btn-icon" aria-hidden="true" style={{ fontSize: "0.85rem" }}>
-            🎨
+            🏠
           </span>
         </button>
 

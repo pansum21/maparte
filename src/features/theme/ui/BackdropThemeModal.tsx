@@ -63,25 +63,25 @@ export default function BackdropThemeModal({
         className="export-modal backdrop-theme-modal"
         role="dialog"
         aria-modal="true"
-        aria-label="Studio Backdrop Theme Settings"
+        aria-label="Room Wall Color & Preview Settings"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           className="export-modal-close"
           onClick={onClose}
-          aria-label="Close backdrop settings"
+          aria-label="Close wall color settings"
         >
           <CloseIcon />
         </button>
 
         <div className="backdrop-modal-header">
           <div className="backdrop-modal-badge">
-            <span>🎨 Studio Ambient Theme</span>
+            <span>🏠 Room Wall Color &amp; Preview</span>
           </div>
-          <h2 className="backdrop-modal-title">Studio Backdrop Theme</h2>
+          <h2 className="backdrop-modal-title">Room Wall Color Preview</h2>
           <p className="backdrop-modal-sub">
-            Customize the ambient background behind your map poster. Pick from curated gallery backdrops or mix your own gradient.
+            Preview your framed map poster against realistic wall paint colors. See how your artwork will look hanging on your living room, bedroom, or office wall before downloading.
           </p>
         </div>
 
@@ -92,14 +92,14 @@ export default function BackdropThemeModal({
             className={`backdrop-tab-btn ${activeTab === "presets" ? "is-active" : ""}`}
             onClick={() => setActiveTab("presets")}
           >
-            Curated Presets (10)
+            Curated Wall Colors (10)
           </button>
           <button
             type="button"
             className={`backdrop-tab-btn ${activeTab === "custom" ? "is-active" : ""}`}
             onClick={() => setActiveTab("custom")}
           >
-            Custom Gradient Mixer
+            Custom Wall Paint Mixer
           </button>
         </div>
 
@@ -227,7 +227,7 @@ export default function BackdropThemeModal({
                 className="mixer-apply-btn"
                 onClick={handleApplyCustom}
               >
-                Apply Custom Gradient
+                Apply Custom Wall Color
               </button>
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function BackdropThemeModal({
             className="backdrop-reset-btn"
             onClick={resetToDefault}
           >
-            Reset to Classic Dark Aurora
+            Reset to Default Wall Color
           </button>
         </div>
       </div>
