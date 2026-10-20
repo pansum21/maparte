@@ -104,12 +104,12 @@ export const BACKDROP_PRESETS: BackdropPreset[] = [
 
 export const DEFAULT_BACKDROP_STATE: BackdropThemeState = {
   type: "preset",
-  presetId: "studio_light",
+  presetId: "classic_dark",
   custom: {
-    color1: "#f8fafc",
-    color2: "#e2e8f0",
-    angle: 145,
+    color1: "#0f172a",
+    color2: "#1e1b4b",
+    angle: 135,
   },
 };
 
-export const BACKDROP_STORAGE_KEY = "maparte_studio_backdrop_v1";
+export const BACKDROP_STORAGE_KEY = "maparte_studio_backdrop_v2";
