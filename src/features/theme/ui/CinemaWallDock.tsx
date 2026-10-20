@@ -121,14 +121,14 @@ export default function CinemaWallDock({
 
   // Fast swatches for instant 1-tap wall color test
   const POPULAR_WALL_SWATCHES = [
-    { id: "swiss_coffee", name: "Swiss Coffee", hex: "#f1ede2" },
-    { id: "alabaster_white", name: "Alabaster White", hex: "#edeae0" },
-    { id: "evergreen_fog", name: "Evergreen Sage", hex: "#5c675b" },
-    { id: "nordic_slate", name: "Nordic Slate", hex: "#1e293b" },
-    { id: "sedona_terracotta", name: "Terracotta", hex: "#b85d43" },
-    { id: "scandi_oak_slat", name: "Oak Wood Slats", hex: "#b89065" },
-    { id: "oceanic_abyss", name: "Oceanic Navy", hex: "#032b43" },
-    { id: "velvet_noir", name: "Velvet Noir", hex: "#09090b" },
+    { id: "swiss_coffee", label: "Coffee", name: "Swiss Coffee", hex: "#f1ede2" },
+    { id: "alabaster_white", label: "White", name: "Alabaster White", hex: "#edeae0" },
+    { id: "evergreen_fog", label: "Sage", name: "Evergreen Sage", hex: "#5c675b" },
+    { id: "nordic_slate", label: "Slate", name: "Nordic Slate", hex: "#1e293b" },
+    { id: "sedona_terracotta", label: "Terracotta", name: "Terracotta", hex: "#b85d43" },
+    { id: "scandi_oak_slat", label: "Oak", name: "Oak Wood Slats", hex: "#b89065" },
+    { id: "oceanic_abyss", label: "Navy", name: "Oceanic Navy", hex: "#032b43" },
+    { id: "velvet_noir", label: "Noir", name: "Velvet Noir", hex: "#09090b" },
   ];
 
   return (
@@ -157,8 +157,28 @@ export default function CinemaWallDock({
         </button>
       </div>
 
-      {/* Top Right: Prominent Exit Button with Esc key badge */}
+      {/* Top Right: Prominent Commerce CTA & Exit Button */}
       <div className="cinema-top-bar-right">
+        <button
+          type="button"
+          className="cinema-top-order-btn"
+          onClick={() => setShowOrderNotice(true)}
+          title="Order this artwork printed & framed delivered to your door"
+        >
+          <span aria-hidden="true">🛍️</span>
+          <span>Order Framed Print (₹1,499)</span>
+        </button>
+
+        <button
+          type="button"
+          className="cinema-top-download-btn"
+          onClick={() => setIsDownloadOpen(true)}
+          title="Download High-Resolution Image"
+        >
+          <span aria-hidden="true">⬇</span>
+          <span>Download</span>
+        </button>
+
         <button
           type="button"
           className="cinema-top-exit-btn"
@@ -167,7 +187,7 @@ export default function CinemaWallDock({
           aria-label="Exit Fullscreen Wall View"
         >
           <span className="cinema-exit-icon" aria-hidden="true">✕</span>
-          <span className="cinema-exit-text">Exit Fullscreen</span>
+          <span className="cinema-exit-text">Exit</span>
           <kbd className="cinema-esc-kbd">ESC</kbd>
         </button>
       </div>
@@ -234,7 +254,7 @@ export default function CinemaWallDock({
                   className="quick-wall-dot"
                   style={{ background: item.hex }}
                 />
-                <span className="quick-wall-label">{item.name}</span>
+                <span className="quick-wall-label">{item.label}</span>
               </button>
             );
           })}
