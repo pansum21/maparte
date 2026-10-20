@@ -368,6 +368,14 @@ export default function DownloadModal({
           </div>
         )}
 
+        {/* Explore First Banner */}
+        <div className="explore-first-banner" role="status">
+          <span className="explore-first-icon" aria-hidden="true">🎨</span>
+          <div className="explore-first-content">
+            <strong>Before downloading:</strong> Explore the website and customize your map! You can change color palettes, add landmarks, adjust coordinates, and style typography — full interactive editing is 100% free.
+          </div>
+        </div>
+
         {/* Pricing & Tier Selector Cards */}
         <div className="download-pricing-tabs">
           {TIERS.map((tier) => {

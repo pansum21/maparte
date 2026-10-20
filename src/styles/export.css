@@ -312,6 +312,40 @@
   color: rgba(160, 185, 205, 0.75);
 }
 
+.explore-first-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 16px;
+  padding: 11px 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(56, 189, 248, 0.15) 0%,
+    rgba(14, 165, 233, 0.08) 60%,
+    rgba(99, 102, 241, 0.12) 100%
+  );
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.25);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #e0f2fe;
+}
+
+.explore-first-icon {
+  font-size: 1.35rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(56, 189, 248, 0.4));
+}
+
+.explore-first-content strong {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
 .download-format-selector {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
