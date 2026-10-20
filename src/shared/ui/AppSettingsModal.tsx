@@ -14,12 +14,14 @@ interface AppSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdminOpen?: () => void;
+  onBackdropOpen?: () => void;
 }
 
 export default function AppSettingsModal({
   isOpen,
   onClose,
   onAdminOpen,
+  onBackdropOpen,
 }: AppSettingsModalProps) {
   const { state, dispatch } = usePosterContext();
   const { clearRecent, recent } = useRecentLocations();
@@ -53,7 +55,7 @@ export default function AppSettingsModal({
     dispatch({ type: "CLEAR_ROUTES" });
     dispatch({
       type: "SET_THEME",
-      themeId: "midnight_blue",
+      themeId: "carrara",
     });
     setResetDone(true);
     setTimeout(() => setResetDone(false), 2500);
@@ -94,13 +96,36 @@ export default function AppSettingsModal({
           <div>
             <h2 className="app-settings-title">App Settings & Tools</h2>
             <p className="app-settings-sub">
-              Customize poster display, export preferences and tools.
+              Customize poster display, studio backdrop, and export tools.
             </p>
           </div>
         </div>
 
         <div className="app-settings-content">
-          {/* Section 1: Poster Display Options */}
+          {/* Section 1: Studio Ambient Backdrop */}
+          <div className="app-settings-card">
+            <h3 className="app-settings-card-title">Studio Ambient Backdrop</h3>
+            <p className="toggle-sub" style={{ marginBottom: "12px" }}>
+              Switch the workspace background between Dark Aurora, Gallery Studio Light, or mix a custom gradient.
+            </p>
+            <button
+              type="button"
+              className="settings-action-btn"
+              style={{
+                background: "linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(14, 165, 233, 0.3))",
+                borderColor: "rgba(56, 189, 248, 0.4)",
+                color: "#e0f2fe",
+              }}
+              onClick={() => {
+                onClose();
+                onBackdropOpen?.();
+              }}
+            >
+              🎨 Customize Studio Backdrop
+            </button>
+          </div>
+
+          {/* Section 2: Poster Display Options */}
           <div className="app-settings-card">
             <h3 className="app-settings-card-title">Poster Elements</h3>
             <div className="app-settings-toggles">
@@ -145,7 +170,7 @@ export default function AppSettingsModal({
             </div>
           </div>
 
-          {/* Section 2: Quality & Engine Info */}
+          {/* Section 3: Quality & Engine Info */}
           <div className="app-settings-card">
             <h3 className="app-settings-card-title">Export Quality & Engine</h3>
             <div className="settings-quality-info">
@@ -161,7 +186,7 @@ export default function AppSettingsModal({
             </div>
           </div>
 
-          {/* Section 3: Admin & Owner Portal */}
+          {/* Section 4: Owner & Admin Access */}
           <div className="app-settings-card">
             <h3 className="app-settings-card-title">Owner & Admin Access</h3>
             <div className="settings-admin-row">
@@ -181,7 +206,7 @@ export default function AppSettingsModal({
             </div>
           </div>
 
-          {/* Section 4: Data & Reset */}
+          {/* Section 5: Data & Reset */}
           <div className="app-settings-card">
             <h3 className="app-settings-card-title">Maintenance & Reset</h3>
             <div className="settings-actions-grid">

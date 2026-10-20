@@ -5,11 +5,13 @@ import SocialLinkGroup from "@/shared/ui/SocialLinkGroup";
 interface GeneralHeaderProps {
   onAboutOpen: () => void;
   onAdminOpen?: () => void;
+  onBackdropOpen?: () => void;
 }
 
 export default function GeneralHeader({
   onAboutOpen,
   onAdminOpen,
+  onBackdropOpen,
 }: GeneralHeaderProps) {
   const [tapCount, setTapCount] = useState(0);
 
@@ -54,7 +56,21 @@ export default function GeneralHeader({
       </div>
 
       <div className="general-header-actions">
+        <button
+          type="button"
+          className="general-header-text-btn general-header-backdrop-text-btn"
+          onClick={onBackdropOpen}
+          aria-label="Studio Backdrop Theme"
+          title="Customize Studio Backdrop"
+        >
+          <span className="general-header-btn-label">Backdrop</span>
+          <span className="general-header-btn-icon" aria-hidden="true" style={{ fontSize: "0.85rem" }}>
+            🎨
+          </span>
+        </button>
+
         <SocialLinkGroup variant="header" />
+
         <button
           type="button"
           className="general-header-text-btn general-header-about-text-btn"

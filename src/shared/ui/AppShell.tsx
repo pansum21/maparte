@@ -24,6 +24,7 @@ import {
   type LegalDocDetail,
   type LegalDocType,
 } from "@/features/legal/application/legalDoc";
+import { initBackdropThemeFromStorage } from "@/features/theme/application/useBackdropTheme";
 
 const AboutModal = lazy(() => import("@/shared/ui/AboutModal"));
 const LegalModal = lazy(() => import("@/features/legal/ui/LegalModal"));
@@ -37,6 +38,9 @@ const AdminControlModal = lazy(
   () => import("@/features/admin/ui/AdminControlModal"),
 );
 const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
+const BackdropThemeModal = lazy(
+  () => import("@/features/theme/ui/BackdropThemeModal"),
+);
 
 function SettingsDrawer({
   mobileTab,
@@ -77,6 +81,9 @@ function SettingsDrawer({
 }
 
 export default function AppShell() {
+  useEffect(() => {
+    initBackdropThemeFromStorage();
+  }, []);
   const { state, dispatch } = usePosterContext();
 
   // Fire once-per-session analytics on load (app_open).
@@ -100,6 +107,7 @@ export default function AppShell() {
   const [desktopLocationRowVisible, setDesktopLocationRowVisible] =
     useState(true);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [backdropOpen, setBackdropOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [supportPrompt, setSupportPrompt] = useState<SupportPromptState | null>(null);
@@ -225,6 +233,7 @@ export default function AppShell() {
       <GeneralHeader
         onAboutOpen={() => setAboutOpen(true)}
         onAdminOpen={() => setAdminOpen(true)}
+        onBackdropOpen={() => setBackdropOpen(true)}
       />
       <InstallPrompt />
       <StartupLocationModal />
@@ -359,6 +368,27 @@ export default function AppShell() {
             isOpen={settingsOpen}
             onClose={() => setSettingsOpen(false)}
             onAdminOpen={() => setAdminOpen(true)}
+        onBackdropOpen={() => setBackdropOpen(true)}
+          />
+        </Suspense>
+      ) : null}
+      {/* Floating Backdrop Theme Button */}
+      <button
+        type="button"
+        className="backdrop-floating-corner-btn"
+        onClick={() => setBackdropOpen(true)}
+        aria-label="Studio Backdrop Theme"
+        title="Customize Studio Backdrop Theme"
+      >
+        <span aria-hidden="true">🎨</span>
+        <span>Backdrop</span>
+      </button>
+
+      {backdropOpen ? (
+        <Suspense fallback={null}>
+          <BackdropThemeModal
+            isOpen={backdropOpen}
+            onClose={() => setBackdropOpen(false)}
           />
         </Suspense>
       ) : null}
