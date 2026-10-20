@@ -79,24 +79,31 @@ export default function PreviewPanel() {
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isWallMockup, setIsWallMockup] = useState<boolean>(() => {
-    if (typeof window === "undefined") return true;
+    if (typeof window === "undefined") return false;
     try {
       const stored = localStorage.getItem("maparte_wall_mockup");
       if (stored !== null) return stored === "true";
     } catch {}
-    return true; // Default to true as user requested living room wall view!
+    return false; // Original canvas poster view is primary by default!
   });
   const [wallStyle, setWallStyle] = useState<
-    "warm-cream" | "modern-charcoal" | "gallery-white" | "luxury-navy" | "concrete-loft"
+    | "nordic-grey"
+    | "warm-cream"
+    | "warm-taupe"
+    | "gallery-white"
+    | "modern-charcoal"
+    | "luxury-navy"
+    | "sage-emerald"
+    | "custom"
   >(() => {
-    if (typeof window === "undefined") return "warm-cream";
+    if (typeof window === "undefined") return "nordic-grey";
     try {
       const stored = localStorage.getItem("maparte_wall_style");
       if (stored) return stored as any;
     } catch {}
-    return "warm-cream";
+    return "nordic-grey";
   });
-  const [frameStyle, setFrameStyle] = useState<"black" | "oak" | "white" | "gold">(() => {
+  const [frameStyle, setFrameStyle] = useState<"none" | "black" | "oak" | "white" | "gold">(() => {
     if (typeof window === "undefined") return "black";
     try {
       const stored = localStorage.getItem("maparte_frame_style");
@@ -104,6 +111,22 @@ export default function PreviewPanel() {
     } catch {}
     return "black";
   });
+  const [isGradientPickerOpen, setIsGradientPickerOpen] = useState(false);
+  const [customWallGradient, setCustomWallGradient] = useState<{
+    color1: string;
+    color2: string;
+    angle: number;
+  }>(() => {
+    if (typeof window === "undefined") {
+      return { color1: "#525861", color2: "#2b2f35", angle: 180 };
+    }
+    try {
+      const stored = localStorage.getItem("maparte_custom_wall_gradient");
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return { color1: "#525861", color2: "#2b2f35", angle: 180 };
+  });
+
   const [mapBearing, setMapBearing] = useState(0);
   const [isRotationEnabled, setIsRotationEnabled] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
@@ -125,6 +148,15 @@ export default function PreviewPanel() {
       localStorage.setItem("maparte_frame_style", frameStyle);
     } catch {}
   }, [frameStyle]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "maparte_custom_wall_gradient",
+        JSON.stringify(customWallGradient),
+      );
+    } catch {}
+  }, [customWallGradient]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -446,112 +478,327 @@ export default function PreviewPanel() {
     <section className="preview-panel">
       <div
         className={`poster-viewport${isWallMockup ? ` is-wall-mockup wall-${wallStyle}` : ""}`}
+        style={
+          isWallMockup && wallStyle === "custom"
+            ? ({
+                background: `radial-gradient(ellipse 90% 55% at 50% 6%, rgba(255, 255, 255, 0.35) 0%, transparent 65%), linear-gradient(${customWallGradient.angle}deg, ${customWallGradient.color1} 0%, ${customWallGradient.color2} 100%)`,
+              } as CSSProperties)
+            : undefined
+        }
       >
         {isWallMockup ? (
-          <div className="wall-mockup-controls" aria-label="Living room gallery mockup controls">
-            <span className="wall-mockup-title">🖼️ Living Room Wall</span>
+          <>
+            {/* Custom Wall Gradient Popover */}
+            {isGradientPickerOpen ? (
+              <div
+                className="wall-gradient-popover"
+                role="dialog"
+                aria-label="Custom Wall Gradient Mixer"
+              >
+                <div className="wall-gradient-popover-header">
+                  <div className="wall-gradient-title">
+                    <span>🎨 Custom Wall Gradient</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="wall-gradient-close-btn"
+                    onClick={() => setIsGradientPickerOpen(false)}
+                    aria-label="Close gradient picker"
+                  >
+                    ✕
+                  </button>
+                </div>
 
-            {/* Wall background switcher */}
-            <div className="wall-frame-switcher" role="radiogroup" aria-label="Select wall background">
-              <span className="wall-switcher-label">Wall</span>
+                <div className="wall-gradient-inputs-row">
+                  <div className="wall-gradient-field">
+                    <span className="wall-gradient-label">Light Source (Top)</span>
+                    <div className="wall-gradient-color-wrap">
+                      <input
+                        type="color"
+                        value={customWallGradient.color1}
+                        onChange={(e) => {
+                          setCustomWallGradient((prev) => ({
+                            ...prev,
+                            color1: e.target.value,
+                          }));
+                          setWallStyle("custom");
+                        }}
+                        aria-label="Top wall color"
+                      />
+                      <input
+                        type="text"
+                        className="wall-hex-input"
+                        value={customWallGradient.color1}
+                        onChange={(e) => {
+                          setCustomWallGradient((prev) => ({
+                            ...prev,
+                            color1: e.target.value,
+                          }));
+                          setWallStyle("custom");
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="wall-gradient-field">
+                    <span className="wall-gradient-label">Wall Base (Bottom)</span>
+                    <div className="wall-gradient-color-wrap">
+                      <input
+                        type="color"
+                        value={customWallGradient.color2}
+                        onChange={(e) => {
+                          setCustomWallGradient((prev) => ({
+                            ...prev,
+                            color2: e.target.value,
+                          }));
+                          setWallStyle("custom");
+                        }}
+                        aria-label="Bottom wall color"
+                      />
+                      <input
+                        type="text"
+                        className="wall-hex-input"
+                        value={customWallGradient.color2}
+                        onChange={(e) => {
+                          setCustomWallGradient((prev) => ({
+                            ...prev,
+                            color2: e.target.value,
+                          }));
+                          setWallStyle("custom");
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Popular wall presets */}
+                <div className="wall-popular-presets">
+                  <span className="wall-presets-heading">Quick Gradients:</span>
+                  <div className="wall-presets-pills">
+                    <button
+                      type="button"
+                      className="wall-preset-chip"
+                      onClick={() => {
+                        setCustomWallGradient({
+                          color1: "#525861",
+                          color2: "#2b2f35",
+                          angle: 180,
+                        });
+                        setWallStyle("custom");
+                      }}
+                    >
+                      Nordic Slate
+                    </button>
+                    <button
+                      type="button"
+                      className="wall-preset-chip"
+                      onClick={() => {
+                        setCustomWallGradient({
+                          color1: "#e2d8c7",
+                          color2: "#b8a994",
+                          angle: 180,
+                        });
+                        setWallStyle("custom");
+                      }}
+                    >
+                      Warm Linen
+                    </button>
+                    <button
+                      type="button"
+                      className="wall-preset-chip"
+                      onClick={() => {
+                        setCustomWallGradient({
+                          color1: "#2d3748",
+                          color2: "#1a202c",
+                          angle: 180,
+                        });
+                        setWallStyle("custom");
+                      }}
+                    >
+                      Moody Loft
+                    </button>
+                    <button
+                      type="button"
+                      className="wall-preset-chip"
+                      onClick={() => {
+                        setCustomWallGradient({
+                          color1: "#1e293b",
+                          color2: "#0f172a",
+                          angle: 180,
+                        });
+                        setWallStyle("custom");
+                      }}
+                    >
+                      Midnight Ink
+                    </button>
+                    <button
+                      type="button"
+                      className="wall-preset-chip"
+                      onClick={() => {
+                        setCustomWallGradient({
+                          color1: "#3f4f44",
+                          color2: "#1e2922",
+                          angle: 180,
+                        });
+                        setWallStyle("custom");
+                      }}
+                    >
+                      Forest Sage
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Bottom Controls Bar */}
+            <div className="wall-mockup-controls is-bottom-bar" aria-label="Living room gallery mockup controls">
+              <span className="wall-mockup-title">🖼️ Living Room View</span>
+
+              {/* 7 Curated Walls + Custom Gradient Mixer */}
+              <div className="wall-frame-switcher" role="radiogroup" aria-label="Select wall background">
+                <span className="wall-switcher-label">Wall:</span>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${wallStyle === "nordic-grey" ? " is-selected" : ""}`}
+                  onClick={() => setWallStyle("nordic-grey")}
+                  title="Modern Nordic Grey Wall (International Standard)"
+                >
+                  <span className="frame-color-swatch swatch-nordic-grey" aria-hidden="true" />
+                  Grey
+                </button>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${wallStyle === "warm-cream" ? " is-selected" : ""}`}
+                  onClick={() => setWallStyle("warm-cream")}
+                  title="Warm Scandinavian Cream Living Room"
+                >
+                  <span className="frame-color-swatch swatch-warm-cream" aria-hidden="true" />
+                  Cream
+                </button>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${wallStyle === "warm-taupe" ? " is-selected" : ""}`}
+                  onClick={() => setWallStyle("warm-taupe")}
+                  title="Warm Greige / Taupe Luxury Wall"
+                >
+                  <span className="frame-color-swatch swatch-warm-taupe" aria-hidden="true" />
+                  Taupe
+                </button>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${wallStyle === "gallery-white" ? " is-selected" : ""}`}
+                  onClick={() => setWallStyle("gallery-white")}
+                  title="Clean Museum White Wall"
+                >
+                  <span className="frame-color-swatch swatch-white" aria-hidden="true" />
+                  White
+                </button>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${wallStyle === "modern-charcoal" ? " is-selected" : ""}`}
+                  onClick={() => setWallStyle("modern-charcoal")}
+                  title="Modern Charcoal Accent Wall"
+                >
+                  <span className="frame-color-swatch swatch-charcoal" aria-hidden="true" />
+                  Charcoal
+                </button>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${wallStyle === "luxury-navy" ? " is-selected" : ""}`}
+                  onClick={() => setWallStyle("luxury-navy")}
+                  title="Luxury Navy Accent Wall"
+                >
+                  <span className="frame-color-swatch swatch-navy" aria-hidden="true" />
+                  Navy
+                </button>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${wallStyle === "sage-emerald" ? " is-selected" : ""}`}
+                  onClick={() => setWallStyle("sage-emerald")}
+                  title="Contemporary Sage Botanical Wall"
+                >
+                  <span className="frame-color-swatch swatch-sage" aria-hidden="true" />
+                  Sage
+                </button>
+                {/* Custom Gradient Toggle with 🎨 paint emoji */}
+                <button
+                  type="button"
+                  className={`wall-frame-chip wall-gradient-trigger${wallStyle === "custom" ? " is-selected" : ""}`}
+                  onClick={() => {
+                    setWallStyle("custom");
+                    setIsGradientPickerOpen((prev) => !prev);
+                  }}
+                  title="Custom Wall Gradient Mixer with Color Picker"
+                >
+                  <span aria-hidden="true">🎨</span>
+                  <span>Gradient</span>
+                </button>
+              </div>
+
+              {/* 5 Frames: Frameless + 4 Real 3D Moldings */}
+              <div className="wall-frame-switcher" role="radiogroup" aria-label="Select frame style">
+                <span className="wall-switcher-label">Frame:</span>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${frameStyle === "none" ? " is-selected" : ""}`}
+                  onClick={() => setFrameStyle("none")}
+                  title="Frameless Gallery Canvas (No Frame, Floating Canvas Look)"
+                >
+                  <span className="frame-color-swatch swatch-none" aria-hidden="true" />
+                  None
+                </button>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${frameStyle === "black" ? " is-selected" : ""}`}
+                  onClick={() => setFrameStyle("black")}
+                  title="Matte Black Beveled Gallery Wood Frame with Passe-partout"
+                >
+                  <span className="frame-color-swatch swatch-black" aria-hidden="true" />
+                  Black
+                </button>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${frameStyle === "oak" ? " is-selected" : ""}`}
+                  onClick={() => setFrameStyle("oak")}
+                  title="Natural Scandinavian Oak Wood Frame"
+                >
+                  <span className="frame-color-swatch swatch-oak" aria-hidden="true" />
+                  Oak
+                </button>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${frameStyle === "white" ? " is-selected" : ""}`}
+                  onClick={() => setFrameStyle("white")}
+                  title="Satin Architectural White Wood Frame"
+                >
+                  <span className="frame-color-swatch swatch-white" aria-hidden="true" />
+                  White
+                </button>
+                <button
+                  type="button"
+                  className={`wall-frame-chip${frameStyle === "gold" ? " is-selected" : ""}`}
+                  onClick={() => setFrameStyle("gold")}
+                  title="Brushed Brass / Antique Gold Metallic Frame"
+                >
+                  <span className="frame-color-swatch swatch-gold" aria-hidden="true" />
+                  Gold
+                </button>
+              </div>
+
+              {/* Return to original canvas view */}
               <button
                 type="button"
-                className={`wall-frame-chip${wallStyle === "warm-cream" ? " is-selected" : ""}`}
-                onClick={() => setWallStyle("warm-cream")}
-                title="Warm Cream Living Room"
+                className="wall-exit-chip"
+                onClick={() => {
+                  setIsWallMockup(false);
+                  setIsGradientPickerOpen(false);
+                }}
+                title="Switch back to original flat poster canvas"
               >
-                <span className="frame-color-swatch swatch-warm-cream" aria-hidden="true" />
-                Cream
-              </button>
-              <button
-                type="button"
-                className={`wall-frame-chip${wallStyle === "modern-charcoal" ? " is-selected" : ""}`}
-                onClick={() => setWallStyle("modern-charcoal")}
-                title="Modern Charcoal Accent Wall"
-              >
-                <span className="frame-color-swatch swatch-charcoal" aria-hidden="true" />
-                Charcoal
-              </button>
-              <button
-                type="button"
-                className={`wall-frame-chip${wallStyle === "gallery-white" ? " is-selected" : ""}`}
-                onClick={() => setWallStyle("gallery-white")}
-                title="Museum Gallery White Wall"
-              >
-                <span className="frame-color-swatch swatch-white" aria-hidden="true" />
-                White
-              </button>
-              <button
-                type="button"
-                className={`wall-frame-chip${wallStyle === "luxury-navy" ? " is-selected" : ""}`}
-                onClick={() => setWallStyle("luxury-navy")}
-                title="Luxury Navy Wall"
-              >
-                <span className="frame-color-swatch swatch-navy" aria-hidden="true" />
-                Navy
-              </button>
-              <button
-                type="button"
-                className={`wall-frame-chip${wallStyle === "concrete-loft" ? " is-selected" : ""}`}
-                onClick={() => setWallStyle("concrete-loft")}
-                title="Industrial Concrete Loft Wall"
-              >
-                <span className="frame-color-swatch swatch-concrete" aria-hidden="true" />
-                Loft
+                <span>✕ Canvas View</span>
               </button>
             </div>
-
-            {/* Frame style switcher */}
-            <div className="wall-frame-switcher" role="radiogroup" aria-label="Select frame style">
-              <span className="wall-switcher-label">Frame</span>
-              <button
-                type="button"
-                className={`wall-frame-chip${frameStyle === "black" ? " is-selected" : ""}`}
-                onClick={() => setFrameStyle("black")}
-                title="Classic Black Frame"
-              >
-                <span className="frame-color-swatch swatch-black" aria-hidden="true" />
-                Black
-              </button>
-              <button
-                type="button"
-                className={`wall-frame-chip${frameStyle === "oak" ? " is-selected" : ""}`}
-                onClick={() => setFrameStyle("oak")}
-                title="Natural Oak Wood Frame"
-              >
-                <span className="frame-color-swatch swatch-oak" aria-hidden="true" />
-                Oak
-              </button>
-              <button
-                type="button"
-                className={`wall-frame-chip${frameStyle === "white" ? " is-selected" : ""}`}
-                onClick={() => setFrameStyle("white")}
-                title="Modern White Frame"
-              >
-                <span className="frame-color-swatch swatch-white" aria-hidden="true" />
-                White
-              </button>
-              <button
-                type="button"
-                className={`wall-frame-chip${frameStyle === "gold" ? " is-selected" : ""}`}
-                onClick={() => setFrameStyle("gold")}
-                title="Brushed Brass / Gold Frame"
-              >
-                <span className="frame-color-swatch swatch-gold" aria-hidden="true" />
-                Gold
-              </button>
-            </div>
-
-            {/* Exit to canvas view */}
-            <button
-              type="button"
-              className="wall-exit-chip"
-              onClick={() => setIsWallMockup(false)}
-              title="Switch back to flat poster canvas"
-            >
-              <span>✕ Canvas View</span>
-            </button>
-          </div>
+          </>
         ) : (
           <button
             type="button"

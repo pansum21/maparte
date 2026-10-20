@@ -51,16 +51,22 @@
 }
 
 /* Wall Background Styles */
+.poster-viewport.is-wall-mockup.wall-nordic-grey {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 6%, rgba(255, 255, 255, 0.42) 0%, transparent 65%),
+    linear-gradient(180deg, #535a64 0%, #3e444d 60%, #2a2f36 100%) !important;
+}
+
 .poster-viewport.is-wall-mockup.wall-warm-cream {
   background:
     radial-gradient(ellipse 90% 55% at 50% 8%, rgba(255, 248, 235, 0.65) 0%, transparent 68%),
     linear-gradient(180deg, #ede5d8 0%, #e2d8c7 60%, #d4c8b4 100%) !important;
 }
 
-.poster-viewport.is-wall-mockup.wall-modern-charcoal {
+.poster-viewport.is-wall-mockup.wall-warm-taupe {
   background:
-    radial-gradient(ellipse 95% 60% at 50% 6%, rgba(255, 238, 215, 0.26) 0%, transparent 65%),
-    linear-gradient(180deg, #1c2027 0%, #13161c 65%, #0b0d10 100%) !important;
+    radial-gradient(ellipse 90% 55% at 50% 6%, rgba(255, 245, 230, 0.45) 0%, transparent 65%),
+    linear-gradient(180deg, #968c83 0%, #7d736b 60%, #5f5750 100%) !important;
 }
 
 .poster-viewport.is-wall-mockup.wall-gallery-white {
@@ -69,21 +75,27 @@
     linear-gradient(180deg, #f8fafc 0%, #eef2f6 65%, #e2e8f0 100%) !important;
 }
 
+.poster-viewport.is-wall-mockup.wall-modern-charcoal {
+  background:
+    radial-gradient(ellipse 95% 60% at 50% 6%, rgba(255, 238, 215, 0.26) 0%, transparent 65%),
+    linear-gradient(180deg, #1c2027 0%, #13161c 65%, #0b0d10 100%) !important;
+}
+
 .poster-viewport.is-wall-mockup.wall-luxury-navy {
   background:
     radial-gradient(ellipse 90% 55% at 50% 6%, rgba(255, 235, 210, 0.28) 0%, transparent 65%),
     linear-gradient(180deg, #111e30 0%, #0a1320 65%, #04080e 100%) !important;
 }
 
-.poster-viewport.is-wall-mockup.wall-concrete-loft {
+.poster-viewport.is-wall-mockup.wall-sage-emerald {
   background:
-    radial-gradient(ellipse 90% 55% at 50% 6%, rgba(255, 245, 230, 0.3) 0%, transparent 65%),
-    linear-gradient(180deg, #373c43 0%, #282c32 65%, #1c1e22 100%) !important;
+    radial-gradient(ellipse 90% 55% at 50% 6%, rgba(255, 250, 235, 0.35) 0%, transparent 65%),
+    linear-gradient(180deg, #3d5045 0%, #2a3830 65%, #18221c 100%) !important;
 }
 
 .poster-viewport.is-wall-mockup::before {
   background-image: none !important;
-  background: radial-gradient(circle at 50% 20%, rgba(255, 245, 230, 0.1), transparent 70%) !important;
+  background: radial-gradient(circle at 50% 20%, rgba(255, 245, 230, 0.12), transparent 70%) !important;
 }
 
 .poster-viewport.is-wall-mockup .poster-ghost-layer {
@@ -96,56 +108,108 @@
   opacity: 0.3;
 }
 
-.poster-viewport.is-wall-mockup .poster-frame {
+/* ── Authentic Picture Frames ── */
+
+/* 1. Frameless Floating Gallery Canvas (No frame) */
+.poster-viewport.is-wall-mockup .poster-frame.frame-none {
   transform: scale(0.92);
-  border: 15px solid #111317;
-  outline: 1px solid rgba(255, 255, 255, 0.15);
+  border: none !important;
+  outline: none !important;
+  border-radius: 4px;
   box-shadow:
-    inset 0 0 0 10px #f7f4ee,
-    inset 0 0 0 11px rgba(0, 0, 0, 0.22),
-    0 45px 90px -15px rgba(0, 0, 0, 0.88),
-    0 22px 42px -10px rgba(0, 0, 0, 0.65);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border 0.35s ease, outline 0.35s ease;
+    0 4px 10px -2px rgba(0, 0, 0, 0.4),
+    0 24px 50px -10px rgba(0, 0, 0, 0.55),
+    0 45px 90px -15px rgba(0, 0, 0, 0.7) !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
 }
 
-.poster-viewport.is-wall-mockup .poster-frame.frame-oak {
-  border: 15px solid #94633b;
+/* 2. Matte Black Gallery Beveled Wood Frame with Archival Matboard */
+.poster-viewport.is-wall-mockup .poster-frame,
+.poster-viewport.is-wall-mockup .poster-frame.frame-black {
+  transform: scale(0.92);
+  border-width: 18px;
+  border-style: solid;
+  border-color: #2b2e35 #1c1f24 #0d0f12 #22262d;
+  border-radius: 2px;
   outline: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
-    inset 0 0 0 10px #fcfaf7,
-    inset 0 0 0 11px rgba(0, 0, 0, 0.18),
-    0 45px 90px -15px rgba(0, 0, 0, 0.88),
-    0 22px 42px -10px rgba(0, 0, 0, 0.65);
+    0 0 0 1px rgba(255, 255, 255, 0.16),
+    0 1px 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 14px #f5f3ec,
+    inset 0 0 0 15px #e5e1d7,
+    inset 1px 2px 5px 15px rgba(0, 0, 0, 0.35),
+    0 4px 8px -2px rgba(0, 0, 0, 0.45),
+    0 20px 42px -8px rgba(0, 0, 0, 0.55),
+    0 48px 96px -16px rgba(0, 0, 0, 0.78);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border 0.35s ease;
 }
 
-.poster-viewport.is-wall-mockup.wall-warm-cream .poster-frame,
-.poster-viewport.is-wall-mockup.wall-gallery-white .poster-frame {
+/* 3. Scandinavian Natural Oak Wood Frame */
+.poster-viewport.is-wall-mockup .poster-frame.frame-oak {
+  transform: scale(0.92);
+  border-width: 18px;
+  border-style: solid;
+  border-color: #c49666 #a8794c #6e4823 #b58555;
+  border-radius: 2px;
+  outline: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow:
-    inset 0 0 0 10px #f7f4ee,
-    inset 0 0 0 11px rgba(0, 0, 0, 0.18),
-    0 38px 80px -12px rgba(25, 20, 15, 0.38),
-    0 18px 36px -8px rgba(25, 20, 15, 0.25),
-    0 6px 14px rgba(25, 20, 15, 0.14);
+    0 0 0 1px rgba(255, 255, 255, 0.22),
+    0 1px 0 1px rgba(255, 255, 255, 0.12),
+    inset 0 1px 2px rgba(255, 255, 255, 0.35),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 14px #f7f5ed,
+    inset 0 0 0 15px #e6e2d6,
+    inset 1px 2px 5px 15px rgba(50, 35, 20, 0.32),
+    0 4px 8px -2px rgba(0, 0, 0, 0.4),
+    0 20px 42px -8px rgba(35, 25, 15, 0.5),
+    0 48px 96px -16px rgba(25, 18, 10, 0.72);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border 0.35s ease;
 }
 
+/* 4. Modern Architectural White Wood Frame */
 .poster-viewport.is-wall-mockup .poster-frame.frame-white {
-  border: 15px solid #f8fafc;
-  outline: 1px solid rgba(0, 0, 0, 0.12);
+  transform: scale(0.92);
+  border-width: 18px;
+  border-style: solid;
+  border-color: #ffffff #f1f5f9 #cbd5e1 #e2e8f0;
+  border-radius: 2px;
+  outline: 1px solid rgba(0, 0, 0, 0.14);
   box-shadow:
-    inset 0 0 0 10px #ffffff,
-    inset 0 0 0 11px rgba(0, 0, 0, 0.12),
-    0 45px 90px -15px rgba(0, 0, 0, 0.82),
-    0 22px 42px -10px rgba(0, 0, 0, 0.6);
+    0 0 0 1px rgba(0, 0, 0, 0.1),
+    0 1px 0 1px rgba(255, 255, 255, 0.6),
+    inset 0 1px 2px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 14px #fafaf9,
+    inset 0 0 0 15px #e7e5e4,
+    inset 1px 2px 5px 15px rgba(0, 0, 0, 0.18),
+    0 4px 8px -2px rgba(0, 0, 0, 0.3),
+    0 20px 42px -8px rgba(0, 0, 0, 0.45),
+    0 48px 96px -16px rgba(0, 0, 0, 0.65);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border 0.35s ease;
 }
 
+/* 5. Brushed Brass / Antique Gold Metallic Frame */
 .poster-viewport.is-wall-mockup .poster-frame.frame-gold {
-  border: 15px solid #c9a45c;
-  outline: 1px solid rgba(255, 255, 255, 0.28);
+  transform: scale(0.92);
+  border-width: 17px;
+  border-style: solid;
+  border-color: #e8c882 #cfa554 #8c6824 #dbae5e;
+  border-radius: 2px;
+  outline: 1px solid rgba(255, 255, 255, 0.32);
   box-shadow:
-    inset 0 0 0 10px #fdfbf7,
-    inset 0 0 0 11px rgba(140, 95, 20, 0.24),
-    0 45px 90px -15px rgba(0, 0, 0, 0.85),
-    0 22px 42px -10px rgba(0, 0, 0, 0.62);
+    0 0 0 1px rgba(255, 255, 255, 0.45),
+    0 1px 0 1px rgba(255, 255, 255, 0.22),
+    inset 0 1px 3px rgba(255, 255, 255, 0.65),
+    inset 0 -1px 3px rgba(80, 55, 10, 0.55),
+    inset 0 0 0 14px #faf8f2,
+    inset 0 0 0 15px #eae5d7,
+    inset 1px 2px 5px 15px rgba(70, 48, 15, 0.28),
+    0 4px 8px -2px rgba(0, 0, 0, 0.45),
+    0 20px 42px -8px rgba(0, 0, 0, 0.55),
+    0 48px 96px -16px rgba(0, 0, 0, 0.75);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border 0.35s ease;
 }
 
 /* Glass reflection shine across framed artwork */
@@ -157,37 +221,60 @@
   z-index: 10;
   background: linear-gradient(
     125deg,
-    rgba(255, 255, 255, 0.18) 0%,
-    rgba(255, 255, 255, 0.05) 30%,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.04) 30%,
     transparent 55%
   );
 }
 
-.wall-mockup-controls {
+/* ── Wall Mockup Controls (Positioned at BOTTOM) ── */
+
+.wall-mockup-controls.is-bottom-bar {
   position: absolute;
-  top: 18px;
+  bottom: 22px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 15;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 5px 12px;
+  gap: 8px;
+  padding: 7px 16px;
   border-radius: 9999px;
-  background: rgba(15, 23, 42, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
-  animation: fadeInDown 0.3s ease;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: calc(100% - 24px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.wall-mockup-controls.is-bottom-bar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 .wall-mockup-title {
   font-size: 11.5px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.03em;
   color: #f1f5f9;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .wall-frame-switcher {
@@ -195,16 +282,25 @@
   align-items: center;
   gap: 3px;
   background: rgba(255, 255, 255, 0.08);
-  padding: 2px 4px;
+  padding: 3px 6px;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.wall-switcher-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 4px 0 2px;
 }
 
 .wall-frame-chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 8px;
+  padding: 4px 8px;
   border-radius: 9999px;
   border: none;
   background: transparent;
@@ -214,6 +310,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
+  white-space: nowrap;
 }
 
 .wall-frame-chip:hover {
@@ -228,53 +325,15 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
-.frame-color-swatch {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  display: inline-block;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+.wall-gradient-trigger {
+  color: #38bdf8 !important;
+  font-weight: 600 !important;
 }
 
-.swatch-black {
-  background: #111317;
-}
-
-.swatch-oak {
-  background: #94633b;
-}
-
-.swatch-white {
-  background: #f8fafc;
-}
-
-.swatch-gold {
-  background: linear-gradient(135deg, #e3be75 0%, #a87e35 100%);
-}
-
-.swatch-warm-cream {
-  background: #ede5d8;
-}
-
-.swatch-charcoal {
-  background: #1c2027;
-}
-
-.swatch-navy {
-  background: #111e30;
-}
-
-.swatch-concrete {
-  background: #373c43;
-}
-
-.wall-switcher-label {
-  font-size: 10px;
-  font-weight: 700;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-right: 2px;
+.wall-gradient-trigger.is-selected {
+  background: rgba(56, 189, 248, 0.28) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4) !important;
 }
 
 .wall-exit-chip {
@@ -291,6 +350,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
+  white-space: nowrap;
 }
 
 .wall-exit-chip:hover {
@@ -334,6 +394,206 @@
   transform: translateX(-50%) translateY(-2px);
   border-color: #38bdf8;
   box-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);
+}
+
+/* ── Custom Wall Gradient Popover ── */
+.wall-gradient-popover {
+  position: absolute;
+  bottom: 74px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  width: min(92vw, 420px);
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+  animation: fadeInUp 0.25s ease;
+}
+
+.wall-gradient-popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.wall-gradient-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.wall-gradient-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.wall-gradient-close-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.wall-gradient-inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.wall-gradient-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.wall-gradient-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wall-gradient-color-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.wall-gradient-color-wrap input[type="color"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+}
+
+.wall-gradient-color-wrap input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.wall-gradient-color-wrap input[type="color"]::-webkit-color-swatch {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.wall-hex-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #f1f5f9;
+  font-family: monospace;
+  font-size: 11.5px;
+  outline: none;
+}
+
+.wall-popular-presets {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 10px;
+}
+
+.wall-presets-heading {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wall-presets-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wall-preset-chip {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  font-size: 10.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wall-preset-chip:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+/* Color swatches */
+.frame-color-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.swatch-none {
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.6);
+}
+
+.swatch-nordic-grey {
+  background: #525861;
+}
+
+.swatch-warm-cream {
+  background: #ede5d8;
+}
+
+.swatch-warm-taupe {
+  background: #968c83;
+}
+
+.swatch-white {
+  background: #f8fafc;
+}
+
+.swatch-charcoal {
+  background: #1c2027;
+}
+
+.swatch-navy {
+  background: #111e30;
+}
+
+.swatch-sage {
+  background: #3d5045;
+}
+
+.swatch-black {
+  background: #111317;
+}
+
+.swatch-oak {
+  background: #a8794c;
+}
+
+.swatch-gold {
+  background: linear-gradient(135deg, #e8c882 0%, #8c6824 100%);
 }
 
 .wall-mockup-badge {
