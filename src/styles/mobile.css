@@ -199,14 +199,31 @@
       0 8px 32px rgba(0, 0, 0, 0.55),
       0 2px 8px rgba(0, 0, 0, 0.35),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    color: rgba(180, 205, 225, 0.4);
-    cursor: default;
+    color: rgba(180, 205, 225, 0.78);
+    cursor: pointer;
+    touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
 
   .mobile-nav-settings-icon {
     width: 20px;
     height: 20px;
+  }
+
+  .mobile-nav-settings.is-active {
+    border-color: rgba(56, 189, 248, 0.5);
+    background: rgba(56, 189, 248, 0.18);
+    color: #7dd8f0;
+  }
+
+  .mobile-nav-settings:active {
+    transform: scale(0.96);
+    background: rgba(56, 189, 248, 0.22);
+  }
+
+  .mobile-nav-settings:focus-visible {
+    outline: 2px solid #7dd8f0;
+    outline-offset: 2px;
   }
 
   .startup-location-modal {
@@ -1693,5 +1710,49 @@
     background: transparent;
     box-shadow: none;
     padding: 0;
+  }
+}
+
+
+/* Tablet touch layout: keep the same tools, with more breathing room than phone. */
+@media (min-width: 601px) and (max-width: 1024px) and (pointer: coarse) {
+  .mobile-nav-wrapper {
+    left: 24px;
+    right: 24px;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    gap: 10px;
+  }
+
+  .mobile-nav {
+    height: 68px;
+    border-radius: 24px;
+  }
+
+  .mobile-nav-tab {
+    width: 84px;
+    font-size: 0.64rem;
+  }
+
+  .mobile-nav-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .mobile-nav-settings {
+    width: 68px;
+    height: 68px;
+    border-radius: 22px;
+    cursor: pointer;
+  }
+
+  .mobile-drawer-sheet {
+    width: min(720px, calc(100vw - 36px));
+    margin-inline: auto;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .mobile-quick-action {
+    min-height: 52px;
+    font-size: 0.8rem;
   }
 }

@@ -1207,3 +1207,69 @@
     grid-template-columns: auto minmax(120px, 1fr) auto;
   }
 }
+
+
+/* Raised ornamental molding used by both cinema preview and exported artwork. */
+.poster-viewport.is-wall-mockup .poster-frame:not(.frame-none) {
+  --molding-width: 18px;
+  --molding-light: #8b7b5a;
+  --molding-mid: #302c23;
+  --molding-dark: #090a0c;
+  --molding-accent: #d7c28c;
+}
+
+.poster-viewport.is-wall-mockup .poster-frame.frame-oak {
+  --molding-light: #f3ca91;
+  --molding-mid: #a96d37;
+  --molding-dark: #4d2b17;
+  --molding-accent: #f9e2b7;
+}
+
+.poster-viewport.is-wall-mockup .poster-frame.frame-white {
+  --molding-light: #ffffff;
+  --molding-mid: #d6dce1;
+  --molding-dark: #8a96a1;
+  --molding-accent: #73808b;
+}
+
+.poster-viewport.is-wall-mockup .poster-frame.frame-gold {
+  --molding-light: #fff0b8;
+  --molding-mid: #c18a28;
+  --molding-dark: #65420d;
+  --molding-accent: #fff4ce;
+}
+
+.poster-viewport.is-wall-mockup .poster-frame:not(.frame-none)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  box-sizing: border-box;
+  padding: var(--molding-width);
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, var(--molding-accent) 0 2px, transparent 2.7px) 0 0 / 28px 28px,
+    repeating-linear-gradient(45deg, transparent 0 7px, rgba(255, 255, 255, 0.24) 7px 8px, transparent 8px 14px),
+    linear-gradient(135deg, var(--molding-light), var(--molding-mid) 42%, var(--molding-dark) 74%, var(--molding-light));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.poster-viewport.is-wall-mockup .poster-frame.frame-none::before {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .poster-viewport.is-wall-mockup .poster-frame:not(.frame-none) {
+    --molding-width: 7px;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  .poster-viewport.is-wall-mockup .poster-frame:not(.frame-none) {
+    --molding-width: 10px;
+  }
+}

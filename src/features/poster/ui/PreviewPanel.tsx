@@ -444,7 +444,7 @@ export default function PreviewPanel({
 
   return (
     <section className="preview-panel">
-      <div className="poster-viewport">
+      <div className={`poster-viewport${isCinemaMode ? " is-wall-mockup" : ""}`}>
         {/* Desktop ghost layer: canvas clone of the main map at reduced opacity */}
         <div className="poster-ghost-layer" aria-hidden="true">
           <canvas
