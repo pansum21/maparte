@@ -1,8 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useBackdropTheme } from "../application/useBackdropTheme";
-import { BACKDROP_PRESETS } from "../domain/backdropThemes";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
-import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import DownloadModal from "@/features/export/ui/DownloadModal";
 
 export type FrameStyleOption = "none" | "black" | "oak" | "white" | "gold";
@@ -16,20 +14,11 @@ export default function CinemaWallDock({
   onExit,
   onOpenWallModal,
 }: CinemaWallDockProps) {
-  const {
-    backdropState,
-    activePreset,
-    selectNextPreset,
-    selectPrevPreset,
-    selectPreset,
-  } = useBackdropTheme();
-
-  const { state, dispatch } = usePosterContext();
+  const { backdropState, activePreset } = useBackdropTheme();
+  const { state } = usePosterContext();
   const { form } = state;
 
-  const isPhoneWallpaper =
-    form.layout === "wallpaper_iphone_15_pro" ||
-    form.layout.startsWith("wallpaper_iphone");
+  const cityName = form.displayCity || form.location || "Custom City";
 
   const [frameStyle, setFrameStyle] = useState<FrameStyleOption>(() => {
     if (typeof window === "undefined") return "black";
@@ -40,19 +29,8 @@ export default function CinemaWallDock({
     return "black";
   });
 
-  const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
   const [showOrderNotice, setShowOrderNotice] = useState(false);
-
-  // Sync native fullscreen state
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsNativeFullscreen(Boolean(document.fullscreenElement));
-    };
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () =>
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  }, []);
 
   // Update frame style
   const handleSelectFrame = useCallback((style: FrameStyleOption) => {
@@ -65,71 +43,7 @@ export default function CinemaWallDock({
     );
   }, []);
 
-  // Toggle native monitor fullscreen
-  const handleToggleNativeFullscreen = useCallback(() => {
-    if (document.fullscreenElement) {
-      void document.exitFullscreen().catch(() => {});
-    } else if (document.documentElement.requestFullscreen) {
-      void document.documentElement.requestFullscreen().catch(() => {});
-    }
-  }, []);
-
-  // Toggle Phone Wallpaper vs A4 Poster layout
-  const handleToggleWallpaper = useCallback(() => {
-    const targetId = isPhoneWallpaper
-      ? "print_a4_portrait"
-      : "wallpaper_iphone_15_pro";
-    const targetLayout =
-      targetId === "wallpaper_iphone_15_pro"
-        ? { widthCm: 14.4, heightCm: 31.2 }
-        : { widthCm: 21, heightCm: 29.7 };
-
-    dispatch({
-      type: "SET_FIELD",
-      field: "layout",
-      value: targetId,
-    });
-    dispatch({
-      type: "SET_DIMENSIONS",
-      widthCm: formatLayoutCm(targetLayout.widthCm),
-      heightCm: formatLayoutCm(targetLayout.heightCm),
-    });
-  }, [isPhoneWallpaper, dispatch]);
-
-  // Arrow key navigation between wall colors
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA"
-      ) {
-        return;
-      }
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        selectNextPreset();
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        selectPrevPreset();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectNextPreset, selectPrevPreset]);
-
   const isCustom = backdropState.type === "custom";
-
-  // Fast swatches for instant 1-tap wall color test
-  const POPULAR_WALL_SWATCHES = [
-    { id: "swiss_coffee", label: "Coffee", name: "Swiss Coffee", hex: "#f1ede2" },
-    { id: "alabaster_white", label: "White", name: "Alabaster White", hex: "#edeae0" },
-    { id: "evergreen_fog", label: "Sage", name: "Evergreen Sage", hex: "#5c675b" },
-    { id: "nordic_slate", label: "Slate", name: "Nordic Slate", hex: "#1e293b" },
-    { id: "sedona_terracotta", label: "Terracotta", name: "Terracotta", hex: "#b85d43" },
-    { id: "scandi_oak_slat", label: "Oak", name: "Oak Wood Slats", hex: "#b89065" },
-    { id: "oceanic_abyss", label: "Navy", name: "Oceanic Navy", hex: "#032b43" },
-    { id: "velvet_noir", label: "Noir", name: "Velvet Noir", hex: "#09090b" },
-  ];
 
   return (
     <div
@@ -137,27 +51,100 @@ export default function CinemaWallDock({
       role="region"
       aria-label="Fullscreen Wall Preview Controls"
     >
-      {/* Top Left: Brand & Wall Color Studio Trigger */}
+      {/* ── Top Left Column: Heading -> Change Wall Color -> Frames ── */}
       <div className="cinema-top-bar-left">
-        <div className="cinema-top-left-pill">
-          <span className="cinema-brand-dot" />
-          <span className="cinema-brand-text">MAPARTE</span>
-          <span className="cinema-brand-sep">•</span>
-          <span className="cinema-brand-sub">Cinema Room View</span>
+        {/* 1. Prominent Heading */}
+        <div className="cinema-heading-block">
+          <div className="cinema-brand-title">
+            <span className="cinema-brand-dot" />
+            <span className="cinema-brand-name">MAPARTE</span>
+          </div>
+          <span className="cinema-heading-sub">Cinema Room View</span>
         </div>
 
+        {/* 2. Just below: Change Wall Color Button */}
         <button
           type="button"
           className="cinema-top-wall-btn"
           onClick={onOpenWallModal}
-          title="Open Wall Color & Custom Paint Studio"
+          title="Open Wall Color Studio (64 Authentic Interior Walls & Custom Colors)"
         >
-          <span aria-hidden="true">🎨</span>
-          <span>Change Wall Color (64 Walls)</span>
+          <span
+            className="cinema-wall-btn-swatch"
+            style={{
+              background: isCustom
+                ? `linear-gradient(${backdropState.custom.angle}deg, ${backdropState.custom.color1}, ${backdropState.custom.color2})`
+                : activePreset.previewGradient,
+            }}
+          />
+          <span className="cinema-wall-btn-icon" aria-hidden="true">🎨</span>
+          <span className="cinema-wall-btn-title">Change Wall Color</span>
+          <span className="cinema-wall-btn-tag">64 Walls</span>
         </button>
+
+        {/* 3. Just below: Frames Bar */}
+        <div className="cinema-frames-bar" role="radiogroup" aria-label="Select frame molding">
+          <span className="cinema-frames-label">Frames:</span>
+          <div className="cinema-frames-list">
+            <button
+              type="button"
+              className={`cinema-frame-chip${frameStyle === "none" ? " is-selected" : ""}`}
+              onClick={() => handleSelectFrame("none")}
+              title="Frameless Canvas"
+            >
+              None
+            </button>
+            <button
+              type="button"
+              className={`cinema-frame-chip${frameStyle === "black" ? " is-selected" : ""}`}
+              onClick={() => handleSelectFrame("black")}
+              title="Matte Black Wood Frame"
+            >
+              <span className="frame-chip-color chip-black" />
+              Black
+            </button>
+            <button
+              type="button"
+              className={`cinema-frame-chip${frameStyle === "oak" ? " is-selected" : ""}`}
+              onClick={() => handleSelectFrame("oak")}
+              title="Scandinavian Natural Oak Frame"
+            >
+              <span className="frame-chip-color chip-oak" />
+              Oak
+            </button>
+            <button
+              type="button"
+              className={`cinema-frame-chip${frameStyle === "white" ? " is-selected" : ""}`}
+              onClick={() => handleSelectFrame("white")}
+              title="Modern White Wood Frame"
+            >
+              <span className="frame-chip-color chip-white" />
+              White
+            </button>
+            <button
+              type="button"
+              className={`cinema-frame-chip${frameStyle === "gold" ? " is-selected" : ""}`}
+              onClick={() => handleSelectFrame("gold")}
+              title="Antique Brass Gold Frame"
+            >
+              <span className="frame-chip-color chip-gold" />
+              Gold
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Top Right: Prominent Commerce CTA & Exit Button */}
+      {/* ── Top Center: Live Poster View Badge with City ── */}
+      <div className="cinema-top-bar-center">
+        <div className="cinema-center-view-badge">
+          <span className="cinema-center-icon">🖼️</span>
+          <span className="cinema-center-title">Poster View</span>
+          <span className="cinema-center-sep">•</span>
+          <span className="cinema-center-city">{cityName}</span>
+        </div>
+      </div>
+
+      {/* ── Top Right: Order Print CTA, Download & Prominent Back / Exit Button ── */}
       <div className="cinema-top-bar-right">
         <button
           type="button"
@@ -183,222 +170,14 @@ export default function CinemaWallDock({
           type="button"
           className="cinema-top-exit-btn"
           onClick={onExit}
-          title="Exit Fullscreen Wall View (Esc)"
-          aria-label="Exit Fullscreen Wall View"
+          title="Exit Fullscreen Wall View & Back to Editor (Esc)"
+          aria-label="Back to Editor"
         >
-          <span className="cinema-exit-icon" aria-hidden="true">✕</span>
-          <span className="cinema-exit-text">Exit</span>
+          <span className="cinema-exit-icon" aria-hidden="true">←</span>
+          <span className="cinema-exit-text">Back to Editor</span>
           <kbd className="cinema-esc-kbd">ESC</kbd>
         </button>
       </div>
-
-      {/* Bottom Center: Fully Clickable, High-Contrast Glassmorphic Cinema Dock */}
-      <aside className="cinema-bottom-dock" onClick={(e) => e.stopPropagation()}>
-        {/* Wall Selector Group */}
-        <div className="cinema-dock-section cinema-wall-group">
-          <button
-            type="button"
-            className="cinema-dock-btn cinema-dock-arrow"
-            onClick={selectPrevPreset}
-            title="Previous Wall Color (Left Arrow ‹)"
-            aria-label="Previous Wall Color"
-          >
-            ❮
-          </button>
-
-          <button
-            type="button"
-            className="cinema-active-wall-btn"
-            onClick={onOpenWallModal}
-            title="Click to browse all 64 interior wall colors & custom paint mixer"
-          >
-            <span
-              className="cinema-wall-swatch-dot"
-              style={{
-                background: isCustom
-                  ? `linear-gradient(${backdropState.custom.angle}deg, ${backdropState.custom.color1}, ${backdropState.custom.color2})`
-                  : activePreset.previewGradient,
-              }}
-            />
-            <span className="cinema-wall-name">
-              {isCustom ? "Custom Paint" : activePreset.name}
-            </span>
-            <span className="cinema-wall-dropdown-icon">▾</span>
-          </button>
-
-          <button
-            type="button"
-            className="cinema-dock-btn cinema-dock-arrow"
-            onClick={selectNextPreset}
-            title="Next Wall Color (Right Arrow ›)"
-            aria-label="Next Wall Color"
-          >
-            ❯
-          </button>
-        </div>
-
-        {/* 1-Tap Popular Wall Swatches */}
-        <div className="cinema-dock-section cinema-quick-walls">
-          {POPULAR_WALL_SWATCHES.map((item) => {
-            const isSelected =
-              !isCustom && backdropState.presetId === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className={`cinema-quick-wall-chip${isSelected ? " is-selected" : ""}`}
-                onClick={() => selectPreset(item.id)}
-                title={`Apply ${item.name} wall`}
-              >
-                <span
-                  className="quick-wall-dot"
-                  style={{ background: item.hex }}
-                />
-                <span className="quick-wall-label">{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Open 64 Colors Studio Button */}
-        <div className="cinema-dock-section">
-          <button
-            type="button"
-            className="cinema-dock-btn cinema-palette-btn"
-            onClick={onOpenWallModal}
-            title="Open All 64 Interior Wall Colors & Custom Mixer"
-          >
-            <span aria-hidden="true">🏠</span>
-            <span className="cinema-dock-label">64 Walls</span>
-          </button>
-        </div>
-
-        <span className="cinema-dock-divider" aria-hidden="true" />
-
-        {/* Wallpaper Layout Toggle (Phone Wallpaper vs Poster) */}
-        <div className="cinema-dock-section">
-          <button
-            type="button"
-            className={`cinema-dock-btn cinema-layout-toggle-btn${isPhoneWallpaper ? " is-wallpaper" : ""}`}
-            onClick={handleToggleWallpaper}
-            title={
-              isPhoneWallpaper
-                ? "Switch back to standard A4 Print Poster"
-                : "Switch to 9:16 vertical Phone Wallpaper format"
-            }
-          >
-            <span aria-hidden="true">{isPhoneWallpaper ? "📱" : "🖼️"}</span>
-            <span className="cinema-dock-label">
-              {isPhoneWallpaper ? "Phone Wallpaper" : "Poster View"}
-            </span>
-          </button>
-        </div>
-
-        <span className="cinema-dock-divider" aria-hidden="true" />
-
-        {/* Frame Selection Group */}
-        <div className="cinema-dock-section cinema-frame-group" role="radiogroup" aria-label="Select frame molding">
-          <span className="cinema-group-label">Frame:</span>
-          <button
-            type="button"
-            className={`cinema-frame-btn${frameStyle === "none" ? " is-selected" : ""}`}
-            onClick={() => handleSelectFrame("none")}
-            title="Frameless Canvas"
-          >
-            None
-          </button>
-          <button
-            type="button"
-            className={`cinema-frame-btn${frameStyle === "black" ? " is-selected" : ""}`}
-            onClick={() => handleSelectFrame("black")}
-            title="Matte Black Wood Frame"
-          >
-            <span className="cinema-frame-dot dot-black" />
-            Black
-          </button>
-          <button
-            type="button"
-            className={`cinema-frame-btn${frameStyle === "oak" ? " is-selected" : ""}`}
-            onClick={() => handleSelectFrame("oak")}
-            title="Scandinavian Natural Oak Frame"
-          >
-            <span className="cinema-frame-dot dot-oak" />
-            Oak
-          </button>
-          <button
-            type="button"
-            className={`cinema-frame-btn${frameStyle === "white" ? " is-selected" : ""}`}
-            onClick={() => handleSelectFrame("white")}
-            title="Modern White Wood Frame"
-          >
-            <span className="cinema-frame-dot dot-white" />
-            White
-          </button>
-          <button
-            type="button"
-            className={`cinema-frame-btn${frameStyle === "gold" ? " is-selected" : ""}`}
-            onClick={() => handleSelectFrame("gold")}
-            title="Antique Brass Gold Frame"
-          >
-            <span className="cinema-frame-dot dot-gold" />
-            Gold
-          </button>
-        </div>
-
-        <span className="cinema-dock-divider" aria-hidden="true" />
-
-        {/* Monetization Cash Flows: Order Framed Print & Download */}
-        <div className="cinema-dock-section cinema-commerce-group">
-          <button
-            type="button"
-            className="cinema-dock-btn cinema-order-btn"
-            onClick={() => setShowOrderNotice(true)}
-            title="Order this artwork printed & framed delivered to your door"
-          >
-            <span aria-hidden="true">🛍️</span>
-            <span className="cinema-dock-label">Order Print (₹1,499)</span>
-          </button>
-
-          <button
-            type="button"
-            className="cinema-dock-btn cinema-download-btn"
-            onClick={() => setIsDownloadOpen(true)}
-            title="Download high-resolution image"
-          >
-            <span aria-hidden="true">⬇</span>
-            <span className="cinema-dock-label">Download</span>
-          </button>
-        </div>
-
-        <span className="cinema-dock-divider" aria-hidden="true" />
-
-        {/* Native Monitor Fullscreen Toggle & Exit */}
-        <div className="cinema-dock-section cinema-actions-group">
-          <button
-            type="button"
-            className="cinema-dock-btn cinema-native-fs-btn"
-            onClick={handleToggleNativeFullscreen}
-            title={
-              isNativeFullscreen
-                ? "Exit Monitor Fullscreen"
-                : "Full Screen on Monitor"
-            }
-            aria-label="Toggle Monitor Fullscreen"
-          >
-            <span aria-hidden="true">{isNativeFullscreen ? "⊡" : "⛶"}</span>
-          </button>
-
-          <button
-            type="button"
-            className="cinema-dock-btn cinema-exit-dock-btn"
-            onClick={onExit}
-            title="Exit Fullscreen Preview (Esc)"
-          >
-            <span>Exit</span>
-            <kbd className="cinema-esc-kbd">Esc</kbd>
-          </button>
-        </div>
-      </aside>
 
       {/* Download Modal Trigger inside Cinema Mode */}
       <DownloadModal

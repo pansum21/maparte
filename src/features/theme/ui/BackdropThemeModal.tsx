@@ -30,6 +30,16 @@ const DESIGNER_SWATCHES = [
   { name: "Natural Birch", hex: "#c9a87c" },
 ];
 
+function sanitizeHex(val?: string): string {
+  if (!val) return "#1e293b";
+  const clean = val.trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(clean)) return clean;
+  if (/^#[0-9a-fA-F]{3}$/.test(clean)) {
+    return `#${clean[1]}${clean[1]}${clean[2]}${clean[2]}${clean[3]}${clean[3]}`;
+  }
+  return "#1e293b";
+}
+
 export default function BackdropThemeModal({
   isOpen,
   onClose,
@@ -139,14 +149,24 @@ export default function BackdropThemeModal({
         aria-label="Room Wall Color & Preview Settings"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          type="button"
-          className="export-modal-close"
-          onClick={onClose}
-          aria-label="Close wall color settings"
-        >
-          <CloseIcon />
-        </button>
+        <div className="backdrop-modal-top-actions">
+          <button
+            type="button"
+            className="backdrop-back-to-preview-btn"
+            onClick={onClose}
+            title="Back to Preview"
+          >
+            ← Back to Preview
+          </button>
+          <button
+            type="button"
+            className="export-modal-close"
+            onClick={onClose}
+            aria-label="Close wall color settings"
+          >
+            <CloseIcon />
+          </button>
+        </div>
 
         <div className="backdrop-modal-header">
           <div className="backdrop-modal-badge-row">
@@ -356,7 +376,7 @@ export default function BackdropThemeModal({
                     <input
                       type="color"
                       className="mixer-color-picker"
-                      value={customDraft.color1}
+                      value={sanitizeHex(customDraft.color1)}
                       onChange={(e) => handleSolidColorChange(e.target.value)}
                     />
                     <input
@@ -380,7 +400,7 @@ export default function BackdropThemeModal({
                     <input
                       type="color"
                       className="mixer-color-picker"
-                      value={customDraft.color1}
+                      value={sanitizeHex(customDraft.color1)}
                       onChange={(e) =>
                         handleUpdateField("color1", e.target.value)
                       }
@@ -403,7 +423,7 @@ export default function BackdropThemeModal({
                     <input
                       type="color"
                       className="mixer-color-picker"
-                      value={customDraft.color2}
+                      value={sanitizeHex(customDraft.color2)}
                       onChange={(e) =>
                         handleUpdateField("color2", e.target.value)
                       }
@@ -463,9 +483,13 @@ export default function BackdropThemeModal({
           >
             Reset to Default Wall Color
           </button>
-          <span className="backdrop-footer-hint">
-            Wall color previews adapt dynamically across light &amp; dark room aesthetics.
-          </span>
+          <button
+            type="button"
+            className="backdrop-done-preview-btn"
+            onClick={onClose}
+          >
+            ✓ Done &amp; Back to Preview
+          </button>
         </div>
       </div>
     </div>,
