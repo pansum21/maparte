@@ -121,6 +121,29 @@ function drawCarvedFrame(
   ctx.restore();
 }
 
+async function drawNeatlineSvg(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  svgMarkup?: string,
+) {
+  if (!svgMarkup) return;
+  const objectUrl = URL.createObjectURL(
+    new Blob([svgMarkup], { type: "image/svg+xml;charset=utf-8" }),
+  );
+  try {
+    const image = new Image();
+    image.src = objectUrl;
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error("Could not render the selected border."));
+    });
+    ctx.drawImage(image, 0, 0, width, height);
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
 /**
  * Composites a final poster from a MapLibre snapshot canvas.
  *
@@ -154,6 +177,7 @@ export async function compositeExport(
     markerSizeScale = 1,
     routes = [],
     frameStyle = "black",
+    neatlineSvg,
   } = options;
 
   const width = mapCanvas.width;
@@ -217,6 +241,7 @@ export async function compositeExport(
 
   // 6. Carved frame, composed at export resolution so it prints with the artwork.
   drawCarvedFrame(ctx, width, height, frameStyle);
+  await drawNeatlineSvg(ctx, width, height, neatlineSvg);
 
   // 7. Poster text
   drawPosterText(
