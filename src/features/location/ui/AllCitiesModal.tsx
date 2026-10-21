@@ -21,6 +21,9 @@ interface SeoCityItem {
   distanceMeters: number;
   landmarks: string[];
   tagline: string;
+  description?: string;
+  rank?: number;
+  annualSearches?: string;
 }
 
 const CONTINENTS = [
@@ -115,11 +118,10 @@ export default function AllCitiesModal({
       >
         <div className="all-cities-modal-header">
           <div className="all-cities-title-group">
-            <span className="all-cities-badge">🌍 81 Curated World Cities</span>
-            <h2>Select a Destination City</h2>
+            <span className="all-cities-badge">🌍 Top 100 Most Searched World Cities</span>
+            <h2>Top 100 World Destinations</h2>
             <p>
-              Instantly create iconic street grid posters for 81 legendary cities
-              across 6 continents.
+              The 100 most visited, searched and traveled cities on Earth with real-time popularity &amp; search trends.
             </p>
           </div>
           <button
@@ -192,11 +194,22 @@ export default function AllCitiesModal({
                 onClick={() => handleCityPick(item)}
               >
                 <div className="city-card-top">
-                  <span className="city-card-name">{item.city}</span>
-                  <span className="city-card-country">{item.country}</span>
+                  <div className="city-card-title-stack">
+                    <span className="city-card-name">{item.city}</span>
+                    <span className="city-card-country">{item.country}</span>
+                  </div>
+                  {item.rank ? (
+                    <span className="city-card-rank-tag">#{item.rank}</span>
+                  ) : null}
                 </div>
+                {item.annualSearches ? (
+                  <div className="city-card-searches">
+                    <span className="city-card-fire" aria-hidden="true">🔥</span>
+                    <span className="city-card-search-text">{item.annualSearches}</span>
+                  </div>
+                ) : null}
                 <div className="city-card-tagline">{item.tagline}</div>
-                {item.landmarks.length > 0 ? (
+                {item.landmarks && item.landmarks.length > 0 ? (
                   <div className="city-card-landmarks">
                     {item.landmarks.slice(0, 3).map((lm) => (
                       <span key={lm} className="city-landmark-chip">

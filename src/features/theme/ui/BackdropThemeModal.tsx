@@ -173,19 +173,6 @@ export default function BackdropThemeModal({
             <div className="backdrop-modal-badge">
               <span>🏠 Room Wall Color Studio</span>
             </div>
-            {onEnterCinema && (
-              <button
-                type="button"
-                className="backdrop-cinema-pill-btn"
-                onClick={() => {
-                  onClose();
-                  onEnterCinema();
-                }}
-                title="Open Framed Poster in Fullscreen Cinema Mode"
-              >
-                <span>⛶ Fullscreen Wall Mode</span>
-              </button>
-            )}
           </div>
           <h2 className="backdrop-modal-title">Room Wall Color Preview</h2>
           <p className="backdrop-modal-sub">

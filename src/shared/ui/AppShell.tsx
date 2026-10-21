@@ -412,7 +412,7 @@ export default function AppShell() {
           className={`desktop-settings-slide${desktopPanelOpen ? " is-open" : ""}`}
         >
           <Suspense fallback={null}>
-            <SettingsPanel />
+            <SettingsPanel mobileTab={desktopTab} />
           </Suspense>
         </div>
       </div>

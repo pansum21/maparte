@@ -132,7 +132,10 @@ export default function DesktopNavBar({
   }, [mapRef]);
 
   return (
-    <nav className="desktop-nav-bar" aria-label="Settings and Quick Actions">
+    <nav
+      className={`desktop-nav-bar${panelOpen ? " has-panel-open" : ""}`}
+      aria-label="Settings and Quick Actions"
+    >
       {/* ── 1. LOCATION ROW ── */}
       <div className="desktop-nav-row" data-tab="location">
         <button
@@ -276,10 +279,10 @@ export default function DesktopNavBar({
               type="button"
               className="desktop-quick-city-pill desktop-all-cities-btn"
               onClick={onOpenAllCities}
-              title="Explore all 81 world cities across 6 continents"
+              title="Explore Top 100 World Cities across 6 continents"
             >
               <span className="plus-icon-badge">➕</span>
-              <span className="all-cities-text">81 Cities</span>
+              <span className="all-cities-text">100 Cities</span>
             </button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
@@ -91,8 +91,13 @@ export default function SettingsPanel({
 
   const [isColorEditorActive, setIsColorEditorActive] = useState(false);
   const [openSections, setOpenSections] = useState<Set<SectionId>>(
-    new Set(["templates", "location", "theme", "layout", "style"]),
+    new Set([((mobileTab as SectionId) || "location")]),
   );
+
+  useEffect(() => {
+    if (!mobileTab) return;
+    setOpenSections(new Set([mobileTab as SectionId]));
+  }, [mobileTab]);
 
   const isAuxEditorActive = isColorEditorActive;
 
