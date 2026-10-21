@@ -112,11 +112,10 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
         </div>
         <span className="neatline-count">{selected === "none" ? "Off" : "50 styles"}</span>
       </div>
-      <div className="neatline-options" role="radiogroup" aria-label="Choose an inner border">
+      <div className="neatline-options" role="group" aria-label="Choose an inner border">
         <button
           type="button"
-          role="radio"
-          aria-checked={selected === "none"}
+          aria-pressed={selected === "none"}
           className={`neatline-option ${selected === "none" ? "is-selected" : ""}`}
           onClick={() => setSelected("none")}
         >
@@ -127,8 +126,7 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
           <button
             key={style.id}
             type="button"
-            role="radio"
-            aria-checked={selected === style.id}
+            aria-pressed={selected === style.id}
             className={`neatline-option ${selected === style.id ? "is-selected" : ""}`}
             onClick={() => setSelected(style.id)}
           >
