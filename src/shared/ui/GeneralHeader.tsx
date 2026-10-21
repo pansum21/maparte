@@ -58,32 +58,6 @@ export default function GeneralHeader({
       </div>
 
       <div className="general-header-actions">
-        <button
-          type="button"
-          className="general-header-text-btn general-header-backdrop-text-btn"
-          onClick={onBackdropOpen}
-          aria-label="Room Wall Color & Preview"
-          title="Choose Wall Color & Room Preview"
-        >
-          <span className="general-header-btn-label">Wall Color</span>
-          <span className="general-header-btn-icon" aria-hidden="true" style={{ fontSize: "0.85rem" }}>
-            🏠
-          </span>
-        </button>
-
-        <button
-          type="button"
-          className="general-header-text-btn general-header-cinema-btn"
-          onClick={onCinemaToggle}
-          aria-label="Fullscreen Wall Preview"
-          title="Fullscreen Wall Preview (Cinema Mode • Press Esc to exit)"
-        >
-          <span className="general-header-btn-label">Fullscreen</span>
-          <span className="general-header-btn-icon" aria-hidden="true" style={{ fontSize: "0.92rem" }}>
-            ⛶
-          </span>
-        </button>
-
         <SocialLinkGroup variant="header" />
 
         <button

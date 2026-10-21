@@ -78,9 +78,9 @@
 
   .general-header {
     grid-area: dheader;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
     margin: 0;
     padding: 0 20px;
     background: var(--overlay-bg);
@@ -91,8 +91,15 @@
     flex-shrink: 0;
   }
 
-  /* Quick 3-step guide pill in header */
+  .desktop-brand {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  /* Quick 3-step guide pill in header - Centered */
   .header-steps-guide {
+    grid-column: 2;
+    justify-self: center;
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -261,20 +268,238 @@
     display: none;
   }
 
-  /* ── Desktop vertical nav bar ── */
+  /* ── Desktop vertical nav bar & Quick Action Companions ── */
 
   .desktop-nav-bar {
     grid-area: dnav;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 8px 0;
-    gap: 2px;
+    align-items: flex-start;
+    padding: 10px 0 10px 6px;
+    gap: 8px;
     background: rgba(10, 20, 31, 0.98);
     border-right: 1px solid rgba(146, 176, 200, 0.1);
-    overflow-y: auto;
-    scrollbar-width: none;
+    overflow: visible;
     z-index: 40;
+    pointer-events: none;
+  }
+
+  .desktop-nav-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: max-content;
+    position: relative;
+    pointer-events: none;
+  }
+
+  .desktop-nav-tab {
+    pointer-events: auto;
+  }
+
+  .desktop-nav-companion {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.98;
+    transition: opacity 0.2s ease;
+  }
+
+  /* Location Companion Input */
+  .desktop-companion-location {
+    position: relative;
+    width: 380px;
+  }
+
+  .desktop-companion-location .location-search-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(20, 36, 52, 0.96);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(171, 201, 224, 0.34);
+    border-radius: 12px;
+    width: 100%;
+    padding: 2px 8px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    height: 42px;
+  }
+
+  .desktop-companion-input {
+    height: 36px;
+    font-size: 0.88rem;
+    color: #f1f5f9;
+  }
+
+  .desktop-inline-coords {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    display: flex;
+    gap: 10px;
+    background: rgba(15, 28, 44, 0.96);
+    padding: 6px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    font-size: 0.75rem;
+    color: #94a3b8;
+    z-index: 60;
+  }
+
+  .desktop-inline-coords label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .desktop-inline-coords input {
+    width: 90px;
+    padding: 2px 6px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 0.75rem;
+  }
+
+  /* Presets Companion: Quick City Pills + 81 Cities Button */
+  .desktop-quick-cities-strip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 28, 44, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    padding: 4px 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  .desktop-quick-city-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    color: #e2e8f0;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+  }
+
+  .desktop-quick-city-pill:hover {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    transform: translateY(-1px);
+  }
+
+  .desktop-all-cities-btn {
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.85), rgba(14, 165, 233, 0.8)) !important;
+    border-color: rgba(56, 189, 248, 0.5) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 10px rgba(2, 132, 199, 0.35);
+  }
+
+  .desktop-all-cities-btn:hover {
+    background: linear-gradient(135deg, #0284c7, #38bdf8) !important;
+    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.5);
+  }
+
+  /* Quick Action Buttons (Recenter, Edit Map, Full Screen, Phone Wallpaper) */
+  .desktop-quick-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    background: rgba(18, 36, 56, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    color: #f1f5f9;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+  }
+
+  .desktop-quick-action-btn:hover {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.3);
+  }
+
+  .desktop-quick-action-btn.is-active {
+    background: #0284c7;
+    border-color: #38bdf8;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+  }
+
+  .desktop-quick-action-cinema {
+    background: linear-gradient(135deg, rgba(20, 44, 70, 0.9), rgba(15, 28, 44, 0.95)) !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    color: #38bdf8 !important;
+    font-weight: 700 !important;
+  }
+
+  .desktop-quick-action-cinema:hover {
+    background: linear-gradient(135deg, #0284c7, #38bdf8) !important;
+    color: #ffffff !important;
+  }
+
+  .desktop-quick-action-wallpaper.is-wallpaper {
+    background: linear-gradient(135deg, #9333ea, #7e22ce) !important;
+    border-color: #c084fc !important;
+    color: #ffffff !important;
+  }
+
+  .desktop-edit-map-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .desktop-quick-zoom-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: rgba(15, 28, 44, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    padding: 2px 4px;
+  }
+
+  .quick-zoom-btn {
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 0.72rem;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+
+  .quick-zoom-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 
   .desktop-nav-bar::-webkit-scrollbar {
@@ -1494,4 +1719,194 @@
 /* Layout label hidden on mobile */
 .desktop-layout-label {
   display: none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   81 CURATED WORLD CITIES MODAL
+   ══════════════════════════════════════════════════════════ */
+.all-cities-modal {
+  max-width: 820px !important;
+  max-height: 85vh !important;
+  display: flex;
+  flex-direction: column;
+  padding: 24px !important;
+  background: #0d1a29 !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.8) !important;
+  color: #ffffff;
+}
+
+.all-cities-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.all-cities-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background: rgba(56, 189, 248, 0.18);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 999px;
+  color: #38bdf8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.all-cities-title-group h2 {
+  font-size: 1.35rem;
+  margin: 0 0 6px 0;
+  color: #ffffff;
+}
+
+.all-cities-title-group p {
+  font-size: 0.82rem;
+  color: rgba(195, 220, 240, 0.75);
+  margin: 0;
+}
+
+.all-cities-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+}
+
+.all-cities-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.all-cities-continents {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.all-cities-continent-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: rgba(195, 220, 240, 0.8);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.all-cities-continent-pill:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.all-cities-continent-pill.is-active {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.continent-count {
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 0.68rem;
+}
+
+.all-cities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+  overflow-y: auto;
+  max-height: 50vh;
+  padding-right: 4px;
+}
+
+.all-cities-card {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  background: rgba(20, 36, 52, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.all-cities-card:hover {
+  background: rgba(30, 58, 84, 0.9);
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.all-cities-card.is-active {
+  border-color: #38bdf8;
+  background: rgba(2, 132, 199, 0.25);
+}
+
+.city-card-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.city-card-country {
+  font-size: 0.72rem;
+  color: rgba(160, 185, 205, 0.8);
+  margin-left: 6px;
+}
+
+.city-card-tagline {
+  font-size: 0.72rem;
+  color: rgba(195, 220, 240, 0.7);
+  margin: 4px 0 6px 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.city-card-landmarks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: auto;
+}
+
+.city-landmark-chip {
+  padding: 1px 6px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  font-size: 0.64rem;
+  color: rgba(195, 220, 240, 0.8);
+}
+
+.all-cities-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 32px 0;
+  color: rgba(195, 220, 240, 0.6);
 }

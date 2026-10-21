@@ -26,6 +26,7 @@ import {
 } from "@/features/legal/application/legalDoc";
 import { initBackdropThemeFromStorage } from "@/features/theme/application/useBackdropTheme";
 import CinemaWallDock from "@/features/theme/ui/CinemaWallDock";
+import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 
 const AboutModal = lazy(() => import("@/shared/ui/AboutModal"));
 const LegalModal = lazy(() => import("@/features/legal/ui/LegalModal"));
@@ -41,6 +42,9 @@ const AdminControlModal = lazy(
 const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
 const BackdropThemeModal = lazy(
   () => import("@/features/theme/ui/BackdropThemeModal"),
+);
+const AllCitiesModal = lazy(
+  () => import("@/features/location/ui/AllCitiesModal"),
 );
 
 function SettingsDrawer({
@@ -112,6 +116,33 @@ export default function AppShell() {
   const [adminOpen, setAdminOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isCinemaMode, setIsCinemaMode] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [allCitiesOpen, setAllCitiesOpen] = useState(false);
+
+  const isPhoneWallpaper =
+    state.form.layout === "wallpaper_iphone_15_pro" ||
+    state.form.layout.startsWith("wallpaper_iphone");
+
+  const handleTogglePhoneWallpaper = useCallback(() => {
+    const targetId = isPhoneWallpaper
+      ? "print_a4_portrait"
+      : "wallpaper_iphone_15_pro";
+    const targetLayout =
+      targetId === "wallpaper_iphone_15_pro"
+        ? { widthCm: 14.4, heightCm: 31.2 }
+        : { widthCm: 21, heightCm: 29.7 };
+
+    dispatch({
+      type: "SET_FIELD",
+      field: "layout",
+      value: targetId,
+    });
+    dispatch({
+      type: "SET_DIMENSIONS",
+      widthCm: formatLayoutCm(targetLayout.widthCm),
+      heightCm: formatLayoutCm(targetLayout.heightCm),
+    });
+  }, [isPhoneWallpaper, dispatch]);
 
   const handleToggleCinema = useCallback((forceState?: boolean) => {
     setIsCinemaMode((prev) => {
@@ -333,20 +364,14 @@ export default function AppShell() {
         activeTab={desktopTab}
         panelOpen={desktopPanelOpen}
         onTabChange={handleDesktopTabChange}
-        isLocationVisible={desktopLocationRowVisible}
-        onLocationToggle={() =>
-          setDesktopLocationRowVisible((isVisible) => !isVisible)
-        }
         onSettingsClick={() => setSettingsOpen(true)}
+        isEditing={isEditing}
+        onToggleEditing={() => setIsEditing((prev) => !prev)}
+        onToggleCinema={() => handleToggleCinema(true)}
+        isPhoneWallpaper={isPhoneWallpaper}
+        onTogglePhoneWallpaper={handleTogglePhoneWallpaper}
+        onOpenAllCities={() => setAllCitiesOpen(true)}
       />
-
-      <div
-        className={`desktop-location-row-wrap${desktopLocationRowVisible ? "" : " is-hidden"}`}
-      >
-        <Suspense fallback={null}>
-          <DesktopLocationBar />
-        </Suspense>
-      </div>
 
       <div
         className={`mobile-location-row-wrap${mobileLocationRowVisible ? "" : " is-hidden"}`}
@@ -395,6 +420,8 @@ export default function AppShell() {
       <PreviewPanel
         isCinemaMode={false}
         onToggleCinema={() => handleToggleCinema(true)}
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
       />
 
       {mobileDrawerOpen ? (
@@ -475,6 +502,15 @@ export default function AppShell() {
             isOpen={backdropOpen}
             onClose={() => setBackdropOpen(false)}
             onEnterCinema={() => handleToggleCinema(true)}
+          />
+        </Suspense>
+      ) : null}
+
+      {allCitiesOpen ? (
+        <Suspense fallback={null}>
+          <AllCitiesModal
+            isOpen={allCitiesOpen}
+            onClose={() => setAllCitiesOpen(false)}
           />
         </Suspense>
       ) : null}
