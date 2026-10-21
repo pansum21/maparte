@@ -112,6 +112,7 @@ export default function AppShell() {
   const [desktopLocationRowVisible, setDesktopLocationRowVisible] =
     useState(true);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">("about");
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -352,7 +353,14 @@ export default function AppShell() {
       data-desktop-tab={desktopTab}
     >
       <GeneralHeader
-        onAboutOpen={() => setAboutOpen(true)}
+        onAboutOpen={() => {
+          setAboutInitialTab("about");
+          setAboutOpen(true);
+        }}
+        onGuideOpen={() => {
+          setAboutInitialTab("guide");
+          setAboutOpen(true);
+        }}
         onAdminOpen={() => setAdminOpen(true)}
         onBackdropOpen={() => setBackdropOpen(true)}
         onCinemaToggle={() => handleToggleCinema(true)}
@@ -462,7 +470,10 @@ export default function AppShell() {
       </Suspense>
       {aboutOpen ? (
         <Suspense fallback={null}>
-          <AboutModal onClose={() => setAboutOpen(false)} />
+          <AboutModal
+            initialTab={aboutInitialTab}
+            onClose={() => setAboutOpen(false)}
+          />
         </Suspense>
       ) : null}
       {supportPrompt ? (
