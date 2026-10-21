@@ -50,9 +50,15 @@ const AllCitiesModal = lazy(
 function SettingsDrawer({
   mobileTab,
   onClose,
+  isPhoneWallpaper,
+  onTogglePhoneWallpaper,
+  onOpenCinema,
 }: {
   mobileTab: MobileTab;
   onClose: () => void;
+  isPhoneWallpaper: boolean;
+  onTogglePhoneWallpaper: () => void;
+  onOpenCinema: () => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { sheetRef, handleRef, handleProps } = useSwipeDown(onClose, 80, {
@@ -78,6 +84,24 @@ function SettingsDrawer({
           {...handleProps}
         />
         <div className="mobile-drawer-content">
+          <div className="mobile-quick-actions" role="group" aria-label="Quick actions">
+            <button
+              type="button"
+              className="mobile-quick-action"
+              onClick={onTogglePhoneWallpaper}
+            >
+              <span aria-hidden="true">{isPhoneWallpaper ? "🖼️" : "📱"}</span>
+              <span>{isPhoneWallpaper ? "Poster View" : "Phone Wallpaper"}</span>
+            </button>
+            <button
+              type="button"
+              className="mobile-quick-action"
+              onClick={onOpenCinema}
+            >
+              <span aria-hidden="true">🖼️</span>
+              <span>Full Screen</span>
+            </button>
+          </div>
           <SettingsPanel mobileTab={mobileTab} />
         </div>
       </div>
@@ -436,6 +460,9 @@ export default function AppShell() {
         <SettingsDrawer
           mobileTab={mobileTab}
           onClose={() => setMobileDrawerOpen(false)}
+          isPhoneWallpaper={isPhoneWallpaper}
+          onTogglePhoneWallpaper={handleTogglePhoneWallpaper}
+          onOpenCinema={() => handleToggleCinema(true)}
         />
       ) : null}
 
