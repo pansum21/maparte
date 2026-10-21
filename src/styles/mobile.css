@@ -1695,3 +1695,47 @@
     padding: 0;
   }
 }
+
+
+/* Tablet touch layout: keep the same tools, with more breathing room than phone. */
+@media (min-width: 601px) and (max-width: 1024px) and (pointer: coarse) {
+  .mobile-nav-wrapper {
+    left: 24px;
+    right: 24px;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    gap: 10px;
+  }
+
+  .mobile-nav {
+    height: 68px;
+    border-radius: 24px;
+  }
+
+  .mobile-nav-tab {
+    width: 84px;
+    font-size: 0.64rem;
+  }
+
+  .mobile-nav-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .mobile-nav-settings {
+    width: 68px;
+    height: 68px;
+    border-radius: 22px;
+    cursor: pointer;
+  }
+
+  .mobile-drawer-sheet {
+    width: min(720px, calc(100vw - 36px));
+    margin-inline: auto;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .mobile-quick-action {
+    min-height: 52px;
+    font-size: 0.8rem;
+  }
+}
