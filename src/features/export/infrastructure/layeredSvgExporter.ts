@@ -567,12 +567,12 @@ export async function createLayeredSvgBlobFromMap({
 <svg xmlns="http://www.w3.org/2000/svg" width="${exportWidth}" height="${exportHeight}" viewBox="0 0 ${exportWidth} ${exportHeight}">
 ${vectorLayersSvg}
 ${routesSvg}
-${neatlineLayerSvg}
 ${fadesSvg}
 ${markersSvg}
 <g id="vector-typography">
 ${vectorTypographySvg}
 </g>
+${neatlineLayerSvg}
 </svg>`;
 
     return new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
