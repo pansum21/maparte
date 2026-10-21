@@ -109,7 +109,49 @@ function SettingsDrawer({
   );
 }
 
+function AppUpdateNotice({
+  onRefresh,
+  onDismiss,
+}: {
+  onRefresh: () => void;
+  onDismiss: () => void;
+}) {
+  return (
+    <div className="app-update-notice" role="status" aria-live="polite">
+      <span className="app-update-notice__message">
+        A new version is ready. Refresh when you are ready.
+      </span>
+      <button
+        type="button"
+        className="app-update-notice__refresh"
+        onClick={onRefresh}
+      >
+        Refresh
+      </button>
+      <button
+        type="button"
+        className="app-update-notice__dismiss"
+        onClick={onDismiss}
+        aria-label="Dismiss update notice"
+      >
+        ×
+      </button>
+    </div>
+  );
+}
+
 export default function AppShell() {
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+
+  useEffect(() => {
+    const handleUpdateReady = () => setUpdateAvailable(true);
+    window.addEventListener("maparte:update-ready", handleUpdateReady);
+    return () =>
+      window.removeEventListener("maparte:update-ready", handleUpdateReady);
+  }, []);
+
+  const refreshForUpdate = useCallback(() => window.location.reload(), []);
+
   useEffect(() => {
     initBackdropThemeFromStorage();
   }, []);
@@ -360,6 +402,12 @@ export default function AppShell() {
         data-desktop-tab={desktopTab}
         data-device-view={deviceView}
       >
+        {updateAvailable ? (
+          <AppUpdateNotice
+            onRefresh={refreshForUpdate}
+            onDismiss={() => setUpdateAvailable(false)}
+          />
+        ) : null}
         <PreviewPanel
           isCinemaMode={true}
           onToggleCinema={() => handleToggleCinema(false)}
@@ -393,6 +441,12 @@ export default function AppShell() {
       data-desktop-tab={desktopTab}
       data-device-view={deviceView}
     >
+      {updateAvailable ? (
+        <AppUpdateNotice
+          onRefresh={refreshForUpdate}
+          onDismiss={() => setUpdateAvailable(false)}
+        />
+      ) : null}
       <GeneralHeader
         onAboutOpen={() => {
           setAboutInitialTab("about");

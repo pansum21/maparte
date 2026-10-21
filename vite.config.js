@@ -255,8 +255,57 @@ ${body}
   };
 }
 
+function serviceWorkerBuildIdPlugin() {
+  let resolvedConfig;
+
+  return {
+    name: "service-worker-build-id",
+    apply: "build",
+    configResolved(config) {
+      resolvedConfig = config;
+    },
+    closeBundle() {
+      const outDir = path.resolve(
+        resolvedConfig.root,
+        resolvedConfig.build.outDir,
+      );
+      const serviceWorkerPath = path.join(outDir, "sw.js");
+      const marker = "__MAPARTE_BUILD_ID__";
+      const buildId = String(
+        process.env.VERCEL_GIT_COMMIT_SHA ??
+          process.env.GITHUB_SHA ??
+          appVersion,
+      )
+        .replace(/[^a-zA-Z0-9._-]/g, "")
+        .slice(0, 64);
+
+      if (!fs.existsSync(serviceWorkerPath)) {
+        throw new Error("[service-worker] public/sw.js was not copied to the build output");
+      }
+
+      const source = fs.readFileSync(serviceWorkerPath, "utf8");
+      if (!source.includes(marker)) {
+        throw new Error("[service-worker] build ID marker is missing");
+      }
+
+      fs.writeFileSync(
+        serviceWorkerPath,
+        source.replaceAll(marker, buildId || appVersion),
+        "utf8",
+      );
+      console.log(`[service-worker] stamped cache version ${buildId || appVersion}`);
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), adsensePlugin(), legalPagesPlugin(), cityPagesPlugin()],
+  plugins: [
+    react(),
+    adsensePlugin(),
+    legalPagesPlugin(),
+    cityPagesPlugin(),
+    serviceWorkerBuildIdPlugin(),
+  ],
   define: {
     "import.meta.env.VITE_APP_VERSION": JSON.stringify(appVersion),
   },

@@ -43,10 +43,25 @@ if (typeof displayModeQuery.addEventListener === "function") {
 }
 
 if ("serviceWorker" in navigator && !isNativePlatform()) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch((error) => {
-      console.warn("Service worker registration failed", error);
+  window.addEventListener("load", async () => {
+    const hadControllerAtLoad = Boolean(navigator.serviceWorker.controller);
+    let updateNoticeDispatched = false;
+
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!hadControllerAtLoad || updateNoticeDispatched) return;
+      updateNoticeDispatched = true;
+      window.dispatchEvent(new Event("maparte:update-ready"));
     });
+
+    try {
+      const registration = await navigator.serviceWorker.register("/sw.js", {
+        updateViaCache: "none",
+      });
+      // Check immediately as well as during the browser's normal update cycle.
+      await registration.update();
+    } catch (error) {
+      console.warn("Service worker update check failed", error);
+    }
   });
 }
 
