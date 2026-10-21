@@ -129,6 +129,9 @@ export default function AppShell() {
   const [mobileLocationRowVisible, setMobileLocationRowVisible] =
     useState(true);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [deviceView, setDeviceView] = useState<"phone" | "tablet" | "desktop">(
+    "desktop",
+  );
 
   // Desktop state
   const [desktopTab, setDesktopTab] = useState<MobileTab>("theme");
@@ -259,14 +262,26 @@ export default function AppShell() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const mediaQuery = window.matchMedia(
-      "(max-width: 768px), (hover: none) and (pointer: coarse)",
-    );
-    const syncViewport = () => setIsMobileViewport(mediaQuery.matches);
+    const pointerQuery = window.matchMedia("(pointer: coarse)");
+    const syncViewport = () => {
+      const width = window.innerWidth;
+      const nextView =
+        width <= 600
+          ? "phone"
+          : width <= 1024 || (pointerQuery.matches && width <= 1280)
+            ? "tablet"
+            : "desktop";
+      setDeviceView(nextView);
+      setIsMobileViewport(nextView !== "desktop");
+    };
     syncViewport();
-    mediaQuery.addEventListener("change", syncViewport);
+    window.addEventListener("resize", syncViewport);
+    pointerQuery.addEventListener("change", syncViewport);
 
-    return () => mediaQuery.removeEventListener("change", syncViewport);
+    return () => {
+      window.removeEventListener("resize", syncViewport);
+      pointerQuery.removeEventListener("change", syncViewport);
+    };
   }, []);
 
   useEffect(() => {
@@ -343,6 +358,7 @@ export default function AppShell() {
         className="app-shell is-cinema-mode"
         data-mobile-tab={mobileTab}
         data-desktop-tab={desktopTab}
+        data-device-view={deviceView}
       >
         <PreviewPanel
           isCinemaMode={true}
@@ -375,6 +391,7 @@ export default function AppShell() {
       className="app-shell"
       data-mobile-tab={mobileTab}
       data-desktop-tab={desktopTab}
+      data-device-view={deviceView}
     >
       <GeneralHeader
         onAboutOpen={() => {
