@@ -1267,3 +1267,9 @@
     --molding-width: 7px;
   }
 }
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  .poster-viewport.is-wall-mockup .poster-frame:not(.frame-none) {
+    --molding-width: 10px;
+  }
+}
