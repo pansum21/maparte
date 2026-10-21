@@ -124,14 +124,7 @@ export default function PreviewPanel({
       window.removeEventListener("maparte:frame:change", handleFrameEvent);
   }, []);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        "maparte_custom_wall_gradient",
-        JSON.stringify(customWallGradient),
-      );
-    } catch {}
-  }, [customWallGradient]);
+
 
   useEffect(() => {
     if (typeof window === "undefined") return;
