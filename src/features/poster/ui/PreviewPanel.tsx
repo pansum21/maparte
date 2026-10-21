@@ -45,6 +45,7 @@ import {
 } from "@/features/layout/infrastructure/layoutRepository";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { NeatlineArtwork } from "@/features/layout/ui/NeatlinePicker";
+import { OUTER_FRAME_STYLES, type OuterFrameStyle } from "@/features/layout/ui/OuterFramePicker";
 
 const LOCKED_HINT = "Map is locked to prevent unintended movement.";
 const UNLOCK_HINT = `${LOCKED_HINT}\nClick to unlock map editing.`;
@@ -94,11 +95,13 @@ export default function PreviewPanel({
   const isEditing = controlledIsEditing !== undefined ? controlledIsEditing : internalIsEditing;
   const setIsEditing = controlledSetIsEditing !== undefined ? controlledSetIsEditing : setInternalIsEditing;
 
-  const [frameStyle, setFrameStyle] = useState<"none" | "black" | "oak" | "white" | "gold">(() => {
+  const [frameStyle, setFrameStyle] = useState<OuterFrameStyle>(() => {
     if (typeof window === "undefined") return "black";
     try {
       const stored = localStorage.getItem("maparte_frame_style");
-      if (stored) return stored as any;
+      if (stored === "oak") return "almond";
+      if (stored === "gold") return "gold-bead";
+      if (OUTER_FRAME_STYLES.some((style) => style.id === stored)) return stored as OuterFrameStyle;
     } catch {}
     return "black";
   });
@@ -129,8 +132,8 @@ export default function PreviewPanel({
 
   useEffect(() => {
     const handleFrameEvent = (e: Event) => {
-      const custom = e as CustomEvent<"none" | "black" | "oak" | "white" | "gold">;
-      if (custom.detail) {
+      const custom = e as CustomEvent<OuterFrameStyle>;
+      if (custom.detail && OUTER_FRAME_STYLES.some((style) => style.id === custom.detail)) {
         setFrameStyle(custom.detail);
       }
     };
