@@ -35,7 +35,6 @@ export interface ExportOptions {
   markerScaleY?: number;
   markerSizeScale?: number;
   routes?: Route[];
-  frameStyle?: "none" | "black" | "oak" | "white" | "gold";
   neatlineSvg?: string;
 }
 
