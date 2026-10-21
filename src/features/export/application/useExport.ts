@@ -243,6 +243,16 @@ export function useExport() {
           customDate: form.customDate,
           fontFamily: form.fontFamily.trim(),
           showPosterText: form.showPosterText,
+          frameStyle: (() => {
+            try {
+              const stored = localStorage.getItem("maparte_frame_style");
+              return stored === "none" || stored === "oak" || stored === "white" || stored === "gold"
+                ? stored
+                : "black";
+            } catch {
+              return "black";
+            }
+          })(),
           showOverlay: form.showMarkers,
           includeCredits,
           markers: hasVisibleMarkers ? state.markers : [],
