@@ -79,9 +79,10 @@ export default function MobileNavBar({
 
       <button
         type="button"
-        className="mobile-nav-settings"
+        className={`mobile-nav-settings${drawerOpen ? " is-active" : ""}`}
         aria-label="Settings"
-        disabled
+        aria-expanded={drawerOpen}
+        onClick={() => onTabChange(activeTab)}
       >
         <SettingsIcon className="mobile-nav-settings-icon" />
       </button>
