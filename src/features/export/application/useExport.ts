@@ -310,6 +310,7 @@ export function useExport() {
               ? getAllMarkerIcons(state.customMarkerIcons)
               : [],
             routes: visibleRoutes,
+            neatlineSvg,
           });
 
           const pngBlob = await createPngBlob(canvas, dpi);
