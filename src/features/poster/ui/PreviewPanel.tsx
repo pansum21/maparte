@@ -44,6 +44,7 @@ import {
   getLayoutOption,
 } from "@/features/layout/infrastructure/layoutRepository";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
+import { NeatlineArtwork } from "@/features/layout/ui/NeatlinePicker";
 
 const LOCKED_HINT = "Map is locked to prevent unintended movement.";
 const UNLOCK_HINT = `${LOCKED_HINT}\nClick to unlock map editing.`;
@@ -101,6 +102,20 @@ export default function PreviewPanel({
     } catch {}
     return "black";
   });
+
+  const [neatlineStyle, setNeatlineStyle] = useState(() => {
+    if (typeof window === "undefined") return "none";
+    try { return window.localStorage.getItem("maparte_neatline_style") || "none"; } catch { return "none"; }
+  });
+
+  useEffect(() => {
+    const handleNeatlineChange = (event: Event) => {
+      const custom = event as CustomEvent<string>;
+      setNeatlineStyle(custom.detail || "none");
+    };
+    window.addEventListener("maparte:neatline:change", handleNeatlineChange);
+    return () => window.removeEventListener("maparte:neatline:change", handleNeatlineChange);
+  }, []);
 
   const [mapBearing, setMapBearing] = useState(0);
   const [isRotationEnabled, setIsRotationEnabled] = useState(false);
@@ -520,6 +535,7 @@ export default function PreviewPanel({
             showOverlay={form.showMarkers}
             customDate={form.customDate}
           />
+          <NeatlineArtwork styleId={neatlineStyle} className="preview-neatline" />
         </div>
       </div>
 
