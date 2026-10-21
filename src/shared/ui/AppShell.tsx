@@ -441,6 +441,12 @@ export default function AppShell() {
       data-desktop-tab={desktopTab}
       data-device-view={deviceView}
     >
+      {updateAvailable ? (
+        <AppUpdateNotice
+          onRefresh={refreshForUpdate}
+          onDismiss={() => setUpdateAvailable(false)}
+        />
+      ) : null}
       <GeneralHeader
         onAboutOpen={() => {
           setAboutInitialTab("about");
