@@ -1,4 +1,4 @@
-const CACHE_NAME = "maparte-static-v5";
+const CACHE_NAME = "maparte-static-v6";
 const TILE_CACHE_NAME = "maparte-tiles-v1";
 const TILE_ORIGINS = ["https://tiles.openfreemap.org"];
 const APP_SHELL_ASSETS = [

@@ -150,13 +150,13 @@ export default function DesktopNavBar({
         </button>
 
         <div className="desktop-nav-companion desktop-companion-location">
-          <div className="location-search-row">
-            <span className="location-search-icon" aria-hidden="true">
-              <SearchIcon />
-            </span>
-            <div className="location-input-wrap">
+          <div className="location-search-main-row">
+            <div className="location-search-box">
+              <span className="location-search-icon" aria-hidden="true">
+                <SearchIcon />
+              </span>
               <input
-                className="form-control-tall desktop-companion-input"
+                className="desktop-search-input"
                 name="location"
                 value={state.form.location}
                 onChange={handleChange}
@@ -171,7 +171,7 @@ export default function DesktopNavBar({
               {hasLocationValue ? (
                 <button
                   type="button"
-                  className="location-clear-btn"
+                  className="desktop-search-clear-btn"
                   aria-label="Clear location"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={handleClearLocation}
@@ -181,10 +181,10 @@ export default function DesktopNavBar({
               ) : null}
             </div>
 
-            <div className="location-search-icons">
+            <div className="location-search-actions">
               <button
                 type="button"
-                className={`icon-only-btn location-row-icon-btn${isLocatingUser ? " is-locating" : ""}`}
+                className={`location-action-btn${isLocatingUser ? " is-locating" : ""}`}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={handleUseCurrentLocation}
                 disabled={isLocatingUser}
@@ -195,7 +195,7 @@ export default function DesktopNavBar({
               </button>
               <button
                 type="button"
-                className={`icon-only-btn location-row-icon-btn${showCoords ? " is-active" : ""}`}
+                className={`location-action-btn${showCoords ? " is-active" : ""}`}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => setShowCoords((v) => !v)}
                 aria-label="Toggle coordinate fields"
@@ -204,6 +204,29 @@ export default function DesktopNavBar({
                 <LocationIcon />
               </button>
             </div>
+
+            {showCoords ? (
+              <div className="desktop-horizontal-coords">
+                <label>
+                  Lat:
+                  <input
+                    name="latitude"
+                    value={state.form.latitude}
+                    onChange={handleChange}
+                    placeholder={PLACEHOLDER_EXAMPLE_LATITUDE}
+                  />
+                </label>
+                <label>
+                  Lon:
+                  <input
+                    name="longitude"
+                    value={state.form.longitude}
+                    onChange={handleChange}
+                    placeholder={PLACEHOLDER_EXAMPLE_LONGITUDE}
+                  />
+                </label>
+              </div>
+            ) : null}
           </div>
 
           <LocationSuggestionsDropdown
@@ -217,29 +240,6 @@ export default function DesktopNavBar({
             onRecentRemove={removeRecent}
             onClearRecent={clearRecent}
           />
-
-          {showCoords ? (
-            <div className="desktop-inline-coords">
-              <label>
-                Lat:
-                <input
-                  name="latitude"
-                  value={state.form.latitude}
-                  onChange={handleChange}
-                  placeholder={PLACEHOLDER_EXAMPLE_LATITUDE}
-                />
-              </label>
-              <label>
-                Lon:
-                <input
-                  name="longitude"
-                  value={state.form.longitude}
-                  onChange={handleChange}
-                  placeholder={PLACEHOLDER_EXAMPLE_LONGITUDE}
-                />
-              </label>
-            </div>
-          ) : null}
 
           {locationPermissionMessage ? (
             <p className="location-permission-message">{locationPermissionMessage}</p>
@@ -262,7 +262,7 @@ export default function DesktopNavBar({
 
         <div className="desktop-nav-companion desktop-companion-presets">
           <div className="desktop-quick-cities-strip">
-            {POPULAR_CITIES.map((city) => (
+            {POPULAR_CITIES.slice(0, 3).map((city) => (
               <button
                 key={city.id}
                 type="button"
