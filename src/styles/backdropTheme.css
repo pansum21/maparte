@@ -1675,3 +1675,156 @@ body.has-custom-backdrop .poster-ghost-layer {
   }
 }
 
+
+
+/* Device-specific Cinema Room controls: keep actions compact and reachable. */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .app-shell.is-cinema-mode .poster-viewport {
+    padding: 88px 16px 92px !important;
+    box-sizing: border-box !important;
+  }
+
+  .app-shell.is-cinema-mode .poster-frame {
+    width: min(calc(100vw - 40px), calc((100svh - 190px) * var(--poster-aspect, 0.6666667))) !important;
+    max-height: calc(100svh - 190px) !important;
+    border-width: 10px !important;
+    transform: none !important;
+  }
+
+  .cinema-top-bar-left {
+    top: 12px !important;
+    left: 14px !important;
+    gap: 7px !important;
+    max-width: calc(58vw - 20px);
+  }
+
+  .cinema-top-bar-right {
+    top: 12px !important;
+    right: 14px !important;
+    gap: 7px !important;
+  }
+
+  .cinema-top-wall-btn {
+    min-height: 38px;
+    padding: 6px 11px;
+    font-size: 0.76rem;
+  }
+
+  .cinema-frames-bar {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .cinema-frame-chip {
+    min-height: 32px;
+    padding: 4px 8px;
+    font-size: 0.72rem;
+  }
+
+  .cinema-top-order-btn,
+  .cinema-top-download-btn,
+  .cinema-top-exit-btn {
+    min-height: 36px;
+    padding: 6px 9px;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-shell.is-cinema-mode .poster-viewport {
+    padding: 112px 8px 66px !important;
+    box-sizing: border-box !important;
+  }
+
+  .app-shell.is-cinema-mode .poster-frame {
+    width: min(calc(100vw - 20px), calc((100svh - 184px) * var(--poster-aspect, 0.6666667))) !important;
+    max-height: calc(100svh - 184px) !important;
+    border-width: 7px !important;
+    transform: none !important;
+  }
+
+  .cinema-top-bar-left {
+    top: 8px !important;
+    left: 8px !important;
+    right: 8px !important;
+    gap: 5px !important;
+    max-width: none !important;
+  }
+
+  .cinema-heading-block,
+  .cinema-top-bar-center {
+    display: none !important;
+  }
+
+  .cinema-top-wall-btn {
+    min-height: 34px;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 11px;
+    font-size: 0.72rem;
+  }
+
+  .cinema-wall-btn-tag {
+    padding: 1px 5px;
+    font-size: 0.62rem;
+  }
+
+  .cinema-frames-bar {
+    width: max-content;
+    max-width: calc(100vw - 16px);
+    gap: 5px;
+    padding: 4px 6px;
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+
+  .cinema-frames-label {
+    font-size: 0.62rem;
+  }
+
+  .cinema-frames-list {
+    min-width: max-content;
+    gap: 3px;
+  }
+
+  .cinema-frame-chip {
+    min-height: 30px;
+    gap: 4px;
+    padding: 4px 7px;
+    font-size: 0.68rem;
+  }
+
+  .cinema-top-bar-right {
+    top: auto !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    left: 8px !important;
+    justify-content: flex-end !important;
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+  }
+
+  .cinema-top-order-btn,
+  .cinema-top-download-btn,
+  .cinema-top-exit-btn {
+    min-height: 34px;
+    gap: 5px;
+    padding: 5px 8px;
+    border-radius: 10px;
+    font-size: 0.68rem;
+  }
+
+  .cinema-top-order-btn {
+    max-width: min(52vw, 180px);
+  }
+
+  .cinema-top-order-btn span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cinema-esc-kbd {
+    display: none !important;
+  }
+}
