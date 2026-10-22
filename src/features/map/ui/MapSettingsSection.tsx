@@ -415,6 +415,9 @@ export default function MapSettingsSection({
           )}
         </div>
 
+        <NeatlinePicker width={form.width} height={form.height} />
+        <OuterFramePicker />
+
         {isLayoutEditing ? (
           <div className="layout-custom-editor">
             <MapDimensionFields
@@ -445,8 +448,6 @@ export default function MapSettingsSection({
             ))}
           </div>
         )}
-        <NeatlinePicker width={form.width} height={form.height} />
-        <OuterFramePicker />
       </div>
     </section>
   );
