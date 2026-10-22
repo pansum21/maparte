@@ -1209,67 +1209,95 @@
 }
 
 
-/* Raised ornamental molding used by both cinema preview and exported artwork. */
+/* Smallwoods-inspired outer wood-frame mockup: shown around the print in Cinema view only. */
 .poster-viewport.is-wall-mockup .poster-frame:not(.frame-none) {
-  --molding-width: 18px;
-  --molding-light: #8b7b5a;
-  --molding-mid: #302c23;
-  --molding-dark: #090a0c;
-  --molding-accent: #d7c28c;
+  --molding-width: 16px;
+  --molding-gradient: linear-gradient(135deg,#3c3c3b 0%,#151617 42%,#090a0b 72%,#303132 100%);
+  --molding-accent: #d4b25e;
+  border: 10px solid #151617;
+  border-radius: 1px;
+  outline: 1px solid rgba(255,255,255,.22);
+  box-shadow:
+    inset 1px 1px 2px rgba(255,255,255,.38),
+    inset -2px -2px 4px rgba(0,0,0,.65),
+    0 4px 10px rgba(0,0,0,.38),
+    0 18px 38px rgba(0,0,0,.5),
+    0 38px 76px rgba(0,0,0,.55);
 }
-
-.poster-viewport.is-wall-mockup .poster-frame.frame-oak {
-  --molding-light: #f3ca91;
-  --molding-mid: #a96d37;
-  --molding-dark: #4d2b17;
-  --molding-accent: #f9e2b7;
+.poster-viewport.is-wall-mockup .poster-frame.frame-almond {
+  --molding-gradient: linear-gradient(135deg,#f2dfc0,#d2b28a 38%,#a78152 78%,#e4c69d);
+  border-color:#c6a77e;
 }
-
+.poster-viewport.is-wall-mockup .poster-frame.frame-stain {
+  --molding-gradient: linear-gradient(135deg,#765338,#4c3323 40%,#2b1c13 78%,#5f412b);
+  border-color:#422b1b;
+}
 .poster-viewport.is-wall-mockup .poster-frame.frame-white {
-  --molding-light: #ffffff;
-  --molding-mid: #d6dce1;
-  --molding-dark: #8a96a1;
-  --molding-accent: #73808b;
+  --molding-gradient: linear-gradient(135deg,#fff,#eeece7 40%,#c7c4bd 78%,#f7f5f0);
+  border-color:#e7e4dc;
 }
-
-.poster-viewport.is-wall-mockup .poster-frame.frame-gold {
-  --molding-light: #fff0b8;
-  --molding-mid: #c18a28;
-  --molding-dark: #65420d;
-  --molding-accent: #fff4ce;
+.poster-viewport.is-wall-mockup .poster-frame.frame-gold-bead {
+  --molding-gradient: linear-gradient(135deg,#e2c577,#b98c35 40%,#76551d 78%,#d3ae5a);
+  --molding-accent:#fff0b2;
+  border-color:#ad812f;
 }
-
+.poster-viewport.is-wall-mockup .poster-frame.frame-black-single-bead,
+.poster-viewport.is-wall-mockup .poster-frame.frame-black-double-bead {
+  --molding-gradient: linear-gradient(135deg,#414141,#181818 40%,#0a0a0a 78%,#303030);
+  border-color:#171717;
+}
+.poster-viewport.is-wall-mockup .poster-frame.frame-white-single-bead,
+.poster-viewport.is-wall-mockup .poster-frame.frame-white-double-bead {
+  --molding-gradient: linear-gradient(135deg,#fff,#eeece7 40%,#c7c4bd 78%,#f7f5f0);
+  border-color:#e7e4dc;
+}
 .poster-viewport.is-wall-mockup .poster-frame:not(.frame-none)::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 9;
-  box-sizing: border-box;
-  padding: var(--molding-width);
-  border-radius: inherit;
-  pointer-events: none;
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:9;
+  box-sizing:border-box;
+  padding:var(--molding-width);
+  border-radius:inherit;
+  pointer-events:none;
   background:
-    radial-gradient(circle, var(--molding-accent) 0 2px, transparent 2.7px) 0 0 / 28px 28px,
-    repeating-linear-gradient(45deg, transparent 0 7px, rgba(255, 255, 255, 0.24) 7px 8px, transparent 8px 14px),
-    linear-gradient(135deg, var(--molding-light), var(--molding-mid) 42%, var(--molding-dark) 74%, var(--molding-light));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
+    var(--bead-decoration, transparent),
+    repeating-linear-gradient(0deg,transparent 0 11px,rgba(255,255,255,.08) 11px 12px,transparent 12px 24px),
+    var(--molding-gradient);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;
 }
-
-.poster-viewport.is-wall-mockup .poster-frame.frame-none::before {
-  display: none;
+.poster-viewport.is-wall-mockup .poster-frame.frame-black-single-bead,
+.poster-viewport.is-wall-mockup .poster-frame.frame-black-double-bead,
+.poster-viewport.is-wall-mockup .poster-frame.frame-white-single-bead,
+.poster-viewport.is-wall-mockup .poster-frame.frame-white-double-bead,
+.poster-viewport.is-wall-mockup .poster-frame.frame-gold-bead {
+  --bead-decoration:
+    radial-gradient(circle,var(--molding-accent) 0 1.5px,transparent 2.4px) 50% 6px/18px 18px repeat-x,
+    radial-gradient(circle,var(--molding-accent) 0 1.5px,transparent 2.4px) 50% calc(100% - 6px)/18px 18px repeat-x,
+    radial-gradient(circle,var(--molding-accent) 0 1.5px,transparent 2.4px) 6px 50%/18px 18px repeat-y,
+    radial-gradient(circle,var(--molding-accent) 0 1.5px,transparent 2.4px) calc(100% - 6px) 50%/18px 18px repeat-y;
 }
-
-@media (max-width: 600px) {
+.poster-viewport.is-wall-mockup .poster-frame.frame-black-double-bead,
+.poster-viewport.is-wall-mockup .poster-frame.frame-white-double-bead {
+  --bead-decoration:
+    radial-gradient(circle,var(--molding-accent) 0 1.4px,transparent 2.3px) 50% 4px/18px 18px repeat-x,
+    radial-gradient(circle,var(--molding-accent) 0 1.4px,transparent 2.3px) 50% 12px/18px 18px repeat-x,
+    radial-gradient(circle,var(--molding-accent) 0 1.4px,transparent 2.3px) 4px 50%/18px 18px repeat-y,
+    radial-gradient(circle,var(--molding-accent) 0 1.4px,transparent 2.3px) 12px 50%/18px 18px repeat-y;
+}
+.poster-viewport.is-wall-mockup .poster-frame.frame-none::before { display:none; }
+@media(max-width:600px) {
   .poster-viewport.is-wall-mockup .poster-frame:not(.frame-none) {
-    --molding-width: 7px;
+    --molding-width:7px;
+    border-width:5px;
   }
 }
-
-@media (min-width: 601px) and (max-width: 1024px) {
+@media(min-width:601px) and (max-width:1024px) {
   .poster-viewport.is-wall-mockup .poster-frame:not(.frame-none) {
-    --molding-width: 10px;
+    --molding-width:10px;
+    border-width:7px;
   }
 }

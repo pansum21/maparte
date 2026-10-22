@@ -50,6 +50,7 @@ interface LayeredSvgOptions {
   markers: MarkerItem[];
   markerIcons: MarkerIconDefinition[];
   routes?: Route[];
+  neatlineSvg?: string;
 }
 
 function renderMapCanvasToDataUrl(
@@ -559,6 +560,9 @@ export async function createLayeredSvgBlobFromMap({
 `;
     }
 
+    const neatlineLayerSvg = options.neatlineSvg
+      ? `<svg x="0" y="0" width="${exportWidth}" height="${exportHeight}" viewBox="0 0 1000 1000" preserveAspectRatio="none">${options.neatlineSvg}</svg>`
+      : "";
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${exportWidth}" height="${exportHeight}" viewBox="0 0 ${exportWidth} ${exportHeight}">
 ${vectorLayersSvg}
@@ -568,6 +572,7 @@ ${markersSvg}
 <g id="vector-typography">
 ${vectorTypographySvg}
 </g>
+${neatlineLayerSvg}
 </svg>`;
 
     return new Blob([svg], { type: "image/svg+xml;charset=utf-8" });

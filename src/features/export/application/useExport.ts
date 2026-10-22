@@ -32,6 +32,19 @@ import { dispatchTelemetryAlert } from "@/core/telemetry/sentinel";
 
 const EXPORT_COUNT_STORAGE_KEY = "maparte.poster.count";
 
+function getSelectedNeatlineSvg(): string | undefined {
+  const preview = document.querySelector<SVGSVGElement>(".preview-neatline");
+  if (!preview) return undefined;
+  const clone = preview.cloneNode(true) as SVGSVGElement;
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  clone.setAttribute("width", "1000");
+  clone.setAttribute("height", "1000");
+  clone.setAttribute("viewBox", "0 0 1000 1000");
+  clone.setAttribute("preserveAspectRatio", "none");
+  clone.removeAttribute("class");
+  return new XMLSerializer().serializeToString(clone);
+}
+
 export type SupportPromptVariant = "follow";
 
 export interface SupportPromptState {
@@ -184,6 +197,7 @@ export function useExport() {
         };
 
         const size = resolveCanvasSize(widthInches, heightInches, dpi);
+        const neatlineSvg = getSelectedNeatlineSvg();
 
         const lat = Number(form.latitude) || 0;
         const lon = Number(form.longitude) || 0;
@@ -207,6 +221,7 @@ export function useExport() {
               ? getAllMarkerIcons(state.customMarkerIcons)
               : [],
             routes: visibleRoutes,
+            neatlineSvg,
           });
           const svgFilename = createPosterFilename(
             form.displayCity || form.location,
@@ -243,17 +258,8 @@ export function useExport() {
           customDate: form.customDate,
           fontFamily: form.fontFamily.trim(),
           showPosterText: form.showPosterText,
-          frameStyle: (() => {
-            try {
-              const stored = localStorage.getItem("maparte_frame_style");
-              return stored === "none" || stored === "oak" || stored === "white" || stored === "gold"
-                ? stored
-                : "black";
-            } catch {
-              return "black";
-            }
-          })(),
           showOverlay: form.showMarkers,
+          neatlineSvg,
           includeCredits,
           markers: hasVisibleMarkers ? state.markers : [],
           markerIcons: hasVisibleOverlays
@@ -294,6 +300,7 @@ export function useExport() {
               ? getAllMarkerIcons(state.customMarkerIcons)
               : [],
             routes: visibleRoutes,
+            neatlineSvg,
           });
 
           const pngBlob = await createPngBlob(canvas, dpi);

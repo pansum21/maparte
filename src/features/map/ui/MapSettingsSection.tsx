@@ -13,6 +13,8 @@ import {
   createFallbackThemeOption,
 } from "@/features/theme/domain/colorSuggestions";
 import LayoutCard from "@/features/layout/ui/LayoutCard";
+import { NeatlinePicker } from "@/features/layout/ui/NeatlinePicker";
+import OuterFramePicker from "@/features/layout/ui/OuterFramePicker";
 import MapDimensionFields from "./MapDimensionFields";
 import ColorPicker from "@/features/theme/ui/ColorPicker";
 import ThemeColorEditor from "@/features/theme/ui/ThemeColorEditor";
@@ -443,6 +445,8 @@ export default function MapSettingsSection({
             ))}
           </div>
         )}
+        <NeatlinePicker width={form.width} height={form.height} />
+        <OuterFramePicker />
       </div>
     </section>
   );
