@@ -1,17 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
 import "./neatline.css";
 
-const STORAGE_KEY = "maparte_neatline_style";
+const CONFIG_STORAGE_KEY = "maparte_neatline_layers";
+const LEGACY_STYLE_KEY = "maparte_neatline_style";
 const THICKNESS_STORAGE_KEY = "maparte_neatline_thicknesses";
-const CORNERS_STORAGE_KEY = "maparte_neatline_corners";
-const CHANGE_EVENT = "maparte:neatline:change";
+export const NEATLINE_CHANGE_EVENT = "maparte:neatline:change";
 
 type LinePattern = "single" | "double" | "triple" | "dashed" | "dotted" | "double-dotted";
-type BorderStyle = { id: string; name: string; kind: "line"; pattern: LinePattern } |
-  { id: string; name: string; kind: "ornament"; asset: string } |
-  { id: string; name: string; kind: "corner"; asset: string };
+type LineStyle = { id: string; name: string; kind: "line"; pattern: LinePattern };
+type ArtStyle = { id: string; name: string; kind: "ornament" | "corner"; asset: string };
+type BorderStyle = LineStyle | ArtStyle;
+export type CornerPosition = "all" | "top" | "bottom" | "left" | "right" | "diagonal-a" | "diagonal-b" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
+export type OrnamentPosition = "top" | "bottom" | "both";
+export type NeatlineSelection = {
+  lineId: string;
+  ornamentId: string;
+  cornerId: string;
+  cornerPosition: CornerPosition;
+  ornamentPosition: OrnamentPosition;
+  thicknesses: Record<string, number[]>;
+};
 
-const lineStyles: Extract<BorderStyle, { kind: "line" }>[] = [
+const lineStyles: LineStyle[] = [
   { id: "neatline-single", name: "Single line", kind: "line", pattern: "single" },
   { id: "neatline-double", name: "Double line", kind: "line", pattern: "double" },
   { id: "neatline-triple", name: "Triple line", kind: "line", pattern: "triple" },
@@ -19,7 +29,7 @@ const lineStyles: Extract<BorderStyle, { kind: "line" }>[] = [
   { id: "neatline-dotted", name: "Dotted line", kind: "line", pattern: "dotted" },
   { id: "neatline-double-dotted", name: "Double dotted", kind: "line", pattern: "double-dotted" },
 ];
-const decorativeStyles: BorderStyle[] = [
+const decorativeStyles: ArtStyle[] = [
   ...Array.from({ length: 11 }, (_, i) => ({
     id: `border-flourish-${String(i + 1).padStart(2, "0")}`,
     name: `Ornament ${i + 1}`,
@@ -33,36 +43,36 @@ const decorativeStyles: BorderStyle[] = [
     asset: `/assets/borders/geometric-${String(i + 1).padStart(2, "0")}.png`,
   })),
 ];
-const cornerStyles: BorderStyle[] = Array.from({ length: 12 }, (_, i) => ({
+const cornerStyles: ArtStyle[] = Array.from({ length: 12 }, (_, i) => ({
   id: `border-corner-${String(i + 1).padStart(2, "0")}`,
   name: `Corner ${i + 1}`,
   kind: "corner" as const,
   asset: `/assets/borders/corner-${String(i + 1).padStart(2, "0")}.png`,
 }));
-const allStyles = [...lineStyles, ...decorativeStyles, ...cornerStyles];
+const allStyles: BorderStyle[] = [...lineStyles, ...decorativeStyles, ...cornerStyles];
 export const NEATLINE_STYLES = lineStyles;
-const DEFAULT_LINE_WIDTH = 2;
-const CORNER_POSITIONS = ["all", "top", "bottom", "diagonal-a", "diagonal-b", "top-left", "top-right", "bottom-left", "bottom-right"] as const;
-type CornerPosition = typeof CORNER_POSITIONS[number];
+const DEFAULT_LINE_WIDTHS = [1.15, 0.9, 0.7];
+const MAX_LINE_WIDTH = 5;
+const ORNAMENT_POSITIONS: OrnamentPosition[] = ["top", "bottom", "both"];
+const ORNAMENT_LABELS: Record<OrnamentPosition, string> = { top: "Top center", bottom: "Bottom center", both: "Top + bottom" };
+const CORNER_POSITIONS: CornerPosition[] = ["all", "top", "bottom", "left", "right", "diagonal-a", "diagonal-b", "top-left", "top-right", "bottom-left", "bottom-right"];
 const CORNER_LABELS: Record<CornerPosition, string> = {
-  all: "All four", top: "Top pair", bottom: "Bottom pair", "diagonal-a": "Top left + bottom right",
-  "diagonal-b": "Top right + bottom left", "top-left": "Top left", "top-right": "Top right",
-  "bottom-left": "Bottom left", "bottom-right": "Bottom right",
+  all: "All four corners", top: "Top pair", bottom: "Bottom pair", left: "Left pair", right: "Right pair",
+  "diagonal-a": "Top left + bottom right", "diagonal-b": "Top right + bottom left",
+  "top-left": "Top left", "top-right": "Top right", "bottom-left": "Bottom left", "bottom-right": "Bottom right",
 };
-const CORNERS = ["top-left", "top-right", "bottom-right", "bottom-left"] as const;
+const CORNER_NAMES = ["top-left", "top-right", "bottom-right", "bottom-left"] as const;
+type CornerName = typeof CORNER_NAMES[number];
 
 function lineCount(pattern: LinePattern): number {
   if (pattern === "double" || pattern === "double-dotted") return 2;
   if (pattern === "triple") return 3;
   return 1;
 }
-function readSelectedStyle(): string {
-  if (typeof window === "undefined") return "none";
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY) || "none";
-    return stored === "none" || allStyles.some((style) => style.id === stored) ? stored : "none";
-  } catch { return "none"; }
-}
+function isLineId(value: string): boolean { return value === "none" || lineStyles.some((style) => style.id === value); }
+function isOrnamentId(value: string): boolean { return value === "none" || decorativeStyles.some((style) => style.id === value); }
+function isCornerId(value: string): boolean { return value === "none" || cornerStyles.some((style) => style.id === value); }
+
 function readThicknesses(): Record<string, number[]> {
   if (typeof window === "undefined") return {};
   try {
@@ -70,87 +80,136 @@ function readThicknesses(): Record<string, number[]> {
     return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, number[]> : {};
   } catch { return {}; }
 }
-function widthsFor(styleId: string, widthByStyle: Record<string, number[]>): number[] {
+function readSelection(): NeatlineSelection {
+  const empty: NeatlineSelection = { lineId: "none", ornamentId: "none", cornerId: "none", cornerPosition: "all", ornamentPosition: "top", thicknesses: readThicknesses() };
+  if (typeof window === "undefined") return empty;
+  try {
+    const stored = window.localStorage.getItem(CONFIG_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as Partial<NeatlineSelection>;
+      return {
+        ...empty,
+        ...parsed,
+        lineId: parsed.lineId && isLineId(parsed.lineId) ? parsed.lineId : "none",
+        ornamentId: parsed.ornamentId && isOrnamentId(parsed.ornamentId) ? parsed.ornamentId : "none",
+        cornerId: parsed.cornerId && isCornerId(parsed.cornerId) ? parsed.cornerId : "none",
+        cornerPosition: parsed.cornerPosition && CORNER_POSITIONS.includes(parsed.cornerPosition) ? parsed.cornerPosition : "all",
+        ornamentPosition: parsed.ornamentPosition && ORNAMENT_POSITIONS.includes(parsed.ornamentPosition) ? parsed.ornamentPosition : "top",
+        thicknesses: readThicknesses(),
+      };
+    }
+    // Migrate a single old style into its matching layer without losing it.
+    const legacy = window.localStorage.getItem(LEGACY_STYLE_KEY) || "none";
+    if (isLineId(legacy)) empty.lineId = legacy;
+    else if (isOrnamentId(legacy)) empty.ornamentId = legacy;
+    else if (isCornerId(legacy)) empty.cornerId = legacy;
+    return empty;
+  } catch { return empty; }
+}
+export function readNeatlineSelection(): NeatlineSelection { return readSelection(); }
+
+function widthsFor(styleId: string, thicknesses: Record<string, number[]>): number[] {
   const style = lineStyles.find((item) => item.id === styleId);
   if (!style) return [];
-  const saved = widthByStyle[styleId] || [];
-  return Array.from({ length: lineCount(style.pattern) }, (_, i) => {
-    const value = Number(saved[i]);
-    return Number.isFinite(value) ? Math.min(10, Math.max(0.5, value)) : DEFAULT_LINE_WIDTH;
+  const saved = thicknesses[styleId] || [];
+  return Array.from({ length: lineCount(style.pattern) }, (_, index) => {
+    const value = Number(saved[index]);
+    return Number.isFinite(value) ? Math.min(MAX_LINE_WIDTH, Math.max(0.5, value)) : DEFAULT_LINE_WIDTHS[index];
   });
 }
-function readCorners(): CornerPosition {
-  if (typeof window === "undefined") return "all";
-  try {
-    const value = window.localStorage.getItem(CORNERS_STORAGE_KEY) as CornerPosition | null;
-    return value && CORNER_POSITIONS.includes(value) ? value : "all";
-  } catch { return "all"; }
-}
-function activeCorners(position: CornerPosition): string[] {
+function activeCorners(position: CornerPosition): CornerName[] {
   switch (position) {
     case "top": return ["top-left", "top-right"];
     case "bottom": return ["bottom-left", "bottom-right"];
+    case "left": return ["top-left", "bottom-left"];
+    case "right": return ["top-right", "bottom-right"];
     case "diagonal-a": return ["top-left", "bottom-right"];
     case "diagonal-b": return ["top-right", "bottom-left"];
-    case "all": return [...CORNERS];
+    case "all": return [...CORNER_NAMES];
     default: return [position];
   }
 }
 
-export function NeatlineArtwork({ styleId, className = "", widthCm, heightCm }: { styleId: string; className?: string; widthCm?: string; heightCm?: string }) {
-  const style = allStyles.find((item) => item.id === styleId);
-  const [thicknesses, setThicknesses] = useState<Record<string, number[]>>(readThicknesses);
-  const [corners, setCorners] = useState<CornerPosition>(readCorners);
-  useEffect(() => {
-    const sync = () => { setThicknesses(readThicknesses()); setCorners(readCorners()); };
-    window.addEventListener(CHANGE_EVENT, sync);
-    return () => window.removeEventListener(CHANGE_EVENT, sync);
-  }, []);
-  if (!style) return null;
+export function NeatlineArtwork({
+  selection,
+  className = "",
+  widthCm,
+  heightCm,
+}: {
+  selection: NeatlineSelection;
+  className?: string;
+  widthCm?: string;
+  heightCm?: string;
+}) {
+  const line = lineStyles.find((style) => style.id === selection.lineId);
+  const ornament = decorativeStyles.find((style) => style.id === selection.ornamentId);
+  const corner = cornerStyles.find((style) => style.id === selection.cornerId);
+  if (!line && !ornament && !corner) return null;
 
-  const maxStroke = Math.max(2, ...widthsFor(style.id, thicknesses));
-  const pad = Math.max(18, maxStroke / 2 + 2);
   const innerW = 1000;
   const aspect = Number(widthCm) > 0 && Number(heightCm) > 0 ? Number(heightCm) / Number(widthCm) : 1;
   const innerH = innerW * aspect;
-  const isDotted = style.kind === "line" && (style.pattern === "dotted" || style.pattern === "double-dotted");
-  const dash = style.kind === "line" ? style.pattern === "dashed" ? "13 8" : isDotted ? "1 8" : undefined : undefined;
-  const offsets = style.kind === "line" ? style.pattern === "double" || style.pattern === "double-dotted"
-    ? [pad, pad + 16] : style.pattern === "triple" ? [pad, pad + 16, pad + 32] : [pad] : [];
-  const selectedCorners = activeCorners(corners);
-  const cornerSize = 112;
-  const ornament = style.kind === "ornament";
-  const ornamentSize = 245;
-  const positions: Record<string, { x: number; y: number; rotate: number }> = {
-    "top-left": { x: 0, y: 0, rotate: 0 }, "top-right": { x: innerW, y: 0, rotate: 90 },
-    "bottom-right": { x: innerW, y: innerH, rotate: 180 }, "bottom-left": { x: 0, y: innerH, rotate: 270 },
+  const maxStroke = line ? Math.max(...widthsFor(line.id, selection.thicknesses)) : 1.15;
+  const pad = Math.max(20, maxStroke / 2 + 2);
+  const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
+  const offsets = line ? line.pattern === "double" || line.pattern === "double-dotted"
+    ? [pad, pad + 14] : line.pattern === "triple" ? [pad, pad + 14, pad + 28] : [pad] : [];
+  const dotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
+  const dash = line?.pattern === "dashed" ? "12 8" : dotted ? "1 8" : undefined;
+  const selectedCorners = corner ? activeCorners(selection.cornerPosition) : [];
+  const cornerSize = Math.min(innerW, innerH) * 0.105;
+  const ornamentSize = Math.min(innerW * 0.25, innerH * 0.16);
+  const ornamentHeight = Math.max(44, ornamentSize * 0.24);
+  const ornamentEdges = ornament
+    ? selection.ornamentPosition === "both" ? ["top", "bottom"] : [selection.ornamentPosition]
+    : [];
+  const cornerGeometry: Record<CornerName, { x: number; y: number; rotate: number }> = {
+    "top-left": { x: pad, y: pad, rotate: 0 }, "top-right": { x: innerW - pad - cornerSize, y: pad, rotate: 90 },
+    "bottom-right": { x: innerW - pad - cornerSize, y: innerH - pad - cornerSize, rotate: 180 },
+    "bottom-left": { x: pad, y: innerH - pad - cornerSize, rotate: 270 },
   };
+  const horizontalGap = ornamentSize + 24;
 
   return <svg className={`neatline-artwork ${className}`} viewBox={`0 0 ${innerW} ${innerH}`} preserveAspectRatio="none" aria-hidden="true">
-    {style.kind === "line" ? offsets.map((offset, index) => <rect key={offset} x={offset} y={offset} width={1000 - offset * 2} height={1000 - offset * 2}
-      fill="none" stroke="#354b62" strokeWidth={widthsFor(style.id, thicknesses)[index] ?? DEFAULT_LINE_WIDTH}
-      strokeDasharray={dash} strokeLinecap={isDotted ? "round" : "butt"} strokeLinejoin="round" shapeRendering="geometricPrecision" />) : null}
-    {ornament ? <>
-      <image href={style.asset} x={(innerW - ornamentSize) / 2} y={pad - 25} width={ornamentSize} height={58} preserveAspectRatio="xMidYMid meet" />
-      <image href={style.asset} x={(innerW - ornamentSize) / 2} y={innerH - pad - 33} width={ornamentSize} height={58} transform={`rotate(180 500 ${innerH - pad - 4})`} preserveAspectRatio="xMidYMid meet" />
-      <image href={style.asset} x={pad - 25} y={(innerH - ornamentSize) / 2} width={58} height={ornamentSize} transform={`rotate(270 ${pad + 4} 500)`} preserveAspectRatio="xMidYMid meet" />
-      <image href={style.asset} x={innerW - pad - 33} y={(innerH - ornamentSize) / 2} width={58} height={ornamentSize} transform={`rotate(90 ${innerW - pad - 4} 500)`} preserveAspectRatio="xMidYMid meet" />
-    </> : null}
-    {style.kind === "corner" ? <>
-      {[
-        [pad + (selectedCorners.includes("top-left") ? cornerSize : 0), pad, innerW - pad - (selectedCorners.includes("top-right") ? cornerSize : 0), pad],
-        [pad + (selectedCorners.includes("bottom-left") ? cornerSize : 0), innerH - pad, innerW - pad - (selectedCorners.includes("bottom-right") ? cornerSize : 0), innerH - pad],
-        [pad, pad + (selectedCorners.includes("top-left") ? cornerSize : 0), pad, innerH - pad - (selectedCorners.includes("bottom-left") ? cornerSize : 0)],
-        [innerW - pad, pad + (selectedCorners.includes("top-right") ? cornerSize : 0), innerW - pad, innerH - pad - (selectedCorners.includes("bottom-right") ? cornerSize : 0)],
-      ].map(([x1, y1, x2, y2], i) => <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#354b62" strokeWidth="2" />)}
-      {selectedCorners.map((position) => {
-        const { x, y, rotate } = positions[position];
-        const xPos = position.includes("right") ? x - cornerSize : x;
-        const yPos = position.includes("bottom") ? y - cornerSize : y;
-        return <image key={position} href={style.asset} x={xPos} y={yPos} width={cornerSize} height={cornerSize}
-          transform={`rotate(${rotate} ${xPos + cornerSize / 2} ${yPos + cornerSize / 2})`} preserveAspectRatio="none" />;
-      })}
-    </> : null}
+    {offsets.map((offset, index) => {
+      const segments: Array<[number, number, number, number]> = [];
+      const topStart = offset + (selectedCorners.includes("top-left") ? cornerSize : 0);
+      const topEnd = innerW - offset - (selectedCorners.includes("top-right") ? cornerSize : 0);
+      const bottomStart = offset + (selectedCorners.includes("bottom-left") ? cornerSize : 0);
+      const bottomEnd = innerW - offset - (selectedCorners.includes("bottom-right") ? cornerSize : 0);
+      const leftStart = offset + (selectedCorners.includes("top-left") ? cornerSize : 0);
+      const leftEnd = innerH - offset - (selectedCorners.includes("bottom-left") ? cornerSize : 0);
+      const rightStart = offset + (selectedCorners.includes("top-right") ? cornerSize : 0);
+      const rightEnd = innerH - offset - (selectedCorners.includes("bottom-right") ? cornerSize : 0);
+      const addHorizontal = (edge: "top" | "bottom", start: number, end: number, y: number) => {
+        if (end <= start) return;
+        if (!ornamentEdges.includes(edge)) { segments.push([start, y, end, y]); return; }
+        const gapStart = (innerW - horizontalGap) / 2;
+        const gapEnd = (innerW + horizontalGap) / 2;
+        if (gapStart > start) segments.push([start, y, Math.min(end, gapStart), y]);
+        if (end > gapEnd) segments.push([Math.max(start, gapEnd), y, end, y]);
+      };
+      addHorizontal("top", topStart, topEnd, offset);
+      addHorizontal("bottom", bottomStart, bottomEnd, innerH - offset);
+      if (leftEnd > leftStart) segments.push([offset, leftStart, offset, leftEnd]);
+      if (rightEnd > rightStart) segments.push([innerW - offset, rightStart, innerW - offset, rightEnd]);
+      const lineIsDotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
+      return <g key={`line-${offset}`} fill="none" stroke="#354b62" strokeWidth={widths[index] ?? 1.15}
+        strokeDasharray={dash} strokeLinecap={lineIsDotted ? "round" : "butt"} shapeRendering="geometricPrecision">
+        {segments.map(([x1, y1, x2, y2], segmentIndex) => <line key={segmentIndex} x1={x1} y1={y1} x2={x2} y2={y2} />)}
+      </g>;
+    })}
+    {ornament && ornamentEdges.map((edge) => {
+      const y = edge === "top" ? pad - ornamentHeight * 0.3 : innerH - pad - ornamentHeight * 0.7;
+      const isBottom = edge === "bottom";
+      return <image key={edge} href={ornament.asset} x={(innerW - ornamentSize) / 2} y={y} width={ornamentSize} height={ornamentHeight}
+        transform={isBottom ? `rotate(180 500 ${y + ornamentHeight / 2})` : undefined} preserveAspectRatio="xMidYMid meet" />;
+    })}
+    {corner && selectedCorners.map((position) => {
+      const item = cornerGeometry[position];
+      return <image key={position} href={corner.asset} x={item.x} y={item.y} width={cornerSize} height={cornerSize}
+        transform={`rotate(${item.rotate} ${item.x + cornerSize / 2} ${item.y + cornerSize / 2})`} preserveAspectRatio="none" />;
+    })}
   </svg>;
 }
 
@@ -161,60 +220,90 @@ function lineLabel(index: number, count: number): string {
 }
 
 export function NeatlinePicker({ width, height }: { width: string; height: string }) {
-  const [selected, setSelected] = useState(readSelectedStyle);
-  const [widthByStyle, setWidthByStyle] = useState(readThicknesses);
-  const [cornerPosition, setCornerPosition] = useState(readCorners);
+  const [selection, setSelection] = useState<NeatlineSelection>(readSelection);
   const [category, setCategory] = useState<"line" | "ornament" | "corner">("line");
   const [isEditingThickness, setIsEditingThickness] = useState(false);
-  const selectedStyle = useMemo(() => allStyles.find((style) => style.id === selected), [selected]);
-  const selectedWidths = selectedStyle?.kind === "line" ? widthsFor(selected, widthByStyle) : [];
-  const categoryStyles = category === "line" ? lineStyles : category === "ornament" ? decorativeStyles : cornerStyles;
+  const selectedLine = useMemo(() => lineStyles.find((style) => style.id === selection.lineId), [selection.lineId]);
+  const activeCategoryStyles = category === "line" ? lineStyles : category === "ornament" ? decorativeStyles : cornerStyles;
+  const displayedStyles: BorderStyle[] = category === "line" ? [{ id: "none", name: "No line", kind: "line", pattern: "single" }, ...activeCategoryStyles] : activeCategoryStyles;
+  const lineWidths = selectedLine ? widthsFor(selectedLine.id, selection.thicknesses) : [];
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, selected);
-      window.localStorage.setItem(THICKNESS_STORAGE_KEY, JSON.stringify(widthByStyle));
-      window.localStorage.setItem(CORNERS_STORAGE_KEY, cornerPosition);
-    } catch { /* keep the current border for this session */ }
-    window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: selected }));
-  }, [selected, widthByStyle, cornerPosition]);
+      window.localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify({
+        lineId: selection.lineId, ornamentId: selection.ornamentId, cornerId: selection.cornerId,
+        cornerPosition: selection.cornerPosition, ornamentPosition: selection.ornamentPosition,
+      }));
+      window.localStorage.setItem(THICKNESS_STORAGE_KEY, JSON.stringify(selection.thicknesses));
+      // Keep the original key in sync for older preview and export readers.
+      window.localStorage.setItem(LEGACY_STYLE_KEY, selection.lineId);
+    } catch { /* keep the current border state for this session */ }
+    window.dispatchEvent(new CustomEvent<NeatlineSelection>(NEATLINE_CHANGE_EVENT, { detail: selection }));
+  }, [selection]);
 
+  const selectStyle = (style: BorderStyle) => {
+    setSelection((current) => {
+      if (style.id === "none") return { ...current, lineId: "none" };
+      if (style.kind === "line") return { ...current, lineId: style.id };
+      if (style.kind === "ornament") return { ...current, ornamentId: style.id };
+      return { ...current, cornerId: style.id };
+    });
+    setIsEditingThickness(false);
+  };
   const updateThickness = (lineIndex: number, value: number) => {
-    if (selectedStyle?.kind !== "line") return;
-    setWidthByStyle((current) => {
-      const next = widthsFor(selectedStyle.id, current);
+    if (!selectedLine) return;
+    setSelection((current) => {
+      const next = widthsFor(selectedLine.id, current.thicknesses);
       next[lineIndex] = value;
-      return { ...current, [selectedStyle.id]: next };
+      return { ...current, thicknesses: { ...current.thicknesses, [selectedLine.id]: next } };
     });
   };
+  const swatchSelection = (style: BorderStyle): NeatlineSelection => {
+    if (style.kind === "line") return { ...selection, lineId: style.id };
+    if (style.kind === "ornament") return { ...selection, lineId: selection.lineId === "none" ? "neatline-single" : selection.lineId, ornamentId: style.id };
+    return { ...selection, lineId: selection.lineId === "none" ? "neatline-single" : selection.lineId, cornerId: style.id };
+  };
+  const isSelected = (style: BorderStyle) => style.id === "none" ? selection.lineId === "none"
+    : style.kind === "line" ? style.id === selection.lineId
+      : style.kind === "ornament" ? style.id === selection.ornamentId : style.id === selection.cornerId;
 
   return <section className="neatline-picker" aria-labelledby="neatline-heading">
     <div className="neatline-picker-heading"><div><h3 id="neatline-heading">Border styles</h3>
-      <p>Map से बाहर, बीच में सफेद गैप · {width} × {height} cm लेआउट पर फिट</p></div>
-      <span className="neatline-count">{selected === "none" ? "Off" : `${allStyles.length} styles`}</span></div>
-    <div className="neatline-tabs" role="tablist" aria-label="Border category">
-      {([["line", "Simple lines"], ["ornament", "Decorative lines"], ["corner", "Corner designs"]] as const).map(([id, label]) =>
+      <p>लेयर जोड़ें: बेस लाइन + सेंटर डिज़ाइन + कॉर्नर · मैप से बाहर सफेद गैप के साथ · {width} × {height} cm</p></div>
+      <span className="neatline-count">{[selection.lineId !== "none", selection.ornamentId !== "none", selection.cornerId !== "none"].filter(Boolean).length} layers</span></div>
+    <div className="neatline-tabs" role="tablist" aria-label="Border layer">
+      {([["line", "Base line"], ["ornament", "Center design"], ["corner", "Corner art"]] as const).map(([id, label]) =>
         <button type="button" role="tab" aria-selected={category === id} className={category === id ? "is-active" : ""} key={id} onClick={() => setCategory(id)}>{label}</button>)}
     </div>
-    <div className="neatline-options" role="group" aria-label="Choose a border">
-      {category === "line" ? <button type="button" aria-pressed={selected === "none"} className={`neatline-option ${selected === "none" ? "is-selected" : ""}`} onClick={() => { setSelected("none"); setIsEditingThickness(false); }}>
-        <span className="neatline-swatch neatline-empty" aria-hidden="true"><span /></span><span className="neatline-option-name">No border</span></button> : null}
-      {categoryStyles.map((style) => <button key={style.id} type="button" title={style.name} aria-pressed={selected === style.id}
-        className={`neatline-option ${selected === style.id ? "is-selected" : ""}`} onClick={() => { setSelected(style.id); setIsEditingThickness(false); }}>
-      <span className="neatline-swatch" aria-hidden="true"><NeatlineArtwork styleId={style.id} widthCm={width} heightCm={height} /></span>
+    <div className="neatline-options" role="group" aria-label={`Choose ${category} border layer`}>
+      {category === "ornament" ? <button type="button" aria-pressed={selection.ornamentId === "none"}
+        className={`neatline-option ${selection.ornamentId === "none" ? "is-selected" : ""}`}
+        onClick={() => setSelection((current) => ({ ...current, ornamentId: "none" }))}>
+        <span className="neatline-swatch neatline-empty" aria-hidden="true"><span /></span><span className="neatline-option-name">No center design</span></button> : null}
+      {category === "corner" ? <button type="button" aria-pressed={selection.cornerId === "none"}
+        className={`neatline-option ${selection.cornerId === "none" ? "is-selected" : ""}`}
+        onClick={() => setSelection((current) => ({ ...current, cornerId: "none" }))}>
+        <span className="neatline-swatch neatline-empty" aria-hidden="true"><span /></span><span className="neatline-option-name">No corner art</span></button> : null}
+      {displayedStyles.map((style) => <button key={`${category}-${style.id}`} type="button" title={style.name} aria-pressed={isSelected(style)}
+        className={`neatline-option ${isSelected(style) ? "is-selected" : ""}`} onClick={() => selectStyle(style)}>
+        <span className="neatline-swatch" aria-hidden="true"><NeatlineArtwork selection={swatchSelection(style)} widthCm={width} heightCm={height} /></span>
         <span className="neatline-option-name">{style.name}</span></button>)}
     </div>
-    {category === "corner" && selectedStyle?.kind === "corner" ? <label className="neatline-corner-position">Corner placement
-      <select value={cornerPosition} onChange={(event) => setCornerPosition(event.target.value as CornerPosition)}>
+    {category === "ornament" && selection.ornamentId !== "none" ? <label className="neatline-layer-position">Design position
+      <select value={selection.ornamentPosition} onChange={(event) => setSelection((current) => ({ ...current, ornamentPosition: event.target.value as OrnamentPosition }))}>
+        {ORNAMENT_POSITIONS.map((position) => <option key={position} value={position}>{ORNAMENT_LABELS[position]}</option>)}
+      </select></label> : null}
+    {category === "corner" && selection.cornerId !== "none" ? <label className="neatline-layer-position">Corner placement
+      <select value={selection.cornerPosition} onChange={(event) => setSelection((current) => ({ ...current, cornerPosition: event.target.value as CornerPosition }))}>
         {CORNER_POSITIONS.map((position) => <option key={position} value={position}>{CORNER_LABELS[position]}</option>)}
       </select></label> : null}
-    {selectedStyle?.kind === "line" ? <div className="neatline-edit-wrap"><button type="button" className="neatline-edit-button" aria-expanded={isEditingThickness}
-      onClick={() => setIsEditingThickness((open) => !open)}>{isEditingThickness ? "Close thickness settings" : "Edit thickness"}</button>
-      {isEditingThickness ? <fieldset className="neatline-adjustments"><legend>Adjust line thickness</legend>
-        {selectedWidths.map((value, index) => <label className="neatline-adjustment" key={`${selectedStyle.id}-${index}`}>
-          <span className="neatline-adjustment-label">{lineLabel(index, selectedWidths.length)}</span>
-          <input type="range" min="0.5" max="10" step="0.5" value={value} onChange={(event) => updateThickness(index, Number(event.target.value))} aria-label={`${lineLabel(index, selectedWidths.length)} thickness`} />
+    {category === "line" && selectedLine ? <div className="neatline-edit-wrap"><button type="button" className="neatline-edit-button" aria-expanded={isEditingThickness}
+      onClick={() => setIsEditingThickness((open) => !open)}>{isEditingThickness ? "Close thickness settings" : "Adjust line thickness"}</button>
+      {isEditingThickness ? <fieldset className="neatline-adjustments"><legend>Line thickness</legend>
+        {lineWidths.map((value, index) => <label className="neatline-adjustment" key={`${selectedLine.id}-${index}`}>
+          <span className="neatline-adjustment-label">{lineLabel(index, lineWidths.length)}</span>
+          <input type="range" min="0.5" max={MAX_LINE_WIDTH} step="0.1" value={value} onChange={(event) => updateThickness(index, Number(event.target.value))} aria-label={`${lineLabel(index, lineWidths.length)} thickness`} />
           <output>{value.toFixed(1)}</output></label>)}
-        <p className="neatline-adjustments-note">हर लाइन की मोटाई अलग सेट कर सकते हैं।</p></fieldset> : null}</div> : null}
+        <p className="neatline-adjustments-note">डिफ़ॉल्ट पतली है; हर लाइन की मोटाई अलग बढ़ा या घटा सकते हैं।</p></fieldset> : null}</div> : null}
   </section>;
 }

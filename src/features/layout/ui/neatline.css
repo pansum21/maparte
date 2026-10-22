@@ -12,7 +12,7 @@
 .neatline-picker-heading p { margin:5px 0 0; font-size:12px; opacity:.72; }
 .neatline-count { flex:0 0 auto; font-size:11px; opacity:.75; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.08); }
 .neatline-tabs { display:flex; flex-wrap:wrap; gap:7px; margin:0 0 12px; }
-.neatline-tabs button { min-height:34px; padding:0 11px; border:1px solid rgba(255,255,255,.13); border-radius:8px; background:rgba(255,255,255,.045); color:inherit; font:600 11px/1 inherit; cursor:pointer; }
+.neatline-tabs button { min-height:34px; padding:0 11px; border:1px solid rgba(255,255,255,.13); border-radius:8px; background:rgba(255,255,255,.045); color:inherit; font:inherit; font-size:11px; font-weight:600; line-height:1; cursor:pointer; }
 .neatline-tabs button.is-active { border-color:#d7b977; color:#f0d49a; background:rgba(215,185,121,.12); }
 .neatline-options {
   display:grid; grid-template-columns:repeat(auto-fill,minmax(88px,1fr)); gap:9px;
@@ -31,8 +31,8 @@
 .neatline-empty span { width:72%; height:72%; border:1px dashed rgba(35,35,35,.35); }
 .neatline-option-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:10px; text-transform:capitalize; opacity:.86; }
 .neatline-edit-wrap { margin-top: 12px; }
-.neatline-corner-position { display:grid; grid-template-columns:1fr minmax(150px, 240px); gap:10px; align-items:center; margin-top:12px; font-size:12px; }
-.neatline-corner-position select { min-height:36px; padding:0 9px; border:1px solid rgba(215,185,121,.42); border-radius:8px; background:#101b27; color:inherit; font:inherit; }
+.neatline-layer-position { display:grid; grid-template-columns:1fr minmax(150px, 240px); gap:10px; align-items:center; margin-top:12px; font-size:12px; }
+.neatline-layer-position select { min-height:36px; padding:0 9px; border:1px solid rgba(215,185,121,.42); border-radius:8px; background:#101b27; color:inherit; font:inherit; }
 .neatline-edit-button {
   min-height: 36px;
   padding: 0 12px;
@@ -86,5 +86,5 @@
   .neatline-option { padding:5px; }
   .neatline-adjustment { grid-template-columns: 82px minmax(60px,1fr) 40px; gap:7px; }
   .neatline-edit-button { width: 100%; }
-  .neatline-corner-position { grid-template-columns:1fr; gap:6px; }
+  .neatline-layer-position { grid-template-columns:1fr; gap:6px; }
 }
