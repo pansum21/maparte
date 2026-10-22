@@ -11,7 +11,7 @@ type LineStyle = { id: string; name: string; kind: "line"; pattern: LinePattern 
 type ArtStyle = { id: string; name: string; kind: "ornament" | "corner"; asset: string };
 type BorderStyle = LineStyle | ArtStyle;
 export type CornerPosition = "all" | "top" | "bottom" | "left" | "right" | "diagonal-a" | "diagonal-b" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
-export type OrnamentPosition = "top" | "bottom" | "both";
+export type OrnamentPosition = "top" | "bottom" | "both" | "all-sides";
 export type NeatlineSelection = {
   lineId: string;
   ornamentId: string;
@@ -51,10 +51,15 @@ const cornerStyles: ArtStyle[] = Array.from({ length: 12 }, (_, i) => ({
 }));
 const allStyles: BorderStyle[] = [...lineStyles, ...decorativeStyles, ...cornerStyles];
 export const NEATLINE_STYLES = lineStyles;
-const DEFAULT_LINE_WIDTHS = [1.15, 0.9, 0.7];
+const DEFAULT_LINE_WIDTHS: Record<LinePattern, number[]> = {
+  single: [1.15], double: [1.05, 0.85], triple: [1, 0.8, 0.65], dashed: [1.15],
+  dotted: [2.2], "double-dotted": [1.9, 1.55],
+};
 const MAX_LINE_WIDTH = 5;
-const ORNAMENT_POSITIONS: OrnamentPosition[] = ["top", "bottom", "both"];
-const ORNAMENT_LABELS: Record<OrnamentPosition, string> = { top: "Top center", bottom: "Bottom center", both: "Top + bottom" };
+const ORNAMENT_POSITIONS: OrnamentPosition[] = ["top", "bottom", "both", "all-sides"];
+const ORNAMENT_LABELS: Record<OrnamentPosition, string> = {
+  top: "Top center", bottom: "Bottom center", both: "Top + bottom", "all-sides": "All four sides",
+};
 const CORNER_POSITIONS: CornerPosition[] = ["all", "top", "bottom", "left", "right", "diagonal-a", "diagonal-b", "top-left", "top-right", "bottom-left", "bottom-right"];
 const CORNER_LABELS: Record<CornerPosition, string> = {
   all: "All four corners", top: "Top pair", bottom: "Bottom pair", left: "Left pair", right: "Right pair",
@@ -114,7 +119,7 @@ function widthsFor(styleId: string, thicknesses: Record<string, number[]>): numb
   const saved = thicknesses[styleId] || [];
   return Array.from({ length: lineCount(style.pattern) }, (_, index) => {
     const value = Number(saved[index]);
-    return Number.isFinite(value) ? Math.min(MAX_LINE_WIDTH, Math.max(0.5, value)) : DEFAULT_LINE_WIDTHS[index];
+    return Number.isFinite(value) ? Math.min(MAX_LINE_WIDTH, Math.max(0.5, value)) : DEFAULT_LINE_WIDTHS[style.pattern][index];
   });
 }
 function activeCorners(position: CornerPosition): CornerName[] {
@@ -155,32 +160,37 @@ export function NeatlineArtwork({
   const offsets = line ? line.pattern === "double" || line.pattern === "double-dotted"
     ? [pad, pad + 14] : line.pattern === "triple" ? [pad, pad + 14, pad + 28] : [pad] : [];
   const dotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
-  const dash = line?.pattern === "dashed" ? "12 8" : dotted ? "1 8" : undefined;
+  const dash = line?.pattern === "dashed" ? "12 8" : dotted ? "0.1 12" : undefined;
   const selectedCorners = corner ? activeCorners(selection.cornerPosition) : [];
-  const cornerSize = Math.min(innerW, innerH) * 0.105;
+  const cornerSize = Math.min(innerW, innerH) * 0.12;
   const ornamentSize = Math.min(innerW * 0.25, innerH * 0.16);
   const ornamentHeight = Math.max(44, ornamentSize * 0.24);
-  const ornamentEdges = ornament
-    ? selection.ornamentPosition === "both" ? ["top", "bottom"] : [selection.ornamentPosition]
-    : [];
+  const ornamentEdges: Array<"top" | "bottom" | "left" | "right"> = !ornament ? []
+    : selection.ornamentPosition === "both" ? ["top", "bottom"]
+      : selection.ornamentPosition === "all-sides" ? ["top", "bottom", "left", "right"]
+        : [selection.ornamentPosition];
   const cornerGeometry: Record<CornerName, { x: number; y: number; rotate: number }> = {
     "top-left": { x: pad, y: pad, rotate: 0 }, "top-right": { x: innerW - pad - cornerSize, y: pad, rotate: 90 },
     "bottom-right": { x: innerW - pad - cornerSize, y: innerH - pad - cornerSize, rotate: 180 },
     "bottom-left": { x: pad, y: innerH - pad - cornerSize, rotate: 270 },
   };
   const horizontalGap = ornamentSize + 24;
+  const verticalGap = Math.min(innerH * 0.5, ornamentSize + 24);
 
   return <svg className={`neatline-artwork ${className}`} viewBox={`0 0 ${innerW} ${innerH}`} preserveAspectRatio="none" aria-hidden="true">
     {offsets.map((offset, index) => {
       const segments: Array<[number, number, number, number]> = [];
-      const topStart = offset + (selectedCorners.includes("top-left") ? cornerSize : 0);
-      const topEnd = innerW - offset - (selectedCorners.includes("top-right") ? cornerSize : 0);
-      const bottomStart = offset + (selectedCorners.includes("bottom-left") ? cornerSize : 0);
-      const bottomEnd = innerW - offset - (selectedCorners.includes("bottom-right") ? cornerSize : 0);
-      const leftStart = offset + (selectedCorners.includes("top-left") ? cornerSize : 0);
-      const leftEnd = innerH - offset - (selectedCorners.includes("bottom-left") ? cornerSize : 0);
-      const rightStart = offset + (selectedCorners.includes("top-right") ? cornerSize : 0);
-      const rightEnd = innerH - offset - (selectedCorners.includes("bottom-right") ? cornerSize : 0);
+      // Corner art sits in a fixed box anchored to the outer line. Every
+      // parallel stroke must stop at that same box edge so no stray gap opens
+      // between the artwork and an inner double/triple stroke.
+      const topStart = pad + (selectedCorners.includes("top-left") ? cornerSize : 0);
+      const topEnd = innerW - pad - (selectedCorners.includes("top-right") ? cornerSize : 0);
+      const bottomStart = pad + (selectedCorners.includes("bottom-left") ? cornerSize : 0);
+      const bottomEnd = innerW - pad - (selectedCorners.includes("bottom-right") ? cornerSize : 0);
+      const leftStart = pad + (selectedCorners.includes("top-left") ? cornerSize : 0);
+      const leftEnd = innerH - pad - (selectedCorners.includes("bottom-left") ? cornerSize : 0);
+      const rightStart = pad + (selectedCorners.includes("top-right") ? cornerSize : 0);
+      const rightEnd = innerH - pad - (selectedCorners.includes("bottom-right") ? cornerSize : 0);
       const addHorizontal = (edge: "top" | "bottom", start: number, end: number, y: number) => {
         if (end <= start) return;
         if (!ornamentEdges.includes(edge)) { segments.push([start, y, end, y]); return; }
@@ -189,21 +199,30 @@ export function NeatlineArtwork({
         if (gapStart > start) segments.push([start, y, Math.min(end, gapStart), y]);
         if (end > gapEnd) segments.push([Math.max(start, gapEnd), y, end, y]);
       };
+      const addVertical = (edge: "left" | "right", start: number, end: number, x: number) => {
+        if (end <= start) return;
+        if (!ornamentEdges.includes(edge)) { segments.push([x, start, x, end]); return; }
+        const gapStart = (innerH - verticalGap) / 2;
+        const gapEnd = (innerH + verticalGap) / 2;
+        if (gapStart > start) segments.push([x, start, x, Math.min(end, gapStart)]);
+        if (end > gapEnd) segments.push([x, Math.max(start, gapEnd), x, end]);
+      };
       addHorizontal("top", topStart, topEnd, offset);
       addHorizontal("bottom", bottomStart, bottomEnd, innerH - offset);
-      if (leftEnd > leftStart) segments.push([offset, leftStart, offset, leftEnd]);
-      if (rightEnd > rightStart) segments.push([innerW - offset, rightStart, innerW - offset, rightEnd]);
-      const lineIsDotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
+      addVertical("left", leftStart, leftEnd, offset);
+      addVertical("right", rightStart, rightEnd, innerW - offset);
       return <g key={`line-${offset}`} fill="none" stroke="#354b62" strokeWidth={widths[index] ?? 1.15}
-        strokeDasharray={dash} strokeLinecap={lineIsDotted ? "round" : "butt"} shapeRendering="geometricPrecision">
+        strokeDasharray={dash} strokeLinecap={dotted ? "round" : "butt"} shapeRendering="geometricPrecision">
         {segments.map(([x1, y1, x2, y2], segmentIndex) => <line key={segmentIndex} x1={x1} y1={y1} x2={x2} y2={y2} />)}
       </g>;
     })}
     {ornament && ornamentEdges.map((edge) => {
-      const y = edge === "top" ? pad - ornamentHeight * 0.3 : innerH - pad - ornamentHeight * 0.7;
-      const isBottom = edge === "bottom";
-      return <image key={edge} href={ornament.asset} x={(innerW - ornamentSize) / 2} y={y} width={ornamentSize} height={ornamentHeight}
-        transform={isBottom ? `rotate(180 500 ${y + ornamentHeight / 2})` : undefined} preserveAspectRatio="xMidYMid meet" />;
+      const centerX = edge === "left" ? pad : edge === "right" ? innerW - pad : innerW / 2;
+      const centerY = edge === "top" ? pad : edge === "bottom" ? innerH - pad : innerH / 2;
+      const rotation = edge === "bottom" ? 180 : edge === "left" ? 270 : edge === "right" ? 90 : 0;
+      const transform = rotation ? `rotate(${rotation} ${centerX} ${centerY})` : undefined;
+      return <image key={edge} href={ornament.asset} x={centerX - ornamentSize / 2} y={centerY - ornamentHeight / 2}
+        width={ornamentSize} height={ornamentHeight} transform={transform} preserveAspectRatio="xMidYMid meet" />;
     })}
     {corner && selectedCorners.map((position) => {
       const item = cornerGeometry[position];
