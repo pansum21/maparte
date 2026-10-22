@@ -1709,3 +1709,16 @@ body.has-custom-backdrop .poster-ghost-layer {
     display: none !important;
   }
 }
+
+/* Room wall paint is isolated to the stage behind the poster. */
+.poster-viewport.has-wall-theme {
+  background-color: var(--wall-bg-color) !important;
+  background-image: var(--wall-bg-image, none) !important;
+}
+.poster-viewport.has-wall-theme::before {
+  display: none !important;
+}
+.poster-viewport.has-wall-theme .poster-ghost-layer {
+  opacity: 0 !important;
+  filter: none !important;
+}
