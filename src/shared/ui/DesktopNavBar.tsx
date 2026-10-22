@@ -20,6 +20,7 @@ import {
   LocationIcon,
   ThemeIcon,
   LayoutIcon,
+  FrameIcon,
   LayersIcon,
   MarkersIcon,
   RouteIcon,
@@ -367,6 +368,19 @@ export default function DesktopNavBar({
             ) : null}
           </div>
         </div>
+      </div>
+
+      <div className="desktop-nav-row" data-tab="frames">
+        <button
+          type="button"
+          className={`desktop-nav-tab${panelOpen && activeTab === "frames" ? " is-active" : ""}`}
+          onClick={() => onTabChange("frames")}
+          title="Inner Border Lines"
+          aria-label="Frame and Border"
+        >
+          <FrameIcon className="desktop-nav-icon" />
+          <span className="desktop-nav-label">Frame & Border</span>
+        </button>
       </div>
 
       {/* ── 5. STYLE ROW (Style / Text + Full Screen / Canvas View) ── */}
