@@ -8,18 +8,6 @@ import {
   type CustomGradientConfig,
 } from "../domain/backdropThemes";
 
-function getLuminance(hex: string): number {
-  const cleanHex = hex.replace("#", "");
-  const num = parseInt(cleanHex.length === 3
-    ? cleanHex.split("").map((c) => c + c).join("")
-    : cleanHex, 16);
-  if (isNaN(num)) return 0;
-  const r = (num >> 16) & 255;
-  const g = (num >> 8) & 255;
-  const b = num & 255;
-  return 0.299 * r + 0.587 * g + 0.114 * b;
-}
-
 function applyBackdropToDOM(state: BackdropThemeState) {
   if (typeof document === "undefined") return;
 
@@ -40,9 +28,7 @@ function applyBackdropToDOM(state: BackdropThemeState) {
       BACKDROP_PRESETS.find((item) => item.id === state.presetId) ||
       BACKDROP_PRESETS[0];
     if (preset.background !== "default") {
-      const isGradient = /^(linear|radial|conic)-gradient\\(/i.test(
-        preset.background,
-      );
+      const isGradient = preset.background.includes("gradient(");
       backgroundColor = isGradient ? "transparent" : preset.background;
       backgroundImage = isGradient ? preset.background : "none";
     }
