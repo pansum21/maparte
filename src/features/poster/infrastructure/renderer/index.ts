@@ -23,7 +23,7 @@ async function drawNeatlineSvg(
       image.onload = () => resolve();
       image.onerror = () => reject(new Error("Could not render the selected border."));
     });
-    ctx.drawImage(image, 0, 0, width, height);
+    ctx.drawImage(image, width * 0.065, height * 0.065, width * 0.87, height * 0.87);
   } finally {
     URL.revokeObjectURL(objectUrl);
   }
@@ -74,7 +74,14 @@ export async function compositeExport(
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas rendering is not available.");
 
-  // 1. Draw map snapshot
+  // Keep a generous white print mat around the artwork.
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, width, height);
+  ctx.save();
+  ctx.translate(width * 0.1, height * 0.1);
+  ctx.scale(0.8, 0.8);
+
+  // 1. Draw map snapshot inside the print mat.
   ctx.drawImage(mapCanvas, 0, 0);
 
   // 2. Gradient fades
@@ -123,9 +130,6 @@ export async function compositeExport(
     );
   }
 
-  // The physical frame belongs to the preview mockup, not the printable artwork.
-  await drawNeatlineSvg(ctx, width, height, neatlineSvg);
-
   // 7. Poster text
   drawPosterText(
     ctx,
@@ -141,6 +145,10 @@ export async function compositeExport(
     includeCredits,
     customDate,
   );
+  ctx.restore();
+
+  // The wooden frame stays physical; print the decorative line and white mat.
+  await drawNeatlineSvg(ctx, width, height, neatlineSvg);
 
   const size: CanvasSize = {
     width,
