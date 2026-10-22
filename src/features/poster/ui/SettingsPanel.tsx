@@ -13,10 +13,12 @@ import MarkersSection from "@/features/markers/ui/MarkersSection";
 import RoutesSection from "@/features/routes/ui/RoutesSection";
 import TypographySection from "@/features/poster/ui/TypographySection";
 import TemplatesSection from "@/features/poster/ui/TemplatesSection";
+import { NeatlinePicker } from "@/features/layout/ui/NeatlinePicker";
 import {
   LocationIcon,
   ThemeIcon,
   LayoutIcon,
+  FrameIcon,
   LayersIcon,
   MarkersIcon,
   RouteIcon,
@@ -39,6 +41,7 @@ type SectionId =
   | "location"
   | "theme"
   | "layout"
+  | "frames"
   | "layers"
   | "markers"
   | "routes"
@@ -53,6 +56,7 @@ const accordionSections: {
   { id: "location", label: "Location", Icon: LocationIcon },
   { id: "theme", label: "Theme", Icon: ThemeIcon },
   { id: "layout", label: "Layout", Icon: LayoutIcon },
+  { id: "frames", label: "Frame & Border", Icon: FrameIcon },
   { id: "layers", label: "Layers", Icon: LayersIcon },
   { id: "markers", label: "Markers", Icon: MarkersIcon },
   { id: "routes", label: "Routes", Icon: RouteIcon },
@@ -244,6 +248,25 @@ export default function SettingsPanel({
                 onColorEditorActiveChange={setIsColorEditorActive}
               />
             ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div
+        className={`mobile-section mobile-section--frames accordion-item${openSections.has("frames") ? " accordion-item--open" : ""}`}
+      >
+        <AccordionHeader
+          sectionId="frames"
+          label={sectionMap["frames"].label}
+          Icon={sectionMap["frames"].Icon}
+          isOpen={openSections.has("frames")}
+          onToggle={toggleSection}
+        />
+        <div
+          className={`accordion-body${openSections.has("frames") ? " is-open" : ""}`}
+        >
+          <div className="accordion-body-inner">
+            <NeatlinePicker width={state.form.width} height={state.form.height} />
           </div>
         </div>
       </div>
