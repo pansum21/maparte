@@ -9,6 +9,7 @@ import {
   SettingsIcon,
   SparklesIcon,
   FullScreenIcon,
+  FrameIcon,
 } from "./Icons";
 
 export type MobileTab =
@@ -16,6 +17,7 @@ export type MobileTab =
   | "location"
   | "theme"
   | "layout"
+  | "frames"
   | "style"
   | "layers"
   | "markers"
@@ -29,6 +31,7 @@ const tabs: {
   { id: "location", label: "Location", Icon: LocationIcon },
   { id: "theme", label: "Theme", Icon: ThemeIcon },
   { id: "layout", label: "Layout", Icon: LayoutIcon },
+  { id: "frames", label: "Frame & Border", Icon: FrameIcon },
   { id: "templates", label: "Presets", Icon: SparklesIcon },
   { id: "style", label: "Style", Icon: StyleIcon },
   { id: "layers", label: "Layers", Icon: LayersIcon },
