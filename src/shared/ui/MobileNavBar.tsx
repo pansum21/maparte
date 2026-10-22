@@ -82,7 +82,6 @@ export default function MobileNavBar({
                 </button>
               );
             })}
-          </div>
             <button
               type="button"
               className="mobile-nav-tab mobile-nav-tab--fullscreen"
