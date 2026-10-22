@@ -60,7 +60,10 @@ function SettingsDrawer({
   onTogglePhoneWallpaper: () => void;
   onOpenCinema: () => void;
 }) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  // Settings sections (especially Layout) contain long tool lists; open the
+  // sheet expanded so phone users can reach the same controls without guessing
+  // that the handle must be swiped first.
+  const [isExpanded, setIsExpanded] = useState(true);
   const { sheetRef, handleRef, handleProps } = useSwipeDown(onClose, 80, {
     onExpand: () => setIsExpanded(true),
   });
