@@ -27,6 +27,8 @@ import {
 import { initBackdropThemeFromStorage } from "@/features/theme/application/useBackdropTheme";
 import CinemaWallDock from "@/features/theme/ui/CinemaWallDock";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
+import OuterFramePicker from "@/features/layout/ui/OuterFramePicker";
+import { NeatlinePicker } from "@/features/layout/ui/NeatlinePicker";
 
 const AboutModal = lazy(() => import("@/shared/ui/AboutModal"));
 const LegalModal = lazy(() => import("@/features/legal/ui/LegalModal"));
@@ -52,14 +54,13 @@ function SettingsDrawer({
   onClose,
   isPhoneWallpaper,
   onTogglePhoneWallpaper,
-  onOpenCinema,
 }: {
   mobileTab: MobileTab;
   onClose: () => void;
   isPhoneWallpaper: boolean;
   onTogglePhoneWallpaper: () => void;
-  onOpenCinema: () => void;
 }) {
+  const { state } = usePosterContext();
   // Settings sections (especially Layout) contain long tool lists; open the
   // sheet expanded so phone users can reach the same controls without guessing
   // that the handle must be swiped first.
@@ -97,17 +98,19 @@ function SettingsDrawer({
                 <span aria-hidden="true">{isPhoneWallpaper ? "🖼️" : "📱"}</span>
                 <span>{isPhoneWallpaper ? "Poster View" : "Phone Wallpaper"}</span>
               </button>
-              <button
-                type="button"
-                className="mobile-quick-action"
-                onClick={onOpenCinema}
-              >
-                <span aria-hidden="true">🖼️</span>
-                <span>Full Screen</span>
-              </button>
             </div>
           ) : null}
-          <SettingsPanel mobileTab={mobileTab} />
+          {mobileTab === "frames" ? (
+            <div className="mobile-frame-settings">
+              <OuterFramePicker />
+              <NeatlinePicker
+                width={String(state.form.width)}
+                height={String(state.form.height)}
+              />
+            </div>
+          ) : (
+            <SettingsPanel mobileTab={mobileTab} />
+          )}
         </div>
       </div>
     </div>
@@ -538,7 +541,6 @@ export default function AppShell() {
           onClose={() => setMobileDrawerOpen(false)}
           isPhoneWallpaper={isPhoneWallpaper}
           onTogglePhoneWallpaper={handleTogglePhoneWallpaper}
-          onOpenCinema={() => handleToggleCinema(true)}
         />
       ) : null}
 
@@ -562,6 +564,15 @@ export default function AppShell() {
         drawerOpen={mobileDrawerOpen}
         isLocationVisible={mobileLocationRowVisible}
         onTabChange={handleMobileTabChange}
+        onOpenFullScreen={() => {
+          setMobileDrawerOpen(false);
+          handleToggleCinema(true);
+        }}
+        onSettingsClick={() => {
+          setMobileDrawerOpen(false);
+          setSettingsOpen(true);
+        }}
+        settingsOpen={settingsOpen}
       />
       <Suspense fallback={null}>
         <ExportFab isMobile={isMobileViewport} />
