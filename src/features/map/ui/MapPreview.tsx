@@ -70,7 +70,7 @@ function applyIncrementalStyleUpdate(
   }
 }
 
-const MAX_MAP_PIXEL_RATIO = 3;
+const MAX_MAP_PIXEL_RATIO = 4;
 
 /** Render the WebGL canvas at device resolution, including browser pinch zoom. */
 function getMapPixelRatio(): number {
