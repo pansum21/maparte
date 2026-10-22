@@ -1068,7 +1068,8 @@
 
 .poster-map-window {
   position: absolute;
-  inset: 9.5%;
+  /* Slightly smaller map window leaves a deliberate white mat for the border. */
+  inset: 11.5%;
   overflow: hidden;
   background: #fff;
 }

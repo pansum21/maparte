@@ -81,12 +81,17 @@ export function NeatlineArtwork({
   const isDotted = style.pattern === "dotted" || style.pattern === "double-dotted";
   const strokeDasharray =
     style.pattern === "dashed" ? "13 8" : isDotted ? "1 8" : undefined;
+  // Keep each stroke fully inside the SVG viewBox at every supported width.
+  // This avoids the clipped half-stroke that can look like a tiny break at an
+  // edge when a thick line is rendered or exported.
+  const maxStroke = Math.max(...widthsFor(style.id, readThicknesses()));
+  const edgeInset = Math.max(16, maxStroke / 2 + 2);
   const lineOffsets =
     style.pattern === "double" || style.pattern === "double-dotted"
-      ? [12, 24]
+      ? [edgeInset, edgeInset + 16]
       : style.pattern === "triple"
-        ? [9, 18, 27]
-        : [16];
+        ? [edgeInset, edgeInset + 16, edgeInset + 32]
+        : [edgeInset];
 
   return (
     <svg
@@ -106,7 +111,9 @@ export function NeatlineArtwork({
           stroke="#354b62"
           strokeWidth={strokeWidthFor(style.id, index)}
           strokeDasharray={strokeDasharray}
-          strokeLinecap={isDotted ? "round" : "square"}
+          strokeLinecap={isDotted ? "round" : "butt"}
+          strokeLinejoin="round"
+          shapeRendering="geometricPrecision"
         />
       ))}
     </svg>
