@@ -135,7 +135,7 @@ export default function MapPreview({
       interactive: false,
       attributionControl: false,
       pixelRatio: getMapPixelRatio(),
-      maxCanvasSize: [4096, 4096],
+      maxCanvasSize: [4096, 8192],
       cancelPendingTileRequestsWhileZooming: true,
       canvasContextAttributes: { preserveDrawingBuffer: true },
     });
