@@ -35,10 +35,11 @@ export function NeatlineArtwork({
     style.pattern === "dashed" ? "16 9" :
     style.pattern === "dotted" ? "1 10" :
     undefined;
+  // Keep every line on the white mat, outside the map window.
   const lineOffsets =
-    style.pattern === "double" ? [39, 51] :
-    style.pattern === "triple" ? [34, 45, 56] :
-    [45];
+    style.pattern === "double" ? [12, 24] :
+    style.pattern === "triple" ? [10, 19, 28] :
+    [16];
   const inset = (value: number) => `${value} ${value} 1000 ${1000 - value}`;
   const cornerPath = (x: number, y: number, sx: number, sy: number) => {
     const p = style.ornament;
@@ -79,8 +80,8 @@ export function NeatlineArtwork({
       {style.ornament !== "plain" && (
         <g fill="none" stroke={style.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke">
           {[0, 1, 2, 3].map((corner) => {
-            const x = corner % 2 === 0 ? 65 : 935;
-            const y = corner < 2 ? 65 : 935;
+            const x = corner % 2 === 0 ? 24 : 976;
+            const y = corner < 2 ? 24 : 976;
             const sx = corner % 2 === 0 ? 1 : -1;
             const sy = corner < 2 ? 1 : -1;
             const d = cornerPath(x, y, sx, sy);
