@@ -56,7 +56,7 @@ const accordionSections: {
   { id: "location", label: "Location", Icon: LocationIcon },
   { id: "theme", label: "Theme", Icon: ThemeIcon },
   { id: "layout", label: "Layout", Icon: LayoutIcon },
-  { id: "frames", label: "Frame & Border", Icon: FrameIcon },
+  { id: "frames", label: "Border", Icon: FrameIcon },
   { id: "layers", label: "Layers", Icon: LayersIcon },
   { id: "markers", label: "Markers", Icon: MarkersIcon },
   { id: "routes", label: "Routes", Icon: RouteIcon },
