@@ -244,7 +244,7 @@ function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: N
   const corner = style.kind === "corner" ? style : undefined;
   const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
   const inset = 13;
-  const cornerSize = 54;
+  const cornerSize = 72;
   const renderCornerLines = !!line && (isLine || !!ornament);
 
   return <span className="neatline-swatch" aria-hidden="true">
@@ -264,7 +264,7 @@ function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: N
         <path d="M 13 22 H 16 M 104 22 H 107" fill="none" stroke="#354b62" strokeWidth="1.4" />
         <image href={ornament.asset} x="16" y="5" width="88" height="34" preserveAspectRatio="xMidYMid meet" />
       </> : null}
-      {corner ? <image href={corner.asset} x="53" y="8" width={cornerSize} height={cornerSize}
+      {corner ? <image href={corner.asset} x="35" y="4" width={cornerSize} height={cornerSize}
         preserveAspectRatio="none" /> : null}
     </svg>
   </span>;
