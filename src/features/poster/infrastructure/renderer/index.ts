@@ -23,7 +23,7 @@ async function drawNeatlineSvg(
       image.onload = () => resolve();
       image.onerror = () => reject(new Error("Could not render the selected border."));
     });
-    ctx.drawImage(image, width * 0.065, height * 0.065, width * 0.87, height * 0.87);
+    ctx.drawImage(image, width * 0.04, height * 0.04, width * 0.92, height * 0.92);
   } finally {
     URL.revokeObjectURL(objectUrl);
   }
@@ -83,8 +83,8 @@ export async function compositeExport(
     ctx.fillRect(0, 0, width, height);
   }
   ctx.save();
-  ctx.translate(width * 0.1, height * 0.1);
-  ctx.scale(0.8, 0.8);
+  ctx.translate(width * 0.085, height * 0.085);
+  ctx.scale(0.83, 0.83);
 
   // 1. Draw map snapshot inside the print mat.
   if (!mapAlreadyInset) ctx.drawImage(mapCanvas, 0, 0);

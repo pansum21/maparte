@@ -39,15 +39,36 @@ function addPpiToFilename(filename: string, ppi: number): string {
   return `${filename.slice(0, extensionIndex)}_${ppi}PPI${filename.slice(extensionIndex)}`;
 }
 
-function getSelectedNeatlineSvg(): string | undefined {
+async function getSelectedNeatlineSvg(): Promise<string | undefined> {
   const preview = document.querySelector<SVGSVGElement>(".preview-neatline");
   if (!preview) return undefined;
   const clone = preview.cloneNode(true) as SVGSVGElement;
   clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-  clone.setAttribute("width", "1000");
-  clone.setAttribute("height", "1000");
-  clone.setAttribute("viewBox", "0 0 1000 1000");
+  const viewBoxParts = (clone.getAttribute("viewBox") || "0 0 1000 1000").split(/\s+/);
+  clone.setAttribute("width", viewBoxParts[2]);
+  clone.setAttribute("height", viewBoxParts[3]);
   clone.setAttribute("preserveAspectRatio", "none");
+  await Promise.all(Array.from(clone.querySelectorAll("image")).map(async (image) => {
+    const href = image.getAttribute("href") || image.getAttribute("xlink:href");
+    if (!href) return;
+    const absoluteHref = new URL(href, document.baseURI).href;
+    try {
+      const response = await fetch(absoluteHref);
+      if (!response.ok) throw new Error("Border asset unavailable");
+      const blob = await response.blob();
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Could not embed border asset"));
+        reader.onerror = () => reject(reader.error || new Error("Could not read border asset"));
+        reader.readAsDataURL(blob);
+      });
+      image.setAttribute("href", dataUrl);
+    } catch {
+      // Keep same-origin assets visible in the preview/export renderer if
+      // offline browser policy prevents embedding them into the SVG file.
+      image.setAttribute("href", absoluteHref);
+    }
+  }));
   clone.removeAttribute("class");
   return new XMLSerializer().serializeToString(clone);
 }
@@ -204,7 +225,7 @@ export function useExport() {
         };
 
         const size = resolveCanvasSize(widthInches, heightInches, targetDpi);
-        const neatlineSvg = getSelectedNeatlineSvg();
+        const neatlineSvg = await getSelectedNeatlineSvg();
 
         const lat = Number(form.latitude) || 0;
         const lon = Number(form.longitude) || 0;

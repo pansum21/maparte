@@ -1068,8 +1068,8 @@
 
 .poster-map-window {
   position: absolute;
-  /* Slightly smaller map window leaves a deliberate white mat for the border. */
-  inset: 11.5%;
+  /* Enlarge the map while keeping a clean white gap before the inner border. */
+  inset: 8.5%;
   overflow: hidden;
   background: #fff;
 }
@@ -1085,9 +1085,9 @@
 .poster-frame .neatline-artwork.preview-neatline {
   position: absolute;
   z-index: 6;
-  inset: 6.5%;
-  width: 87%;
-  height: 87%;
+  inset: 4%;
+  width: 92%;
+  height: 92%;
   pointer-events: none;
 }
 

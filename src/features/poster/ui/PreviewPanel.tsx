@@ -516,6 +516,8 @@ export default function PreviewPanel({
             key={neatlineRevision}
             styleId={neatlineStyle}
             className="preview-neatline"
+            widthCm={form.width}
+            heightCm={form.height}
           />
         </div>
       </div>

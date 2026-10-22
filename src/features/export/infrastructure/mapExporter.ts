@@ -71,8 +71,8 @@ export async function captureMapAsCanvas(
     outputContext.fillStyle = "#fff";
     outputContext.fillRect(0, 0, exportWidth, exportHeight);
     outputContext.save();
-    outputContext.translate(exportWidth * 0.1, exportHeight * 0.1);
-    outputContext.scale(0.8, 0.8);
+    outputContext.translate(exportWidth * 0.085, exportHeight * 0.085);
+    outputContext.scale(0.83, 0.83);
 
     const sourceContainer = map.getContainer();
     const scaleToExport = exportWidth / fullResolutionParams.effectivePreviewWidth;
