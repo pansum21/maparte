@@ -45,8 +45,8 @@ export async function compositeExport(
   const {
     theme,
     center,
-    widthInches: _wi,
-    heightInches: _hi,
+    widthInches,
+    heightInches,
     displayCity,
     displayCountry,
     customDate,
@@ -156,6 +156,9 @@ export async function compositeExport(
     requestedWidth: width,
     requestedHeight: height,
     downscaleFactor: 1,
+    requestedDpi: 0,
+    effectiveDpiX: widthInches > 0 ? width / widthInches : 0,
+    effectiveDpiY: heightInches > 0 ? height / heightInches : 0,
   };
 
   return { canvas, size };

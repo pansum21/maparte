@@ -40,9 +40,9 @@ const TIERS: TierConfig[] = [
     price: "$4.99",
     desc: "Best for Phone & 4K/8K Wallpapers",
     included: [
-      "500 DPI Ultra-HD resolution (up to 80 Megapixels)",
+      "Up to 500 PPI at supported print sizes; exact file resolution depends on size and device",
       "Lossless pixel-perfect lines & crisp street fonts",
-      "Perfect for high-res OLED smartphones & 4K/8K displays",
+      "PNG pixel dimensions are sized for the selected print format",
       "Permanent MapArte studio signature branding",
     ],
     notIncluded: [
@@ -59,7 +59,7 @@ const TIERS: TierConfig[] = [
     price: "$4.99",
     desc: "Compact & Light for Social Sharing",
     included: [
-      "500 DPI Ultra-HD compact image (smaller file size)",
+      "Up to 500 PPI at supported print sizes; actual density is embedded in the JPG",
       "Easy to share on WhatsApp, Instagram & digital frames",
       "Compatible with legacy photo printing labs",
       "Permanent MapArte studio signature branding",
@@ -79,8 +79,8 @@ const TIERS: TierConfig[] = [
     badge: "🔥 POPULAR DUO",
     desc: "Both Image Formats (PNG + JPG) in 1 Pack",
     included: [
-      "BOTH 500 DPI Lossless PNG + 500 DPI Compact JPG in 1 ZIP",
-      "Perfect for both 4K/8K screens & quick mobile sharing",
+      "PNG + JPG exports with actual pixel-density metadata for the selected print size",
+      "Use the lossless PNG for editing and JPG for smaller sharing files",
       "Save $4 compared to buying PNG and JPG separately",
       "Permanent MapArte studio signature branding",
     ],
@@ -97,7 +97,7 @@ const TIERS: TierConfig[] = [
     price: "$6.99",
     desc: "Best for Home & Print Shops",
     included: [
-      "500 DPI print-ready document for frame shops",
+      "Print-sized PDF; effective PPI follows the embedded image pixels and selected size",
       "Standard A4/A3/A2 framing ready with razor-sharp typography",
       "Ideal for local printers (FedEx, Staples, Printo) & fine art paper",
       "Permanent MapArte studio signature branding",
@@ -112,10 +112,10 @@ const TIERS: TierConfig[] = [
     format: "svg",
     label: "SVG Vector",
     price: "$7.99",
-    desc: "Infinite Vector • Unlimited Zoom",
+    desc: "Scalable Vector SVG",
     included: [
-      "100% Pure mathematical vector graphics",
-      "Infinite zoom • 0% quality loss at 10,000% scale",
+      "Vector map paths and typography scale without raster pixelation",
+      "Map detail depends on the underlying map data and rendered features",
       "Layered paths for Adobe Illustrator, CAD, CNC & laser cutters",
       "Permanent MapArte studio signature branding",
     ],
@@ -132,7 +132,7 @@ const TIERS: TierConfig[] = [
     badge: "🎁 BUY 1 GET 1 FREE",
     desc: "All Formats (PNG+JPG+PDF+SVG) + 2nd Poster Free",
     included: [
-      "ALL Formats in 1 ZIP: PNG (500 DPI) + JPG (500 DPI) + PDF (500 DPI) + SVG Vector",
+      "PNG/JPG with actual density metadata, print-sized PDF and vector SVG in one ZIP",
       "🎁 BUY 1 GET 1 FREE (BOGO): 2nd Matching Poster 100% Free!",
       "Unique 1-Time BOGO bonus code delivered directly to your Gmail",
       "Save 65% vs buying individual formats ($30+ value)",
@@ -449,7 +449,7 @@ export default function DownloadModal({
                   selectedFormat === "png" ? "is-active" : ""
                 }`}
                 onClick={() => handleFormatSelect("png")}
-                title="500 DPI Lossless PNG Image"
+                title="High-resolution PNG image"
               >
                 PNG
               </button>
@@ -459,7 +459,7 @@ export default function DownloadModal({
                   selectedFormat === "jpg" ? "is-active" : ""
                 }`}
                 onClick={() => handleFormatSelect("jpg")}
-                title="500 DPI Compact JPG Image"
+                title="High-resolution compact JPG image"
               >
                 JPG
               </button>
@@ -481,7 +481,7 @@ export default function DownloadModal({
                   selectedFormat === "pdf" ? "is-active" : ""
                 }`}
                 onClick={() => handleFormatSelect("pdf")}
-                title="500 DPI Print Document PDF"
+                title="Print-sized PDF document"
               >
                 PDF
               </button>
@@ -491,7 +491,7 @@ export default function DownloadModal({
                   selectedFormat === "svg" ? "is-active" : ""
                 }`}
                 onClick={() => handleFormatSelect("svg")}
-                title="Infinite Vector Graphics SVG"
+                title="Scalable Vector Graphics SVG"
               >
                 SVG
               </button>
@@ -516,7 +516,7 @@ export default function DownloadModal({
               <div className="pro-unlocked-banner">
                 <span>
                   {isAdmin
-                    ? "👑 Ultra-HD 500 DPI & Vector Engine Active"
+                    ? "👑 High-resolution export & vector SVG available"
                     : `🎁 ${credits} Ultra-HD ${credits === 1 ? "Poster" : "Posters"} Available`}
                 </span>
               </div>
@@ -640,7 +640,7 @@ export default function DownloadModal({
                   <span className="trust-badge-icon" aria-hidden="true">⚡</span>
                   <div className="trust-badge-content">
                     <span className="trust-badge-title">Instant Access</span>
-                    <span className="trust-badge-sub">500 DPI & Vector</span>
+                    <span className="trust-badge-sub">Up to 500 PPI & vector SVG</span>
                   </div>
                 </div>
                 <div className="trust-badge-item">
@@ -668,16 +668,16 @@ export default function DownloadModal({
           )}
         </div>
 
-        {/* Free Screen Wallpaper Option (Clean, 300 DPI HD Retina, No Center Watermark) */}
+        {/* Free screen wallpaper option */}
         {!isPro && (
           <div className="free-screen-wallpaper-box">
             <div className="free-wallpaper-info">
               <span className="free-wallpaper-title">📱 Free HD Phone Wallpaper ($0)</span>
               <p className="free-wallpaper-desc">
-                <strong>✓ Included:</strong> Clean 300 DPI Retina HD wallpaper for phone screens • Zero center watermark • Permanent MapArte studio signature.
+                <strong>✓ Included:</strong> Clean phone wallpaper export • Zero center watermark • Permanent MapArte studio signature.
               </p>
               <p className="free-wallpaper-desc free-wallpaper-desc--excluded">
-                <strong>✕ Not Included:</strong> No 500 DPI print quality (blurs on physical paper) • No PDF print document • No vector SVG • No BOGO bonus poster.
+                <strong>✕ Not Included:</strong> No Pro high-resolution print export • No PDF print document • No vector SVG • No BOGO bonus poster.
               </p>
             </div>
             <button
@@ -733,19 +733,19 @@ export default function DownloadModal({
                     <td className="td-highlight">📦 ALL 4 Files (PNG + JPG + PDF + SVG)</td>
                   </tr>
                   <tr>
-                    <td>Resolution / DPI</td>
-                    <td>300 DPI (Phone Screen)</td>
-                    <td>500 DPI Ultra-HD (80 MP)</td>
-                    <td>500 DPI Ultra-HD (Compact)</td>
-                    <td>500 DPI (Lossless + Compact)</td>
-                    <td>500 DPI Vector-Raster</td>
-                    <td>Infinite Vector</td>
-                    <td className="td-highlight">500 DPI + Infinite Vector</td>
+                    <td>Raster resolution (effective PPI)</td>
+                    <td>Screen-oriented PNG</td>
+                    <td>Up to 500 PPI; varies with size/device</td>
+                    <td>Up to 500 PPI; varies with size/device</td>
+                    <td>PNG + JPG; actual density metadata</td>
+                    <td>Raster PDF; effective PPI follows actual pixels</td>
+                    <td>Vector paths; map detail depends on source data</td>
+                    <td className="td-highlight">Raster exports + vector SVG</td>
                   </tr>
                   <tr>
                     <td>Best Used For</td>
                     <td>Phone Screen Wallpaper</td>
-                    <td>4K/8K Monitors &amp; Displays</td>
+                    <td>Lossless sharing, editing &amp; print use</td>
                     <td>Social Sharing &amp; Photo Labs</td>
                     <td>Screens &amp; Quick Mobile Sharing</td>
                     <td>Framing &amp; Local Print Shops</td>
@@ -763,24 +763,24 @@ export default function DownloadModal({
                     <td className="td-highlight">❌ None (100% Clean)</td>
                   </tr>
                   <tr>
-                    <td>Physical Paper Print Quality</td>
-                    <td>⚠️ Blurs on paper</td>
-                    <td>✓ Razor-Sharp Frame Print</td>
-                    <td>✓ Sharp Photo Print</td>
-                    <td>✓ Razor-Sharp Frame Print</td>
-                    <td>✓ Perfect Frame Print</td>
-                    <td>✓ Infinite Resolution</td>
-                    <td className="td-highlight">✓ Museum-Grade Gallery Print</td>
+                    <td>Print suitability</td>
+                    <td>Screen-focused; depends on output size</td>
+                    <td>Depends on effective PPI and printer</td>
+                    <td>Depends on effective PPI and printer</td>
+                    <td>Depends on effective PPI and printer</td>
+                    <td>Raster artwork; PPI follows actual pixels</td>
+                    <td>Vector paths scale; detail depends on map data</td>
+                    <td className="td-highlight">Raster PPI labeled + scalable SVG paths</td>
                   </tr>
                   <tr>
                     <td>Zoom Capability</td>
-                    <td>Blurs on deep zoom</td>
-                    <td>Crisp up to 1000%</td>
-                    <td>Crisp up to 800%</td>
-                    <td>Crisp up to 1000%</td>
-                    <td>Sharp Document</td>
-                    <td>Never Blurs (0% Loss)</td>
-                    <td className="td-highlight">Never Blurs (0% Loss)</td>
+                    <td>Limited by native pixels</td>
+                    <td>Limited by native pixels</td>
+                    <td>Limited by native pixels</td>
+                    <td>Limited by native pixels</td>
+                    <td>Raster pixels limit zoom</td>
+                    <td>Paths scale; detail depends on map data</td>
+                    <td className="td-highlight">Raster limits + scalable SVG paths</td>
                   </tr>
                   <tr>
                     <td>Vector Paths (Illustrator/CAD)</td>
@@ -789,8 +789,8 @@ export default function DownloadModal({
                     <td>✕</td>
                     <td>✕</td>
                     <td>✕</td>
-                    <td>✓ 100% Pure Vectors</td>
-                    <td className="td-highlight">✓ 100% Pure Vectors</td>
+                    <td>✓ Vector paths where available</td>
+                    <td className="td-highlight">✓ Vector paths where available</td>
                   </tr>
                   <tr>
                     <td>Studio Signature (MAPARTE)</td>

@@ -32,6 +32,12 @@ import { dispatchTelemetryAlert } from "@/core/telemetry/sentinel";
 
 const EXPORT_COUNT_STORAGE_KEY = "maparte.poster.count";
 
+function addPpiToFilename(filename: string, ppi: number): string {
+  const extensionIndex = filename.lastIndexOf(".");
+  if (extensionIndex < 0) return `${filename}_${ppi}PPI`;
+  return `${filename.slice(0, extensionIndex)}_${ppi}PPI${filename.slice(extensionIndex)}`;
+}
+
 function getSelectedNeatlineSvg(): string | undefined {
   const preview = document.querySelector<SVGSVGElement>(".preview-neatline");
   if (!preview) return undefined;
@@ -168,7 +174,7 @@ export function useExport() {
         const heightCm = Number(form.height) || DEFAULT_POSTER_HEIGHT_CM;
         const isPro =
           options?.asPro !== undefined ? options.asPro : isProUser();
-        const dpi = isPro ? 500 : FREE_DPI;
+        const targetDpi = isPro ? 500 : FREE_DPI;
         const widthInches = widthCm / CM_PER_INCH;
         const heightInches = heightCm / CM_PER_INCH;
         // Permanent branding & studio signature on ALL downloads:
@@ -196,7 +202,7 @@ export function useExport() {
             : {}),
         };
 
-        const size = resolveCanvasSize(widthInches, heightInches, dpi);
+        const size = resolveCanvasSize(widthInches, heightInches, targetDpi);
         const neatlineSvg = getSelectedNeatlineSvg();
 
         const lat = Number(form.latitude) || 0;
@@ -246,6 +252,14 @@ export function useExport() {
           markerScaleY,
           markerSizeScale,
         } = await captureMapAsCanvas(map, size.width, size.height);
+        // The WebGL map surface can be smaller than the requested poster on
+        // some devices. Export at the actual rendered pixel dimensions instead
+        // of interpolating it upward and labeling the result as 500 PPI.
+        const density = {
+          x: mapCanvas.width / widthInches,
+          y: mapCanvas.height / heightInches,
+        };
+        const effectiveDpi = Math.max(1, Math.floor(Math.min(density.x, density.y)));
 
         // 2. Composite fades + text
         const { canvas: fullCanvas } = await compositeExport(mapCanvas, {
@@ -280,6 +294,7 @@ export function useExport() {
           form.theme,
           format,
         );
+        const rasterFilename = addPpiToFilename(filename, effectiveDpi);
 
         if (format === "zip") {
           const svgBlob = await createLayeredSvgBlobFromMap({
@@ -303,8 +318,8 @@ export function useExport() {
             neatlineSvg,
           });
 
-          const pngBlob = await createPngBlob(canvas, dpi);
-          const jpgBlob = await createJpgBlob(canvas, 0.95);
+          const pngBlob = await createPngBlob(canvas, density);
+          const jpgBlob = await createJpgBlob(canvas, 0.95, density);
           const pdfBlob = createPdfBlobFromCanvas(canvas, {
             widthCm,
             heightCm,
@@ -315,24 +330,24 @@ export function useExport() {
           const cleanTheme = (form.theme || "custom").replace(/[^a-zA-Z0-9_-]/g, "_");
           const baseName = `MapArte_${cleanCity}_${cleanTheme}`;
 
-          zip.file(`${baseName}_Wallpaper_UltraHD.png`, pngBlob);
-          zip.file(`${baseName}_Wallpaper_Compact.jpg`, jpgBlob);
-          zip.file(`${baseName}_Print_500DPI.pdf`, pdfBlob);
-          zip.file(`${baseName}_Vector_Infinite.svg`, svgBlob);
+          zip.file(`${baseName}_Wallpaper_UltraHD_${effectiveDpi}PPI.png`, pngBlob);
+          zip.file(`${baseName}_Wallpaper_Compact_${effectiveDpi}PPI.jpg`, jpgBlob);
+          zip.file(`${baseName}_Print_${effectiveDpi}PPI.pdf`, pdfBlob);
+          zip.file(`${baseName}_Vector.svg`, svgBlob);
 
           const zipBlob = await zip.generateAsync({ type: "blob" });
           await triggerDownloadBlob(zipBlob, `${baseName}_Master_Bundle.zip`);
         } else if (format === "image_bundle") {
-          const pngBlob = await createPngBlob(canvas, dpi);
-          const jpgBlob = await createJpgBlob(canvas, 0.95);
+          const pngBlob = await createPngBlob(canvas, density);
+          const jpgBlob = await createJpgBlob(canvas, 0.95, density);
 
           const zip = new JSZip();
           const cleanCity = (form.displayCity || form.location || "City").replace(/[^a-zA-Z0-9_-]/g, "_");
           const cleanTheme = (form.theme || "custom").replace(/[^a-zA-Z0-9_-]/g, "_");
           const baseName = `MapArte_${cleanCity}_${cleanTheme}`;
 
-          zip.file(`${baseName}_Wallpaper_UltraHD.png`, pngBlob);
-          zip.file(`${baseName}_Wallpaper_Compact.jpg`, jpgBlob);
+          zip.file(`${baseName}_Wallpaper_UltraHD_${effectiveDpi}PPI.png`, pngBlob);
+          zip.file(`${baseName}_Wallpaper_Compact_${effectiveDpi}PPI.jpg`, jpgBlob);
 
           const zipBlob = await zip.generateAsync({ type: "blob" });
           await triggerDownloadBlob(zipBlob, `${baseName}_ImageDuo_Pack.zip`);
@@ -341,13 +356,16 @@ export function useExport() {
             widthCm,
             heightCm,
           });
-          await triggerDownloadBlob(pdfBlob, filename);
+          await triggerDownloadBlob(
+            pdfBlob,
+            rasterFilename,
+          );
         } else if (format === "jpg") {
-          const jpgBlob = await createJpgBlob(canvas, 0.95);
-          await triggerDownloadBlob(jpgBlob, filename);
+          const jpgBlob = await createJpgBlob(canvas, 0.95, density);
+          await triggerDownloadBlob(jpgBlob, rasterFilename);
         } else {
-          const pngBlob = await createPngBlob(canvas, dpi);
-          await triggerDownloadBlob(pngBlob, filename);
+          const pngBlob = await createPngBlob(canvas, density);
+          await triggerDownloadBlob(pngBlob, rasterFilename);
         }
 
         if (isPro) {

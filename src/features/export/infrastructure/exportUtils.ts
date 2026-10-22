@@ -68,8 +68,8 @@ function getDeviceMaxWebGlDimension(): number {
         maxTextureSize || 4096,
       );
 
-      // Use the device's actual WebGL hardware limit (up to 8192px)
-      // so modern phones export the identical high-res, full-detail files as desktop.
+      // Respect the current browser/GPU limit. The final raster export uses
+      // these rendered dimensions so its PPI metadata cannot overstate detail.
       return Math.min(safeLimit, 8192);
     }
   } catch {

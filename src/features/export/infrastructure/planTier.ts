@@ -315,9 +315,7 @@ function drawWatermark(
   ctx.restore();
 }
 
-/** Returns the low-res 72 DPI screen wallpaper cleanly without giant watermark overlay. */
+/** Returns the free screen export without a center watermark. */
 export function applyFreeTier(source: HTMLCanvasElement): HTMLCanvasElement {
-  // Free tier is cleanly rendered at 72 DPI (Standard Mobile/Desktop Screen Only).
-  // No center watermark needed as 72 DPI naturally pixelates on deep zoom or physical paper printing.
   return source;
 }

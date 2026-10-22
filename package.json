@@ -9,6 +9,7 @@
     "build": "bunx --bun vite build",
     "preview": "bunx --bun vite preview --host",
     "typecheck": "tsc --noEmit",
+    "verify:exports": "node scripts/verify-export-resolution.mjs",
     "showcase:grid": "node scripts/combine-showcase-grid.mjs"
   },
   "dependencies": {

@@ -28,8 +28,23 @@ function crc32(bytes: Uint8Array): number {
   return (crc ^ 0xffffffff) >>> 0;
 }
 
-function buildPhysChunk(dpi: number): Uint8Array {
-  const ppm = Math.max(1, Math.round(dpi / 0.0254));
+export interface PixelDensity {
+  x: number;
+  y: number;
+}
+
+function normalizeDensity(dpi: number | PixelDensity): PixelDensity {
+  const x = typeof dpi === "number" ? dpi : dpi.x;
+  const y = typeof dpi === "number" ? dpi : dpi.y;
+  return {
+    x: Number.isFinite(x) && x > 0 ? x : 300,
+    y: Number.isFinite(y) && y > 0 ? y : 300,
+  };
+}
+
+function buildPhysChunk(dpi: PixelDensity): Uint8Array {
+  const xPpm = Math.max(1, Math.round(dpi.x / 0.0254));
+  const yPpm = Math.max(1, Math.round(dpi.y / 0.0254));
   const length = 9;
   const chunk = new Uint8Array(4 + 4 + length + 4);
   const type = new TextEncoder().encode("pHYs");
@@ -37,8 +52,8 @@ function buildPhysChunk(dpi: number): Uint8Array {
 
   writeUint32BE(chunk, 0, length);
   chunk.set(type, 4);
-  writeUint32BE(chunk, dataOffset, ppm);
-  writeUint32BE(chunk, dataOffset + 4, ppm);
+  writeUint32BE(chunk, dataOffset, xPpm);
+  writeUint32BE(chunk, dataOffset + 4, yPpm);
   chunk[dataOffset + 8] = 1; // meters
 
   const crcBytes = new Uint8Array(4 + length);
@@ -49,11 +64,7 @@ function buildPhysChunk(dpi: number): Uint8Array {
   return chunk;
 }
 
-function injectDpiChunk(pngBytes: Uint8Array, dpi: number): Uint8Array {
-  if (dpi <= 0 || !Number.isFinite(dpi)) {
-    return pngBytes;
-  }
-
+export function injectDpiChunk(pngBytes: Uint8Array, dpi: number | PixelDensity): Uint8Array {
   // PNG signature is 8 bytes, first chunk is expected to be IHDR.
   if (pngBytes.length < 33) {
     return pngBytes;
@@ -69,17 +80,41 @@ function injectDpiChunk(pngBytes: Uint8Array, dpi: number): Uint8Array {
     return pngBytes;
   }
 
-  const physChunk = buildPhysChunk(dpi);
-  const result = new Uint8Array(pngBytes.length + physChunk.length);
-  result.set(pngBytes.slice(0, insertAt), 0);
-  result.set(physChunk, insertAt);
-  result.set(pngBytes.slice(insertAt), insertAt + physChunk.length);
+  const resultChunks: Uint8Array[] = [pngBytes.slice(0, insertAt)];
+  let offset = insertAt;
+  let inserted = false;
+  while (offset + 12 <= pngBytes.length) {
+    const length =
+      pngBytes[offset] * 0x1000000 +
+      (pngBytes[offset + 1] << 16) +
+      (pngBytes[offset + 2] << 8) +
+      pngBytes[offset + 3];
+    const end = offset + 12 + length;
+    if (end > pngBytes.length) return pngBytes;
+    const type = String.fromCharCode(...pngBytes.slice(offset + 4, offset + 8));
+    if (type === "pHYs") {
+      if (!inserted) resultChunks.push(buildPhysChunk(normalizeDensity(dpi)));
+      inserted = true;
+    } else {
+      resultChunks.push(pngBytes.slice(offset, end));
+    }
+    offset = end;
+    if (type === "IEND") break;
+  }
+  if (!inserted) resultChunks.splice(1, 0, buildPhysChunk(normalizeDensity(dpi)));
+  const totalLength = resultChunks.reduce((sum, chunk) => sum + chunk.length, 0);
+  const result = new Uint8Array(totalLength);
+  let writeOffset = 0;
+  for (const chunk of resultChunks) {
+    result.set(chunk, writeOffset);
+    writeOffset += chunk.length;
+  }
   return result;
 }
 
 export async function createPngBlob(
   canvas: HTMLCanvasElement,
-  dpi: number = 500,
+  dpi: number | PixelDensity = 500,
 ): Promise<Blob> {
   const baseBlob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((blob) => {

@@ -7,6 +7,11 @@ import {
 } from "./constants";
 import type { CanvasSize } from "../../domain/types";
 
+export interface CanvasLimits {
+  maxPixels: number;
+  maxSide: number;
+}
+
 function isMobileDevice(): boolean {
   if (typeof navigator === "undefined") return false;
   return (
@@ -15,19 +20,26 @@ function isMobileDevice(): boolean {
   );
 }
 
+export function getCanvasLimits(mobile = isMobileDevice()): CanvasLimits {
+  return mobile
+    ? { maxPixels: MOBILE_MAX_PIXELS, maxSide: MOBILE_MAX_SIDE }
+    : { maxPixels: MAX_PIXELS, maxSide: MAX_SIDE };
+}
+
 export function resolveCanvasSize(
   widthInches: number,
   heightInches: number,
   targetDpi: number = OUTPUT_DPI,
+  limits: CanvasLimits = getCanvasLimits(),
 ): CanvasSize {
-  const dpi = Math.max(300, targetDpi);
-  const requestedWidth = Math.max(1080, Math.round(widthInches * dpi));
-  const requestedHeight = Math.max(1080, Math.round(heightInches * dpi));
+  const safeWidthInches = Number.isFinite(widthInches) && widthInches > 0 ? widthInches : 1;
+  const safeHeightInches = Number.isFinite(heightInches) && heightInches > 0 ? heightInches : 1;
+  const dpi = Number.isFinite(targetDpi) && targetDpi > 0 ? targetDpi : OUTPUT_DPI;
+  const requestedWidth = Math.max(1, Math.floor(safeWidthInches * dpi));
+  const requestedHeight = Math.max(1, Math.floor(safeHeightInches * dpi));
   const totalPixels = requestedWidth * requestedHeight;
-
-  const isMobile = isMobileDevice();
-  const maxPixels = isMobile ? MOBILE_MAX_PIXELS : MAX_PIXELS;
-  const maxSide = isMobile ? MOBILE_MAX_SIDE : MAX_SIDE;
+  const maxPixels = Math.max(1, limits.maxPixels);
+  const maxSide = Math.max(1, limits.maxSide);
 
   const areaFactor =
     totalPixels > maxPixels ? Math.sqrt(maxPixels / totalPixels) : 1;
@@ -36,9 +48,14 @@ export function resolveCanvasSize(
       ? maxSide / Math.max(requestedWidth, requestedHeight)
       : 1;
 
-  const factor = Math.min(areaFactor, sideFactor, 1);
-  const width = Math.max(600, Math.round(requestedWidth * factor));
-  const height = Math.max(600, Math.round(requestedHeight * factor));
+  let factor = Math.min(areaFactor, sideFactor, 1);
+  let width = Math.max(1, Math.round(requestedWidth * factor));
+  let height = Math.max(1, Math.round(requestedHeight * factor));
+  while (width * height > maxPixels || Math.max(width, height) > maxSide) {
+    factor *= 0.999;
+    width = Math.max(1, Math.floor(requestedWidth * factor));
+    height = Math.max(1, Math.floor(requestedHeight * factor));
+  }
 
   return {
     width,
@@ -46,5 +63,8 @@ export function resolveCanvasSize(
     requestedWidth,
     requestedHeight,
     downscaleFactor: factor,
+    requestedDpi: dpi,
+    effectiveDpiX: width / safeWidthInches,
+    effectiveDpiY: height / safeHeightInches,
   };
 }

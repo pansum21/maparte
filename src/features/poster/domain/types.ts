@@ -12,6 +12,9 @@ export interface CanvasSize {
   requestedWidth: number;
   requestedHeight: number;
   downscaleFactor: number;
+  requestedDpi: number;
+  effectiveDpiX: number;
+  effectiveDpiY: number;
 }
 
 /** Options passed to the export compositor (map snapshot + text overlay). */
