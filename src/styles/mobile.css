@@ -163,6 +163,16 @@
     scroll-snap-align: start;
   }
 
+  .mobile-nav-tab--frames {
+    width: 92px;
+    white-space: normal;
+    line-height: 1.1;
+  }
+
+  .mobile-nav-tab--fullscreen {
+    width: 88px;
+  }
+
   .mobile-nav-tab:not(:disabled):hover {
     transform: none;
     filter: none;
@@ -1731,6 +1741,14 @@
   .mobile-nav-tab {
     width: 84px;
     font-size: 0.64rem;
+  }
+
+  .mobile-nav-tab--frames {
+    width: 108px;
+  }
+
+  .mobile-nav-tab--fullscreen {
+    width: 100px;
   }
 
   .mobile-nav-icon {
