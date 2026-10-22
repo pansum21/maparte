@@ -23,42 +23,48 @@ function getLuminance(hex: string): number {
 function applyBackdropToDOM(state: BackdropThemeState) {
   if (typeof document === "undefined") return;
 
-  const docEl = document.documentElement;
+  // Wall paint belongs to the poster stage only. Never theme the app shell,
+  // page body, navigation, or settings panels.
+  const root = document.documentElement;
   const body = document.body;
+  root.removeAttribute("data-backdrop-mode");
+  body.classList.remove("has-custom-backdrop");
+  body.style.removeProperty("--app-custom-bg-color");
+  body.style.removeProperty("--app-custom-bg-image");
+
+  let backgroundColor: string | null = null;
+  let backgroundImage: string | null = null;
 
   if (state.type === "preset") {
     const preset =
-      BACKDROP_PRESETS.find((p) => p.id === state.presetId) ||
+      BACKDROP_PRESETS.find((item) => item.id === state.presetId) ||
       BACKDROP_PRESETS[0];
-
-    docEl.setAttribute("data-backdrop-mode", preset.mode);
-
-    if (preset.id === "classic_dark" || preset.background === "default") {
-      body.style.removeProperty("--app-custom-bg-color");
-      body.style.removeProperty("--app-custom-bg-image");
-      body.classList.remove("has-custom-backdrop");
-    } else {
-      body.classList.add("has-custom-backdrop");
-      if (preset.background.startsWith("linear-gradient") || preset.background.startsWith("radial-gradient")) {
-        body.style.setProperty("--app-custom-bg-image", preset.background);
-        body.style.setProperty("--app-custom-bg-color", "transparent");
-      } else {
-        body.style.setProperty("--app-custom-bg-color", preset.background);
-        body.style.setProperty("--app-custom-bg-image", "none");
-      }
+    if (preset.background !== "default") {
+      const isGradient = /^(linear|radial|conic)-gradient\\(/i.test(
+        preset.background,
+      );
+      backgroundColor = isGradient ? "transparent" : preset.background;
+      backgroundImage = isGradient ? preset.background : "none";
     }
   } else {
-    // Custom gradient
     const { color1, color2, angle } = state.custom;
     const gradient = `linear-gradient(${angle}deg, ${color1} 0%, ${color2} 100%)`;
-    const avgLum = (getLuminance(color1) + getLuminance(color2)) / 2;
-    const mode = avgLum > 165 ? "light" : "dark";
-
-    docEl.setAttribute("data-backdrop-mode", mode);
-    body.classList.add("has-custom-backdrop");
-    body.style.setProperty("--app-custom-bg-image", gradient);
-    body.style.setProperty("--app-custom-bg-color", color1);
+    backgroundColor = color1;
+    backgroundImage = gradient;
   }
+
+  document.querySelectorAll<HTMLElement>(".poster-viewport").forEach((viewport) => {
+    if (backgroundColor === null || backgroundImage === null) {
+      viewport.classList.remove("has-wall-theme");
+      viewport.style.removeProperty("--wall-bg-color");
+      viewport.style.removeProperty("--wall-bg-image");
+      return;
+    }
+
+    viewport.classList.add("has-wall-theme");
+    viewport.style.setProperty("--wall-bg-color", backgroundColor);
+    viewport.style.setProperty("--wall-bg-image", backgroundImage);
+  });
 }
 
 export function initBackdropThemeFromStorage() {
