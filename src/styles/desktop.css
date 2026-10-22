@@ -1154,6 +1154,12 @@
     display: none;
   }
 
+  [data-desktop-tab="frames"]
+    .desktop-settings-slide
+    .mobile-section:not(.mobile-section--frames) {
+    display: none;
+  }
+
   [data-desktop-tab="layers"]
     .desktop-settings-slide
     .mobile-section:not(.mobile-section--layers) {

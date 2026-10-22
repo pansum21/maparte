@@ -1583,6 +1583,12 @@
     display: none;
   }
 
+  /* Border tab: show only the border styles picker */
+  [data-mobile-tab="frames"]
+    .mobile-section:not(.mobile-section--frames) {
+    display: none;
+  }
+
   /* Layers tab: show only the layers section */
   [data-mobile-tab="layers"] .mobile-section:not(.mobile-section--layers) {
     display: none;
