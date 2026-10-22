@@ -8,6 +8,8 @@ import {
   StyleIcon,
   SettingsIcon,
   SparklesIcon,
+  FrameIcon,
+  FullScreenIcon,
 } from "./Icons";
 
 export type MobileTab =
@@ -15,6 +17,7 @@ export type MobileTab =
   | "location"
   | "theme"
   | "layout"
+  | "frames"
   | "style"
   | "layers"
   | "markers"
@@ -29,6 +32,7 @@ const tabs: {
   { id: "location", label: "Location", Icon: LocationIcon },
   { id: "theme", label: "Theme", Icon: ThemeIcon },
   { id: "layout", label: "Layout", Icon: LayoutIcon },
+  { id: "frames", label: "Frame & Border", Icon: FrameIcon },
   { id: "style", label: "Style", Icon: StyleIcon },
   { id: "layers", label: "Layers", Icon: LayersIcon },
   { id: "markers", label: "Markers", Icon: MarkersIcon },
@@ -40,6 +44,9 @@ interface MobileNavBarProps {
   drawerOpen: boolean;
   isLocationVisible: boolean;
   onTabChange: (tab: MobileTab) => void;
+  onOpenFullScreen: () => void;
+  onSettingsClick: () => void;
+  settingsOpen: boolean;
 }
 
 export default function MobileNavBar({
@@ -47,6 +54,9 @@ export default function MobileNavBar({
   drawerOpen,
   isLocationVisible,
   onTabChange,
+  onOpenFullScreen,
+  onSettingsClick,
+  settingsOpen,
 }: MobileNavBarProps) {
   return (
     <div className="mobile-nav-wrapper">
@@ -62,7 +72,7 @@ export default function MobileNavBar({
                 <button
                   key={id}
                   type="button"
-                  className={`mobile-nav-tab${isActive ? " is-active" : ""}`}
+                  className={`mobile-nav-tab${id === "frames" ? " mobile-nav-tab--frames" : ""}${isActive ? " is-active" : ""}`}
                   onClick={() => onTabChange(id)}
                   aria-current={!isLocationTab && activeTab === id ? "page" : undefined}
                   aria-pressed={isLocationTab ? isLocationVisible : undefined}
@@ -73,16 +83,26 @@ export default function MobileNavBar({
               );
             })}
           </div>
+            <button
+              type="button"
+              className="mobile-nav-tab mobile-nav-tab--fullscreen"
+              onClick={onOpenFullScreen}
+              aria-label="Open full screen preview"
+            >
+              <FullScreenIcon className="mobile-nav-icon" />
+              <span className="mobile-nav-label">Full Screen</span>
+            </button>
+          </div>
           <div className="mobile-nav-fade" aria-hidden="true" />
         </div>
       </nav>
 
       <button
         type="button"
-        className={`mobile-nav-settings${drawerOpen ? " is-active" : ""}`}
+        className={`mobile-nav-settings${settingsOpen ? " is-active" : ""}`}
         aria-label="Settings"
-        aria-expanded={drawerOpen}
-        onClick={() => onTabChange(activeTab)}
+        aria-expanded={settingsOpen}
+        onClick={onSettingsClick}
       >
         <SettingsIcon className="mobile-nav-settings-icon" />
       </button>
