@@ -1,9 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useBackdropTheme } from "../application/useBackdropTheme";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import DownloadModal from "@/features/export/ui/DownloadModal";
 
-export type FrameStyleOption = "none" | "black" | "oak" | "white" | "gold";
 
 interface CinemaWallDockProps {
   onExit: () => void;
@@ -20,28 +19,7 @@ export default function CinemaWallDock({
 
   const cityName = form.displayCity || form.location || "Custom City";
 
-  const [frameStyle, setFrameStyle] = useState<FrameStyleOption>(() => {
-    if (typeof window === "undefined") return "black";
-    try {
-      const stored = localStorage.getItem("maparte_frame_style");
-      if (stored) return stored as FrameStyleOption;
-    } catch {}
-    return "black";
-  });
-
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
-  const [showOrderNotice, setShowOrderNotice] = useState(false);
-
-  // Update frame style
-  const handleSelectFrame = useCallback((style: FrameStyleOption) => {
-    setFrameStyle(style);
-    try {
-      localStorage.setItem("maparte_frame_style", style);
-    } catch {}
-    window.dispatchEvent(
-      new CustomEvent("maparte:frame:change", { detail: style }),
-    );
-  }, []);
 
   const isCustom = backdropState.type === "custom";
 
@@ -82,56 +60,6 @@ export default function CinemaWallDock({
           <span className="cinema-wall-btn-tag">64 Walls</span>
         </button>
 
-        {/* 3. Just below: Frames Bar */}
-        <div className="cinema-frames-bar" role="radiogroup" aria-label="Select frame molding">
-          <span className="cinema-frames-label">Frames:</span>
-          <div className="cinema-frames-list">
-            <button
-              type="button"
-              className={`cinema-frame-chip${frameStyle === "none" ? " is-selected" : ""}`}
-              onClick={() => handleSelectFrame("none")}
-              title="Frameless Canvas"
-            >
-              None
-            </button>
-            <button
-              type="button"
-              className={`cinema-frame-chip${frameStyle === "black" ? " is-selected" : ""}`}
-              onClick={() => handleSelectFrame("black")}
-              title="Matte Black Wood Frame"
-            >
-              <span className="frame-chip-color chip-black" />
-              Black
-            </button>
-            <button
-              type="button"
-              className={`cinema-frame-chip${frameStyle === "oak" ? " is-selected" : ""}`}
-              onClick={() => handleSelectFrame("oak")}
-              title="Scandinavian Natural Oak Frame"
-            >
-              <span className="frame-chip-color chip-oak" />
-              Oak
-            </button>
-            <button
-              type="button"
-              className={`cinema-frame-chip${frameStyle === "white" ? " is-selected" : ""}`}
-              onClick={() => handleSelectFrame("white")}
-              title="Modern White Wood Frame"
-            >
-              <span className="frame-chip-color chip-white" />
-              White
-            </button>
-            <button
-              type="button"
-              className={`cinema-frame-chip${frameStyle === "gold" ? " is-selected" : ""}`}
-              onClick={() => handleSelectFrame("gold")}
-              title="Antique Brass Gold Frame"
-            >
-              <span className="frame-chip-color chip-gold" />
-              Gold
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* ── Top Center: Live Poster View Badge with City ── */}
@@ -146,16 +74,6 @@ export default function CinemaWallDock({
 
       {/* ── Top Right: Order Print CTA, Download & Prominent Back / Exit Button ── */}
       <div className="cinema-top-bar-right">
-        <button
-          type="button"
-          className="cinema-top-order-btn"
-          onClick={() => setShowOrderNotice(true)}
-          title="Order this artwork printed & framed delivered to your door"
-        >
-          <span aria-hidden="true">🛍️</span>
-          <span>Order Framed Print (₹1,499)</span>
-        </button>
-
         <button
           type="button"
           className="cinema-top-download-btn"
@@ -185,65 +103,6 @@ export default function CinemaWallDock({
         onClose={() => setIsDownloadOpen(false)}
       />
 
-      {/* Order Print Commercial Prompt Modal */}
-      {showOrderNotice && (
-        <div
-          className="export-modal-backdrop"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setShowOrderNotice(false)}
-        >
-          <div
-            className="export-modal cinema-order-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="cinema-order-modal-header">
-              <span className="cinema-order-badge">✨ Museum Quality Print</span>
-              <h3>Order Your Custom Framed Map</h3>
-              <p>
-                Printed on 240g/m² archival museum matte paper with premium solid wood framing and shatterproof plexiglass.
-              </p>
-            </div>
-
-            <div className="cinema-order-specs">
-              <div className="order-spec-item">
-                <span className="spec-label">Current Location:</span>
-                <span className="spec-val">{form.location || form.displayCity || "Custom Map"}</span>
-              </div>
-              <div className="order-spec-item">
-                <span className="spec-label">Selected Frame:</span>
-                <span className="spec-val" style={{ textTransform: "capitalize" }}>
-                  {frameStyle === "none" ? "Canvas Print (No Frame)" : `${frameStyle} Solid Wood Frame`}
-                </span>
-              </div>
-              <div className="order-spec-item">
-                <span className="spec-label">Price:</span>
-                <span className="spec-val order-price">₹1,499 ($39 USD) • Free Shipping</span>
-              </div>
-            </div>
-
-            <div className="cinema-order-actions">
-              <button
-                type="button"
-                className="cinema-order-confirm-btn"
-                onClick={() => {
-                  alert("Order integration connected! Gelato & Printful print-on-demand fulfillment will ship directly to customer.");
-                  setShowOrderNotice(false);
-                }}
-              >
-                Proceed to Checkout (Free Shipping)
-              </button>
-              <button
-                type="button"
-                className="cinema-order-cancel-btn"
-                onClick={() => setShowOrderNotice(false)}
-              >
-                Back to Preview
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
