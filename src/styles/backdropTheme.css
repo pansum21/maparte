@@ -1214,92 +1214,6 @@ body.has-custom-backdrop .poster-ghost-layer {
   letter-spacing: 0.04em;
 }
 
-/* 3. Frames Selector Bar */
-.cinema-frames-bar {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 12px;
-  background: rgba(10, 20, 32, 0.82);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-}
-
-:root[data-backdrop-mode="light"] .cinema-frames-bar {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(15, 23, 42, 0.14);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-.cinema-frames-label {
-  font-size: 0.76rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #94a3b8;
-}
-
-:root[data-backdrop-mode="light"] .cinema-frames-label {
-  color: #64748b;
-}
-
-.cinema-frames-list {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.cinema-frame-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  color: #cbd5e1;
-  font-family: inherit;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.16s ease;
-}
-
-:root[data-backdrop-mode="light"] .cinema-frame-chip {
-  background: rgba(15, 23, 42, 0.05);
-  border-color: rgba(15, 23, 42, 0.1);
-  color: #334155;
-}
-
-.cinema-frame-chip:hover {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.25);
-  color: #ffffff;
-}
-
-.cinema-frame-chip.is-selected {
-  background: #0284c7;
-  border-color: #38bdf8;
-  color: #ffffff;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-}
-
-.frame-chip-color {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  flex-shrink: 0;
-}
-
-.frame-chip-color.chip-black { background: #111111; }
-.frame-chip-color.chip-oak   { background: #b89065; }
-.frame-chip-color.chip-white { background: #f8fafc; }
-.frame-chip-color.chip-gold  { background: #d4af37; }
-
 /* ── Top Center: Poster View Badge ── */
 .cinema-center-view-badge {
   display: inline-flex;
@@ -1667,9 +1581,6 @@ body.has-custom-backdrop .poster-ghost-layer {
     padding: 6px 10px !important;
     gap: 6px !important;
   }
-  .cinema-frame-group {
-    display: none !important;
-  }
   .cinema-wall-name {
     max-width: 90px !important;
   }
@@ -1710,16 +1621,7 @@ body.has-custom-backdrop .poster-ghost-layer {
     font-size: 0.76rem;
   }
 
-  .cinema-frames-bar {
-    max-width: 100%;
-    overflow-x: auto;
-  }
 
-  .cinema-frame-chip {
-    min-height: 32px;
-    padding: 4px 8px;
-    font-size: 0.72rem;
-  }
 
   .cinema-top-order-btn,
   .cinema-top-download-btn,
@@ -1769,30 +1671,9 @@ body.has-custom-backdrop .poster-ghost-layer {
     font-size: 0.62rem;
   }
 
-  .cinema-frames-bar {
-    width: max-content;
-    max-width: calc(100vw - 16px);
-    gap: 5px;
-    padding: 4px 6px;
-    border-radius: 12px;
-    overflow-x: auto;
-  }
 
-  .cinema-frames-label {
-    font-size: 0.62rem;
-  }
 
-  .cinema-frames-list {
-    min-width: max-content;
-    gap: 3px;
-  }
 
-  .cinema-frame-chip {
-    min-height: 30px;
-    gap: 4px;
-    padding: 4px 7px;
-    font-size: 0.68rem;
-  }
 
   .cinema-top-bar-right {
     top: auto !important;
