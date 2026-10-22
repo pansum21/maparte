@@ -27,9 +27,56 @@
 .neatline-empty { display:grid; place-items:center; background:linear-gradient(135deg,#e9e4d8,#d8d1c0); }
 .neatline-empty span { width:72%; height:72%; border:1px dashed rgba(35,35,35,.35); }
 .neatline-option-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:10px; text-transform:capitalize; opacity:.86; }
+.neatline-edit-wrap { margin-top: 12px; }
+.neatline-edit-button {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(215, 185, 121, 0.42);
+  border-radius: 8px;
+  background: rgba(215, 185, 121, 0.1);
+  color: inherit;
+  font: 600 11px/1 "Spline Sans Mono", monospace;
+  cursor: pointer;
+}
+.neatline-adjustments {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  margin: 14px 0 0;
+  padding: 12px;
+  border: 1px solid rgba(146, 176, 200, 0.2);
+  border-radius: 10px;
+  background: rgba(4, 12, 20, 0.32);
+}
+.neatline-adjustments legend {
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.neatline-adjustment {
+  display: grid;
+  grid-template-columns: minmax(84px, auto) minmax(80px, 1fr) 42px;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+.neatline-adjustment-label { font-size: 11px; }
+.neatline-adjustment input[type="range"] { width: 100%; margin: 0; accent-color: #d7b977; }
+.neatline-adjustment output {
+  min-width: 42px;
+  padding: 4px 5px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.08);
+  font: 600 11px/1.2 "Spline Sans Mono", monospace;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.neatline-adjustments-note { margin:0; font-size:10px; opacity:.64; }
 .neatline-artwork.preview-neatline { position:absolute; z-index:5; inset:0; width:100%; height:100%; pointer-events:none; }
 @media(max-width:600px) {
   .neatline-picker { padding:12px; margin-top:16px; }
   .neatline-options { grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; max-height:250px; }
   .neatline-option { padding:5px; }
+  .neatline-adjustment { grid-template-columns: 82px minmax(60px,1fr) 40px; gap:7px; }
+  .neatline-edit-button { width: 100%; }
 }
