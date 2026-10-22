@@ -570,7 +570,7 @@ export default function AppShell() {
         }}
         onSettingsClick={() => {
           setMobileDrawerOpen(false);
-          setSettingsOpen(true);
+          setSettingsOpen((open) => !open);
         }}
         settingsOpen={settingsOpen}
       />
