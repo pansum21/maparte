@@ -98,11 +98,13 @@ export default function PreviewPanel({
     if (typeof window === "undefined") return "none";
     try { return window.localStorage.getItem("maparte_neatline_style") || "none"; } catch { return "none"; }
   });
+  const [neatlineRevision, setNeatlineRevision] = useState(0);
 
   useEffect(() => {
     const handleNeatlineChange = (event: Event) => {
       const custom = event as CustomEvent<string>;
       setNeatlineStyle(custom.detail || "none");
+      setNeatlineRevision((revision) => revision + 1);
     };
     window.addEventListener("maparte:neatline:change", handleNeatlineChange);
     return () => window.removeEventListener("maparte:neatline:change", handleNeatlineChange);
@@ -510,7 +512,11 @@ export default function PreviewPanel({
             customDate={form.customDate}
           />
           </div>
-          <NeatlineArtwork styleId={neatlineStyle} className="preview-neatline" />
+          <NeatlineArtwork
+            key={neatlineRevision}
+            styleId={neatlineStyle}
+            className="preview-neatline"
+          />
         </div>
       </div>
 
