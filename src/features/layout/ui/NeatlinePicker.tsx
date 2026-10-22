@@ -162,7 +162,7 @@ export function NeatlineArtwork({
   const dotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
   const dash = line?.pattern === "dashed" ? "12 8" : dotted ? "0.1 12" : undefined;
   const selectedCorners = corner ? activeCorners(selection.cornerPosition) : [];
-  const cornerSize = Math.min(innerW, innerH) * 0.12;
+  const cornerSize = Math.min(innerW, innerH) * 0.15;
   const ornamentSize = Math.min(innerW * 0.25, innerH * 0.16);
   const ornamentHeight = Math.max(44, ornamentSize * 0.24);
   const ornamentEdges: Array<"top" | "bottom" | "left" | "right"> = !ornament ? []
@@ -170,9 +170,11 @@ export function NeatlineArtwork({
       : selection.ornamentPosition === "all-sides" ? ["top", "bottom", "left", "right"]
         : [selection.ornamentPosition];
   const cornerGeometry: Record<CornerName, { x: number; y: number; rotate: number }> = {
-    "top-left": { x: pad, y: pad, rotate: 0 }, "top-right": { x: innerW - pad - cornerSize, y: pad, rotate: 90 },
-    "bottom-right": { x: innerW - pad - cornerSize, y: innerH - pad - cornerSize, rotate: 180 },
-    "bottom-left": { x: pad, y: innerH - pad - cornerSize, rotate: 270 },
+    // Corner PNGs are authored for the top-right: horizontal art runs left
+    // from the top edge and vertical art runs down from the right edge.
+    "top-left": { x: pad, y: pad, rotate: 270 }, "top-right": { x: innerW - pad - cornerSize, y: pad, rotate: 0 },
+    "bottom-right": { x: innerW - pad - cornerSize, y: innerH - pad - cornerSize, rotate: 90 },
+    "bottom-left": { x: pad, y: innerH - pad - cornerSize, rotate: 180 },
   };
   const horizontalGap = ornamentSize + 24;
   const verticalGap = Math.min(innerH * 0.5, ornamentSize + 24);
@@ -230,6 +232,42 @@ export function NeatlineArtwork({
         transform={`rotate(${item.rotate} ${item.x + cornerSize / 2} ${item.y + cornerSize / 2})`} preserveAspectRatio="none" />;
     })}
   </svg>;
+}
+
+function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: NeatlineSelection }) {
+  const isLine = style.kind === "line";
+  const isOrnament = style.kind === "ornament";
+  const line = isLine
+    ? (style.id === "none" ? undefined : style)
+    : lineStyles.find((item) => item.id === selection.lineId) || lineStyles[0];
+  const ornament = isOrnament ? style : undefined;
+  const corner = style.kind === "corner" ? style : undefined;
+  const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
+  const inset = 13;
+  const cornerSize = 54;
+  const renderCornerLines = !!line && (isLine || !!ornament);
+
+  return <span className="neatline-swatch" aria-hidden="true">
+    <svg className="neatline-artwork neatline-swatch-artwork" viewBox="0 0 120 90" preserveAspectRatio="none">
+      {renderCornerLines ? widths.map((width, index) => {
+        const offset = index * 8;
+        const start = inset + offset;
+        const end = 110 - offset;
+        const path = `M ${start} ${end} V ${start} H ${end}`;
+        const isDotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
+        const dash = line?.pattern === "dashed" ? "7 4" : isDotted ? "0.1 6" : undefined;
+        const strokeWidth = Math.max(1.35, Math.min(2.6, width * 1.4));
+        return <path key={index} d={path} fill="none" stroke="#354b62" strokeWidth={strokeWidth}
+          strokeDasharray={dash} strokeLinecap={isDotted ? "round" : "butt"} strokeLinejoin="miter" />;
+      }) : null}
+      {ornament ? <>
+        <path d="M 13 22 H 16 M 104 22 H 107" fill="none" stroke="#354b62" strokeWidth="1.4" />
+        <image href={ornament.asset} x="16" y="5" width="88" height="34" preserveAspectRatio="xMidYMid meet" />
+      </> : null}
+      {corner ? <image href={corner.asset} x="53" y="8" width={cornerSize} height={cornerSize}
+        preserveAspectRatio="none" /> : null}
+    </svg>
+  </span>;
 }
 
 function lineLabel(index: number, count: number): string {
@@ -305,7 +343,7 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
         <span className="neatline-swatch neatline-empty" aria-hidden="true"><span /></span><span className="neatline-option-name">No corner art</span></button> : null}
       {displayedStyles.map((style) => <button key={`${category}-${style.id}`} type="button" title={style.name} aria-pressed={isSelected(style)}
         className={`neatline-option ${isSelected(style) ? "is-selected" : ""}`} onClick={() => selectStyle(style)}>
-        <span className="neatline-swatch" aria-hidden="true"><NeatlineArtwork selection={swatchSelection(style)} widthCm={width} heightCm={height} /></span>
+        <NeatlineSwatch style={style} selection={swatchSelection(style)} />
         <span className="neatline-option-name">{style.name}</span></button>)}
     </div>
     {category === "ornament" && selection.ornamentId !== "none" ? <label className="neatline-layer-position">Design position
