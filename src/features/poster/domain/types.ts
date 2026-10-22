@@ -19,6 +19,8 @@ export interface CanvasSize {
 
 /** Options passed to the export compositor (map snapshot + text overlay). */
 export interface ExportOptions {
+  /** Map pixels were rendered directly into the page canvas' 10% print mat. */
+  mapAlreadyInset?: boolean;
   theme: ResolvedTheme;
   center: { lat: number; lon: number };
   widthInches: number;

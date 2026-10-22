@@ -43,6 +43,7 @@ export async function compositeExport(
   options: ExportOptions,
 ): Promise<{ canvas: HTMLCanvasElement; size: CanvasSize }> {
   const {
+    mapAlreadyInset = false,
     theme,
     center,
     widthInches,
@@ -67,22 +68,26 @@ export async function compositeExport(
   const width = mapCanvas.width;
   const height = mapCanvas.height;
 
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
+  const canvas = mapAlreadyInset ? mapCanvas : document.createElement("canvas");
+  if (!mapAlreadyInset) {
+    canvas.width = width;
+    canvas.height = height;
+  }
 
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas rendering is not available.");
 
   // Keep a generous white print mat around the artwork.
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, width, height);
+  if (!mapAlreadyInset) {
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, width, height);
+  }
   ctx.save();
   ctx.translate(width * 0.1, height * 0.1);
   ctx.scale(0.8, 0.8);
 
   // 1. Draw map snapshot inside the print mat.
-  ctx.drawImage(mapCanvas, 0, 0);
+  if (!mapAlreadyInset) ctx.drawImage(mapCanvas, 0, 0);
 
   // 2. Gradient fades
   if (showOverlay) {

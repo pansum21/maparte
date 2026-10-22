@@ -210,6 +210,10 @@ export default function DownloadModal({
     onClose();
   };
 
+  const handleTiffTestDownload = async () => {
+    await exportPoster("tiff", { asPro: true, includeCredits: true });
+  };
+
   const formatToTier = (f: ExportFormat): SelectedTier => {
     if (f === "jpg") return "jpg";
     if (f === "image_bundle") return "duo";
@@ -667,6 +671,27 @@ export default function DownloadModal({
             </div>
           )}
         </div>
+
+        {/* Free screen wallpaper option */}
+        {isAdmin && (
+          <div className="free-screen-wallpaper-box">
+            <div className="free-wallpaper-info">
+              <span className="free-wallpaper-title">TIFF print export — testing</span>
+              <p className="free-wallpaper-desc">
+                Uncompressed TIFF with fixed pixel dimensions and embedded PPI. The same 64 MB safety limit applies on phone and desktop.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="tier-btn tier-btn--free-clean"
+              disabled={isExporting}
+              onClick={() => void handleTiffTestDownload()}
+            >
+              {isExporting ? <LoaderIcon className="is-spinning" /> : <DownloadIcon />}
+              <span>Download TIFF (test)</span>
+            </button>
+          </div>
+        )}
 
         {/* Free screen wallpaper option */}
         {!isPro && (

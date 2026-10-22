@@ -4,6 +4,7 @@ import JSZip from "jszip";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
 import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
+import { createTiffBlob } from "@/features/export/infrastructure/tiffExporter";
 import {
   isProUser,
   applyFreeTier,
@@ -247,6 +248,7 @@ export function useExport() {
         // 1. Capture map at full export resolution
         const {
           canvas: mapCanvas,
+          mapAlreadyInset,
           markerProjection,
           markerScaleX,
           markerScaleY,
@@ -263,6 +265,7 @@ export function useExport() {
 
         // 2. Composite fades + text
         const { canvas: fullCanvas } = await compositeExport(mapCanvas, {
+          mapAlreadyInset,
           theme: effectiveTheme,
           center: { lat, lon },
           widthInches,
@@ -296,7 +299,10 @@ export function useExport() {
         );
         const rasterFilename = addPpiToFilename(filename, effectiveDpi);
 
-        if (format === "zip") {
+        if (format === "tiff") {
+          const tiffBlob = await createTiffBlob(canvas, density);
+          await triggerDownloadBlob(tiffBlob, rasterFilename.replace(/\.[^.]+$/, ".tif"));
+        } else if (format === "zip") {
           const svgBlob = await createLayeredSvgBlobFromMap({
             map,
             exportWidth: size.width,
