@@ -70,6 +70,15 @@ function applyIncrementalStyleUpdate(
   }
 }
 
+const MAX_MAP_PIXEL_RATIO = 3;
+
+/** Render the WebGL canvas at device resolution, including browser pinch zoom. */
+function getMapPixelRatio(): number {
+  const deviceRatio = window.devicePixelRatio || 1;
+  const pageScale = window.visualViewport?.scale ?? 1;
+  return Math.min(MAX_MAP_PIXEL_RATIO, Math.max(1, deviceRatio * pageScale));
+}
+
 interface MapPreviewProps {
   style: StyleSpecification;
   center: [lon: number, lat: number];
@@ -125,7 +134,7 @@ export default function MapPreview({
       zoom,
       interactive: false,
       attributionControl: false,
-      pixelRatio: 1,
+      pixelRatio: getMapPixelRatio(),
       maxCanvasSize: [4096, 4096],
       cancelPendingTileRequestsWhileZooming: true,
       canvasContextAttributes: { preserveDrawingBuffer: true },
@@ -154,8 +163,27 @@ export default function MapPreview({
     });
     resizeObserver.observe(containerRef.current);
 
+    // Browser page zoom can enlarge the page without changing the map's CSS
+    // size. Rebuild the WebGL backing canvas at the settled zoom resolution.
+    let pixelRatioTimer: number | undefined;
+    const syncPixelRatio = () => {
+      window.clearTimeout(pixelRatioTimer);
+      pixelRatioTimer = window.setTimeout(() => {
+        const nextPixelRatio = getMapPixelRatio();
+        if (Math.abs(map.getPixelRatio() - nextPixelRatio) > 0.05) {
+          map.setPixelRatio(nextPixelRatio);
+        }
+        map.resize();
+      }, 100);
+    };
+    window.addEventListener("resize", syncPixelRatio, { passive: true });
+    window.visualViewport?.addEventListener("resize", syncPixelRatio, { passive: true });
+
     return () => {
       resizeObserver.disconnect();
+      window.removeEventListener("resize", syncPixelRatio);
+      window.visualViewport?.removeEventListener("resize", syncPixelRatio);
+      window.clearTimeout(pixelRatioTimer);
       mapRef.current = null;
       map.remove();
     };
