@@ -1323,7 +1323,7 @@
   position: absolute;
 }
 
-.neatline-artwork.preview-neatline {
+.poster-frame .neatline-artwork.preview-neatline {
   position: absolute;
   z-index: 6;
   inset: 6.5%;
