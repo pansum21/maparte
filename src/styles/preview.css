@@ -1301,3 +1301,37 @@
     border-width:7px;
   }
 }
+
+
+/* Print-style composition: map, breathing gap, neatline, white mat, outer frame. */
+.poster-frame {
+  background: #fff;
+}
+
+.poster-map-window {
+  position: absolute;
+  inset: 9.5%;
+  overflow: hidden;
+  background: #fff;
+}
+
+.poster-map-window > .map-container,
+.poster-map-window > .poster-text-overlay,
+.poster-map-window > .poster-marker-overlay,
+.poster-map-window > .route-overlay,
+.poster-map-window > .route-endpoints-overlay {
+  position: absolute;
+}
+
+.neatline-artwork.preview-neatline {
+  position: absolute;
+  z-index: 6;
+  inset: 6.5%;
+  width: 87%;
+  height: 87%;
+  pointer-events: none;
+}
+
+.poster-viewport.is-wall-mockup .poster-frame {
+  background: #fff;
+}
