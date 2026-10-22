@@ -27,8 +27,6 @@ import {
 import { initBackdropThemeFromStorage } from "@/features/theme/application/useBackdropTheme";
 import CinemaWallDock from "@/features/theme/ui/CinemaWallDock";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
-import OuterFramePicker from "@/features/layout/ui/OuterFramePicker";
-import { NeatlinePicker } from "@/features/layout/ui/NeatlinePicker";
 
 const AboutModal = lazy(() => import("@/shared/ui/AboutModal"));
 const LegalModal = lazy(() => import("@/features/legal/ui/LegalModal"));
@@ -60,7 +58,6 @@ function SettingsDrawer({
   isPhoneWallpaper: boolean;
   onTogglePhoneWallpaper: () => void;
 }) {
-  const { state } = usePosterContext();
   // Settings sections (especially Layout) contain long tool lists; open the
   // sheet expanded so phone users can reach the same controls without guessing
   // that the handle must be swiped first.
@@ -100,17 +97,7 @@ function SettingsDrawer({
               </button>
             </div>
           ) : null}
-          {mobileTab === "frames" ? (
-            <div className="mobile-frame-settings">
-              <OuterFramePicker />
-              <NeatlinePicker
-                width={String(state.form.width)}
-                height={String(state.form.height)}
-              />
-            </div>
-          ) : (
-            <SettingsPanel mobileTab={mobileTab} />
-          )}
+          <SettingsPanel mobileTab={mobileTab} />
         </div>
       </div>
     </div>
