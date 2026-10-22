@@ -483,6 +483,7 @@ export default function PreviewPanel({
             } as CSSProperties
           }
         >
+          <div className="poster-map-window">
           <MapPreview
             style={mapStyle}
             center={mapCenter}
@@ -538,6 +539,7 @@ export default function PreviewPanel({
             showOverlay={form.showMarkers}
             customDate={form.customDate}
           />
+          </div>
           <NeatlineArtwork styleId={neatlineStyle} className="preview-neatline" />
         </div>
       </div>
