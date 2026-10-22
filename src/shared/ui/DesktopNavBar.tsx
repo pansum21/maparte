@@ -375,11 +375,11 @@ export default function DesktopNavBar({
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "frames" ? " is-active" : ""}`}
           onClick={() => onTabChange("frames")}
-          title="Inner Border Lines"
-          aria-label="Frame and Border"
+          title="Map Border Lines"
+          aria-label="Border"
         >
           <FrameIcon className="desktop-nav-icon" />
-          <span className="desktop-nav-label">Frame & Border</span>
+          <span className="desktop-nav-label">Border</span>
         </button>
       </div>
 
