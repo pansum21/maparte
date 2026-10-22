@@ -561,16 +561,19 @@ export async function createLayeredSvgBlobFromMap({
     }
 
     const neatlineLayerSvg = options.neatlineSvg
-      ? `<svg x="0" y="0" width="${exportWidth}" height="${exportHeight}" viewBox="0 0 1000 1000" preserveAspectRatio="none">${options.neatlineSvg}</svg>`
+      ? `<svg x="${exportWidth * 0.065}" y="${exportHeight * 0.065}" width="${exportWidth * 0.87}" height="${exportHeight * 0.87}" viewBox="0 0 1000 1000" preserveAspectRatio="none">${options.neatlineSvg}</svg>`
       : "";
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${exportWidth}" height="${exportHeight}" viewBox="0 0 ${exportWidth} ${exportHeight}">
+<rect width="100%" height="100%" fill="#fff"/>
+<g transform="translate(${exportWidth * 0.1} ${exportHeight * 0.1}) scale(0.8)">
 ${vectorLayersSvg}
 ${routesSvg}
 ${fadesSvg}
 ${markersSvg}
 <g id="vector-typography">
 ${vectorTypographySvg}
+</g>
 </g>
 ${neatlineLayerSvg}
 </svg>`;
