@@ -87,24 +87,26 @@ function SettingsDrawer({
           {...handleProps}
         />
         <div className="mobile-drawer-content">
-          <div className="mobile-quick-actions" role="group" aria-label="Quick actions">
-            <button
-              type="button"
-              className="mobile-quick-action"
-              onClick={onTogglePhoneWallpaper}
-            >
-              <span aria-hidden="true">{isPhoneWallpaper ? "🖼️" : "📱"}</span>
-              <span>{isPhoneWallpaper ? "Poster View" : "Phone Wallpaper"}</span>
-            </button>
-            <button
-              type="button"
-              className="mobile-quick-action"
-              onClick={onOpenCinema}
-            >
-              <span aria-hidden="true">🖼️</span>
-              <span>Full Screen</span>
-            </button>
-          </div>
+          {mobileTab === "layout" ? (
+            <div className="mobile-quick-actions" role="group" aria-label="Quick actions">
+              <button
+                type="button"
+                className="mobile-quick-action"
+                onClick={onTogglePhoneWallpaper}
+              >
+                <span aria-hidden="true">{isPhoneWallpaper ? "🖼️" : "📱"}</span>
+                <span>{isPhoneWallpaper ? "Poster View" : "Phone Wallpaper"}</span>
+              </button>
+              <button
+                type="button"
+                className="mobile-quick-action"
+                onClick={onOpenCinema}
+              >
+                <span aria-hidden="true">🖼️</span>
+                <span>Full Screen</span>
+              </button>
+            </div>
+          ) : null}
           <SettingsPanel mobileTab={mobileTab} />
         </div>
       </div>
