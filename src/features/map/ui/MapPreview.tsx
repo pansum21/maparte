@@ -75,7 +75,11 @@ const MAX_MAP_PIXEL_RATIO = 4;
 /** Render the WebGL canvas at device resolution, including browser pinch zoom. */
 function getMapPixelRatio(): number {
   const deviceRatio = window.devicePixelRatio || 1;
-  const pageScale = window.visualViewport?.scale ?? 1;
+  const viewport = window.visualViewport;
+  const layoutWidth = document.documentElement.clientWidth || window.innerWidth;
+  const viewportScale =
+    viewport && viewport.width > 0 ? layoutWidth / viewport.width : 1;
+  const pageScale = Math.max(viewport?.scale ?? 1, viewportScale);
   return Math.min(MAX_MAP_PIXEL_RATIO, Math.max(1, deviceRatio * pageScale));
 }
 
@@ -178,11 +182,13 @@ export default function MapPreview({
     };
     window.addEventListener("resize", syncPixelRatio, { passive: true });
     window.visualViewport?.addEventListener("resize", syncPixelRatio, { passive: true });
+    window.visualViewport?.addEventListener("scroll", syncPixelRatio, { passive: true });
 
     return () => {
       resizeObserver.disconnect();
       window.removeEventListener("resize", syncPixelRatio);
       window.visualViewport?.removeEventListener("resize", syncPixelRatio);
+      window.visualViewport?.removeEventListener("scroll", syncPixelRatio);
       window.clearTimeout(pixelRatioTimer);
       mapRef.current = null;
       map.remove();
