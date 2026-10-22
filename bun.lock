@@ -15,7 +15,6 @@
         "react-markdown": "^10.1.0",
         "rehype-sanitize": "^6.0.0",
         "remark-breaks": "^4.0.0",
-        "rollup": "^4.59.0",
       },
       "devDependencies": {
         "@fontsource/bebas-neue": "^5.2.7",
