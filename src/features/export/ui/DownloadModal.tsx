@@ -206,7 +206,12 @@ export default function DownloadModal({
   const isPro = isAdmin || credits > 0 || isProUser();
 
   const handleFreeDownload = () => {
-    void exportPoster("png", { asPro: false, includeCredits: true });
+    void exportPoster("png", {
+      asPro: false,
+      includeCredits: true,
+      targetSizeCm: { widthCm: 14.4, heightCm: 31.2 },
+      targetDpi: 192,
+    });
     onClose();
   };
 
@@ -376,7 +381,7 @@ export default function DownloadModal({
         <div className="explore-first-banner" role="status">
           <span className="explore-first-icon" aria-hidden="true">🎨</span>
           <div className="explore-first-content">
-            <strong>Before downloading:</strong> Explore the website and customize your map! You can change color palettes, add landmarks, adjust coordinates, and style typography — full interactive editing is 100% free.
+            <strong>Before you download, explore the editor:</strong> Try another theme, layout, border, or map detail while everything is still editable. Find the version you love first, then save it.
           </div>
         </div>
 
@@ -694,15 +699,14 @@ export default function DownloadModal({
         )}
 
         {/* Free screen wallpaper option */}
-        {!isPro && (
-          <div className="free-screen-wallpaper-box">
+        <div className="free-screen-wallpaper-box">
             <div className="free-wallpaper-info">
-              <span className="free-wallpaper-title">📱 Free HD Phone Wallpaper ($0)</span>
+              <span className="free-wallpaper-title">📱 Free Phone Wallpaper ($0)</span>
               <p className="free-wallpaper-desc">
-                <strong>✓ Included:</strong> Clean phone wallpaper export • Zero center watermark • Permanent MapArte studio signature.
+                A free phone-sized PNG for your lock or home screen. Explore the editor first to try themes, layouts, borders, and map details before downloading.
               </p>
               <p className="free-wallpaper-desc free-wallpaper-desc--excluded">
-                <strong>✕ Not Included:</strong> No Pro high-resolution print export • No PDF print document • No vector SVG • No BOGO bonus poster.
+                Phone wallpaper quality is optimized for screens and is not a print-resolution file.
               </p>
             </div>
             <button
@@ -718,8 +722,7 @@ export default function DownloadModal({
               )}
               <span>Download Free Wallpaper (PNG)</span>
             </button>
-          </div>
-        )}
+        </div>
 
         {/* Quality Comparison Toggle */}
         <div className="quality-comparison-section">

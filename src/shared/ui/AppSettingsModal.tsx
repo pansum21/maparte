@@ -14,14 +14,12 @@ interface AppSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdminOpen?: () => void;
-  onBackdropOpen?: () => void;
 }
 
 export default function AppSettingsModal({
   isOpen,
   onClose,
   onAdminOpen,
-  onBackdropOpen,
 }: AppSettingsModalProps) {
   const { state, dispatch } = usePosterContext();
   const { clearRecent, recent } = useRecentLocations();
@@ -96,36 +94,13 @@ export default function AppSettingsModal({
           <div>
             <h2 className="app-settings-title">App Settings & Tools</h2>
             <p className="app-settings-sub">
-              Customize poster display, studio backdrop, and export tools.
+              Customize poster display and export tools.
             </p>
           </div>
         </div>
 
         <div className="app-settings-content">
-          {/* Section 1: Room Wall Color & Preview */}
-          <div className="app-settings-card">
-            <h3 className="app-settings-card-title">Room Wall Color Preview</h3>
-            <p className="toggle-sub" style={{ marginBottom: "12px" }}>
-              Switch the background wall color to preview how your framed poster looks on different room paint colors (Warm White, Nordic Slate, Velvet Noir, or custom wall paint).
-            </p>
-            <button
-              type="button"
-              className="settings-action-btn"
-              style={{
-                background: "linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(14, 165, 233, 0.3))",
-                borderColor: "rgba(56, 189, 248, 0.4)",
-                color: "#e0f2fe",
-              }}
-              onClick={() => {
-                onClose();
-                onBackdropOpen?.();
-              }}
-            >
-              🏠 Choose Wall Color
-            </button>
-          </div>
-
-          {/* Section 2: Poster Display Options */}
+          {/* Section 1: Poster Display Options */}
           <div className="app-settings-card">
             <h3 className="app-settings-card-title">Poster Elements</h3>
             <div className="app-settings-toggles">

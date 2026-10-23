@@ -293,6 +293,19 @@
     pointer-events: none;
   }
 
+  .desktop-nav-row--wall {
+    padding-left: 2px;
+  }
+
+  .desktop-nav-row--wall .desktop-quick-action-btn {
+    min-height: 38px;
+    padding: 7px 14px;
+  }
+
+  .desktop-nav-row--fullscreen .desktop-nav-tab {
+    width: 60px;
+  }
+
   .desktop-nav-tab {
     pointer-events: auto;
   }
@@ -2106,3 +2119,9 @@
   padding: 32px 0;
   color: rgba(195, 220, 240, 0.6);
 }
+
+.location-panel-quick-cities { margin-top:12px; }
+.location-panel-quick-label { display:block; margin-bottom:6px; font-size:11px; font-weight:700; opacity:.68; }
+.location-panel-quick-list { display:flex; gap:7px; overflow-x:auto; padding:2px 1px 7px; }
+.location-panel-city { display:inline-flex; flex:0 0 auto; align-items:center; gap:5px; min-height:32px; padding:0 10px; border:1px solid rgba(255,255,255,.13); border-radius:999px; background:rgba(255,255,255,.055); color:inherit; font:inherit; font-size:11px; cursor:pointer; }
+.location-panel-city:hover { background:rgba(255,255,255,.12); }

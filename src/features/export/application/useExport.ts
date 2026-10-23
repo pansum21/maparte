@@ -175,7 +175,12 @@ export function useExport() {
   const exportPoster = useCallback(
     async (
       format: ExportFormat,
-      options?: { asPro?: boolean; includeCredits?: boolean },
+      options?: {
+        asPro?: boolean;
+        includeCredits?: boolean;
+        targetSizeCm?: { widthCm: number; heightCm: number };
+        targetDpi?: number;
+      },
     ) => {
       const map = mapRef.current;
       if (!map) {
@@ -192,11 +197,15 @@ export function useExport() {
         }
         await document.fonts.ready;
 
-        const widthCm = Number(form.width) || DEFAULT_POSTER_WIDTH_CM;
-        const heightCm = Number(form.height) || DEFAULT_POSTER_HEIGHT_CM;
+        const widthCm =
+          options?.targetSizeCm?.widthCm ??
+          (Number(form.width) || DEFAULT_POSTER_WIDTH_CM);
+        const heightCm =
+          options?.targetSizeCm?.heightCm ??
+          (Number(form.height) || DEFAULT_POSTER_HEIGHT_CM);
         const isPro =
           options?.asPro !== undefined ? options.asPro : isProUser();
-        const targetDpi = isPro ? 500 : FREE_DPI;
+        const targetDpi = options?.targetDpi ?? (isPro ? 500 : FREE_DPI);
         const widthInches = widthCm / CM_PER_INCH;
         const heightInches = heightCm / CM_PER_INCH;
         // Permanent branding & studio signature on ALL downloads:

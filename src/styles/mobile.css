@@ -30,6 +30,43 @@
   display: none;
 }
 
+.edit-map-action-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.edit-map-action,
+.theme-wall-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid rgba(125, 216, 240, 0.28);
+  border-radius: 12px;
+  background: rgba(25, 45, 64, 0.9);
+  color: #e7f4fb;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.edit-map-action.is-active,
+.theme-wall-action:hover {
+  border-color: rgba(56, 189, 248, 0.75);
+  background: rgba(2, 132, 199, 0.28);
+}
+
+.theme-wall-action {
+  width: 100%;
+  margin: 2px 0 12px;
+}
+
 /* ── Mobile persistent footer — hidden on desktop ── */
 
 .mobile-persistent-footer {

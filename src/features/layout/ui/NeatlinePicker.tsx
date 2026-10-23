@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import "./neatline.css";
 
 const CONFIG_STORAGE_KEY = "maparte_neatline_layers";
@@ -8,15 +8,16 @@ export const NEATLINE_CHANGE_EVENT = "maparte:neatline:change";
 
 type LinePattern = "single" | "double" | "triple" | "dashed" | "dotted" | "double-dotted";
 type LineStyle = { id: string; name: string; kind: "line"; pattern: LinePattern };
-type ArtStyle = { id: string; name: string; kind: "ornament" | "corner"; asset: string; variant?: "plain" | "colorful" };
+type ArtStyle = { id: string; name: string; kind: "ornament" | "corner" | "frame"; asset: string; variant?: "plain" | "colorful" };
 type BorderStyle = LineStyle | ArtStyle;
 type ArtVariant = "plain" | "colorful";
 export type CornerPosition = "all" | "top" | "bottom" | "left" | "right" | "diagonal-a" | "diagonal-b" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
-export type OrnamentPosition = "top" | "bottom" | "both" | "all-sides";
+export type OrnamentPosition = "top" | "bottom" | "left" | "right" | "both" | "all-sides";
 export type NeatlineSelection = {
   lineId: string;
   ornamentId: string;
   cornerId: string;
+  frameId: string;
   cornerPosition: CornerPosition;
   ornamentPosition: OrnamentPosition;
   thicknesses: Record<string, number[]>;
@@ -60,15 +61,55 @@ const colorfulCornerStyles: ArtStyle[] = [{
   asset: "/assets/borders/color-corner-oc-301668.svg",
   variant: "colorful",
 }];
+const initialFrameStyles: ArtStyle[] = [
+  { id: "full-frame-flourish-10", name: "Leaf Scrollwork", kind: "frame", asset: "/assets/borders/Decorative-Floral-Flourish-Frame-10.svg" },
+  { id: "full-frame-flourish-2", name: "Classic Floral Square", kind: "frame", asset: "/assets/borders/Decorative-Floral-Flourish-Frame-2.svg" },
+  { id: "full-frame-flourish-3", name: "Floral Medallion", kind: "frame", asset: "/assets/borders/Decorative-Floral-Flourish-Frame-3.svg" },
+  { id: "full-frame-flourish-4", name: "Fine Corner Flourish", kind: "frame", asset: "/assets/borders/Decorative-Floral-Flourish-Frame-4.svg" },
+  { id: "full-frame-flourish-6", name: "Ornate Scroll", kind: "frame", asset: "/assets/borders/Decorative-Floral-Flourish-Frame-6.svg" },
+  { id: "full-frame-flourish-7", name: "Bold Scrollwork", kind: "frame", asset: "/assets/borders/Decorative-Floral-Flourish-Frame-7.svg" },
+  { id: "full-frame-flourish-8", name: "Botanical Scroll", kind: "frame", asset: "/assets/borders/Decorative-Floral-Flourish-Frame-8.svg" },
+  { id: "full-frame-flourish-9", name: "Vintage Filigree", kind: "frame", asset: "/assets/borders/Decorative-Floral-Flourish-Frame-9.svg" },
+  { id: "full-frame-yellow-flowers", name: "Yellow Floral", kind: "frame", asset: "/assets/borders/FloralFrame25.svg" },
+  { id: "full-frame-lace", name: "Fine Lace", kind: "frame", asset: "/assets/borders/FloralFrame30.svg" },
+  { id: "full-frame-purple-floral", name: "Violet Floral", kind: "frame", asset: "/assets/borders/FloralFrame32.svg" },
+  { id: "full-frame-golden-geometric", name: "Golden Geometric", kind: "frame", asset: "/assets/borders/Frame221.svg" },
+];
+const sourcedFrameFiles = [
+  "Abstract-Flowers-Frame-2.svg", "Abstract-Flowers-Frame-3.svg", "Abstract-Flowers-Frame-4.svg", "Abstract-Flowers-Frame-5.svg", "Abstract-Flowers-Frame.svg",
+  "Decorative-Floral-Flourish-Frame-11.svg", "Decorative-Floral-Flourish-Frame-13.svg", "Decorative-Flourish-Frame-II-Large.svg", "Decorative-Flourish-Frame-II.svg",
+  "Decorative-Ornamental-Flourish-Frame-Extrapolated-2.svg", "Decorative-Ornamental-Flourish-Frame-Extrapolated-5.svg", "Decorative-Ornamental-Flourish-Frame-Extrapolated.svg",
+  "Decorative-Ornamental-Flourish-Frame.svg", "FloralFrame19.svg", "FloralFrame20.svg", "FloralFrame23V2.svg", "FloralFrame26.svg", "FloralFrame27.svg", "FloralFrame31.svg",
+  "Flowery-Vintage-Frame-2.svg", "Flowery-Vintage-Frame-3.svg", "Flowery-Vintage-Frame-6.svg", "FloweryFrame9.svg", "Frame190Colour2.svg", "Frame222.svg", "Frame222Colour2.svg", "Frame226Colour2.svg",
+  "LeafyFrame23.svg", "LeafyFrame25.svg", "Ornamental-Rectangular-Frame.svg", "SensesFrame.svg", "bloomingflowerframe.svg", "easterlillies-frame.svg", "flowerpowerframe.svg", "ornateflowerframe.svg", "simpleflowerframe.svg",
+];
+const FRAME_DISPLAY_NAMES: Record<string, string> = {
+  "bloomingflowerframe.svg": "Blooming Flowers",
+  "easterlillies-frame.svg": "Easter Lilies",
+  "flowerpowerframe.svg": "Flower Power",
+  "ornateflowerframe.svg": "Ornate Flowers",
+  "simpleflowerframe.svg": "Simple Floral Border",
+};
+const displayFrameName = (filename: string) => FRAME_DISPLAY_NAMES[filename]
+  ?? filename.replace(/\.svg$/i, "").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+const frameStyles: ArtStyle[] = [
+  ...initialFrameStyles,
+  ...sourcedFrameFiles.map((filename) => ({
+    id: `full-frame-${filename.replace(/\.svg$/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+    name: displayFrameName(filename),
+    kind: "frame" as const,
+    asset: `/assets/borders/${filename}`,
+  })),
+];
 export const NEATLINE_STYLES = lineStyles;
 const DEFAULT_LINE_WIDTHS: Record<LinePattern, number[]> = {
   single: [1.15], double: [1.05, 0.85], triple: [1, 0.8, 0.65], dashed: [1.15],
   dotted: [2.2], "double-dotted": [1.9, 1.55],
 };
 const MAX_LINE_WIDTH = 5;
-const ORNAMENT_POSITIONS: OrnamentPosition[] = ["top", "bottom", "both", "all-sides"];
+const ORNAMENT_POSITIONS: OrnamentPosition[] = ["top", "bottom", "left", "right", "both", "all-sides"];
 const ORNAMENT_LABELS: Record<OrnamentPosition, string> = {
-  top: "Top center", bottom: "Bottom center", both: "Top + bottom", "all-sides": "All four sides",
+  top: "Top center", bottom: "Bottom center", left: "Left center", right: "Right center", both: "Top + bottom", "all-sides": "All four sides",
 };
 const CORNER_POSITIONS: CornerPosition[] = ["all", "top", "bottom", "left", "right", "diagonal-a", "diagonal-b", "top-left", "top-right", "bottom-left", "bottom-right"];
 const CORNER_LABELS: Record<CornerPosition, string> = {
@@ -117,6 +158,7 @@ function lineCount(pattern: LinePattern): number {
 function isLineId(value: string): boolean { return value === "none" || lineStyles.some((style) => style.id === value); }
 function isOrnamentId(value: string): boolean { return value === "none" || decorativeStyles.some((style) => style.id === value); }
 function isCornerId(value: string): boolean { return value === "none" || [...cornerStyles, ...colorfulCornerStyles].some((style) => style.id === value); }
+function isFrameId(value: string): boolean { return value === "none" || frameStyles.some((style) => style.id === value); }
 
 function readThicknesses(): Record<string, number[]> {
   if (typeof window === "undefined") return {};
@@ -126,7 +168,7 @@ function readThicknesses(): Record<string, number[]> {
   } catch { return {}; }
 }
 function readSelection(): NeatlineSelection {
-  const empty: NeatlineSelection = { lineId: "none", ornamentId: "none", cornerId: "none", cornerPosition: "all", ornamentPosition: "top", thicknesses: readThicknesses(), lineVariant: "plain", cornerVariant: "plain" };
+  const empty: NeatlineSelection = { lineId: "none", ornamentId: "none", cornerId: "none", frameId: "none", cornerPosition: "all", ornamentPosition: "top", thicknesses: readThicknesses(), lineVariant: "plain", cornerVariant: "plain" };
   if (typeof window === "undefined") return empty;
   try {
     const stored = window.localStorage.getItem(CONFIG_STORAGE_KEY);
@@ -136,10 +178,10 @@ function readSelection(): NeatlineSelection {
         ...empty,
         ...parsed,
         lineId: parsed.lineId && isLineId(parsed.lineId) ? parsed.lineId : "none",
-        // Older stored center ornaments were raster traces and looked soft at zoom.
-        // Clear them instead of silently bringing the blurry artwork back.
-        ornamentId: "none",
+        // Keep only known vector artwork IDs; drop stale or unknown saved files.
+        ornamentId: parsed.ornamentId && isOrnamentId(parsed.ornamentId) ? parsed.ornamentId : "none",
         cornerId: parsed.cornerId && isCornerId(parsed.cornerId) ? parsed.cornerId : "none",
+        frameId: parsed.frameId && isFrameId(parsed.frameId) ? parsed.frameId : "none",
         cornerPosition: parsed.cornerPosition && CORNER_POSITIONS.includes(parsed.cornerPosition) ? parsed.cornerPosition : "all",
         ornamentPosition: parsed.ornamentPosition && ORNAMENT_POSITIONS.includes(parsed.ornamentPosition) ? parsed.ornamentPosition : "top",
         lineVariant: parsed.lineVariant === "colorful" ? "colorful" : "plain",
@@ -193,7 +235,9 @@ export function NeatlineArtwork({
   const line = lineStyles.find((style) => style.id === selection.lineId);
   const ornament = decorativeStyles.find((style) => style.id === selection.ornamentId);
   const corner = [...cornerStyles, ...colorfulCornerStyles].find((style) => style.id === selection.cornerId);
-  if (!line && !ornament && !corner) return null;
+  const frame = frameStyles.find((style) => style.id === selection.frameId);
+  const frameClipId = `neatline-frame-${useId().replace(/:/g, "")}`;
+  if (!line && !ornament && !corner && !frame) return null;
 
   const metrics = getPosterBorderMetrics(widthCm, heightCm);
   const innerW = 1000;
@@ -235,6 +279,9 @@ export function NeatlineArtwork({
   const verticalGap = Math.min(innerH * 0.5, ornamentSize + 24);
 
   return <svg className={`neatline-artwork ${className}`} viewBox={`0 0 ${innerW} ${innerH}`} preserveAspectRatio="none" aria-hidden="true">
+    {frame ? <defs><clipPath id={frameClipId}><path fillRule="evenodd" d={`M 0 0 H ${innerW} V ${innerH} H 0 Z M ${mapEdge - gapUnits} ${mapEdge - gapUnits} H ${innerW - mapEdge + gapUnits} V ${innerH - mapEdge + gapUnits} H ${mapEdge - gapUnits} Z`} /></clipPath></defs> : null}
+    {frame ? <image href={frame.asset} x="0" y="0" width={innerW} height={innerH}
+      preserveAspectRatio="none" clipPath={`url(#${frameClipId})`} /> : null}
     {offsets.map((offset, index) => {
       const segments: Array<{ coords: [number, number, number, number]; edge: "top" | "right" | "bottom" | "left" }> = [];
       // Corner art sits in a fixed box anchored to the outer line. Every
@@ -293,11 +340,16 @@ export function NeatlineArtwork({
 function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: NeatlineSelection }) {
   const isLine = style.kind === "line";
   const isOrnament = style.kind === "ornament";
+  const isFrame = style.kind === "frame";
   const line = isLine
     ? (style.id === "none" ? undefined : style)
     : lineStyles.find((item) => item.id === selection.lineId) || lineStyles[0];
   const ornament = isOrnament ? style : undefined;
   const corner = style.kind === "corner" ? style : undefined;
+  const frame = isFrame ? style : undefined;
+  if (frame?.asset) return <span className="neatline-swatch" aria-hidden="true">
+    <img className="neatline-frame-thumb" src={frame.asset} alt="" loading="lazy" decoding="async" />
+  </span>;
   const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
   const inset = 13;
   const cornerSize = 72;
@@ -330,6 +382,7 @@ function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: N
       </> : null}
       {corner ? <image href={corner.asset} x="35" y="4" width={cornerSize} height={cornerSize}
         preserveAspectRatio="none" /> : null}
+      {frame?.asset ? <image href={frame.asset} x="2" y="2" width="116" height="86" preserveAspectRatio="none" /> : null}
     </svg>
   </span>;
 }
@@ -342,18 +395,24 @@ function lineLabel(index: number, count: number): string {
 
 export function NeatlinePicker({ width, height }: { width: string; height: string }) {
   const [selection, setSelection] = useState<NeatlineSelection>(readSelection);
-  const [category, setCategory] = useState<"line" | "corner">("line");
+  const [category, setCategory] = useState<"line" | "center" | "corner" | "frame">("line");
   const [variant, setVariant] = useState<ArtVariant>(() => readSelection().lineVariant);
   const [isEditingThickness, setIsEditingThickness] = useState(false);
   const selectedLine = useMemo(() => lineStyles.find((style) => style.id === selection.lineId), [selection.lineId]);
-  const activeCategoryStyles = category === "line" ? lineStyles : variant === "colorful" ? colorfulCornerStyles : cornerStyles;
-  const displayedStyles: BorderStyle[] = category === "line" ? [{ id: "none", name: "No line", kind: "line", pattern: "single" }, ...activeCategoryStyles] : activeCategoryStyles;
+  const activeCategoryStyles: BorderStyle[] = category === "line" ? lineStyles
+    : category === "center" ? decorativeStyles
+      : category === "corner" ? variant === "colorful" ? colorfulCornerStyles : cornerStyles
+        : frameStyles;
+  const displayedStyles: BorderStyle[] = category === "line" ? [{ id: "none", name: "No line", kind: "line", pattern: "single" }, ...activeCategoryStyles]
+    : category === "center" ? [{ id: "none-center", name: "No center design", kind: "ornament", asset: "" }, ...activeCategoryStyles]
+      : category === "corner" ? [{ id: "none-corner", name: "No corner art", kind: "corner", asset: "" }, ...activeCategoryStyles]
+        : [{ id: "none-frame", name: "No full frame", kind: "frame", asset: "" }, ...activeCategoryStyles];
   const lineWidths = selectedLine ? widthsFor(selectedLine.id, selection.thicknesses) : [];
 
   useEffect(() => {
     try {
       window.localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify({
-        lineId: selection.lineId, ornamentId: selection.ornamentId, cornerId: selection.cornerId,
+        lineId: selection.lineId, ornamentId: selection.ornamentId, cornerId: selection.cornerId, frameId: selection.frameId,
         cornerPosition: selection.cornerPosition, ornamentPosition: selection.ornamentPosition,
         lineVariant: selection.lineVariant, cornerVariant: selection.cornerVariant,
       }));
@@ -368,7 +427,11 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
     setSelection((current) => {
       if (style.id === "none") return { ...current, lineId: "none" };
       if (style.kind === "line") return { ...current, lineId: style.id };
+      if (style.id === "none-center") return { ...current, ornamentId: "none" };
+      if (style.id === "none-corner") return { ...current, cornerId: "none" };
+      if (style.id === "none-frame") return { ...current, frameId: "none" };
       if (style.kind === "ornament") return { ...current, ornamentId: style.id };
+      if (style.kind === "frame") return { ...current, frameId: style.id };
       return { ...current, cornerId: style.id, cornerVariant: style.variant ?? "plain" };
     });
     setIsEditingThickness(false);
@@ -383,38 +446,42 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
   };
   const swatchSelection = (style: BorderStyle): NeatlineSelection => {
     if (style.kind === "line") return { ...selection, lineId: style.id };
+    if (style.id === "none-center") return { ...selection, ornamentId: "none" };
+    if (style.id === "none-corner") return { ...selection, cornerId: "none" };
+    if (style.id === "none-frame") return { ...selection, frameId: "none" };
     if (style.kind === "ornament") return { ...selection, lineId: selection.lineId === "none" ? "neatline-single" : selection.lineId, ornamentId: style.id };
+    if (style.kind === "frame") return { ...selection, frameId: style.id };
     return { ...selection, lineId: selection.lineId === "none" ? "neatline-single" : selection.lineId, cornerId: style.id,
       cornerVariant: style.variant ?? "plain" };
   };
   const isSelected = (style: BorderStyle) => style.id === "none" ? selection.lineId === "none"
+    : style.id === "none-center" ? selection.ornamentId === "none"
+      : style.id === "none-corner" ? selection.cornerId === "none"
+      : style.id === "none-frame" ? selection.frameId === "none"
     : style.kind === "line" ? style.id === selection.lineId
-      : style.kind === "ornament" ? style.id === selection.ornamentId : style.id === selection.cornerId;
+      : style.kind === "ornament" ? style.id === selection.ornamentId : style.kind === "frame" ? style.id === selection.frameId : style.id === selection.cornerId;
 
   return <section className="neatline-picker" aria-labelledby="neatline-heading">
     <div className="neatline-picker-heading"><div><h3 id="neatline-heading">Border styles</h3>
-      <p>लाइन और कॉर्नर अलग चुनें · Plain या Colorful · मैप से बाहर सफेद गैप के साथ · {width} × {height} cm</p></div>
-      <span className="neatline-count">{[selection.lineId !== "none", selection.cornerId !== "none"].filter(Boolean).length} layers</span></div>
+      <p>Choose separate layers. Artwork stays outside the map edge with a white gap · {width} × {height} cm</p></div>
+      <span className="neatline-count">{[selection.lineId !== "none", selection.ornamentId !== "none", selection.cornerId !== "none", selection.frameId !== "none"].filter(Boolean).length} layers</span></div>
     <div className="neatline-tabs" role="tablist" aria-label="Border layer">
-      {([["line", "Line border"], ["corner", "Corner design"]] as const).map(([id, label]) =>
+      {([["line", "Line border"], ["center", "Center design"], ["corner", "Corner design"], ["frame", "Full frame"]] as const).map(([id, label]) =>
         <button type="button" role="tab" aria-selected={category === id} className={category === id ? "is-active" : ""} key={id} onClick={() => {
           setCategory(id);
-          setVariant(id === "line" ? selection.lineVariant : selection.cornerVariant);
+          if (id === "line") setVariant(selection.lineVariant);
+          if (id === "corner") setVariant(selection.cornerVariant);
         }}>{label}</button>)}
     </div>
-    <div className="neatline-variants" role="group" aria-label={`${category} color style`}>
+    {category === "line" || category === "corner" ? <div className="neatline-variants" role="group" aria-label={`${category} color style`}>
       {([["plain", "Plain"], ["colorful", "Colorful"]] as const).map(([id, label]) => <button key={id} type="button"
         className={variant === id ? "is-active" : ""} aria-pressed={variant === id} onClick={() => {
           setVariant(id);
           if (category === "line") setSelection((current) => ({ ...current, lineVariant: id }));
-          else setSelection((current) => ({ ...current, cornerVariant: id, cornerId: "none" }));
+          else if (category === "corner") setSelection((current) => ({ ...current, cornerVariant: id, cornerId: "none" }));
         }}>{label}</button>)}
-    </div>
+    </div> : null}
     <div className="neatline-options" role="group" aria-label={`Choose ${category} border layer`}>
-      {category === "corner" ? <button type="button" aria-pressed={selection.cornerId === "none"}
-        className={`neatline-option ${selection.cornerId === "none" ? "is-selected" : ""}`}
-        onClick={() => setSelection((current) => ({ ...current, cornerId: "none" }))}>
-        <span className="neatline-swatch neatline-empty" aria-hidden="true"><span /></span><span className="neatline-option-name">No corner art</span></button> : null}
       {displayedStyles.map((style) => <button key={`${category}-${style.id}`} type="button" title={style.name} aria-pressed={isSelected(style)}
         className={`neatline-option ${isSelected(style) ? "is-selected" : ""}`} onClick={() => selectStyle(style)}>
         <NeatlineSwatch style={style} selection={swatchSelection(style)} />
@@ -424,6 +491,10 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
       <select value={selection.cornerPosition} onChange={(event) => setSelection((current) => ({ ...current, cornerPosition: event.target.value as CornerPosition }))}>
         {CORNER_POSITIONS.map((position) => <option key={position} value={position}>{CORNER_LABELS[position]}</option>)}
       </select></label> : null}
+    {category === "center" && selection.ornamentId !== "none" ? <label className="neatline-layer-position">Center placement
+      <select value={selection.ornamentPosition} onChange={(event) => setSelection((current) => ({ ...current, ornamentPosition: event.target.value as OrnamentPosition }))}>
+        {ORNAMENT_POSITIONS.map((position) => <option key={position} value={position}>{ORNAMENT_LABELS[position]}</option>)}
+      </select></label> : null}
     {category === "line" && selectedLine ? <div className="neatline-edit-wrap"><button type="button" className="neatline-edit-button" aria-expanded={isEditingThickness}
       onClick={() => setIsEditingThickness((open) => !open)}>{isEditingThickness ? "Close thickness settings" : "Adjust line thickness"}</button>
       {isEditingThickness ? <fieldset className="neatline-adjustments"><legend>Line thickness</legend>
@@ -431,6 +502,6 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
           <span className="neatline-adjustment-label">{lineLabel(index, lineWidths.length)}</span>
           <input type="range" min="0.5" max={MAX_LINE_WIDTH} step="0.1" value={value} onChange={(event) => updateThickness(index, Number(event.target.value))} aria-label={`${lineLabel(index, lineWidths.length)} thickness`} />
           <output>{value.toFixed(1)}</output></label>)}
-        <p className="neatline-adjustments-note">डिफ़ॉल्ट पतली है; हर लाइन की मोटाई अलग बढ़ा या घटा सकते हैं।</p></fieldset> : null}</div> : null}
+        <p className="neatline-adjustments-note">Set each line thickness independently. The value helps compare line weight.</p></fieldset> : null}</div> : null}
   </section>;
 }

@@ -39,6 +39,7 @@ import type { SearchResult } from "@/features/location/domain/types";
 type SectionId =
   | "templates"
   | "location"
+  | "edit-map"
   | "theme"
   | "layout"
   | "frames"
@@ -69,8 +70,18 @@ const sectionMap = Object.fromEntries(
 
 export default function SettingsPanel({
   mobileTab,
+  isEditing = false,
+  onToggleEditing,
+  onOpenWall,
+  isPhoneWallpaper = false,
+  onTogglePhoneWallpaper,
 }: {
   mobileTab?: MobileTab;
+  isEditing?: boolean;
+  onToggleEditing?: () => void;
+  onOpenWall?: () => void;
+  isPhoneWallpaper?: boolean;
+  onTogglePhoneWallpaper?: () => void;
 }) {
   const { state, dispatch, mapRef, selectedTheme } = usePosterContext();
   const {
@@ -121,6 +132,38 @@ export default function SettingsPanel({
     handleLocationSelect(location);
     flyToLocation(location.lat, location.lon);
   };
+
+  const handleRecenter = () => {
+    const lat = Number.parseFloat(state.form.latitude);
+    const lon = Number.parseFloat(state.form.longitude);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      flyToLocation(lat, lon, true);
+    }
+  };
+
+  if (mobileTab === "edit-map") {
+    return (
+      <div className="edit-map-action-panel" role="group" aria-label="Edit map actions">
+        <button
+          type="button"
+          className={`edit-map-action${isEditing ? " is-active" : ""}`}
+          onClick={onToggleEditing}
+          aria-pressed={isEditing}
+        >
+          <span aria-hidden="true">{isEditing ? "🔒" : "🔓"}</span>
+          <span>{isEditing ? "Lock Map" : "Edit Map"}</span>
+        </button>
+        <button
+          type="button"
+          className="edit-map-action"
+          onClick={handleRecenter}
+        >
+          <span aria-hidden="true">⛶</span>
+          <span>Recenter</span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <form className="settings-panel" onSubmit={(e) => e.preventDefault()}>
@@ -193,6 +236,15 @@ export default function SettingsPanel({
         >
           <div className="accordion-body-inner">
             {!isColorEditorActive ? (
+              <>
+              <button
+                type="button"
+                className="theme-wall-action"
+                onClick={onOpenWall}
+              >
+                <span aria-hidden="true">🎨</span>
+                <span>Change Wall Color</span>
+              </button>
               <MapSettingsSection
                 activeMobileTab={mobileTab}
                 form={state.form}
@@ -210,6 +262,7 @@ export default function SettingsPanel({
                 onResetColors={handleResetColors}
                 onColorEditorActiveChange={setIsColorEditorActive}
               />
+              </>
             ) : null}
           </div>
         </div>
@@ -230,6 +283,17 @@ export default function SettingsPanel({
         >
           <div className="accordion-body-inner">
             {!isColorEditorActive ? (
+              <>
+              {mobileTab === "layout" ? (
+                <button
+                  type="button"
+                  className="theme-wall-action"
+                  onClick={onTogglePhoneWallpaper}
+                >
+                  <span aria-hidden="true">{isPhoneWallpaper ? "🖼️" : "📱"}</span>
+                  <span>{isPhoneWallpaper ? "Poster View" : "Phone Wallpaper Preview"}</span>
+                </button>
+              ) : null}
               <MapSettingsSection
                 activeMobileTab={mobileTab}
                 form={state.form}
@@ -247,6 +311,7 @@ export default function SettingsPanel({
                 onResetColors={handleResetColors}
                 onColorEditorActiveChange={setIsColorEditorActive}
               />
+              </>
             ) : null}
           </div>
         </div>

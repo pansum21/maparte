@@ -6,7 +6,6 @@ interface GeneralHeaderProps {
   onAboutOpen: () => void;
   onGuideOpen?: () => void;
   onAdminOpen?: () => void;
-  onBackdropOpen?: () => void;
   onCinemaToggle?: () => void;
 }
 
@@ -14,7 +13,6 @@ export default function GeneralHeader({
   onAboutOpen,
   onGuideOpen,
   onAdminOpen,
-  onBackdropOpen,
   onCinemaToggle,
 }: GeneralHeaderProps) {
   const [tapCount, setTapCount] = useState(0);

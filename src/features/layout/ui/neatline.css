@@ -31,6 +31,7 @@
 .neatline-option.is-selected { border-color:#d7b977; box-shadow:0 0 0 1px rgba(215,185,119,.24); }
 .neatline-swatch { position:relative; display:block; aspect-ratio:4/3; overflow:hidden; border-radius:6px; background:#eee9dc; }
 .neatline-swatch .neatline-artwork { position:absolute; inset:0; width:100%; height:100%; }
+.neatline-frame-thumb { display:block; width:100%; height:100%; object-fit:contain; }
 .neatline-empty { display:grid; place-items:center; background:linear-gradient(135deg,#e9e4d8,#d8d1c0); }
 .neatline-empty span { width:72%; height:72%; border:1px dashed rgba(35,35,35,.35); }
 .neatline-option-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:10px; text-transform:capitalize; opacity:.86; }
