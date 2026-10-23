@@ -121,8 +121,12 @@ export function getPosterBorderMetrics(widthValue?: string, heightValue?: string
   const width = Number(widthValue) > 0 ? Number(widthValue) : 21;
   const height = Number(heightValue) > 0 ? Number(heightValue) : 29.7;
   const shortSide = Math.min(width, height);
+  const aspectRatio = Math.max(width, height) / shortSide;
   const outerMatCm = Math.min(OUTER_MAT_MAX_CM, shortSide * 0.02);
-  const mapInsetCm = Math.min(MAP_INSET_MAX_CM, shortSide * 0.074);
+  // Wide banner and very small layouts need a little more printable ring for
+  // line/corner options to remain visible without entering the map's white gap.
+  const mapInsetRatio = aspectRatio >= 5 ? 0.18 : aspectRatio >= 3 || shortSide < 5 ? 0.15 : 0.074;
+  const mapInsetCm = Math.min(MAP_INSET_MAX_CM, shortSide * mapInsetRatio);
   const gapCm = Math.min(MAP_ART_GAP_CM, shortSide * 0.012);
   const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
   const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
