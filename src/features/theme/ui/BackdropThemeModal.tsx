@@ -152,14 +152,6 @@ export default function BackdropThemeModal({
         <div className="backdrop-modal-top-actions">
           <button
             type="button"
-            className="backdrop-back-to-preview-btn"
-            onClick={onClose}
-            title="Back to Preview"
-          >
-            ← Back to Preview
-          </button>
-          <button
-            type="button"
             className="export-modal-close"
             onClick={onClose}
             aria-label="Close wall color settings"
@@ -169,11 +161,6 @@ export default function BackdropThemeModal({
         </div>
 
         <div className="backdrop-modal-header">
-          <div className="backdrop-modal-badge-row">
-            <div className="backdrop-modal-badge">
-              <span>🏠 Room Wall Color Studio</span>
-            </div>
-          </div>
           <h2 className="backdrop-modal-title">Room Wall Color Preview</h2>
           <p className="backdrop-modal-sub">
             Preview your framed map poster against 64 authentic interior paint tones (Scandinavian neutrals, USA &amp; Europe designer palettes, timber slats) or mix your own custom wall paint with real-time auto-save.

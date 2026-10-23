@@ -69,7 +69,7 @@ try {
     || !/width:\s*auto/.test(frameRule) || !/height:\s*auto/.test(frameRule)) {
     failures.push("preview frame SVG is not constrained to the white mat interior");
   }
-  const { NeatlineArtwork, getAiFramePlacement, getPosterBorderMetrics } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
+  const { NeatlineArtwork, getPosterBorderMetrics } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
   for (const layout of layouts) {
     const metrics = getPosterBorderMetrics(layout.widthCm, layout.heightCm, true);
     const unitScaleX = 1000 / metrics.usableWidthCm;
@@ -83,57 +83,61 @@ try {
         widthCm: layout.widthCm,
         heightCm: layout.heightCm,
       }));
-      const image = markup.match(/<image\b([^>]*data-full-frame="true"[^>]*)\/?\s*>/);
-      const attrs = Object.fromEntries(["href", "x", "y", "width", "height"].map((name) => {
-        const match = image?.[1].match(new RegExp(`${name}="([^"]+)"`));
-        return [name, match?.[1]];
-      }));
-      if (!image || attrs.href !== frame.asset) {
+      const renderedRects = [...markup.matchAll(/<rect\b([^>]*data-full-frame="true"[^>]*)\/?\s*>/g)];
+      if (renderedRects.length !== 2) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: selected vector frame did not render`);
+        failures.push(`${layout.id}/${frame.id}: expected two responsive vector border lines`);
         continue;
       }
-      const numbers = Object.fromEntries(["x", "y", "width", "height"].map((key) => [key, Number(attrs[key])]));
-      if (Object.values(numbers).some((n) => !Number.isFinite(n)) || numbers.width <= 0 || numbers.height <= 0) {
+      const frameRects = renderedRects.map((match) => Object.fromEntries(["x", "y", "width", "height", "stroke-width"].map((name) => {
+        const attr = match[1].match(new RegExp(`${name}="([^"]+)"`));
+        return [name, Number(attr?.[1])];
+      })));
+      if (frameRects.some((rect) => Object.values(rect).some((n) => !Number.isFinite(n)) || rect.width <= 0 || rect.height <= 0 || rect["stroke-width"] <= 0)) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: invalid frame placement`);
+        failures.push(`${layout.id}/${frame.id}: invalid responsive vector border geometry`);
         continue;
-      }
-      const placement = getAiFramePlacement(layout.widthCm, layout.heightCm);
-      for (const key of ["x", "y", "width", "height"]) {
-        if (Math.abs(numbers[key] - placement[key]) > 0.02) {
-          layoutFailures++;
-          failures.push(`${layout.id}/${frame.id}: ${key} differs from placement metrics`);
-        }
       }
 
-      // Use the actual non-transparent pixels of each SVG, then apply the
-      // same SVG image transform used by the live preview.
-      const bounds = metricsByFrame.get(frame.id);
-      if (!bounds) continue;
-      const artLeft = (numbers.x + numbers.width * (bounds.left / bounds.width)) / unitScaleX;
-      const artRight = (1000 - (numbers.x + numbers.width * ((bounds.right + 1) / bounds.width))) / unitScaleX;
-      const artTop = (numbers.y + numbers.height * (bounds.top / bounds.height)) / unitScaleY;
-      const artBottom = metrics.usableHeightCm - (numbers.y + numbers.height * ((bounds.bottom + 1) / bounds.height)) / unitScaleY;
-      const leftGap = metrics.mapInsetCm - metrics.outerMatCm - artLeft;
-      const rightGap = metrics.mapInsetCm - metrics.outerMatCm - artRight;
-      const topGap = metrics.mapInsetCm - metrics.outerMatCm - artTop;
-      const bottomGap = metrics.mapInsetCm - metrics.outerMatCm - artBottom;
-      const gaps = [leftGap, rightGap, topGap, bottomGap];
+      // The rendered artwork uses the same dynamic SVG aspect as the selected
+      // page. Verify its physical stroke widths remain identical in X/Y, and
+      // that the outer stroke leaves an equal map gap on all four sides.
+      const outer = frameRects[0];
+      const outerEdges = {
+        left: (outer.x - outer["stroke-width"] / 2) / unitScaleX,
+        right: (1000 - outer.x - outer.width - outer["stroke-width"] / 2) / unitScaleX,
+        top: (outer.y - outer["stroke-width"] / 2) / unitScaleY,
+        bottom: (1000 * metrics.usableHeightCm / metrics.usableWidthCm - outer.y - outer.height - outer["stroke-width"] / 2) / unitScaleY,
+      };
+      const artEdges = Object.values(outerEdges);
+      if (artEdges.some((edge) => !Number.isFinite(edge) || edge <= 0)
+        || Math.max(...artEdges) - Math.min(...artEdges) > 0.01) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}: outer artwork inset is uneven across the layout`);
+      }
+      const physicalWidths = frameRects.map((rect) => rect["stroke-width"] / unitScaleX);
+      if (physicalWidths.some((width) => width <= 0 || width > 0.2)) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}: line thickness is outside the thin-frame range`);
+      }
+      const gaps = [
+        metrics.mapInsetCm - metrics.outerMatCm - outerEdges.left,
+        metrics.mapInsetCm - metrics.outerMatCm - outerEdges.right,
+        metrics.mapInsetCm - metrics.outerMatCm - outerEdges.top,
+        metrics.mapInsetCm - metrics.outerMatCm - outerEdges.bottom,
+      ];
       const min = Math.min(...gaps), max = Math.max(...gaps);
       smallestGap = Math.min(smallestGap, min);
       largestGap = Math.max(largestGap, max);
-      const expectedGap = metrics.gapCm;
-      // Thin banner canvases can legitimately scale the physical gap below
-      // 0.12 cm. Require the gap to stay positive and equal on all four sides;
-      // also ensure it remains within the designed maximum gap.
-      if (gaps.some((gap) => gap <= 0 || Math.abs(gap - expectedGap) > 0.035) || max - min > 0.01) {
+      if (gaps.some((gap) => gap <= 0 || Math.abs(gap - metrics.gapCm) > 0.02) || max - min > 0.01) {
         layoutFailures++;
         failures.push(`${layout.id}/${frame.id}: map/frame white gap is not even (${gaps.map((g) => g.toFixed(3)).join(", ")} cm)`);
       }
-      if (numbers.x + numbers.width * 0.02 < 0 || numbers.y + numbers.height * (20 / 1400) < 0) {
+      if (frameRects[1].x <= outer.x || frameRects[1].y <= outer.y
+        || frameRects[1].x + frameRects[1].width >= outer.x + outer.width
+        || frameRects[1].y + frameRects[1].height >= outer.y + outer.height) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: inner frame edge clips the page`);
+        failures.push(`${layout.id}/${frame.id}: inner line overlaps or escapes the outer line`);
       }
     }
     layoutReports.push({

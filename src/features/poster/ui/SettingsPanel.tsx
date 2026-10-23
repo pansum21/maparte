@@ -26,7 +26,6 @@ import {
   ChevronDownIcon,
   SparklesIcon,
   ScissorsIcon,
-  RecenterIcon,
 } from "@/shared/ui/Icons";
 
 import { themeOptions } from "@/features/theme/infrastructure/themeRepository";
@@ -100,7 +99,7 @@ export default function SettingsPanel({
     state.form.location,
     state.isLocationFocused,
   );
-  const { flyToLocation, recenterToLocation } = useMapSync(state, dispatch, mapRef);
+  const { flyToLocation } = useMapSync(state, dispatch, mapRef);
   const { handleUseCurrentLocation, isLocatingUser, locationPermissionMessage } =
     useCurrentLocation(flyToLocation);
 
@@ -133,10 +132,6 @@ export default function SettingsPanel({
     flyToLocation(location.lat, location.lon);
   };
 
-  const handleRecenter = () => {
-    recenterToLocation();
-  };
-
   if (mobileTab === "edit-map") {
     return (
       <div className="edit-map-action-panel" role="group" aria-label="Edit map actions">
@@ -148,14 +143,6 @@ export default function SettingsPanel({
         >
           {isEditing ? <span aria-hidden="true">🔒</span> : <ScissorsIcon aria-hidden="true" />}
           <span>{isEditing ? "Lock Map" : "Edit Map"}</span>
-        </button>
-        <button
-          type="button"
-          className="edit-map-action"
-          onClick={handleRecenter}
-        >
-          <RecenterIcon aria-hidden="true" />
-          <span>Recenter</span>
         </button>
       </div>
     );

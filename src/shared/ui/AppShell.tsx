@@ -180,6 +180,8 @@ export default function AppShell() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isCinemaMode, setIsCinemaMode] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [cinemaWallPhoto, setCinemaWallPhoto] = useState<string | null>(null);
+  const [cinemaPosterPlacement, setCinemaPosterPlacement] = useState({ x: 0, y: 0, scale: 1 });
   const [allCitiesOpen, setAllCitiesOpen] = useState(false);
 
   const isPhoneWallpaper =
@@ -416,9 +418,18 @@ export default function AppShell() {
         <PreviewPanel
           isCinemaMode={true}
           onToggleCinema={() => handleToggleCinema(false)}
+          wallPhoto={cinemaWallPhoto}
+          cinemaPosterPlacement={cinemaPosterPlacement}
+          onCinemaPosterPlacementChange={setCinemaPosterPlacement}
         />
 
-        <CinemaWallDock onExit={() => handleToggleCinema(false)} />
+        <CinemaWallDock
+          onExit={() => handleToggleCinema(false)}
+          onWallPhotoChange={setCinemaWallPhoto}
+          hasWallPhoto={Boolean(cinemaWallPhoto)}
+          placement={cinemaPosterPlacement}
+          onPlacementChange={setCinemaPosterPlacement}
+        />
       </div>
     );
   }
@@ -464,6 +475,8 @@ export default function AppShell() {
         onToggleCinema={() => handleToggleCinema(true)}
         onOpenAllCities={() => setAllCitiesOpen(true)}
         onOpenWall={() => setBackdropOpen(true)}
+        isEditing={isEditing}
+        onEditMapToggle={() => setIsEditing((prev) => !prev)}
       />
 
       <div
@@ -564,6 +577,11 @@ export default function AppShell() {
         }}
         settingsOpen={settingsOpen}
         wallOpen={backdropOpen}
+        isEditing={isEditing}
+        onEditMapToggle={() => {
+          setMobileDrawerOpen(false);
+          setIsEditing((prev) => !prev);
+        }}
       />
       <Suspense fallback={null}>
         <ExportFab isMobile={isMobileViewport} />

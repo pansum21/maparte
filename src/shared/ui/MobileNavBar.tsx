@@ -12,6 +12,7 @@ import {
   FrameIcon,
   ScissorsIcon,
   WallIcon,
+  LockIcon,
 } from "./Icons";
 
 export type MobileTab =
@@ -54,6 +55,8 @@ interface MobileNavBarProps {
   onSettingsClick: () => void;
   settingsOpen: boolean;
   wallOpen?: boolean;
+  isEditing?: boolean;
+  onEditMapToggle?: () => void;
 }
 
 export default function MobileNavBar({
@@ -65,6 +68,8 @@ export default function MobileNavBar({
   onSettingsClick,
   settingsOpen,
   wallOpen = false,
+  isEditing = false,
+  onEditMapToggle,
 }: MobileNavBarProps) {
   return (
     <div className="mobile-nav-wrapper">
@@ -73,7 +78,9 @@ export default function MobileNavBar({
           <div className="mobile-nav-tabs">
             {tabs.map(({ id, label, Icon }) => {
               const isLocationTab = id === "location";
-              const isActive = id === "wall"
+              const isActive = id === "edit-map"
+                ? isEditing
+                : id === "wall"
                 ? wallOpen
                 : isLocationTab
                   ? isLocationVisible
@@ -83,12 +90,13 @@ export default function MobileNavBar({
                   key={id}
                   type="button"
                   className={`mobile-nav-tab${isActive ? " is-active" : ""}`}
-                  onClick={() => onTabChange(id)}
-                  aria-current={!isLocationTab && activeTab === id ? "page" : undefined}
-                  aria-pressed={isLocationTab ? isLocationVisible : undefined}
+                  onClick={() => id === "edit-map" ? onEditMapToggle?.() : onTabChange(id)}
+                  aria-label={id === "edit-map" ? (isEditing ? "Lock Map" : "Edit Map") : label}
+                  aria-current={!isLocationTab && id !== "edit-map" && activeTab === id ? "page" : undefined}
+                  aria-pressed={id === "edit-map" ? isEditing : isLocationTab ? isLocationVisible : undefined}
                 >
-                  <Icon className="mobile-nav-icon" />
-                  <span className="mobile-nav-label">{label}</span>
+                  {id === "edit-map" && isEditing ? <LockIcon className="mobile-nav-icon" /> : <Icon className="mobile-nav-icon" />}
+                  <span className="mobile-nav-label">{id === "edit-map" && isEditing ? "Lock Map" : label}</span>
                 </button>
               );
             })}

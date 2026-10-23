@@ -16,7 +16,6 @@ import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
 import GradientFades from "./GradientFades";
 import PosterTextOverlay from "./PosterTextOverlay";
 import SettingsInfo from "./SettingsInfo";
-import MapPrimaryControls from "./MapPrimaryControls";
 import {
   PlusIcon,
   MinusIcon,
@@ -31,13 +30,8 @@ import {
 import {
   DEFAULT_POSTER_WIDTH_CM,
   DEFAULT_POSTER_HEIGHT_CM,
-  DEFAULT_DISTANCE_METERS,
-  DEFAULT_LAT,
-  DEFAULT_LON,
-  DEFAULT_CITY,
-  DEFAULT_COUNTRY,
 } from "@/core/config";
-import { ensureFont, reverseGeocodeCoordinates } from "@/core/services";
+import { ensureFont } from "@/core/services";
 import {
   createCustomLayoutOption,
   formatLayoutDimensions,
@@ -54,7 +48,6 @@ import {
 
 const LOCKED_HINT = "Map is locked to prevent unintended movement.";
 const UNLOCK_HINT = `${LOCKED_HINT}\nClick to unlock map editing.`;
-const RECENTER_HINT = "Recenter map to the current location";
 const COUNTRY_VIEW_ZOOM_LEVEL = 10;
 const CONTINENT_VIEW_ZOOM_LEVEL = 6;
 const DEFAULT_LOCATION_LABEL =
@@ -65,6 +58,9 @@ interface PreviewPanelProps {
   onToggleCinema?: () => void;
   isEditing?: boolean;
   setIsEditing?: (val: boolean | ((prev: boolean) => boolean)) => void;
+  wallPhoto?: string | null;
+  cinemaPosterPlacement?: { x: number; y: number; scale: number };
+  onCinemaPosterPlacementChange?: (placement: { x: number; y: number; scale: number }) => void;
 }
 
 export default function PreviewPanel({
@@ -72,13 +68,14 @@ export default function PreviewPanel({
   onToggleCinema,
   isEditing: controlledIsEditing,
   setIsEditing: controlledSetIsEditing,
+  wallPhoto = null,
+  cinemaPosterPlacement = { x: 0, y: 0, scale: 1 },
+  onCinemaPosterPlacementChange,
 }: PreviewPanelProps) {
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
   const {
     form,
-    selectedLocation,
-    userLocation,
     isMarkerEditorActive,
     activeMarkerId,
   } = state;
@@ -95,6 +92,7 @@ export default function PreviewPanel({
   } = useMapSync(state, dispatch, mapRef);
 
   const frameRef = useRef<HTMLDivElement | null>(null);
+  const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
   const isEditing = controlledIsEditing !== undefined ? controlledIsEditing : internalIsEditing;
@@ -305,86 +303,6 @@ export default function PreviewPanel({
     [mapRef],
   );
 
-  const handleRecenter = useCallback(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    const target = selectedLocation ||
-      userLocation || {
-        id: "fallback:hanover",
-        label: DEFAULT_LOCATION_LABEL,
-        city: DEFAULT_CITY,
-        country: DEFAULT_COUNTRY,
-        continent: "Europe",
-        lat: DEFAULT_LAT,
-        lon: DEFAULT_LON,
-      };
-    const applyTarget = (
-      city: string,
-      country: string,
-      continent: string,
-      label: string,
-      includeCoordinates = true,
-    ) => {
-      dispatch({
-        type: "SET_FORM_FIELDS",
-        resetDisplayNameOverrides: true,
-        fields: {
-          ...(includeCoordinates
-            ? {
-                location: label,
-                latitude: target.lat.toFixed(6),
-                longitude: target.lon.toFixed(6),
-                distance: String(DEFAULT_DISTANCE_METERS),
-              }
-            : { location: label }),
-          displayCity: city,
-          displayCountry: country,
-          displayContinent: continent,
-        },
-      });
-    };
-
-    const city = String(target.city ?? "").trim();
-    const country = String(target.country ?? "").trim();
-    const continent = String(target.continent ?? "").trim();
-    const label = String(target.label ?? "").trim() || DEFAULT_LOCATION_LABEL;
-    map.stop();
-    map.jumpTo({
-      bearing: 0,
-      pitch: 0,
-    });
-    setMapBearing(0);
-
-    if (city && country) {
-      // All display names known — single dispatch with coordinates + correct names.
-      applyTarget(city, country, continent || "Europe", label, true);
-      return;
-    }
-
-    // Coordinates known but names aren't — set coordinates with fallback names
-    // immediately, then overwrite names once reverse-geocoding resolves.
-    applyTarget(DEFAULT_CITY, DEFAULT_COUNTRY, "Europe", label, true);
-
-    void reverseGeocodeCoordinates(target.lat, target.lon)
-      .then((resolved) => {
-        dispatch({ type: "SET_USER_LOCATION", location: resolved });
-        dispatch({
-          type: "SET_FORM_FIELDS",
-          resetDisplayNameOverrides: true,
-          fields: {
-            displayCity: String(resolved.city ?? "").trim() || DEFAULT_CITY,
-            displayCountry:
-              String(resolved.country ?? "").trim() || DEFAULT_COUNTRY,
-            displayContinent:
-              String(resolved.continent ?? "").trim() || "Europe",
-          },
-        });
-      })
-      .catch(() => {
-        // fallback names already applied above — nothing more to do.
-      });
-  }, [mapRef, selectedLocation, userLocation, dispatch]);
-
   const handleMarkerPositionChange = useCallback(
     (markerId: string, lat: number, lon: number) => {
       dispatch({
@@ -436,7 +354,10 @@ export default function PreviewPanel({
 
   return (
     <section className="preview-panel">
-      <div className={`poster-viewport${isCinemaMode ? " is-wall-mockup" : ""}`}>
+      <div
+        className={`poster-viewport${isCinemaMode ? " is-wall-mockup" : ""}${wallPhoto && isCinemaMode ? " has-user-wall-photo" : ""}`}
+        style={wallPhoto && isCinemaMode ? { "--cinema-wall-photo": `url("${wallPhoto}")` } as CSSProperties : undefined}
+      >
         {/* Desktop ghost layer: canvas clone of the main map at reduced opacity */}
         <div className="poster-ghost-layer" aria-hidden="true">
           <canvas
@@ -450,6 +371,30 @@ export default function PreviewPanel({
         <div
           ref={frameRef}
           className="poster-frame"
+          onPointerDown={(event) => {
+            if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
+            posterDragRef.current = {
+              pointerId: event.pointerId,
+              startX: event.clientX,
+              startY: event.clientY,
+              originX: cinemaPosterPlacement.x,
+              originY: cinemaPosterPlacement.y,
+            };
+            event.currentTarget.setPointerCapture(event.pointerId);
+          }}
+          onPointerMove={(event) => {
+            const drag = posterDragRef.current;
+            if (!drag || drag.pointerId !== event.pointerId || !onCinemaPosterPlacementChange) return;
+            onCinemaPosterPlacementChange({
+              ...cinemaPosterPlacement,
+              x: Math.max(-30, Math.min(30, drag.originX + ((event.clientX - drag.startX) / window.innerWidth) * 100)),
+              y: Math.max(-30, Math.min(30, drag.originY + ((event.clientY - drag.startY) / window.innerHeight) * 100)),
+            });
+          }}
+          onPointerUp={(event) => {
+            if (posterDragRef.current?.pointerId === event.pointerId) posterDragRef.current = null;
+          }}
+          onPointerCancel={() => { posterDragRef.current = null; }}
           style={
             {
               "--poster-aspect": `${aspect}`,
@@ -458,6 +403,9 @@ export default function PreviewPanel({
               "--map-inset-y": borderMetrics.mapInsetY,
               "--mat-inset-x": borderMetrics.matInsetX,
               "--mat-inset-y": borderMetrics.matInsetY,
+              "--cinema-poster-x": `${cinemaPosterPlacement.x}vw`,
+              "--cinema-poster-y": `${cinemaPosterPlacement.y}vh`,
+              "--cinema-poster-scale": cinemaPosterPlacement.scale,
             } as CSSProperties
           }
         >
