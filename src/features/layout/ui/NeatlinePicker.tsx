@@ -38,8 +38,8 @@ const cornerStyles: ArtStyle[] = Array.from({ length: 12 }, (_, i) => ({
 }));
 export const NEATLINE_STYLES = lineStyles;
 const DEFAULT_LINE_WIDTHS: Record<LinePattern, number[]> = {
-  single: [1.15], double: [1.05, 0.85], triple: [1, 0.8, 0.65], dashed: [1.15],
-  dotted: [2.2], "double-dotted": [1.9, 1.55],
+  single: [2], double: [1.9, 1.5], triple: [1.8, 1.45, 1.1], dashed: [2],
+  dotted: [2.8], "double-dotted": [2.5, 2],
 };
 const MAX_LINE_WIDTH = 5;
 const CORNER_POSITIONS: CornerPosition[] = ["all", "top", "bottom", "left", "right", "diagonal-a", "diagonal-b", "top-left", "top-right", "bottom-left", "bottom-right"];
@@ -55,7 +55,7 @@ const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
 type CornerName = typeof CORNER_NAMES[number];
 
 const OUTER_MAT_MAX_CM = 0.35;
-const MAP_INSET_MAX_CM = 1.65;
+const MAP_INSET_MAX_CM = 1.9;
 const MAP_ART_GAP_CM = 0.22;
 
 /** Shared physical measurements for the white mat, map opening and border art. */
@@ -64,7 +64,7 @@ export function getPosterBorderMetrics(widthValue?: string, heightValue?: string
   const height = Number(heightValue) > 0 ? Number(heightValue) : 29.7;
   const shortSide = Math.min(width, height);
   const outerMatCm = Math.min(OUTER_MAT_MAX_CM, shortSide * 0.02);
-  const mapInsetCm = Math.min(MAP_INSET_MAX_CM, shortSide * 0.0786);
+  const mapInsetCm = Math.min(MAP_INSET_MAX_CM, shortSide * 0.09);
   const gapCm = Math.min(MAP_ART_GAP_CM, shortSide * 0.012);
   const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
   const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
@@ -181,7 +181,9 @@ export function NeatlineArtwork({
   const dotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
   const dash = line?.pattern === "dashed" ? "12 8" : dotted ? "0.1 12" : undefined;
   const selectedCorners = corner ? activeCorners(selection.cornerPosition) : [];
-  const cornerSize = Math.min(safeArtDepth * 0.94, innerW * 0.15, innerH * 0.15);
+  // Use most of the printable ring so corner details remain legible at poster size.
+  // Keep the size bounded by the map gap to prevent artwork from touching the map.
+  const cornerSize = Math.min(safeArtDepth * 0.98, innerW * 0.2, innerH * 0.2);
   const cornerGeometry: Record<CornerName, { x: number; y: number; rotate: number }> = {
     // Corner PNGs are authored for the top-right: horizontal art runs left
     // from the top edge and vertical art runs down from the right edge.
@@ -285,6 +287,7 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
     ? [{ id: "none", name: "No line", kind: "line", pattern: "single" }, ...activeCategoryStyles]
     : [{ id: "none-corner", name: "No corner art", kind: "corner", asset: "" }, ...activeCategoryStyles];
   const lineWidths = selectedLine ? widthsFor(selectedLine.id, selection.thicknesses) : [];
+  const layerCount = [selection.lineId !== "none", selection.cornerId !== "none"].filter(Boolean).length;
 
   useEffect(() => {
     try {
@@ -330,7 +333,7 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
   return <section className="neatline-picker" aria-labelledby="neatline-heading">
     <div className="neatline-picker-heading"><div><h3 id="neatline-heading">Border styles</h3>
       <p>Choose a line and optional corner details. Both stay outside the map edge with a white gap · {width} × {height} cm</p></div>
-      <span className="neatline-count">{[selection.lineId !== "none", selection.cornerId !== "none"].filter(Boolean).length} layers</span></div>
+      <span className="neatline-count">{layerCount} {layerCount === 1 ? "layer" : "layers"}</span></div>
     <div className="neatline-tabs" role="tablist" aria-label="Border layer">
       {([["line", "Line border"], ["corner", "Corner design"]] as const).map(([id, label]) =>
         <button type="button" role="tab" aria-selected={category === id} className={category === id ? "is-active" : ""} key={id} onClick={() => {
