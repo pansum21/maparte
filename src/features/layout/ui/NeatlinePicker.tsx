@@ -170,7 +170,6 @@ export function NeatlineArtwork({
   const metrics = getPosterBorderMetrics(widthCm, heightCm, Boolean(frame));
   const innerW = 1000;
   const innerH = innerW * metrics.usableHeightCm / metrics.usableWidthCm;
-  const framePlacement = frame ? getAiFramePlacement(widthCm, heightCm) : null;
   const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
   const maxStroke = widths.length ? Math.max(...widths) : 1;
   const unitScale = innerW / metrics.usableWidthCm;
@@ -183,10 +182,28 @@ export function NeatlineArtwork({
       ? [edgeInset, edgeInset + Math.min(0.28, metrics.gapCm * 0.42) * unitScale, edgeInset + Math.min(0.56, metrics.gapCm * 0.84) * unitScale]
       : [edgeInset]
     : [];
+  const frameLineSpec = frame?.id === "selected-frame-18"
+    ? [{ insetCm: metrics.frameArtInsetCm, widthCm: 0.075 }, { insetCm: metrics.frameArtInsetCm + 0.17, widthCm: 0.05 }]
+    : frame
+      ? [{ insetCm: metrics.frameArtInsetCm, widthCm: 0.055 }, { insetCm: metrics.frameArtInsetCm + 0.15, widthCm: 0.055 }]
+      : [];
   return <svg className={`neatline-artwork ${className}`} viewBox={`0 0 ${innerW} ${innerH}`} preserveAspectRatio="none" aria-hidden="true">
-    {frame && framePlacement ? <image data-full-frame="true" href={frame.asset}
-      x={framePlacement.x} y={framePlacement.y} width={framePlacement.width} height={framePlacement.height}
-      preserveAspectRatio="none" /> : null}
+    {frameLineSpec.map((spec, index) => {
+      const inset = spec.insetCm * unitScale;
+      const stroke = spec.widthCm * unitScale;
+      return <rect
+        key={`frame-line-${index}`}
+        data-full-frame="true"
+        x={inset + stroke / 2}
+        y={inset + stroke / 2}
+        width={innerW - 2 * inset - stroke}
+        height={innerH - 2 * inset - stroke}
+        fill="none"
+        stroke={frame?.accent ?? "#303238"}
+        strokeWidth={stroke}
+        strokeLinejoin="miter"
+      />;
+    })}
     {offsets.map((offset, index) => {
       const start = offset;
       const endX = innerW - offset;

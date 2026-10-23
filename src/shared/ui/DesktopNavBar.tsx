@@ -31,6 +31,7 @@ import {
   MyLocationIcon,
   WallIcon,
   ScissorsIcon,
+  LockIcon,
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
 
@@ -44,6 +45,8 @@ export interface DesktopNavBarProps {
   onToggleCinema?: () => void;
   onOpenAllCities?: () => void;
   onOpenWall?: () => void;
+  isEditing?: boolean;
+  onEditMapToggle?: () => void;
 }
 
 export default function DesktopNavBar({
@@ -56,6 +59,8 @@ export default function DesktopNavBar({
   onToggleCinema,
   onOpenAllCities,
   onOpenWall,
+  isEditing = false,
+  onEditMapToggle,
 }: DesktopNavBarProps) {
   const { state, dispatch, mapRef } = usePosterContext();
   const {
@@ -222,13 +227,7 @@ export default function DesktopNavBar({
             onClearRecent={clearRecent}
           />
 
-          {locationPermissionMessage ? (
-            <p className="location-permission-message">{locationPermissionMessage}</p>
-          ) : null}
-        </div>
-
-        <div className="desktop-nav-companion desktop-companion-presets">
-          <div className="desktop-quick-cities-strip">
+          <div className="desktop-quick-cities-strip" role="toolbar" aria-label="Quick cities">
             {POPULAR_CITIES.slice(0, 3).map((city) => (
               <button
                 key={city.id}
@@ -241,7 +240,6 @@ export default function DesktopNavBar({
                 <span className="city-pill-name">{city.name}</span>
               </button>
             ))}
-
             <button
               type="button"
               className="desktop-quick-city-pill desktop-all-cities-btn"
@@ -252,6 +250,10 @@ export default function DesktopNavBar({
               <span className="all-cities-text">100 Cities</span>
             </button>
           </div>
+
+          {locationPermissionMessage ? (
+            <p className="location-permission-message">{locationPermissionMessage}</p>
+          ) : null}
         </div>
       </div>
 
@@ -259,13 +261,14 @@ export default function DesktopNavBar({
       <div className="desktop-nav-row" data-tab="edit-map">
         <button
           type="button"
-          className={`desktop-nav-tab${panelOpen && activeTab === "edit-map" ? " is-active" : ""}`}
-          onClick={() => onTabChange("edit-map")}
-          title="Edit Map and Recenter"
-          aria-label="Edit Map"
+          className={`desktop-nav-tab${isEditing ? " is-active" : ""}`}
+          onClick={onEditMapToggle}
+          title={isEditing ? "Lock map editing" : "Unlock map editing"}
+          aria-label={isEditing ? "Lock Map" : "Edit Map"}
+          aria-pressed={isEditing}
         >
-          <ScissorsIcon className="desktop-nav-icon" />
-          <span className="desktop-nav-label">Edit Map</span>
+          {isEditing ? <LockIcon className="desktop-nav-icon" /> : <ScissorsIcon className="desktop-nav-icon" />}
+          <span className="desktop-nav-label">{isEditing ? "Lock Map" : "Edit Map"}</span>
         </button>
       </div>
 
