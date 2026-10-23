@@ -27,7 +27,6 @@ import {
   SparklesIcon,
   ScissorsIcon,
   RecenterIcon,
-  WallIcon,
 } from "@/shared/ui/Icons";
 
 import { themeOptions } from "@/features/theme/infrastructure/themeRepository";
@@ -75,14 +74,12 @@ export default function SettingsPanel({
   mobileTab,
   isEditing = false,
   onToggleEditing,
-  onOpenWall,
   isPhoneWallpaper = false,
   onTogglePhoneWallpaper,
 }: {
   mobileTab?: MobileTab;
   isEditing?: boolean;
   onToggleEditing?: () => void;
-  onOpenWall?: () => void;
   isPhoneWallpaper?: boolean;
   onTogglePhoneWallpaper?: () => void;
 }) {
@@ -236,14 +233,6 @@ export default function SettingsPanel({
           <div className="accordion-body-inner">
             {!isColorEditorActive ? (
               <>
-              <button
-                type="button"
-                className="theme-wall-action"
-                onClick={onOpenWall}
-              >
-                <WallIcon aria-hidden="true" />
-                <span>Change Wall Color</span>
-              </button>
               <MapSettingsSection
                 activeMobileTab={mobileTab}
                 form={state.form}

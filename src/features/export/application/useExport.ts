@@ -48,20 +48,28 @@ async function getSelectedNeatlineSvg(): Promise<string | undefined> {
   clone.setAttribute("width", viewBoxParts[2]);
   clone.setAttribute("height", viewBoxParts[3]);
   clone.setAttribute("preserveAspectRatio", "none");
+  const embeddedAssets = new Map<string, Promise<string>>();
   await Promise.all(Array.from(clone.querySelectorAll("image")).map(async (image) => {
     const href = image.getAttribute("href") || image.getAttribute("xlink:href");
     if (!href) return;
     const absoluteHref = new URL(href, document.baseURI).href;
     try {
-      const response = await fetch(absoluteHref);
-      if (!response.ok) throw new Error("Border asset unavailable");
-      const blob = await response.blob();
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Could not embed border asset"));
-        reader.onerror = () => reject(reader.error || new Error("Could not read border asset"));
-        reader.readAsDataURL(blob);
-      });
+      let assetPromise = embeddedAssets.get(absoluteHref);
+      if (!assetPromise) {
+        assetPromise = (async () => {
+          const response = await fetch(absoluteHref);
+          if (!response.ok) throw new Error("Border asset unavailable");
+          const blob = await response.blob();
+          return await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Could not embed border asset"));
+            reader.onerror = () => reject(reader.error || new Error("Could not read border asset"));
+            reader.readAsDataURL(blob);
+          });
+        })();
+        embeddedAssets.set(absoluteHref, assetPromise);
+      }
+      const dataUrl = await assetPromise;
       image.setAttribute("href", dataUrl);
     } catch {
       // Keep same-origin assets visible in the preview/export renderer if

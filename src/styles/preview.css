@@ -1086,10 +1086,9 @@
 .poster-frame .neatline-artwork.preview-neatline {
   position: absolute;
   z-index: 6;
-  inset-block: var(--mat-inset-y, 1.18%);
-  inset-inline: var(--mat-inset-x, 1.67%);
-  width: calc(100% - var(--mat-inset-x, 1.67%) - var(--mat-inset-x, 1.67%));
-  height: calc(100% - var(--mat-inset-y, 1.18%) - var(--mat-inset-y, 1.18%));
+  inset: var(--mat-inset-y, 1.18%) var(--mat-inset-x, 1.67%);
+  width: auto;
+  height: auto;
   pointer-events: none;
 }
 

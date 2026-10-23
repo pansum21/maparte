@@ -1206,8 +1206,8 @@
     padding: 0;
     position: relative;
     overflow: hidden;
-    --poster-frame-margin-top: -40px;
-    --poster-frame-margin-bottom: 18px;
+    --poster-frame-margin-top: 0px;
+    --poster-frame-margin-bottom: 0px;
     --poster-frame-center-offset-y: calc(
       (var(--poster-frame-margin-top) - var(--poster-frame-margin-bottom)) / 2
     );
@@ -1222,18 +1222,20 @@
     width: 100%;
     border: none;
     border-radius: 0;
+    box-sizing: border-box;
+    padding-bottom: 44px;
   }
 
   /* Ghost frame: poster floats above ghost map; no more 100vmax overlay */
   .app-shell > .preview-panel .poster-frame {
     box-shadow: 0 24px 48px rgba(0, 0, 0, 0.65);
-    max-height: calc(84vh - 44px);
+    max-height: calc(100dvh - 106px);
     width: min(
       calc(100% - 48px),
-      calc((84vh - 44px) * var(--poster-aspect, 0.6666667))
+      calc((100dvh - 106px) * var(--poster-aspect, 0.6666667))
     );
-    margin-top: var(--poster-frame-margin-top);
-    margin-bottom: var(--poster-frame-margin-bottom);
+    margin-top: 0;
+    margin-bottom: 0;
     overflow: visible;
   }
 

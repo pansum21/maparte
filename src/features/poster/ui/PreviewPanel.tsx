@@ -83,7 +83,6 @@ export default function PreviewPanel({
     activeMarkerId,
   } = state;
   const hasVisibleMarkers = form.showMarkers && state.markers.length > 0;
-  const borderMetrics = getPosterBorderMetrics(form.width, form.height);
   const {
     mapCenter,
     mapZoom,
@@ -102,6 +101,7 @@ export default function PreviewPanel({
   const setIsEditing = controlledSetIsEditing !== undefined ? controlledSetIsEditing : setInternalIsEditing;
 
   const [neatlineSelection, setNeatlineSelection] = useState<NeatlineSelection>(readNeatlineSelection);
+  const borderMetrics = getPosterBorderMetrics(form.width, form.height, neatlineSelection.frameId !== "none");
 
   useEffect(() => {
     const handleNeatlineChange = (event: Event) => {
