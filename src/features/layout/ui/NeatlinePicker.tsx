@@ -45,7 +45,9 @@ const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
 
 const OUTER_MAT_MAX_CM = 0.35;
 const LINE_MAP_INSET_MAX_CM = 1.55;
-const MAP_ART_GAP_CM = 0.22;
+// Keep the map visibly separated from even the darkest frame artwork in the
+// live preview. A 2.2 mm gap collapsed to only a couple of preview pixels.
+const MAP_ART_GAP_CM = 0.45;
 const FRAME_ART_INSET_CM = 0.12;
 
 /** Shared physical measurements for the mat, map opening, and border art. */
@@ -60,7 +62,7 @@ export function getPosterBorderMetrics(widthValue?: string, heightValue?: string
   // Keep a small, equal physical gap between the map opening and the frame on
   // all four sides. The frame artwork itself sits just inside the white mat.
   const frameArtInsetCm = Math.min(FRAME_ART_INSET_CM, shortSide * 0.006);
-  const frameMapGapCm = Math.min(MAP_ART_GAP_CM, shortSide * 0.025);
+  const frameMapGapCm = Math.min(MAP_ART_GAP_CM, shortSide * 0.035);
   const mapInsetCm = hasAiFrame
     ? outerMatCm + frameArtInsetCm + frameMapGapCm
     : lineMapInsetCm;

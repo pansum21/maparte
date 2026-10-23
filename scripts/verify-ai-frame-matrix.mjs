@@ -41,8 +41,20 @@ for (const frame of frames) {
     if (info.width !== 1000 || info.height !== 1400) failures.push(`${frame.id}: rasterized to ${info.width}x${info.height}`);
     const centerAlpha = data[((700 * info.width) + 500) * 4 + 3];
     const cornerAlpha = data[3];
+    let left = info.width, top = info.height, right = -1, bottom = -1;
+    for (let y = 0; y < info.height; y++) {
+      for (let x = 0; x < info.width; x++) {
+        if (data[(y * info.width + x) * 4 + 3] <= 8) continue;
+        left = Math.min(left, x);
+        top = Math.min(top, y);
+        right = Math.max(right, x);
+        bottom = Math.max(bottom, y);
+      }
+    }
+    metricsByFrame.set(frame.id, { left, top, right, bottom, width: info.width, height: info.height });
     if (centerAlpha !== 0) failures.push(`${frame.id}: map opening is not transparent`);
     if (cornerAlpha !== 0) failures.push(`${frame.id}: outer canvas background is not transparent`);
+    if (right < left || bottom < top) failures.push(`${frame.id}: no visible frame artwork`);
   } catch (error) {
     failures.push(`${frame.id}: invalid SVG (${error.message})`);
   }
@@ -51,6 +63,12 @@ for (const frame of frames) {
 const vite = await createServer({ root, configFile: false, plugins: [react()], server: { middlewareMode: true }, appType: "custom", logLevel: "error" });
 const layoutReports = [];
 try {
+  const previewCss = fs.readFileSync(path.join(root, "src/styles/preview.css"), "utf8");
+  const frameRule = previewCss.match(/\.poster-frame \.neatline-artwork\.preview-neatline\s*\{([^}]+)\}/)?.[1] || "";
+  if (!/inset:\s*var\(--mat-inset-y[^)]*\)\s+var\(--mat-inset-x[^)]*\)/.test(frameRule)
+    || !/width:\s*auto/.test(frameRule) || !/height:\s*auto/.test(frameRule)) {
+    failures.push("preview frame SVG is not constrained to the white mat interior");
+  }
   const { NeatlineArtwork, getAiFramePlacement, getPosterBorderMetrics } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
   for (const layout of layouts) {
     const metrics = getPosterBorderMetrics(layout.widthCm, layout.heightCm, true);
@@ -89,11 +107,14 @@ try {
         }
       }
 
-      // Verify actual vector line bounds after applying the image transform.
-      const artLeft = (numbers.x + numbers.width * 0.02) / unitScaleX;
-      const artRight = (1000 - (numbers.x + numbers.width * 0.98)) / unitScaleX;
-      const artTop = (numbers.y + numbers.height * (20 / 1400)) / unitScaleY;
-      const artBottom = (metrics.usableHeightCm - (numbers.y + numbers.height * (1380 / 1400)) / unitScaleY);
+      // Use the actual non-transparent pixels of each SVG, then apply the
+      // same SVG image transform used by the live preview.
+      const bounds = metricsByFrame.get(frame.id);
+      if (!bounds) continue;
+      const artLeft = (numbers.x + numbers.width * (bounds.left / bounds.width)) / unitScaleX;
+      const artRight = (1000 - (numbers.x + numbers.width * ((bounds.right + 1) / bounds.width))) / unitScaleX;
+      const artTop = (numbers.y + numbers.height * (bounds.top / bounds.height)) / unitScaleY;
+      const artBottom = metrics.usableHeightCm - (numbers.y + numbers.height * ((bounds.bottom + 1) / bounds.height)) / unitScaleY;
       const leftGap = metrics.mapInsetCm - metrics.outerMatCm - artLeft;
       const rightGap = metrics.mapInsetCm - metrics.outerMatCm - artRight;
       const topGap = metrics.mapInsetCm - metrics.outerMatCm - artTop;
