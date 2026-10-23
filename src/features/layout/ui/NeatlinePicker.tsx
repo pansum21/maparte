@@ -53,14 +53,13 @@ const cornerStyles: ArtStyle[] = Array.from({ length: 12 }, (_, i) => ({
   asset: `/assets/borders/corner-${String(i + 1).padStart(2, "0")}.svg`,
   variant: "plain" as const,
 }));
-const colorfulCornerStyles: ArtStyle[] = Array.from({ length: 8 }, (_, i) => ({
-  id: `border-color-corner-${String(i + 1).padStart(2, "0")}`,
-  name: ["Mughal vine", "Lotus garden", "Peacock leaf", "Marigold", "Royal paisley", "Art deco jewel", "Wildflower", "Heritage scroll"][i],
-  kind: "corner" as const,
-  asset: `/assets/borders/color-corner-${String(i + 1).padStart(2, "0")}.svg`,
-  variant: "colorful" as const,
-}));
-const allStyles: BorderStyle[] = [...lineStyles, ...decorativeStyles, ...cornerStyles, ...colorfulCornerStyles];
+const colorfulCornerStyles: ArtStyle[] = [{
+  id: "border-color-corner-oc-301668",
+  name: "Floral vine · OpenClipart",
+  kind: "corner",
+  asset: "/assets/borders/color-corner-oc-301668.svg",
+  variant: "colorful",
+}];
 export const NEATLINE_STYLES = lineStyles;
 const DEFAULT_LINE_WIDTHS: Record<LinePattern, number[]> = {
   single: [1.15], double: [1.05, 0.85], triple: [1, 0.8, 0.65], dashed: [1.15],
@@ -78,7 +77,9 @@ const CORNER_LABELS: Record<CornerPosition, string> = {
   "top-left": "Top left", "top-right": "Top right", "bottom-left": "Bottom left", "bottom-right": "Bottom right",
 };
 const CORNER_NAMES = ["top-left", "top-right", "bottom-right", "bottom-left"] as const;
-const LINE_COLORS = ["#b44737", "#276b62", "#bd8735"];
+const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
+  top: "#b44737", right: "#276b62", bottom: "#bd8735", left: "#526b9b",
+};
 type CornerName = typeof CORNER_NAMES[number];
 
 const OUTER_MAT_MAX_CM = 0.35;
@@ -235,7 +236,7 @@ export function NeatlineArtwork({
 
   return <svg className={`neatline-artwork ${className}`} viewBox={`0 0 ${innerW} ${innerH}`} preserveAspectRatio="none" aria-hidden="true">
     {offsets.map((offset, index) => {
-      const segments: Array<[number, number, number, number]> = [];
+      const segments: Array<{ coords: [number, number, number, number]; edge: "top" | "right" | "bottom" | "left" }> = [];
       // Corner art sits in a fixed box anchored to the outer line. Every
       // parallel stroke must stop at that same box edge so no stray gap opens
       // between the artwork and an inner double/triple stroke.
@@ -249,19 +250,19 @@ export function NeatlineArtwork({
       const rightEnd = innerH - pad - (selectedCorners.includes("bottom-right") ? cornerSize : 0);
       const addHorizontal = (edge: "top" | "bottom", start: number, end: number, y: number) => {
         if (end <= start) return;
-        if (!ornamentEdges.includes(edge)) { segments.push([start, y, end, y]); return; }
+        if (!ornamentEdges.includes(edge)) { segments.push({ coords: [start, y, end, y], edge }); return; }
         const gapStart = (innerW - horizontalGap) / 2;
         const gapEnd = (innerW + horizontalGap) / 2;
-        if (gapStart > start) segments.push([start, y, Math.min(end, gapStart), y]);
-        if (end > gapEnd) segments.push([Math.max(start, gapEnd), y, end, y]);
+        if (gapStart > start) segments.push({ coords: [start, y, Math.min(end, gapStart), y], edge });
+        if (end > gapEnd) segments.push({ coords: [Math.max(start, gapEnd), y, end, y], edge });
       };
       const addVertical = (edge: "left" | "right", start: number, end: number, x: number) => {
         if (end <= start) return;
-        if (!ornamentEdges.includes(edge)) { segments.push([x, start, x, end]); return; }
+        if (!ornamentEdges.includes(edge)) { segments.push({ coords: [x, start, x, end], edge }); return; }
         const gapStart = (innerH - verticalGap) / 2;
         const gapEnd = (innerH + verticalGap) / 2;
-        if (gapStart > start) segments.push([x, start, x, Math.min(end, gapStart)]);
-        if (end > gapEnd) segments.push([x, Math.max(start, gapEnd), x, end]);
+        if (gapStart > start) segments.push({ coords: [x, start, x, Math.min(end, gapStart)], edge });
+        if (end > gapEnd) segments.push({ coords: [x, Math.max(start, gapEnd), x, end], edge });
       };
       addHorizontal("top", topStart, topEnd, offset);
       addHorizontal("bottom", bottomStart, bottomEnd, innerH - offset);
@@ -269,8 +270,8 @@ export function NeatlineArtwork({
       addVertical("right", rightStart, rightEnd, innerW - offset);
       return <g key={`line-${offset}`} fill="none" strokeWidth={widths[index] ?? 1.15}
         strokeDasharray={dash} strokeLinecap={dotted ? "round" : "butt"} shapeRendering="geometricPrecision">
-        {segments.map(([x1, y1, x2, y2], segmentIndex) => <line key={segmentIndex} x1={x1} y1={y1} x2={x2} y2={y2}
-          stroke={selection.lineVariant === "colorful" ? LINE_COLORS[segmentIndex % LINE_COLORS.length] : "#354b62"} />)}
+        {segments.map(({ coords: [x1, y1, x2, y2], edge }, segmentIndex) => <line key={`${edge}-${segmentIndex}`} x1={x1} y1={y1} x2={x2} y2={y2}
+          stroke={selection.lineVariant === "colorful" ? LINE_COLORS[edge] : "#354b62"} />)}
       </g>;
     })}
     {ornament && ornamentHeight > 0 && ornamentEdges.map((edge) => {
@@ -308,12 +309,20 @@ function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: N
         const offset = index * 8;
         const start = inset + offset;
         const end = 110 - offset;
-        const path = `M ${start} ${end} V ${start} H ${end}`;
+        const paths = [
+          { edge: "top" as const, d: `M ${start} ${start} H ${end}` },
+          { edge: "right" as const, d: `M ${end} ${start} V ${end}` },
+          { edge: "bottom" as const, d: `M ${end} ${end} H ${start}` },
+          { edge: "left" as const, d: `M ${start} ${end} V ${start}` },
+        ];
         const isDotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
         const dash = line?.pattern === "dashed" ? "7 4" : isDotted ? "0.1 6" : undefined;
         const strokeWidth = Math.max(1.35, Math.min(2.6, width * 1.4));
-        return <path key={index} d={path} fill="none" stroke={selection.lineVariant === "colorful" ? LINE_COLORS[index % LINE_COLORS.length] : "#354b62"} strokeWidth={strokeWidth}
-          strokeDasharray={dash} strokeLinecap={isDotted ? "round" : "butt"} strokeLinejoin="miter" />;
+        return <g key={index} fill="none" strokeWidth={strokeWidth} strokeDasharray={dash}
+          strokeLinecap={isDotted ? "round" : "butt"} strokeLinejoin="miter">
+          {paths.map(({ edge, d }) => <path key={edge} d={d}
+            stroke={selection.lineVariant === "colorful" ? LINE_COLORS[edge] : "#354b62"} />)}
+        </g>;
       }) : null}
       {ornament ? <>
         <path d="M 13 22 H 16 M 104 22 H 107" fill="none" stroke="#354b62" strokeWidth="1.4" />
@@ -360,7 +369,7 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
       if (style.id === "none") return { ...current, lineId: "none" };
       if (style.kind === "line") return { ...current, lineId: style.id };
       if (style.kind === "ornament") return { ...current, ornamentId: style.id };
-      return { ...current, cornerId: style.id };
+      return { ...current, cornerId: style.id, cornerVariant: style.variant ?? "plain" };
     });
     setIsEditingThickness(false);
   };
@@ -376,7 +385,7 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
     if (style.kind === "line") return { ...selection, lineId: style.id };
     if (style.kind === "ornament") return { ...selection, lineId: selection.lineId === "none" ? "neatline-single" : selection.lineId, ornamentId: style.id };
     return { ...selection, lineId: selection.lineId === "none" ? "neatline-single" : selection.lineId, cornerId: style.id,
-      cornerVariant: style.variant ?? variant };
+      cornerVariant: style.variant ?? "plain" };
   };
   const isSelected = (style: BorderStyle) => style.id === "none" ? selection.lineId === "none"
     : style.kind === "line" ? style.id === selection.lineId
