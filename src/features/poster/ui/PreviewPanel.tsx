@@ -46,6 +46,7 @@ import {
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import {
   NeatlineArtwork,
+  getPosterBorderMetrics,
   NEATLINE_CHANGE_EVENT,
   readNeatlineSelection,
   type NeatlineSelection,
@@ -82,6 +83,7 @@ export default function PreviewPanel({
     activeMarkerId,
   } = state;
   const hasVisibleMarkers = form.showMarkers && state.markers.length > 0;
+  const borderMetrics = getPosterBorderMetrics(form.width, form.height);
   const {
     mapCenter,
     mapZoom,
@@ -452,6 +454,10 @@ export default function PreviewPanel({
             {
               "--poster-aspect": `${aspect}`,
               "--poster-bg": effectiveTheme.ui.bg,
+              "--map-inset-x": borderMetrics.mapInsetX,
+              "--map-inset-y": borderMetrics.mapInsetY,
+              "--mat-inset-x": borderMetrics.matInsetX,
+              "--mat-inset-y": borderMetrics.matInsetY,
             } as CSSProperties
           }
         >

@@ -34,20 +34,20 @@ const decorativeStyles: ArtStyle[] = [
     id: `border-flourish-${String(i + 1).padStart(2, "0")}`,
     name: `Ornament ${i + 1}`,
     kind: "ornament" as const,
-    asset: `/assets/borders/flourish-${String(i + 1).padStart(2, "0")}.png`,
+    asset: `/assets/borders/flourish-${String(i + 1).padStart(2, "0")}.svg`,
   })),
   ...Array.from({ length: 4 }, (_, i) => ({
     id: `border-geometric-${String(i + 1).padStart(2, "0")}`,
     name: `Geometric ${i + 1}`,
     kind: "ornament" as const,
-    asset: `/assets/borders/geometric-${String(i + 1).padStart(2, "0")}.png`,
+    asset: `/assets/borders/geometric-${String(i + 1).padStart(2, "0")}.svg`,
   })),
 ];
 const cornerStyles: ArtStyle[] = Array.from({ length: 12 }, (_, i) => ({
   id: `border-corner-${String(i + 1).padStart(2, "0")}`,
   name: `Corner ${i + 1}`,
   kind: "corner" as const,
-  asset: `/assets/borders/corner-${String(i + 1).padStart(2, "0")}.png`,
+  asset: `/assets/borders/corner-${String(i + 1).padStart(2, "0")}.svg`,
 }));
 const allStyles: BorderStyle[] = [...lineStyles, ...decorativeStyles, ...cornerStyles];
 export const NEATLINE_STYLES = lineStyles;
@@ -68,6 +68,33 @@ const CORNER_LABELS: Record<CornerPosition, string> = {
 };
 const CORNER_NAMES = ["top-left", "top-right", "bottom-right", "bottom-left"] as const;
 type CornerName = typeof CORNER_NAMES[number];
+
+const OUTER_MAT_MAX_CM = 0.35;
+const MAP_INSET_MAX_CM = 1.65;
+const MAP_ART_GAP_CM = 0.22;
+
+/** Shared physical measurements for the white mat, map opening and border art. */
+export function getPosterBorderMetrics(widthValue?: string, heightValue?: string) {
+  const width = Number(widthValue) > 0 ? Number(widthValue) : 21;
+  const height = Number(heightValue) > 0 ? Number(heightValue) : 29.7;
+  const shortSide = Math.min(width, height);
+  const outerMatCm = Math.min(OUTER_MAT_MAX_CM, shortSide * 0.02);
+  const mapInsetCm = Math.min(MAP_INSET_MAX_CM, shortSide * 0.0786);
+  const gapCm = Math.min(MAP_ART_GAP_CM, shortSide * 0.012);
+  const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
+  const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
+  return {
+    outerMatCm,
+    mapInsetCm,
+    gapCm,
+    mapInsetX: `${(mapInsetCm / width) * 100}%`,
+    mapInsetY: `${(mapInsetCm / height) * 100}%`,
+    matInsetX: `${(outerMatCm / width) * 100}%`,
+    matInsetY: `${(outerMatCm / height) * 100}%`,
+    usableWidthCm,
+    usableHeightCm,
+  };
+}
 
 function lineCount(pattern: LinePattern): number {
   if (pattern === "double" || pattern === "double-dotted") return 2;
@@ -151,20 +178,31 @@ export function NeatlineArtwork({
   const corner = cornerStyles.find((style) => style.id === selection.cornerId);
   if (!line && !ornament && !corner) return null;
 
+  const metrics = getPosterBorderMetrics(widthCm, heightCm);
   const innerW = 1000;
-  const aspect = Number(widthCm) > 0 && Number(heightCm) > 0 ? Number(heightCm) / Number(widthCm) : 1;
-  const innerH = innerW * aspect;
+  const innerH = innerW * metrics.usableHeightCm / metrics.usableWidthCm;
   const maxStroke = line ? Math.max(...widthsFor(line.id, selection.thicknesses)) : 1.15;
-  const pad = Math.max(20, maxStroke / 2 + 2);
+  const unitScale = innerW / metrics.usableWidthCm;
+  const mapEdge = Math.max(0, (metrics.mapInsetCm - metrics.outerMatCm) * unitScale);
+  const gapUnits = metrics.gapCm * unitScale;
+  const lastLineLimit = Math.max(0, mapEdge - gapUnits - maxStroke / 2);
+  const ringCm = Math.max(0, metrics.mapInsetCm - metrics.outerMatCm);
+  const requestedPad = Math.min(0.4, ringCm * 0.25) * unitScale;
+  const pad = Math.min(lastLineLimit, Math.max(requestedPad, maxStroke / 2 + 2));
+  const extraLineCount = Math.max(0, (line ? lineCount(line.pattern) : 1) - 1);
+  const lineSeparation = extraLineCount
+    ? Math.min(0.28 * unitScale, Math.max(0, (lastLineLimit - pad) / extraLineCount))
+    : 0;
+  const safeArtDepth = Math.max(0, mapEdge - pad - gapUnits);
   const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
   const offsets = line ? line.pattern === "double" || line.pattern === "double-dotted"
-    ? [pad, pad + 14] : line.pattern === "triple" ? [pad, pad + 14, pad + 28] : [pad] : [];
+    ? [pad, pad + lineSeparation] : line.pattern === "triple" ? [pad, pad + lineSeparation, pad + lineSeparation * 2] : [pad] : [];
   const dotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
   const dash = line?.pattern === "dashed" ? "12 8" : dotted ? "0.1 12" : undefined;
   const selectedCorners = corner ? activeCorners(selection.cornerPosition) : [];
-  const cornerSize = Math.min(innerW, innerH) * 0.15;
+  const cornerSize = Math.min(safeArtDepth * 0.94, innerW * 0.15, innerH * 0.15);
   const ornamentSize = Math.min(innerW * 0.25, innerH * 0.16);
-  const ornamentHeight = Math.max(44, ornamentSize * 0.24);
+  const ornamentHeight = Math.min(Math.max(16, ornamentSize * 0.24), safeArtDepth * 0.84);
   const ornamentEdges: Array<"top" | "bottom" | "left" | "right"> = !ornament ? []
     : selection.ornamentPosition === "both" ? ["top", "bottom"]
       : selection.ornamentPosition === "all-sides" ? ["top", "bottom", "left", "right"]
@@ -218,7 +256,7 @@ export function NeatlineArtwork({
         {segments.map(([x1, y1, x2, y2], segmentIndex) => <line key={segmentIndex} x1={x1} y1={y1} x2={x2} y2={y2} />)}
       </g>;
     })}
-    {ornament && ornamentEdges.map((edge) => {
+    {ornament && ornamentHeight > 0 && ornamentEdges.map((edge) => {
       const centerX = edge === "left" ? pad : edge === "right" ? innerW - pad : innerW / 2;
       const centerY = edge === "top" ? pad : edge === "bottom" ? innerH - pad : innerH / 2;
       const rotation = edge === "bottom" ? 180 : edge === "left" ? 270 : edge === "right" ? 90 : 0;
