@@ -138,7 +138,7 @@ export default function BackdropThemeModal({
 
   return createPortal(
     <div
-      className="export-modal-backdrop"
+      className="export-modal-backdrop backdrop-theme-modal-backdrop"
       role="presentation"
       onClick={onClose}
     >

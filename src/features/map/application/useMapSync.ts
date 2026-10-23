@@ -18,7 +18,7 @@ import {
   MAX_OVERZOOM_SCALE,
 } from "@/features/map/infrastructure/constants";
 
-let lastLocationTarget: { lat: number; lon: number; distanceMeters: number } | null = null;
+let lastLocationTarget: { lat: number; lon: number; zoom: number } | null = null;
 
 /**
  * Converts half-width distance (meters) to MapLibre zoom for a given latitude
@@ -282,12 +282,9 @@ export function useMapSync(
 
   const flyToLocation = useCallback(
     (lat: number, lon: number, keepCurrentZoom = false) => {
-      const map = mapRef.current;
-      if (!map) return;
-
       const bounds = resolveZoomBounds(lat, effectiveContainerPx);
       const zoom = keepCurrentZoom
-        ? clamp(map.getZoom(), bounds.minZoom, bounds.maxZoom)
+        ? clamp(mapRef.current?.getZoom() ?? mapZoom, bounds.minZoom, bounds.maxZoom)
         : clamp(
             distanceToZoom(formDistance, lat, effectiveContainerPx),
             bounds.minZoom,
@@ -295,19 +292,19 @@ export function useMapSync(
           );
 
       if (!keepCurrentZoom) {
-        lastLocationTarget = { lat, lon, distanceMeters: formDistance };
+        lastLocationTarget = { lat, lon, zoom };
       }
 
       lastLookupCoordsRef.current = [lat, lon];
       lastLocationLookupAtRef.current = Date.now();
 
-      map.flyTo({
+      mapRef.current?.flyTo({
         center: [lon, lat],
         zoom,
         duration: FLY_TO_DURATION_MS,
       });
     },
-    [mapRef, formDistance, effectiveContainerPx],
+    [mapRef, formDistance, effectiveContainerPx, mapZoom],
   );
 
   const recenterToLocation = useCallback(() => {
@@ -317,17 +314,12 @@ export function useMapSync(
     const target = lastLocationTarget ?? {
       lat: formLat,
       lon: formLon,
-      distanceMeters: formDistance,
+      zoom: mapZoom,
     };
     const bounds = resolveZoomBounds(target.lat, effectiveContainerPx);
-    const zoom = clamp(
-      distanceToZoom(target.distanceMeters, target.lat, effectiveContainerPx),
-      bounds.minZoom,
-      bounds.maxZoom,
-    );
-
+    const zoom = clamp(target.zoom, bounds.minZoom, bounds.maxZoom);
     map.flyTo({ center: [target.lon, target.lat], zoom, duration: FLY_TO_DURATION_MS });
-  }, [mapRef, formLat, formLon, formDistance, effectiveContainerPx]);
+  }, [mapRef, formLat, formLon, mapZoom, effectiveContainerPx]);
 
   return {
     mapCenter,

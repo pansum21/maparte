@@ -1,0 +1,24 @@
+[
+  {
+    "id": "selected-frame-18",
+    "name": "Complete Double Rectangle",
+    "asset": "/assets/ai-frames/selected-frame-18.svg",
+    "thumbnail": "/assets/ai-frames/selected-frame-18.svg",
+    "width": 1000,
+    "height": 1400,
+    "mime": "image/svg+xml",
+    "kind": "frame",
+    "accent": "#303238"
+  },
+  {
+    "id": "selected-frame-20",
+    "name": "Classic Double Rectangle",
+    "asset": "/assets/ai-frames/selected-frame-20.svg",
+    "thumbnail": "/assets/ai-frames/selected-frame-20.svg",
+    "width": 1000,
+    "height": 1400,
+    "mime": "image/svg+xml",
+    "kind": "frame",
+    "accent": "#303238"
+  }
+]
