@@ -55,7 +55,7 @@ const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
 type CornerName = typeof CORNER_NAMES[number];
 
 const OUTER_MAT_MAX_CM = 0.35;
-const MAP_INSET_MAX_CM = 1.9;
+const MAP_INSET_MAX_CM = 1.55;
 const MAP_ART_GAP_CM = 0.22;
 
 /** Shared physical measurements for the white mat, map opening and border art. */
@@ -64,7 +64,7 @@ export function getPosterBorderMetrics(widthValue?: string, heightValue?: string
   const height = Number(heightValue) > 0 ? Number(heightValue) : 29.7;
   const shortSide = Math.min(width, height);
   const outerMatCm = Math.min(OUTER_MAT_MAX_CM, shortSide * 0.02);
-  const mapInsetCm = Math.min(MAP_INSET_MAX_CM, shortSide * 0.09);
+  const mapInsetCm = Math.min(MAP_INSET_MAX_CM, shortSide * 0.074);
   const gapCm = Math.min(MAP_ART_GAP_CM, shortSide * 0.012);
   const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
   const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
@@ -169,12 +169,17 @@ export function NeatlineArtwork({
   const lastLineLimit = Math.max(0, mapEdge - gapUnits - maxStroke / 2);
   const ringCm = Math.max(0, metrics.mapInsetCm - metrics.outerMatCm);
   const requestedPad = Math.min(0.4, ringCm * 0.25) * unitScale;
-  const pad = Math.min(lastLineLimit, Math.max(requestedPad, maxStroke / 2 + 2));
   const extraLineCount = Math.max(0, (line ? lineCount(line.pattern) : 1) - 1);
+  // Anchor the innermost stroke to the map's printable gap. Place the other
+  // strokes outward from it, leaving a useful outer ring for corner artwork.
   const lineSeparation = extraLineCount
-    ? Math.min(0.28 * unitScale, Math.max(0, (lastLineLimit - pad) / extraLineCount))
+    ? Math.min(0.28 * unitScale, Math.max(0, (lastLineLimit - requestedPad) / extraLineCount))
     : 0;
-  const safeArtDepth = Math.max(0, mapEdge - pad - gapUnits);
+  const pad = line
+    ? Math.max(requestedPad, lastLineLimit - lineSeparation * extraLineCount)
+    : Math.min(lastLineLimit, Math.max(requestedPad, maxStroke / 2 + 2));
+  const artPad = Math.min(lastLineLimit, Math.max(requestedPad, maxStroke / 2 + 2));
+  const safeArtDepth = Math.max(0, lastLineLimit - artPad);
   const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
   const offsets = line ? line.pattern === "double" || line.pattern === "double-dotted"
     ? [pad, pad + lineSeparation] : line.pattern === "triple" ? [pad, pad + lineSeparation, pad + lineSeparation * 2] : [pad] : [];
@@ -183,29 +188,29 @@ export function NeatlineArtwork({
   const selectedCorners = corner ? activeCorners(selection.cornerPosition) : [];
   // Use most of the printable ring so corner details remain legible at poster size.
   // Keep the size bounded by the map gap to prevent artwork from touching the map.
-  const cornerSize = Math.min(safeArtDepth * 0.98, innerW * 0.2, innerH * 0.2);
+  const cornerSize = Math.min(safeArtDepth, innerW * 0.2, innerH * 0.2);
   const cornerGeometry: Record<CornerName, { x: number; y: number; rotate: number }> = {
-    // Corner PNGs are authored for the top-right: horizontal art runs left
-    // from the top edge and vertical art runs down from the right edge.
-    "top-left": { x: pad, y: pad, rotate: 270 }, "top-right": { x: innerW - pad - cornerSize, y: pad, rotate: 0 },
-    "bottom-right": { x: innerW - pad - cornerSize, y: innerH - pad - cornerSize, rotate: 90 },
-    "bottom-left": { x: pad, y: innerH - pad - cornerSize, rotate: 180 },
+    // Corner artwork occupies the outer ring and ends at the inner line grid.
+    "top-left": { x: artPad, y: artPad, rotate: 270 }, "top-right": { x: innerW - artPad - cornerSize, y: artPad, rotate: 0 },
+    "bottom-right": { x: innerW - artPad - cornerSize, y: innerH - artPad - cornerSize, rotate: 90 },
+    "bottom-left": { x: artPad, y: innerH - artPad - cornerSize, rotate: 180 },
   };
+  const cornerJoin = artPad + cornerSize;
 
   return <svg className={`neatline-artwork ${className}`} viewBox={`0 0 ${innerW} ${innerH}`} preserveAspectRatio="none" aria-hidden="true">
     {offsets.map((offset, index) => {
       const segments: Array<{ coords: [number, number, number, number]; edge: "top" | "right" | "bottom" | "left" }> = [];
-      // Corner art sits in a fixed box anchored to the outer line. Every
-      // parallel stroke must stop at that same box edge so no stray gap opens
-      // between the artwork and an inner double/triple stroke.
-      const topStart = pad + (selectedCorners.includes("top-left") ? cornerSize : 0);
-      const topEnd = innerW - pad - (selectedCorners.includes("top-right") ? cornerSize : 0);
-      const bottomStart = pad + (selectedCorners.includes("bottom-left") ? cornerSize : 0);
-      const bottomEnd = innerW - pad - (selectedCorners.includes("bottom-right") ? cornerSize : 0);
-      const leftStart = pad + (selectedCorners.includes("top-left") ? cornerSize : 0);
-      const leftEnd = innerH - pad - (selectedCorners.includes("bottom-left") ? cornerSize : 0);
-      const rightStart = pad + (selectedCorners.includes("top-right") ? cornerSize : 0);
-      const rightEnd = innerH - pad - (selectedCorners.includes("bottom-right") ? cornerSize : 0);
+      // The corner tile's inner edge is the join point. Ending every selected
+      // stroke on that same grid keeps the corner motif attached without
+      // letting any decoration cross the map's white breathing gap.
+      const topStart = selectedCorners.includes("top-left") ? cornerJoin : pad;
+      const topEnd = innerW - (selectedCorners.includes("top-right") ? cornerJoin : pad);
+      const bottomStart = selectedCorners.includes("bottom-left") ? cornerJoin : pad;
+      const bottomEnd = innerW - (selectedCorners.includes("bottom-right") ? cornerJoin : pad);
+      const leftStart = selectedCorners.includes("top-left") ? cornerJoin : pad;
+      const leftEnd = innerH - (selectedCorners.includes("bottom-left") ? cornerJoin : pad);
+      const rightStart = selectedCorners.includes("top-right") ? cornerJoin : pad;
+      const rightEnd = innerH - (selectedCorners.includes("bottom-right") ? cornerJoin : pad);
       const addHorizontal = (edge: "top" | "bottom", start: number, end: number, y: number) => {
         if (end <= start) return;
         segments.push({ coords: [start, y, end, y], edge });
@@ -241,7 +246,9 @@ function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: N
   const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
   const inset = 13;
   const cornerSize = 72;
-  const renderCornerLines = !!line;
+  // Corner swatches preview only the selected corner asset. The live poster
+  // still composes it with the user's chosen line layer.
+  const renderCornerLines = isLine && !!line;
 
   return <span className="neatline-swatch" aria-hidden="true">
     <svg className="neatline-artwork neatline-swatch-artwork" viewBox="0 0 120 90" preserveAspectRatio="none">
