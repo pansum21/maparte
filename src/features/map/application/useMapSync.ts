@@ -18,6 +18,8 @@ import {
   MAX_OVERZOOM_SCALE,
 } from "@/features/map/infrastructure/constants";
 
+let lastLocationTarget: { lat: number; lon: number; distanceMeters: number } | null = null;
+
 /**
  * Converts half-width distance (meters) to MapLibre zoom for a given latitude
  * and container width.
@@ -292,6 +294,10 @@ export function useMapSync(
             bounds.maxZoom,
           );
 
+      if (!keepCurrentZoom) {
+        lastLocationTarget = { lat, lon, distanceMeters: formDistance };
+      }
+
       lastLookupCoordsRef.current = [lat, lon];
       lastLocationLookupAtRef.current = Date.now();
 
@@ -304,6 +310,25 @@ export function useMapSync(
     [mapRef, formDistance, effectiveContainerPx],
   );
 
+  const recenterToLocation = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const target = lastLocationTarget ?? {
+      lat: formLat,
+      lon: formLon,
+      distanceMeters: formDistance,
+    };
+    const bounds = resolveZoomBounds(target.lat, effectiveContainerPx);
+    const zoom = clamp(
+      distanceToZoom(target.distanceMeters, target.lat, effectiveContainerPx),
+      bounds.minZoom,
+      bounds.maxZoom,
+    );
+
+    map.flyTo({ center: [target.lon, target.lat], zoom, duration: FLY_TO_DURATION_MS });
+  }, [mapRef, formLat, formLon, formDistance, effectiveContainerPx]);
+
   return {
     mapCenter,
     mapZoom,
@@ -312,6 +337,7 @@ export function useMapSync(
     handleMove,
     handleMoveEnd,
     flyToLocation,
+    recenterToLocation,
     setContainerWidth,
     overzoomScale,
   };

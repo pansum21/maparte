@@ -44,7 +44,13 @@ import {
   getLayoutOption,
 } from "@/features/layout/infrastructure/layoutRepository";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
-import { NeatlineArtwork } from "@/features/layout/ui/NeatlinePicker";
+import {
+  NeatlineArtwork,
+  getPosterBorderMetrics,
+  NEATLINE_CHANGE_EVENT,
+  readNeatlineSelection,
+  type NeatlineSelection,
+} from "@/features/layout/ui/NeatlinePicker";
 
 const LOCKED_HINT = "Map is locked to prevent unintended movement.";
 const UNLOCK_HINT = `${LOCKED_HINT}\nClick to unlock map editing.`;
@@ -77,6 +83,7 @@ export default function PreviewPanel({
     activeMarkerId,
   } = state;
   const hasVisibleMarkers = form.showMarkers && state.markers.length > 0;
+  const borderMetrics = getPosterBorderMetrics(form.width, form.height);
   const {
     mapCenter,
     mapZoom,
@@ -94,18 +101,15 @@ export default function PreviewPanel({
   const isEditing = controlledIsEditing !== undefined ? controlledIsEditing : internalIsEditing;
   const setIsEditing = controlledSetIsEditing !== undefined ? controlledSetIsEditing : setInternalIsEditing;
 
-  const [neatlineStyle, setNeatlineStyle] = useState(() => {
-    if (typeof window === "undefined") return "none";
-    try { return window.localStorage.getItem("maparte_neatline_style") || "none"; } catch { return "none"; }
-  });
+  const [neatlineSelection, setNeatlineSelection] = useState<NeatlineSelection>(readNeatlineSelection);
 
   useEffect(() => {
     const handleNeatlineChange = (event: Event) => {
-      const custom = event as CustomEvent<string>;
-      setNeatlineStyle(custom.detail || "none");
+      const custom = event as CustomEvent<NeatlineSelection>;
+      setNeatlineSelection(custom.detail || readNeatlineSelection());
     };
-    window.addEventListener("maparte:neatline:change", handleNeatlineChange);
-    return () => window.removeEventListener("maparte:neatline:change", handleNeatlineChange);
+    window.addEventListener(NEATLINE_CHANGE_EVENT, handleNeatlineChange);
+    return () => window.removeEventListener(NEATLINE_CHANGE_EVENT, handleNeatlineChange);
   }, []);
 
   const [mapBearing, setMapBearing] = useState(0);
@@ -450,6 +454,10 @@ export default function PreviewPanel({
             {
               "--poster-aspect": `${aspect}`,
               "--poster-bg": effectiveTheme.ui.bg,
+              "--map-inset-x": borderMetrics.mapInsetX,
+              "--map-inset-y": borderMetrics.mapInsetY,
+              "--mat-inset-x": borderMetrics.matInsetX,
+              "--mat-inset-y": borderMetrics.matInsetY,
             } as CSSProperties
           }
         >
@@ -510,7 +518,12 @@ export default function PreviewPanel({
             customDate={form.customDate}
           />
           </div>
-          <NeatlineArtwork styleId={neatlineStyle} className="preview-neatline" />
+          <NeatlineArtwork
+            selection={neatlineSelection}
+            className="preview-neatline"
+            widthCm={form.width}
+            heightCm={form.height}
+          />
         </div>
       </div>
 

@@ -25,6 +25,9 @@ import {
   StyleIcon,
   ChevronDownIcon,
   SparklesIcon,
+  ScissorsIcon,
+  RecenterIcon,
+  WallIcon,
 } from "@/shared/ui/Icons";
 
 import { themeOptions } from "@/features/theme/infrastructure/themeRepository";
@@ -39,6 +42,7 @@ import type { SearchResult } from "@/features/location/domain/types";
 type SectionId =
   | "templates"
   | "location"
+  | "edit-map"
   | "theme"
   | "layout"
   | "frames"
@@ -69,8 +73,18 @@ const sectionMap = Object.fromEntries(
 
 export default function SettingsPanel({
   mobileTab,
+  isEditing = false,
+  onToggleEditing,
+  onOpenWall,
+  isPhoneWallpaper = false,
+  onTogglePhoneWallpaper,
 }: {
   mobileTab?: MobileTab;
+  isEditing?: boolean;
+  onToggleEditing?: () => void;
+  onOpenWall?: () => void;
+  isPhoneWallpaper?: boolean;
+  onTogglePhoneWallpaper?: () => void;
 }) {
   const { state, dispatch, mapRef, selectedTheme } = usePosterContext();
   const {
@@ -89,7 +103,7 @@ export default function SettingsPanel({
     state.form.location,
     state.isLocationFocused,
   );
-  const { flyToLocation } = useMapSync(state, dispatch, mapRef);
+  const { flyToLocation, recenterToLocation } = useMapSync(state, dispatch, mapRef);
   const { handleUseCurrentLocation, isLocatingUser, locationPermissionMessage } =
     useCurrentLocation(flyToLocation);
 
@@ -121,6 +135,34 @@ export default function SettingsPanel({
     handleLocationSelect(location);
     flyToLocation(location.lat, location.lon);
   };
+
+  const handleRecenter = () => {
+    recenterToLocation();
+  };
+
+  if (mobileTab === "edit-map") {
+    return (
+      <div className="edit-map-action-panel" role="group" aria-label="Edit map actions">
+        <button
+          type="button"
+          className={`edit-map-action${isEditing ? " is-active" : ""}`}
+          onClick={onToggleEditing}
+          aria-pressed={isEditing}
+        >
+          {isEditing ? <span aria-hidden="true">🔒</span> : <ScissorsIcon aria-hidden="true" />}
+          <span>{isEditing ? "Lock Map" : "Edit Map"}</span>
+        </button>
+        <button
+          type="button"
+          className="edit-map-action"
+          onClick={handleRecenter}
+        >
+          <RecenterIcon aria-hidden="true" />
+          <span>Recenter</span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <form className="settings-panel" onSubmit={(e) => e.preventDefault()}>
@@ -193,6 +235,15 @@ export default function SettingsPanel({
         >
           <div className="accordion-body-inner">
             {!isColorEditorActive ? (
+              <>
+              <button
+                type="button"
+                className="theme-wall-action"
+                onClick={onOpenWall}
+              >
+                <WallIcon aria-hidden="true" />
+                <span>Change Wall Color</span>
+              </button>
               <MapSettingsSection
                 activeMobileTab={mobileTab}
                 form={state.form}
@@ -210,6 +261,7 @@ export default function SettingsPanel({
                 onResetColors={handleResetColors}
                 onColorEditorActiveChange={setIsColorEditorActive}
               />
+              </>
             ) : null}
           </div>
         </div>
@@ -230,6 +282,17 @@ export default function SettingsPanel({
         >
           <div className="accordion-body-inner">
             {!isColorEditorActive ? (
+              <>
+              {mobileTab === "layout" ? (
+                <button
+                  type="button"
+                  className="theme-wall-action"
+                  onClick={onTogglePhoneWallpaper}
+                >
+                  <span aria-hidden="true">{isPhoneWallpaper ? "🖼️" : "📱"}</span>
+                  <span>{isPhoneWallpaper ? "Poster View" : "Phone Wallpaper Preview"}</span>
+                </button>
+              ) : null}
               <MapSettingsSection
                 activeMobileTab={mobileTab}
                 form={state.form}
@@ -247,6 +310,7 @@ export default function SettingsPanel({
                 onResetColors={handleResetColors}
                 onColorEditorActiveChange={setIsColorEditorActive}
               />
+              </>
             ) : null}
           </div>
         </div>

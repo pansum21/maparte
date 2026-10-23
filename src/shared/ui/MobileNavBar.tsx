@@ -10,11 +10,13 @@ import {
   SparklesIcon,
   FullScreenIcon,
   FrameIcon,
+  ScissorsIcon,
 } from "./Icons";
 
 export type MobileTab =
   | "templates"
   | "location"
+  | "edit-map"
   | "theme"
   | "layout"
   | "frames"
@@ -29,11 +31,12 @@ const tabs: {
   Icon: React.ComponentType<{ className?: string }>;
 }[] = [
   { id: "location", label: "Location", Icon: LocationIcon },
+  { id: "edit-map", label: "Edit Map", Icon: ScissorsIcon },
   { id: "theme", label: "Theme", Icon: ThemeIcon },
   { id: "layout", label: "Layout", Icon: LayoutIcon },
   { id: "frames", label: "Border", Icon: FrameIcon },
   { id: "templates", label: "Presets", Icon: SparklesIcon },
-  { id: "style", label: "Style", Icon: StyleIcon },
+  { id: "style", label: "Text", Icon: StyleIcon },
   { id: "layers", label: "Layers", Icon: LayersIcon },
   { id: "markers", label: "Markers", Icon: MarkersIcon },
   { id: "routes", label: "Routes", Icon: RouteIcon },

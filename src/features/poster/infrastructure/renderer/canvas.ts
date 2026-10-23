@@ -1,10 +1,4 @@
-import {
-  MAX_PIXELS,
-  MAX_SIDE,
-  MOBILE_MAX_PIXELS,
-  MOBILE_MAX_SIDE,
-  OUTPUT_DPI,
-} from "./constants";
+import { MAX_PIXELS, MAX_SIDE, OUTPUT_DPI } from "./constants";
 import type { CanvasSize } from "../../domain/types";
 
 export interface CanvasLimits {
@@ -12,18 +6,8 @@ export interface CanvasLimits {
   maxSide: number;
 }
 
-function isMobileDevice(): boolean {
-  if (typeof navigator === "undefined") return false;
-  return (
-    /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-    (navigator.maxTouchPoints > 1 && window.innerWidth < 1024)
-  );
-}
-
-export function getCanvasLimits(mobile = isMobileDevice()): CanvasLimits {
-  return mobile
-    ? { maxPixels: MOBILE_MAX_PIXELS, maxSide: MOBILE_MAX_SIDE }
-    : { maxPixels: MAX_PIXELS, maxSide: MAX_SIDE };
+export function getCanvasLimits(): CanvasLimits {
+  return { maxPixels: MAX_PIXELS, maxSide: MAX_SIDE };
 }
 
 export function resolveCanvasSize(

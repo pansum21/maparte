@@ -6,9 +6,11 @@ import {
   createOffscreenContainer,
   resolveExportRenderParams,
 } from "./exportUtils";
+import { buildExportRenderTiles } from "./renderTiles";
 
 export interface CapturedMapResult {
   canvas: HTMLCanvasElement;
+  mapAlreadyInset: boolean;
   markerProjection: MarkerProjectionInput;
   markerScaleX: number;
   markerScaleY: number;
@@ -39,7 +41,114 @@ export async function captureMapAsCanvas(
     markerScaleX,
     markerScaleY,
     markerSizeScale,
+    maxGlDimension,
   } = resolveExportRenderParams(map, exportWidth, exportHeight);
+
+  // A phone GPU may cap a single WebGL surface below the requested print
+  // dimensions. Render overlapping sections at the *same full-output zoom*,
+  // then stitch only their non-overlapping cores into the print canvas.
+  const maxRequestedSide = Math.max(exportWidth, exportHeight);
+  if (maxRequestedSide > maxGlDimension) {
+    const fullResolutionParams = resolveExportRenderParams(
+      map,
+      exportWidth,
+      exportHeight,
+      true,
+      maxGlDimension,
+    );
+    const tiles = buildExportRenderTiles(
+      exportWidth,
+      exportHeight,
+      fullResolutionParams.maxGlDimension,
+    );
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = exportWidth;
+    exportCanvas.height = exportHeight;
+    const outputContext = exportCanvas.getContext("2d");
+    if (!outputContext) {
+      throw new Error("This device could not allocate the full-size print canvas.");
+    }
+    outputContext.fillStyle = "#fff";
+    outputContext.fillRect(0, 0, exportWidth, exportHeight);
+    outputContext.save();
+    outputContext.translate(exportWidth * 0.085, exportHeight * 0.085);
+    outputContext.scale(0.83, 0.83);
+
+    const sourceContainer = map.getContainer();
+    const scaleToExport = exportWidth / fullResolutionParams.effectivePreviewWidth;
+    for (const tile of tiles) {
+      const offsetX =
+        tile.renderX + tile.renderWidth / 2 - exportWidth / 2;
+      const offsetY =
+        tile.renderY + tile.renderHeight / 2 - exportHeight / 2;
+      const tileCenter = map.unproject([
+        sourceContainer.clientWidth / 2 + offsetX / scaleToExport,
+        sourceContainer.clientHeight / 2 + offsetY / scaleToExport,
+      ]);
+      const tileContainer = createOffscreenContainer(
+        tile.renderWidth,
+        tile.renderHeight,
+      );
+      document.body.appendChild(tileContainer);
+
+      const tileMap = new maplibregl.Map({
+        container: tileContainer,
+        style: fullResolutionParams.style,
+        center: [tileCenter.lng, tileCenter.lat],
+        zoom: fullResolutionParams.zoom,
+        pitch: fullResolutionParams.pitch,
+        bearing: fullResolutionParams.bearing,
+        interactive: false,
+        attributionControl: false,
+        pixelRatio: 1,
+        canvasContextAttributes: { preserveDrawingBuffer: true },
+      });
+
+      try {
+        await waitForMapIdle(tileMap);
+        const tileCanvas = tileMap.getCanvas();
+        const gl =
+          tileCanvas.getContext("webgl2") ||
+          tileCanvas.getContext("webgl") ||
+          (tileCanvas.getContext("experimental-webgl") as WebGLRenderingContext | null);
+        const renderedWidth = gl?.drawingBufferWidth || tileCanvas.width;
+        const renderedHeight = gl?.drawingBufferHeight || tileCanvas.height;
+        if (
+          renderedWidth < tile.renderWidth ||
+          renderedHeight < tile.renderHeight
+        ) {
+          throw new Error(
+            `This device's graphics limit is below the print tile size (${renderedWidth} × ${renderedHeight}px).`,
+          );
+        }
+
+        outputContext.drawImage(
+          tileCanvas,
+          tile.sourceX,
+          tile.sourceY,
+          tile.width,
+          tile.height,
+          tile.x,
+          tile.y,
+          tile.width,
+          tile.height,
+        );
+      } finally {
+        tileMap.remove();
+        tileContainer.remove();
+      }
+    }
+    outputContext.restore();
+
+    return {
+      canvas: exportCanvas,
+      mapAlreadyInset: true,
+      markerProjection: fullResolutionParams.markerProjection,
+      markerScaleX: fullResolutionParams.markerScaleX,
+      markerScaleY: fullResolutionParams.markerScaleY,
+      markerSizeScale: fullResolutionParams.markerSizeScale,
+    };
+  }
 
   const offscreenContainer = createOffscreenContainer(renderWidth, renderHeight);
   document.body.appendChild(offscreenContainer);
@@ -80,6 +189,7 @@ export async function captureMapAsCanvas(
 
     return {
       canvas: exportCanvas,
+      mapAlreadyInset: false,
       markerProjection,
       markerScaleX: outputWidth / sourceWidth,
       markerScaleY: outputHeight / sourceHeight,

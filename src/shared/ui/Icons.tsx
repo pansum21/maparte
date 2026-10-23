@@ -42,5 +42,7 @@ export { FiClock as HistoryIcon } from "react-icons/fi";
 export { FiSun as SunIcon, FiMoon as MoonIcon } from "react-icons/fi";
 export { BsStars as SparklesIcon } from "react-icons/bs";
 export { FiHeart as HeartIcon, FiHome as HomeIcon, FiCompass as CompassIcon, FiAward as AwardIcon } from "react-icons/fi";
+export { FiHome as WallIcon } from "react-icons/fi";
+export { FaScissors as ScissorsIcon } from "react-icons/fa6";
 
 export { FiMaximize as FullScreenIcon } from "react-icons/fi";

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
@@ -29,6 +29,8 @@ import {
   SparklesIcon,
   SearchIcon,
   MyLocationIcon,
+  WallIcon,
+  ScissorsIcon,
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
 
@@ -36,31 +38,26 @@ export interface DesktopNavBarProps {
   activeTab: MobileTab;
   panelOpen: boolean;
   onTabChange: (tab: MobileTab) => void;
-  isLocationVisible?: boolean;
-  onLocationToggle?: () => void;
+  isLocationVisible: boolean;
+  onLocationToggle: () => void;
   onSettingsClick?: () => void;
-  isEditing?: boolean;
-  onToggleEditing?: () => void;
   onToggleCinema?: () => void;
-  isPhoneWallpaper?: boolean;
-  onTogglePhoneWallpaper?: () => void;
   onOpenAllCities?: () => void;
+  onOpenWall?: () => void;
 }
 
 export default function DesktopNavBar({
   activeTab,
   panelOpen,
   onTabChange,
+  isLocationVisible,
+  onLocationToggle,
   onSettingsClick,
-  isEditing = false,
-  onToggleEditing,
   onToggleCinema,
-  isPhoneWallpaper = false,
-  onTogglePhoneWallpaper,
   onOpenAllCities,
+  onOpenWall,
 }: DesktopNavBarProps) {
   const { state, dispatch, mapRef } = usePosterContext();
-  const { form } = state;
   const {
     handleChange,
     handleLocationSelect: handleLocationSelectBase,
@@ -113,38 +110,21 @@ export default function DesktopNavBar({
     flyToLocation(city.lat, city.lon);
   };
 
-  // Recenter map to city coordinates
-  const handleRecenter = useCallback(() => {
-    const lat = Number.parseFloat(form.latitude);
-    const lon = Number.parseFloat(form.longitude);
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-    flyToLocation(lat, lon, true);
-  }, [form.latitude, form.longitude, flyToLocation]);
-
-  // Zoom helpers when map editing is active
-  const handleZoomIn = useCallback(() => {
-    const map = mapRef.current;
-    if (map) map.zoomTo(map.getZoom() + 0.5, { duration: 300 });
-  }, [mapRef]);
-
-  const handleZoomOut = useCallback(() => {
-    const map = mapRef.current;
-    if (map) map.zoomTo(map.getZoom() - 0.5, { duration: 300 });
-  }, [mapRef]);
-
   return (
     <nav
-      className={`desktop-nav-bar${panelOpen ? " has-panel-open" : ""}`}
+      className={`desktop-nav-bar${panelOpen ? " has-panel-open" : ""}${isLocationVisible ? " is-location-open" : ""}`}
+      data-active-tab={activeTab}
       aria-label="Settings and Quick Actions"
     >
       {/* ── 1. LOCATION ROW ── */}
       <div className="desktop-nav-row" data-tab="location">
         <button
           type="button"
-          className={`desktop-nav-tab${panelOpen && activeTab === "location" ? " is-active" : ""}`}
-          onClick={() => onTabChange("location")}
+          className={`desktop-nav-tab${isLocationVisible ? " is-active" : ""}`}
+          onClick={onLocationToggle}
           title="Location Search & Coordinates"
           aria-label="Location"
+          aria-pressed={isLocationVisible}
         >
           <LocationIcon className="desktop-nav-icon" />
           <span className="desktop-nav-label">Location</span>
@@ -246,20 +226,6 @@ export default function DesktopNavBar({
             <p className="location-permission-message">{locationPermissionMessage}</p>
           ) : null}
         </div>
-      </div>
-
-      {/* ── 2. PRESETS ROW (Quick cities + ➕ 81 World Cities) ── */}
-      <div className="desktop-nav-row" data-tab="templates">
-        <button
-          type="button"
-          className={`desktop-nav-tab${panelOpen && activeTab === "templates" ? " is-active" : ""}`}
-          onClick={() => onTabChange("templates")}
-          title="Presets & Styles"
-          aria-label="Presets"
-        >
-          <SparklesIcon className="desktop-nav-icon" />
-          <span className="desktop-nav-label">Presets</span>
-        </button>
 
         <div className="desktop-nav-companion desktop-companion-presets">
           <div className="desktop-quick-cities-strip">
@@ -289,7 +255,21 @@ export default function DesktopNavBar({
         </div>
       </div>
 
-      {/* ── 3. THEME ROW (Theme + Recenter Map) ── */}
+      {/* ── 2. EDIT MAP ROW ── */}
+      <div className="desktop-nav-row" data-tab="edit-map">
+        <button
+          type="button"
+          className={`desktop-nav-tab${panelOpen && activeTab === "edit-map" ? " is-active" : ""}`}
+          onClick={() => onTabChange("edit-map")}
+          title="Edit Map and Recenter"
+          aria-label="Edit Map"
+        >
+          <ScissorsIcon className="desktop-nav-icon" />
+          <span className="desktop-nav-label">Edit Map</span>
+        </button>
+      </div>
+
+      {/* ── 3. THEME ROW (Theme + Wall Color) ── */}
       <div className="desktop-nav-row" data-tab="theme">
         <button
           type="button"
@@ -302,17 +282,19 @@ export default function DesktopNavBar({
           <span className="desktop-nav-label">Theme</span>
         </button>
 
-        <div className="desktop-nav-companion">
-          <button
-            type="button"
-            className="desktop-quick-action-btn"
-            onClick={handleRecenter}
-            title="Recenter Map View to City Coordinates"
-          >
-            <span className="quick-action-icon">⛶</span>
-            <span className="quick-action-text">Recenter</span>
-          </button>
-        </div>
+      </div>
+
+      <div className="desktop-nav-row desktop-nav-row--wall" data-tab="wall">
+        <button
+          type="button"
+          className="desktop-nav-tab"
+          onClick={onOpenWall}
+          title="Change only the wall panel behind the poster"
+          aria-label="Wall color"
+        >
+          <WallIcon className="desktop-nav-icon" />
+          <span className="desktop-nav-label">Wall</span>
+        </button>
       </div>
 
       {/* ── 4. LAYOUT ROW (Layout + Edit Map) ── */}
@@ -328,46 +310,6 @@ export default function DesktopNavBar({
           <span className="desktop-nav-label">Layout</span>
         </button>
 
-        <div className="desktop-nav-companion">
-          <div className="desktop-edit-map-group">
-            <button
-              type="button"
-              className={`desktop-quick-action-btn${isEditing ? " is-active" : ""}`}
-              onClick={onToggleEditing}
-              title={
-                isEditing
-                  ? "Finish editing map view"
-                  : "Unlock map to pan, drag and zoom"
-              }
-            >
-              <span className="quick-action-icon">{isEditing ? "🔒" : "🔓"}</span>
-              <span className="quick-action-text">
-                {isEditing ? "Lock Map" : "Edit Map"}
-              </span>
-            </button>
-
-            {isEditing ? (
-              <div className="desktop-quick-zoom-group">
-                <button
-                  type="button"
-                  className="quick-zoom-btn"
-                  onClick={handleZoomIn}
-                  title="Zoom in"
-                >
-                  ➕
-                </button>
-                <button
-                  type="button"
-                  className="quick-zoom-btn"
-                  onClick={handleZoomOut}
-                  title="Zoom out"
-                >
-                  ➖
-                </button>
-              </div>
-            ) : null}
-          </div>
-        </div>
       </div>
 
       <div className="desktop-nav-row" data-tab="frames">
@@ -383,33 +325,34 @@ export default function DesktopNavBar({
         </button>
       </div>
 
-      {/* ── 5. STYLE ROW (Style / Text + Full Screen / Canvas View) ── */}
+      <div className="desktop-nav-row" data-tab="templates">
+        <button
+          type="button"
+          className={`desktop-nav-tab${panelOpen && activeTab === "templates" ? " is-active" : ""}`}
+          onClick={() => onTabChange("templates")}
+          title="Preset styles"
+          aria-label="Presets"
+        >
+          <SparklesIcon className="desktop-nav-icon" />
+          <span className="desktop-nav-label">Presets</span>
+        </button>
+      </div>
+
+      {/* ── 5. TEXT ROW ── */}
       <div className="desktop-nav-row" data-tab="style">
         <button
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "style" ? " is-active" : ""}`}
           onClick={() => onTabChange("style")}
-          title="Typography, Margins & Frame Styles"
-          aria-label="Style"
+          title="Poster Text and Typography"
+          aria-label="Text"
         >
           <StyleIcon className="desktop-nav-icon" />
-          <span className="desktop-nav-label">Style</span>
+          <span className="desktop-nav-label">Text</span>
         </button>
-
-        <div className="desktop-nav-companion">
-          <button
-            type="button"
-            className="desktop-quick-action-btn desktop-quick-action-cinema"
-            onClick={onToggleCinema}
-            title="Fullscreen Wall Preview & Living Room View (64 Walls, Custom Colors & Frames • Press Esc to exit)"
-          >
-            <span className="quick-action-icon">🖼️</span>
-            <span className="quick-action-text">Full Screen</span>
-          </button>
-        </div>
       </div>
 
-      {/* ── 6. LAYERS ROW (Layers + Phone Wallpaper / Poster Toggle) ── */}
+      {/* ── 6. LAYERS ROW ── */}
       <div className="desktop-nav-row" data-tab="layers">
         <button
           type="button"
@@ -422,23 +365,6 @@ export default function DesktopNavBar({
           <span className="desktop-nav-label">Layers</span>
         </button>
 
-        <div className="desktop-nav-companion">
-          <button
-            type="button"
-            className={`desktop-quick-action-btn desktop-quick-action-wallpaper${isPhoneWallpaper ? " is-wallpaper" : ""}`}
-            onClick={onTogglePhoneWallpaper}
-            title={
-              isPhoneWallpaper
-                ? "Switch back to standard A4 print poster"
-                : "Switch to 9:16 vertical smartphone wallpaper layout"
-            }
-          >
-            <span className="quick-action-icon">{isPhoneWallpaper ? "🖼️" : "📱"}</span>
-            <span className="quick-action-text">
-              {isPhoneWallpaper ? "Poster View" : "Phone Wallpaper"}
-            </span>
-          </button>
-        </div>
       </div>
 
       {/* ── 7. MARKERS ROW ── */}
@@ -466,6 +392,20 @@ export default function DesktopNavBar({
         >
           <RouteIcon className="desktop-nav-icon" />
           <span className="desktop-nav-label">Routes</span>
+        </button>
+      </div>
+
+      {/* Full Screen is the last editor action before Settings. */}
+      <div className="desktop-nav-row desktop-nav-row--fullscreen" data-tab="fullscreen">
+        <button
+          type="button"
+          className="desktop-nav-tab desktop-nav-tab--fullscreen"
+          onClick={onToggleCinema}
+          title="Open Full Screen preview"
+          aria-label="Full Screen"
+        >
+          <span className="desktop-nav-icon" aria-hidden="true">▣</span>
+          <span className="desktop-nav-label">Full Screen</span>
         </button>
       </div>
 

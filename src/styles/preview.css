@@ -1068,7 +1068,9 @@
 
 .poster-map-window {
   position: absolute;
-  inset: 9.5%;
+  /* Equal physical white margin on every edge, independent of poster ratio. */
+  inset-block: var(--map-inset-y, 5.56%);
+  inset-inline: var(--map-inset-x, 7.86%);
   overflow: hidden;
   background: #fff;
 }
@@ -1084,9 +1086,10 @@
 .poster-frame .neatline-artwork.preview-neatline {
   position: absolute;
   z-index: 6;
-  inset: 6.5%;
-  width: 87%;
-  height: 87%;
+  inset-block: var(--mat-inset-y, 1.18%);
+  inset-inline: var(--mat-inset-x, 1.67%);
+  width: calc(100% - var(--mat-inset-x, 1.67%) - var(--mat-inset-x, 1.67%));
+  height: calc(100% - var(--mat-inset-y, 1.18%) - var(--mat-inset-y, 1.18%));
   pointer-events: none;
 }
 

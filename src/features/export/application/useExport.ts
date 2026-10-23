@@ -4,6 +4,7 @@ import JSZip from "jszip";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
 import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
+import { createTiffBlob } from "@/features/export/infrastructure/tiffExporter";
 import {
   isProUser,
   applyFreeTier,
@@ -38,15 +39,36 @@ function addPpiToFilename(filename: string, ppi: number): string {
   return `${filename.slice(0, extensionIndex)}_${ppi}PPI${filename.slice(extensionIndex)}`;
 }
 
-function getSelectedNeatlineSvg(): string | undefined {
+async function getSelectedNeatlineSvg(): Promise<string | undefined> {
   const preview = document.querySelector<SVGSVGElement>(".preview-neatline");
   if (!preview) return undefined;
   const clone = preview.cloneNode(true) as SVGSVGElement;
   clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-  clone.setAttribute("width", "1000");
-  clone.setAttribute("height", "1000");
-  clone.setAttribute("viewBox", "0 0 1000 1000");
+  const viewBoxParts = (clone.getAttribute("viewBox") || "0 0 1000 1000").split(/\s+/);
+  clone.setAttribute("width", viewBoxParts[2]);
+  clone.setAttribute("height", viewBoxParts[3]);
   clone.setAttribute("preserveAspectRatio", "none");
+  await Promise.all(Array.from(clone.querySelectorAll("image")).map(async (image) => {
+    const href = image.getAttribute("href") || image.getAttribute("xlink:href");
+    if (!href) return;
+    const absoluteHref = new URL(href, document.baseURI).href;
+    try {
+      const response = await fetch(absoluteHref);
+      if (!response.ok) throw new Error("Border asset unavailable");
+      const blob = await response.blob();
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Could not embed border asset"));
+        reader.onerror = () => reject(reader.error || new Error("Could not read border asset"));
+        reader.readAsDataURL(blob);
+      });
+      image.setAttribute("href", dataUrl);
+    } catch {
+      // Keep same-origin assets visible in the preview/export renderer if
+      // offline browser policy prevents embedding them into the SVG file.
+      image.setAttribute("href", absoluteHref);
+    }
+  }));
   clone.removeAttribute("class");
   return new XMLSerializer().serializeToString(clone);
 }
@@ -153,7 +175,12 @@ export function useExport() {
   const exportPoster = useCallback(
     async (
       format: ExportFormat,
-      options?: { asPro?: boolean; includeCredits?: boolean },
+      options?: {
+        asPro?: boolean;
+        includeCredits?: boolean;
+        targetSizeCm?: { widthCm: number; heightCm: number };
+        targetDpi?: number;
+      },
     ) => {
       const map = mapRef.current;
       if (!map) {
@@ -170,11 +197,15 @@ export function useExport() {
         }
         await document.fonts.ready;
 
-        const widthCm = Number(form.width) || DEFAULT_POSTER_WIDTH_CM;
-        const heightCm = Number(form.height) || DEFAULT_POSTER_HEIGHT_CM;
+        const widthCm =
+          options?.targetSizeCm?.widthCm ??
+          (Number(form.width) || DEFAULT_POSTER_WIDTH_CM);
+        const heightCm =
+          options?.targetSizeCm?.heightCm ??
+          (Number(form.height) || DEFAULT_POSTER_HEIGHT_CM);
         const isPro =
           options?.asPro !== undefined ? options.asPro : isProUser();
-        const targetDpi = isPro ? 500 : FREE_DPI;
+        const targetDpi = options?.targetDpi ?? (isPro ? 500 : FREE_DPI);
         const widthInches = widthCm / CM_PER_INCH;
         const heightInches = heightCm / CM_PER_INCH;
         // Permanent branding & studio signature on ALL downloads:
@@ -203,7 +234,7 @@ export function useExport() {
         };
 
         const size = resolveCanvasSize(widthInches, heightInches, targetDpi);
-        const neatlineSvg = getSelectedNeatlineSvg();
+        const neatlineSvg = await getSelectedNeatlineSvg();
 
         const lat = Number(form.latitude) || 0;
         const lon = Number(form.longitude) || 0;
@@ -247,6 +278,7 @@ export function useExport() {
         // 1. Capture map at full export resolution
         const {
           canvas: mapCanvas,
+          mapAlreadyInset,
           markerProjection,
           markerScaleX,
           markerScaleY,
@@ -263,6 +295,7 @@ export function useExport() {
 
         // 2. Composite fades + text
         const { canvas: fullCanvas } = await compositeExport(mapCanvas, {
+          mapAlreadyInset,
           theme: effectiveTheme,
           center: { lat, lon },
           widthInches,
@@ -296,7 +329,10 @@ export function useExport() {
         );
         const rasterFilename = addPpiToFilename(filename, effectiveDpi);
 
-        if (format === "zip") {
+        if (format === "tiff") {
+          const tiffBlob = await createTiffBlob(canvas, density);
+          await triggerDownloadBlob(tiffBlob, rasterFilename.replace(/\.[^.]+$/, ".tif"));
+        } else if (format === "zip") {
           const svgBlob = await createLayeredSvgBlobFromMap({
             map,
             exportWidth: size.width,

@@ -1,19 +1,13 @@
 import { useState } from "react";
-import { useBackdropTheme } from "../application/useBackdropTheme";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import DownloadModal from "@/features/export/ui/DownloadModal";
 
 
 interface CinemaWallDockProps {
   onExit: () => void;
-  onOpenWallModal: () => void;
 }
 
-export default function CinemaWallDock({
-  onExit,
-  onOpenWallModal,
-}: CinemaWallDockProps) {
-  const { backdropState, activePreset } = useBackdropTheme();
+export default function CinemaWallDock({ onExit }: CinemaWallDockProps) {
   const { state } = usePosterContext();
   const { form } = state;
 
@@ -21,15 +15,13 @@ export default function CinemaWallDock({
 
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
 
-  const isCustom = backdropState.type === "custom";
-
   return (
     <div
       className="cinema-overlay-controls"
       role="region"
       aria-label="Fullscreen Wall Preview Controls"
     >
-      {/* ── Top Left Column: Heading -> Change Wall Color -> Frames ── */}
+      {/* ── Top Left: Cinema heading ── */}
       <div className="cinema-top-bar-left">
         {/* 1. Prominent Heading */}
         <div className="cinema-heading-block">
@@ -39,26 +31,6 @@ export default function CinemaWallDock({
           </div>
           <span className="cinema-heading-sub">Cinema Room View</span>
         </div>
-
-        {/* 2. Just below: Change Wall Color Button */}
-        <button
-          type="button"
-          className="cinema-top-wall-btn"
-          onClick={onOpenWallModal}
-          title="Open Wall Color Studio (64 Authentic Interior Walls & Custom Colors)"
-        >
-          <span
-            className="cinema-wall-btn-swatch"
-            style={{
-              background: isCustom
-                ? `linear-gradient(${backdropState.custom.angle}deg, ${backdropState.custom.color1}, ${backdropState.custom.color2})`
-                : activePreset.previewGradient,
-            }}
-          />
-          <span className="cinema-wall-btn-icon" aria-hidden="true">🎨</span>
-          <span className="cinema-wall-btn-title">Change Wall Color</span>
-          <span className="cinema-wall-btn-tag">64 Walls</span>
-        </button>
 
       </div>
 

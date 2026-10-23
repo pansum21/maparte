@@ -50,11 +50,17 @@ const AllCitiesModal = lazy(
 function SettingsDrawer({
   mobileTab,
   onClose,
+  isEditing,
+  onToggleEditing,
+  onOpenWall,
   isPhoneWallpaper,
   onTogglePhoneWallpaper,
 }: {
   mobileTab: MobileTab;
   onClose: () => void;
+  isEditing: boolean;
+  onToggleEditing: () => void;
+  onOpenWall: () => void;
   isPhoneWallpaper: boolean;
   onTogglePhoneWallpaper: () => void;
 }) {
@@ -85,19 +91,14 @@ function SettingsDrawer({
           {...handleProps}
         />
         <div className="mobile-drawer-content">
-          {mobileTab === "layout" ? (
-            <div className="mobile-quick-actions" role="group" aria-label="Quick actions">
-              <button
-                type="button"
-                className="mobile-quick-action"
-                onClick={onTogglePhoneWallpaper}
-              >
-                <span aria-hidden="true">{isPhoneWallpaper ? "🖼️" : "📱"}</span>
-                <span>{isPhoneWallpaper ? "Poster View" : "Phone Wallpaper"}</span>
-              </button>
-            </div>
-          ) : null}
-          <SettingsPanel mobileTab={mobileTab} />
+          <SettingsPanel
+            mobileTab={mobileTab}
+            isEditing={isEditing}
+            onToggleEditing={onToggleEditing}
+            onOpenWall={onOpenWall}
+            isPhoneWallpaper={isPhoneWallpaper}
+            onTogglePhoneWallpaper={onTogglePhoneWallpaper}
+          />
         </div>
       </div>
     </div>
@@ -164,7 +165,7 @@ export default function AppShell() {
   const [mobileTab, setMobileTab] = useState<MobileTab>("theme");
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [mobileLocationRowVisible, setMobileLocationRowVisible] =
-    useState(true);
+    useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [deviceView, setDeviceView] = useState<"phone" | "tablet" | "desktop">(
     "desktop",
@@ -174,7 +175,7 @@ export default function AppShell() {
   const [desktopTab, setDesktopTab] = useState<MobileTab>("theme");
   const [desktopPanelOpen, setDesktopPanelOpen] = useState(false);
   const [desktopLocationRowVisible, setDesktopLocationRowVisible] =
-    useState(true);
+    useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">("about");
   const [backdropOpen, setBackdropOpen] = useState(false);
@@ -192,22 +193,18 @@ export default function AppShell() {
     const targetId = isPhoneWallpaper
       ? "print_a4_portrait"
       : "wallpaper_iphone_15_pro";
-    const targetLayout =
+    const targetSize =
       targetId === "wallpaper_iphone_15_pro"
         ? { widthCm: 14.4, heightCm: 31.2 }
         : { widthCm: 21, heightCm: 29.7 };
 
     dispatch({
-      type: "SET_FIELD",
-      field: "layout",
-      value: targetId,
+      type: "SET_LAYOUT",
+      layoutId: targetId,
+      widthCm: formatLayoutCm(targetSize.widthCm),
+      heightCm: formatLayoutCm(targetSize.heightCm),
     });
-    dispatch({
-      type: "SET_DIMENSIONS",
-      widthCm: formatLayoutCm(targetLayout.widthCm),
-      heightCm: formatLayoutCm(targetLayout.heightCm),
-    });
-  }, [isPhoneWallpaper, dispatch]);
+  }, [dispatch, isPhoneWallpaper]);
 
   const handleToggleCinema = useCallback((forceState?: boolean) => {
     setIsCinemaMode((prev) => {
@@ -351,6 +348,8 @@ export default function AppShell() {
       return;
     }
 
+    setMobileLocationRowVisible(false);
+
     if (tab === mobileTab && mobileDrawerOpen) {
       setMobileDrawerOpen(false);
     } else {
@@ -360,12 +359,19 @@ export default function AppShell() {
   };
 
   const handleDesktopTabChange = (tab: MobileTab) => {
+    setDesktopLocationRowVisible(false);
     if (tab === desktopTab && desktopPanelOpen) {
       setDesktopPanelOpen(false);
     } else {
       setDesktopTab(tab);
       setDesktopPanelOpen(true);
     }
+  };
+
+  const handleDesktopLocationToggle = () => {
+    setDesktopTab("location");
+    setDesktopPanelOpen(false);
+    setDesktopLocationRowVisible((visible) => !visible);
   };
 
   const handleMobileMarkerSizeChange = useCallback(
@@ -408,20 +414,7 @@ export default function AppShell() {
           onToggleCinema={() => handleToggleCinema(false)}
         />
 
-        <CinemaWallDock
-          onExit={() => handleToggleCinema(false)}
-          onOpenWallModal={() => setBackdropOpen(true)}
-        />
-
-        {backdropOpen ? (
-          <Suspense fallback={null}>
-            <BackdropThemeModal
-              isOpen={backdropOpen}
-              onClose={() => setBackdropOpen(false)}
-              onEnterCinema={() => handleToggleCinema(true)}
-            />
-          </Suspense>
-        ) : null}
+        <CinemaWallDock onExit={() => handleToggleCinema(false)} />
       </div>
     );
   }
@@ -452,7 +445,6 @@ export default function AppShell() {
           setAboutOpen(true);
         }}
         onAdminOpen={() => setAdminOpen(true)}
-        onBackdropOpen={() => setBackdropOpen(true)}
         onCinemaToggle={() => handleToggleCinema(true)}
       />
       <InstallPrompt />
@@ -461,14 +453,13 @@ export default function AppShell() {
       <DesktopNavBar
         activeTab={desktopTab}
         panelOpen={desktopPanelOpen}
+        isLocationVisible={desktopLocationRowVisible}
+        onLocationToggle={handleDesktopLocationToggle}
         onTabChange={handleDesktopTabChange}
         onSettingsClick={() => setSettingsOpen(true)}
-        isEditing={isEditing}
-        onToggleEditing={() => setIsEditing((prev) => !prev)}
         onToggleCinema={() => handleToggleCinema(true)}
-        isPhoneWallpaper={isPhoneWallpaper}
-        onTogglePhoneWallpaper={handleTogglePhoneWallpaper}
         onOpenAllCities={() => setAllCitiesOpen(true)}
+        onOpenWall={() => setBackdropOpen(true)}
       />
 
       <div
@@ -510,7 +501,14 @@ export default function AppShell() {
           className={`desktop-settings-slide${desktopPanelOpen ? " is-open" : ""}`}
         >
           <Suspense fallback={null}>
-            <SettingsPanel mobileTab={desktopTab} />
+            <SettingsPanel
+              mobileTab={desktopTab}
+              isEditing={isEditing}
+              onToggleEditing={() => setIsEditing((prev) => !prev)}
+              onOpenWall={() => setBackdropOpen(true)}
+              isPhoneWallpaper={isPhoneWallpaper}
+              onTogglePhoneWallpaper={handleTogglePhoneWallpaper}
+            />
           </Suspense>
         </div>
       </div>
@@ -526,6 +524,12 @@ export default function AppShell() {
         <SettingsDrawer
           mobileTab={mobileTab}
           onClose={() => setMobileDrawerOpen(false)}
+          isEditing={isEditing}
+          onToggleEditing={() => setIsEditing((prev) => !prev)}
+          onOpenWall={() => {
+            setMobileDrawerOpen(false);
+            setBackdropOpen(true);
+          }}
           isPhoneWallpaper={isPhoneWallpaper}
           onTogglePhoneWallpaper={handleTogglePhoneWallpaper}
         />
@@ -602,8 +606,6 @@ export default function AppShell() {
             isOpen={settingsOpen}
             onClose={() => setSettingsOpen(false)}
             onAdminOpen={() => setAdminOpen(true)}
-            onBackdropOpen={() => setBackdropOpen(true)}
-            onCinemaToggle={() => handleToggleCinema(true)}
           />
         </Suspense>
       ) : null}

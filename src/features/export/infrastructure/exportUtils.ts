@@ -45,7 +45,7 @@ export function waitForMapIdle(map: MaplibreMap): Promise<void> {
   });
 }
 
-function getDeviceMaxWebGlDimension(): number {
+export function getDeviceMaxWebGlDimension(): number {
   if (typeof window === "undefined") return 4096;
   try {
     const canvas = document.createElement("canvas");
@@ -67,6 +67,8 @@ function getDeviceMaxWebGlDimension(): number {
         maxRenderbuffer || 4096,
         maxTextureSize || 4096,
       );
+
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
 
       // Respect the current browser/GPU limit. The final raster export uses
       // these rendered dimensions so its PPI metadata cannot overstate detail.
@@ -116,6 +118,9 @@ export interface ExportRenderParams {
   markerScaleX: number;
   markerScaleY: number;
   markerSizeScale: number;
+  effectivePreviewWidth: number;
+  effectivePreviewHeight: number;
+  maxGlDimension: number;
 }
 
 /**
@@ -126,6 +131,8 @@ export function resolveExportRenderParams(
   map: MaplibreMap,
   exportWidth: number,
   exportHeight: number,
+  fullResolution = false,
+  knownMaxGlDimension?: number,
 ): ExportRenderParams {
   const internalMapContainer = map.getContainer();
   const visibleContainer = internalMapContainer.parentElement;
@@ -159,7 +166,8 @@ export function resolveExportRenderParams(
     Math.round(previewWidth * actualOverzoomScale),
   );
 
-  const safeMaxGlDim = getDeviceMaxWebGlDimension();
+  const safeMaxGlDim =
+    knownMaxGlDimension ?? getDeviceMaxWebGlDimension();
 
   // High-detail supersampled render target:
   // Render the offscreen WebGL map at high resolution (up to safeMaxGlDim, target ~2560px for the larger side)
@@ -169,7 +177,10 @@ export function resolveExportRenderParams(
   let renderWidth: number;
   let renderHeight: number;
 
-  if (aspect >= 1) {
+  if (fullResolution) {
+    renderWidth = exportWidth;
+    renderHeight = exportHeight;
+  } else if (aspect >= 1) {
     // Portrait: height is the larger dimension
     renderHeight = Math.min(safeMaxGlDim, Math.max(exportHeight, 2560));
     renderWidth = Math.max(1, Math.round(renderHeight / aspect));
@@ -181,7 +192,7 @@ export function resolveExportRenderParams(
 
   // Ensure neither dimension exceeds safeMaxGlDim
   const maxTargetSide = Math.max(renderWidth, renderHeight);
-  if (maxTargetSide > safeMaxGlDim) {
+  if (!fullResolution && maxTargetSide > safeMaxGlDim) {
     const scaleDown = safeMaxGlDim / maxTargetSide;
     renderWidth = Math.max(1, Math.round(renderWidth * scaleDown));
     renderHeight = Math.max(1, Math.round(renderHeight * scaleDown));
@@ -220,5 +231,8 @@ export function resolveExportRenderParams(
     markerScaleX: exportWidth / renderWidth,
     markerScaleY: exportHeight / renderHeight,
     markerSizeScale: renderWidth / previewWidth,
+    effectivePreviewWidth,
+    effectivePreviewHeight: Math.max(1, Math.round(previewHeight * actualOverzoomScale)),
+    maxGlDimension: safeMaxGlDim,
   };
 }

@@ -8,6 +8,7 @@ import {
   PLACEHOLDER_EXAMPLE_LONGITUDE,
 } from "./constants";
 import { MyLocationIcon } from "@/shared/ui/Icons";
+import { POPULAR_CITIES } from "../domain/popularCities";
 
 interface LocationSectionProps {
   form: PosterForm;
@@ -42,6 +43,15 @@ export default function LocationSection({
 }: LocationSectionProps) {
   const { recent, removeRecent, clearRecent } = useRecentLocations();
   const hasLocationValue = form.location.trim().length > 0;
+  const handleQuickCitySelect = (city: (typeof POPULAR_CITIES)[number]) => onLocationSelect({
+    id: `popular:${city.id}`,
+    label: `${city.name}, ${city.country}`,
+    city: city.name,
+    country: city.country,
+    continent: city.continent,
+    lat: city.lat,
+    lon: city.lon,
+  });
 
   return (
     <section className="panel-block">
@@ -97,6 +107,15 @@ export default function LocationSection({
             onRecentRemove={removeRecent}
             onClearRecent={clearRecent}
           />
+          <div className="location-panel-quick-cities" role="toolbar" aria-label="Quick city suggestions">
+            <span className="location-panel-quick-label">Quick cities</span>
+            <div className="location-panel-quick-list">
+              {POPULAR_CITIES.map((city) => <button key={city.id} type="button" className="location-panel-city"
+                onClick={() => handleQuickCitySelect(city)} title={`Explore ${city.name}, ${city.country}`}>
+                <span aria-hidden="true">{city.flag}</span><span>{city.name}</span>
+              </button>)}
+            </div>
+          </div>
           {locationPermissionMessage ? (
             <p className="location-permission-message">
               {locationPermissionMessage}
