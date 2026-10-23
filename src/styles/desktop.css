@@ -294,12 +294,7 @@
   }
 
   .desktop-nav-row--wall {
-    padding-left: 2px;
-  }
-
-  .desktop-nav-row--wall .desktop-quick-action-btn {
-    min-height: 38px;
-    padding: 7px 14px;
+    padding-left: 0;
   }
 
   .desktop-nav-row--fullscreen .desktop-nav-tab {
@@ -310,17 +305,20 @@
     pointer-events: auto;
   }
 
-  .desktop-nav-bar.has-panel-open .desktop-nav-companion {
-    display: none !important;
-  }
-
   .desktop-nav-companion {
     pointer-events: auto;
-    display: flex;
+    display: none;
     align-items: center;
     gap: 8px;
     opacity: 0.98;
     transition: opacity 0.2s ease;
+  }
+
+  .desktop-nav-bar.is-location-open
+    .desktop-nav-row[data-tab="location"] .desktop-companion-location,
+  .desktop-nav-bar.is-location-open
+    .desktop-nav-row[data-tab="location"] .desktop-companion-presets {
+    display: flex;
   }
 
   /* ── Location Companion Input (Pixel-Perfect Match with Image 2) ── */

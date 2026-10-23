@@ -25,6 +25,9 @@ import {
   StyleIcon,
   ChevronDownIcon,
   SparklesIcon,
+  ScissorsIcon,
+  RecenterIcon,
+  WallIcon,
 } from "@/shared/ui/Icons";
 
 import { themeOptions } from "@/features/theme/infrastructure/themeRepository";
@@ -100,7 +103,7 @@ export default function SettingsPanel({
     state.form.location,
     state.isLocationFocused,
   );
-  const { flyToLocation } = useMapSync(state, dispatch, mapRef);
+  const { flyToLocation, recenterToLocation } = useMapSync(state, dispatch, mapRef);
   const { handleUseCurrentLocation, isLocatingUser, locationPermissionMessage } =
     useCurrentLocation(flyToLocation);
 
@@ -134,11 +137,7 @@ export default function SettingsPanel({
   };
 
   const handleRecenter = () => {
-    const lat = Number.parseFloat(state.form.latitude);
-    const lon = Number.parseFloat(state.form.longitude);
-    if (Number.isFinite(lat) && Number.isFinite(lon)) {
-      flyToLocation(lat, lon, true);
-    }
+    recenterToLocation();
   };
 
   if (mobileTab === "edit-map") {
@@ -150,7 +149,7 @@ export default function SettingsPanel({
           onClick={onToggleEditing}
           aria-pressed={isEditing}
         >
-          <span aria-hidden="true">{isEditing ? "🔒" : "🔓"}</span>
+          {isEditing ? <span aria-hidden="true">🔒</span> : <ScissorsIcon aria-hidden="true" />}
           <span>{isEditing ? "Lock Map" : "Edit Map"}</span>
         </button>
         <button
@@ -158,7 +157,7 @@ export default function SettingsPanel({
           className="edit-map-action"
           onClick={handleRecenter}
         >
-          <span aria-hidden="true">⛶</span>
+          <RecenterIcon aria-hidden="true" />
           <span>Recenter</span>
         </button>
       </div>
@@ -242,7 +241,7 @@ export default function SettingsPanel({
                 className="theme-wall-action"
                 onClick={onOpenWall}
               >
-                <span aria-hidden="true">🎨</span>
+                <WallIcon aria-hidden="true" />
                 <span>Change Wall Color</span>
               </button>
               <MapSettingsSection

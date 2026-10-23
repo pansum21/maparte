@@ -165,7 +165,7 @@ export default function AppShell() {
   const [mobileTab, setMobileTab] = useState<MobileTab>("theme");
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [mobileLocationRowVisible, setMobileLocationRowVisible] =
-    useState(true);
+    useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [deviceView, setDeviceView] = useState<"phone" | "tablet" | "desktop">(
     "desktop",
@@ -175,7 +175,7 @@ export default function AppShell() {
   const [desktopTab, setDesktopTab] = useState<MobileTab>("theme");
   const [desktopPanelOpen, setDesktopPanelOpen] = useState(false);
   const [desktopLocationRowVisible, setDesktopLocationRowVisible] =
-    useState(true);
+    useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">("about");
   const [backdropOpen, setBackdropOpen] = useState(false);
@@ -348,6 +348,8 @@ export default function AppShell() {
       return;
     }
 
+    setMobileLocationRowVisible(false);
+
     if (tab === mobileTab && mobileDrawerOpen) {
       setMobileDrawerOpen(false);
     } else {
@@ -357,12 +359,19 @@ export default function AppShell() {
   };
 
   const handleDesktopTabChange = (tab: MobileTab) => {
+    setDesktopLocationRowVisible(false);
     if (tab === desktopTab && desktopPanelOpen) {
       setDesktopPanelOpen(false);
     } else {
       setDesktopTab(tab);
       setDesktopPanelOpen(true);
     }
+  };
+
+  const handleDesktopLocationToggle = () => {
+    setDesktopTab("location");
+    setDesktopPanelOpen(false);
+    setDesktopLocationRowVisible((visible) => !visible);
   };
 
   const handleMobileMarkerSizeChange = useCallback(
@@ -444,6 +453,8 @@ export default function AppShell() {
       <DesktopNavBar
         activeTab={desktopTab}
         panelOpen={desktopPanelOpen}
+        isLocationVisible={desktopLocationRowVisible}
+        onLocationToggle={handleDesktopLocationToggle}
         onTabChange={handleDesktopTabChange}
         onSettingsClick={() => setSettingsOpen(true)}
         onToggleCinema={() => handleToggleCinema(true)}

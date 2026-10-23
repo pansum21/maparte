@@ -29,6 +29,8 @@ import {
   SparklesIcon,
   SearchIcon,
   MyLocationIcon,
+  WallIcon,
+  ScissorsIcon,
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
 
@@ -36,8 +38,8 @@ export interface DesktopNavBarProps {
   activeTab: MobileTab;
   panelOpen: boolean;
   onTabChange: (tab: MobileTab) => void;
-  isLocationVisible?: boolean;
-  onLocationToggle?: () => void;
+  isLocationVisible: boolean;
+  onLocationToggle: () => void;
   onSettingsClick?: () => void;
   onToggleCinema?: () => void;
   onOpenAllCities?: () => void;
@@ -48,6 +50,8 @@ export default function DesktopNavBar({
   activeTab,
   panelOpen,
   onTabChange,
+  isLocationVisible,
+  onLocationToggle,
   onSettingsClick,
   onToggleCinema,
   onOpenAllCities,
@@ -108,17 +112,19 @@ export default function DesktopNavBar({
 
   return (
     <nav
-      className={`desktop-nav-bar${panelOpen ? " has-panel-open" : ""}`}
+      className={`desktop-nav-bar${panelOpen ? " has-panel-open" : ""}${isLocationVisible ? " is-location-open" : ""}`}
+      data-active-tab={activeTab}
       aria-label="Settings and Quick Actions"
     >
       {/* ── 1. LOCATION ROW ── */}
       <div className="desktop-nav-row" data-tab="location">
         <button
           type="button"
-          className={`desktop-nav-tab${panelOpen && activeTab === "location" ? " is-active" : ""}`}
-          onClick={() => onTabChange("location")}
+          className={`desktop-nav-tab${isLocationVisible ? " is-active" : ""}`}
+          onClick={onLocationToggle}
           title="Location Search & Coordinates"
           aria-label="Location"
+          aria-pressed={isLocationVisible}
         >
           <LocationIcon className="desktop-nav-icon" />
           <span className="desktop-nav-label">Location</span>
@@ -258,7 +264,7 @@ export default function DesktopNavBar({
           title="Edit Map and Recenter"
           aria-label="Edit Map"
         >
-          <LayoutIcon className="desktop-nav-icon" />
+          <ScissorsIcon className="desktop-nav-icon" />
           <span className="desktop-nav-label">Edit Map</span>
         </button>
       </div>
@@ -281,12 +287,13 @@ export default function DesktopNavBar({
       <div className="desktop-nav-row desktop-nav-row--wall" data-tab="wall">
         <button
           type="button"
-          className="desktop-quick-action-btn desktop-quick-action-wall"
+          className="desktop-nav-tab"
           onClick={onOpenWall}
           title="Change only the wall panel behind the poster"
+          aria-label="Wall color"
         >
-          <span className="quick-action-icon" aria-hidden="true">🎨</span>
-          <span className="quick-action-text">Wall</span>
+          <WallIcon className="desktop-nav-icon" />
+          <span className="desktop-nav-label">Wall</span>
         </button>
       </div>
 
