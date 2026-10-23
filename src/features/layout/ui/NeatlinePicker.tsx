@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import cornerAnchorData from "./cornerAnchorMasks.json";
 import "./neatline.css";
 
 const CONFIG_STORAGE_KEY = "maparte_neatline_layers";
@@ -53,6 +54,63 @@ const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
   top: "#b44737", right: "#276b62", bottom: "#bd8735", left: "#526b9b",
 };
 type CornerName = typeof CORNER_NAMES[number];
+
+function nearestOccupiedIndex(rows: Array<[number, number] | null>, requested: number): number | null {
+  for (let distance = 0; distance < rows.length; distance++) {
+    const before = requested - distance;
+    const after = requested + distance;
+    if (before >= 0 && rows[before]) return before;
+    if (distance > 0 && after < rows.length && rows[after]) return after;
+  }
+  return null;
+}
+
+function nearestEdgeAnchor(
+  cornerId: string,
+  rotation: number,
+  axis: "horizontal" | "vertical",
+  offset: number,
+  innerW: number,
+  innerH: number,
+  origin: number,
+  size: number,
+  position: CornerName,
+): { linePoint: [number, number]; artPoint: [number, number]; gapUnits: number } | null {
+  if (size <= 0) return null;
+  const key = cornerId.replace("border-", "");
+  const asset = (cornerAnchorData as any).assets[key]?.[rotation];
+  if (!asset) return null;
+  const resolution = (cornerAnchorData as any).size as number;
+  const fromLeftCorner = position === "top-left" || position === "bottom-left";
+  const isTop = position === "top-left" || position === "top-right";
+  const boxX = fromLeftCorner ? origin : innerW - origin - size;
+  const boxY = isTop ? origin : innerH - origin - size;
+
+  if (axis === "horizontal") {
+    const y = isTop ? offset : innerH - offset;
+    const row = Math.max(0, Math.min(resolution - 1, Math.round(((y - boxY) / size) * (resolution - 1))));
+    const rowIndex = nearestOccupiedIndex(asset.rows, row);
+    if (rowIndex === null) return null;
+    const bounds = asset.rows[rowIndex] as [number, number] | null;
+    if (!bounds) return null;
+    const edgeX = fromLeftCorner ? bounds[1] : bounds[0];
+    const x = boxX + (edgeX / (resolution - 1)) * size;
+    const artY = boxY + (rowIndex / (resolution - 1)) * size;
+    return { linePoint: [x, y], artPoint: [x, artY], gapUnits: Math.abs(y - artY) };
+  }
+
+  const x = fromLeftCorner ? offset : innerW - offset;
+  const column = Math.max(0, Math.min(resolution - 1, Math.round(((x - boxX) / size) * (resolution - 1))));
+  const columnIndex = nearestOccupiedIndex(asset.columns, column);
+  if (columnIndex === null) return null;
+  const bounds = asset.columns[columnIndex] as [number, number] | null;
+  if (!bounds) return null;
+  const fromTop = position === "bottom-left" || position === "bottom-right";
+  const edgeY = fromTop ? bounds[0] : bounds[1];
+  const y = boxY + (edgeY / (resolution - 1)) * size;
+  const artX = boxX + (columnIndex / (resolution - 1)) * size;
+  return { linePoint: [x, y], artPoint: [artX, y], gapUnits: Math.abs(x - artX) };
+}
 
 const OUTER_MAT_MAX_CM = 0.35;
 const MAP_INSET_MAX_CM = 1.55;
@@ -168,64 +226,95 @@ export function NeatlineArtwork({
   const gapUnits = metrics.gapCm * unitScale;
   const lastLineLimit = Math.max(0, mapEdge - gapUnits - maxStroke / 2);
   const ringCm = Math.max(0, metrics.mapInsetCm - metrics.outerMatCm);
-  const requestedPad = Math.min(0.4, ringCm * 0.25) * unitScale;
+  const selectedCorners = corner ? activeCorners(selection.cornerPosition) : [];
+  const hasCornerArt = selectedCorners.length > 0;
+  // Give corner artwork a larger, still safe canvas. Line-only borders keep
+  // the existing breathing room; decorative corners can use more of the mat.
+  const requestedPad = (hasCornerArt
+    ? Math.min(0.08, ringCm * 0.08)
+    : Math.min(0.4, ringCm * 0.25)) * unitScale;
   const extraLineCount = Math.max(0, (line ? lineCount(line.pattern) : 1) - 1);
-  // Anchor the innermost stroke to the map's printable gap. Place the other
-  // strokes outward from it, leaving a useful outer ring for corner artwork.
+  // When corner art is active, reserve a corner tile inside the same safe ring
+  // as the border. The outer line anchors to the tile's outer edge, while any
+  // additional parallel lines share the remaining printable width.
+  const cornerReserve = hasCornerArt && line ? (lastLineLimit - requestedPad) * 0.5 : 0;
   const lineSeparation = extraLineCount
-    ? Math.min(0.28 * unitScale, Math.max(0, (lastLineLimit - requestedPad) / extraLineCount))
+    ? Math.min(0.28 * unitScale, Math.max(0, (lastLineLimit - requestedPad - cornerReserve) / extraLineCount))
     : 0;
   const pad = line
-    ? Math.max(requestedPad, lastLineLimit - lineSeparation * extraLineCount)
+    ? hasCornerArt
+      ? requestedPad
+      : Math.max(requestedPad, lastLineLimit - lineSeparation * extraLineCount)
     : Math.min(lastLineLimit, Math.max(requestedPad, maxStroke / 2 + 2));
   const artPad = Math.min(lastLineLimit, Math.max(requestedPad, maxStroke / 2 + 2));
-  const safeArtDepth = Math.max(0, lastLineLimit - artPad);
+  const cornerOrigin = line && hasCornerArt ? pad : artPad;
+  const innermostLineOffset = line ? pad + lineSeparation * extraLineCount : cornerOrigin;
+  const safeArtDepth = Math.max(0, lastLineLimit - (line && hasCornerArt ? innermostLineOffset : cornerOrigin));
   const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
   const offsets = line ? line.pattern === "double" || line.pattern === "double-dotted"
     ? [pad, pad + lineSeparation] : line.pattern === "triple" ? [pad, pad + lineSeparation, pad + lineSeparation * 2] : [pad] : [];
   const dotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
   const dash = line?.pattern === "dashed" ? "12 8" : dotted ? "0.1 12" : undefined;
-  const selectedCorners = corner ? activeCorners(selection.cornerPosition) : [];
   // Use most of the printable ring so corner details remain legible at poster size.
   // Keep the size bounded by the map gap to prevent artwork from touching the map.
   const cornerSize = Math.min(safeArtDepth, innerW * 0.2, innerH * 0.2);
   const cornerGeometry: Record<CornerName, { x: number; y: number; rotate: number }> = {
-    // Corner artwork occupies the outer ring and ends at the inner line grid.
-    "top-left": { x: artPad, y: artPad, rotate: 270 }, "top-right": { x: innerW - artPad - cornerSize, y: artPad, rotate: 0 },
-    "bottom-right": { x: innerW - artPad - cornerSize, y: innerH - artPad - cornerSize, rotate: 90 },
-    "bottom-left": { x: artPad, y: innerH - artPad - cornerSize, rotate: 180 },
+    // Corner PNGs are authored for the top-right: horizontal art runs left
+    // from the top edge and vertical art runs down from the right edge.
+    "top-left": { x: cornerOrigin, y: cornerOrigin, rotate: 270 }, "top-right": { x: innerW - cornerOrigin - cornerSize, y: cornerOrigin, rotate: 0 },
+    "bottom-right": { x: innerW - cornerOrigin - cornerSize, y: innerH - cornerOrigin - cornerSize, rotate: 90 },
+    "bottom-left": { x: cornerOrigin, y: innerH - cornerOrigin - cornerSize, rotate: 180 },
   };
-  const cornerJoin = artPad + cornerSize;
-
   return <svg className={`neatline-artwork ${className}`} viewBox={`0 0 ${innerW} ${innerH}`} preserveAspectRatio="none" aria-hidden="true">
     {offsets.map((offset, index) => {
-      const segments: Array<{ coords: [number, number, number, number]; edge: "top" | "right" | "bottom" | "left" }> = [];
-      // The corner tile's inner edge is the join point. Ending every selected
-      // stroke on that same grid keeps the corner motif attached without
-      // letting any decoration cross the map's white breathing gap.
-      const topStart = selectedCorners.includes("top-left") ? cornerJoin : pad;
-      const topEnd = innerW - (selectedCorners.includes("top-right") ? cornerJoin : pad);
-      const bottomStart = selectedCorners.includes("bottom-left") ? cornerJoin : pad;
-      const bottomEnd = innerW - (selectedCorners.includes("bottom-right") ? cornerJoin : pad);
-      const leftStart = selectedCorners.includes("top-left") ? cornerJoin : pad;
-      const leftEnd = innerH - (selectedCorners.includes("bottom-left") ? cornerJoin : pad);
-      const rightStart = selectedCorners.includes("top-right") ? cornerJoin : pad;
-      const rightEnd = innerH - (selectedCorners.includes("bottom-right") ? cornerJoin : pad);
-      const addHorizontal = (edge: "top" | "bottom", start: number, end: number, y: number) => {
-        if (end <= start) return;
-        segments.push({ coords: [start, y, end, y], edge });
+      const segments: Array<{ d: string; edge: "top" | "right" | "bottom" | "left"; joinGaps: number[] }> = [];
+      const anchor = (position: CornerName, axis: "horizontal" | "vertical") => {
+        if (!corner || !selectedCorners.includes(position) || cornerSize <= 0) return null;
+        const item = cornerGeometry[position];
+        return nearestEdgeAnchor(corner.id, item.rotate, axis, offset, innerW, innerH, cornerOrigin, cornerSize, position);
       };
-      const addVertical = (edge: "left" | "right", start: number, end: number, x: number) => {
-        if (end <= start) return;
-        segments.push({ coords: [x, start, x, end], edge });
+      const pathData = (points: Array<[number, number]>) => points
+        .map(([x, y], pointIndex) => `${pointIndex ? "L" : "M"} ${x} ${y}`).join(" ");
+      const addHorizontal = (edge: "top" | "bottom", start: number, end: number, y: number, startCorner: CornerName, endCorner: CornerName) => {
+        const fromCorner = anchor(startCorner, "horizontal");
+        const toCorner = anchor(endCorner, "horizontal");
+        const points: Array<[number, number]> = fromCorner
+          ? [fromCorner.artPoint, fromCorner.linePoint]
+          : [[start, y]];
+        points.push(toCorner ? toCorner.linePoint : [end, y]);
+        if (toCorner) points.push(toCorner.artPoint);
+        const joinGaps = [fromCorner?.gapUnits, toCorner?.gapUnits].filter((gap): gap is number => gap !== undefined);
+        if (dash && fromCorner && toCorner) {
+          const midpoint = (fromCorner.linePoint[0] + toCorner.linePoint[0]) / 2;
+          segments.push({ d: `${pathData([fromCorner.artPoint, fromCorner.linePoint, [midpoint, y]])} ${pathData([toCorner.artPoint, toCorner.linePoint, [midpoint, y]])}`, edge, joinGaps });
+        } else if (dash && toCorner) {
+          segments.push({ d: pathData([...points].reverse()), edge, joinGaps });
+        } else segments.push({ d: pathData(points), edge, joinGaps });
       };
-      addHorizontal("top", topStart, topEnd, offset);
-      addHorizontal("bottom", bottomStart, bottomEnd, innerH - offset);
-      addVertical("left", leftStart, leftEnd, offset);
-      addVertical("right", rightStart, rightEnd, innerW - offset);
+      const addVertical = (edge: "left" | "right", start: number, end: number, x: number, startCorner: CornerName, endCorner: CornerName) => {
+        const fromCorner = anchor(startCorner, "vertical");
+        const toCorner = anchor(endCorner, "vertical");
+        const points: Array<[number, number]> = fromCorner
+          ? [fromCorner.artPoint, fromCorner.linePoint]
+          : [[x, start]];
+        points.push(toCorner ? toCorner.linePoint : [x, end]);
+        if (toCorner) points.push(toCorner.artPoint);
+        const joinGaps = [fromCorner?.gapUnits, toCorner?.gapUnits].filter((gap): gap is number => gap !== undefined);
+        if (dash && fromCorner && toCorner) {
+          const midpoint = (fromCorner.linePoint[1] + toCorner.linePoint[1]) / 2;
+          segments.push({ d: `${pathData([fromCorner.artPoint, fromCorner.linePoint, [x, midpoint]])} ${pathData([toCorner.artPoint, toCorner.linePoint, [x, midpoint]])}`, edge, joinGaps });
+        } else if (dash && toCorner) {
+          segments.push({ d: pathData([...points].reverse()), edge, joinGaps });
+        } else segments.push({ d: pathData(points), edge, joinGaps });
+      };
+      addHorizontal("top", pad, innerW - pad, offset, "top-left", "top-right");
+      addHorizontal("bottom", pad, innerW - pad, innerH - offset, "bottom-left", "bottom-right");
+      addVertical("left", pad, innerH - pad, offset, "top-left", "bottom-left");
+      addVertical("right", pad, innerH - pad, innerW - offset, "top-right", "bottom-right");
       return <g key={`line-${offset}`} fill="none" strokeWidth={widths[index] ?? 1.15}
-        strokeDasharray={dash} strokeLinecap={dotted ? "round" : "butt"} shapeRendering="geometricPrecision">
-        {segments.map(({ coords: [x1, y1, x2, y2], edge }, segmentIndex) => <line key={`${edge}-${segmentIndex}`} x1={x1} y1={y1} x2={x2} y2={y2}
+        strokeDasharray={dash} strokeLinecap="round" strokeLinejoin="round" shapeRendering="geometricPrecision">
+        {segments.map(({ d, edge, joinGaps }, segmentIndex) => <path key={`${edge}-${segmentIndex}`} d={d}
+          data-join-gaps={joinGaps.join(",")}
           stroke={selection.lineVariant === "colorful" ? LINE_COLORS[edge] : "#354b62"} />)}
       </g>;
     })}
