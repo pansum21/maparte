@@ -1649,6 +1649,8 @@ body.has-custom-backdrop .poster-ghost-layer {
   .app-shell.is-cinema-mode .poster-viewport {
     /* Keep the poster centered in the usable fullscreen area. The old
        asymmetric padding pushed it down and reserved too much vertical space. */
+    height: 100vh !important;
+    height: 100svh !important;
     padding: 64px 8px !important;
     box-sizing: border-box !important;
   }
