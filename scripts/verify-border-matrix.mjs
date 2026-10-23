@@ -18,9 +18,6 @@ const patterns = [
   ["neatline-single", 1],
   ["neatline-double", 2],
   ["neatline-triple", 3],
-  ["neatline-dashed", 1],
-  ["neatline-dotted", 1],
-  ["neatline-double-dotted", 2],
 ];
 const errors = [];
 const layoutReports = [];
@@ -88,11 +85,6 @@ try {
               layoutFailures++;
               errors.push(`${layout.id}/${lineId}: edge path exits the viewBox`);
             }
-          }
-          const dashExpected = lineId.includes("dotted") ? "0.1 12" : lineId === "neatline-dashed" ? "12 8" : null;
-          if (dashExpected && !markup.includes(`stroke-dasharray="${dashExpected}"`)) {
-            layoutFailures++;
-            errors.push(`${layout.id}/${lineId}: expected ${dashExpected} dash pattern`);
           }
           if (lineVariant === "colorful" && !["#b44737", "#276b62", "#bd8735", "#526b9b"].every((color) => markup.includes(`stroke="${color}"`))) {
             layoutFailures++;

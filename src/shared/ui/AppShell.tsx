@@ -52,7 +52,6 @@ function SettingsDrawer({
   onClose,
   isEditing,
   onToggleEditing,
-  onOpenWall,
   isPhoneWallpaper,
   onTogglePhoneWallpaper,
 }: {
@@ -60,7 +59,6 @@ function SettingsDrawer({
   onClose: () => void;
   isEditing: boolean;
   onToggleEditing: () => void;
-  onOpenWall: () => void;
   isPhoneWallpaper: boolean;
   onTogglePhoneWallpaper: () => void;
 }) {
@@ -95,7 +93,6 @@ function SettingsDrawer({
             mobileTab={mobileTab}
             isEditing={isEditing}
             onToggleEditing={onToggleEditing}
-            onOpenWall={onOpenWall}
             isPhoneWallpaper={isPhoneWallpaper}
             onTogglePhoneWallpaper={onTogglePhoneWallpaper}
           />
@@ -342,6 +339,13 @@ export default function AppShell() {
   }, [mobileDrawerOpen]);
 
   const handleMobileTabChange = (tab: MobileTab) => {
+    if (tab === "wall") {
+      setMobileLocationRowVisible(false);
+      setMobileDrawerOpen(false);
+      setMobileTab(tab);
+      setBackdropOpen(true);
+      return;
+    }
     if (tab === "location") {
       setMobileLocationRowVisible((isVisible) => !isVisible);
       setMobileDrawerOpen(false);
@@ -505,7 +509,6 @@ export default function AppShell() {
               mobileTab={desktopTab}
               isEditing={isEditing}
               onToggleEditing={() => setIsEditing((prev) => !prev)}
-              onOpenWall={() => setBackdropOpen(true)}
               isPhoneWallpaper={isPhoneWallpaper}
               onTogglePhoneWallpaper={handleTogglePhoneWallpaper}
             />
@@ -526,10 +529,6 @@ export default function AppShell() {
           onClose={() => setMobileDrawerOpen(false)}
           isEditing={isEditing}
           onToggleEditing={() => setIsEditing((prev) => !prev)}
-          onOpenWall={() => {
-            setMobileDrawerOpen(false);
-            setBackdropOpen(true);
-          }}
           isPhoneWallpaper={isPhoneWallpaper}
           onTogglePhoneWallpaper={handleTogglePhoneWallpaper}
         />
@@ -564,6 +563,7 @@ export default function AppShell() {
           setSettingsOpen((open) => !open);
         }}
         settingsOpen={settingsOpen}
+        wallOpen={backdropOpen}
       />
       <Suspense fallback={null}>
         <ExportFab isMobile={isMobileViewport} />

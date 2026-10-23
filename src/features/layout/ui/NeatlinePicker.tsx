@@ -7,7 +7,7 @@ const LEGACY_STYLE_KEY = "maparte_neatline_style";
 const THICKNESS_STORAGE_KEY = "maparte_neatline_thicknesses";
 export const NEATLINE_CHANGE_EVENT = "maparte:neatline:change";
 
-type LinePattern = "single" | "double" | "triple" | "dashed" | "dotted" | "double-dotted";
+type LinePattern = "single" | "double" | "triple";
 type LineStyle = { id: string; name: string; kind: "line"; pattern: LinePattern };
 type FrameStyle = { id: string; name: string; kind: "frame"; asset: string; thumbnail: string; width: number; height: number; accent: string };
 type BorderStyle = LineStyle | FrameStyle;
@@ -28,15 +28,13 @@ const lineStyles: LineStyle[] = [
   { id: "neatline-single", name: "Single line", kind: "line", pattern: "single" },
   { id: "neatline-double", name: "Double line", kind: "line", pattern: "double" },
   { id: "neatline-triple", name: "Triple line", kind: "line", pattern: "triple" },
-  { id: "neatline-dashed", name: "Dashed line", kind: "line", pattern: "dashed" },
-  { id: "neatline-dotted", name: "Dotted line", kind: "line", pattern: "dotted" },
-  { id: "neatline-double-dotted", name: "Double dotted", kind: "line", pattern: "double-dotted" },
 ];
-const frameStyles = frameAssetData as FrameStyle[];
+const frameStyles = (frameAssetData as FrameStyle[]).filter((frame) =>
+  frame.id === "selected-frame-18" || frame.id === "selected-frame-20",
+);
 export const NEATLINE_STYLES = lineStyles;
 const DEFAULT_LINE_WIDTHS: Record<LinePattern, number[]> = {
-  single: [2], double: [1.9, 1.5], triple: [1.8, 1.45, 1.1], dashed: [2],
-  dotted: [2.8], "double-dotted": [2.5, 2],
+  single: [2], double: [1.9, 1.5], triple: [1.8, 1.45, 1.1],
 };
 const MAX_LINE_WIDTH = 5;
 const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
@@ -107,7 +105,7 @@ export function getAiFramePlacement(widthCm?: string, heightCm?: string) {
 }
 
 function lineCount(pattern: LinePattern): number {
-  if (pattern === "double" || pattern === "double-dotted") return 2;
+  if (pattern === "double") return 2;
   if (pattern === "triple") return 3;
   return 1;
 }
@@ -179,14 +177,12 @@ export function NeatlineArtwork({
   // Keep every stroke fully inside the SVG viewport, even at the thickest
   // supported setting, so square caps meet cleanly without clipped edges.
   const edgeInset = maxStroke / 2 + 0.5;
-  const offsets = line ? line.pattern === "double" || line.pattern === "double-dotted"
+  const offsets = line ? line.pattern === "double"
     ? [edgeInset, edgeInset + Math.min(0.28, metrics.gapCm * 0.42) * unitScale]
     : line.pattern === "triple"
       ? [edgeInset, edgeInset + Math.min(0.28, metrics.gapCm * 0.42) * unitScale, edgeInset + Math.min(0.56, metrics.gapCm * 0.84) * unitScale]
       : [edgeInset]
     : [];
-  const dotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
-  const dash = line?.pattern === "dashed" ? "12 8" : dotted ? "0.1 12" : undefined;
   return <svg className={`neatline-artwork ${className}`} viewBox={`0 0 ${innerW} ${innerH}`} preserveAspectRatio="none" aria-hidden="true">
     {frame && framePlacement ? <image data-full-frame="true" href={frame.asset}
       x={framePlacement.x} y={framePlacement.y} width={framePlacement.width} height={framePlacement.height}
@@ -201,8 +197,8 @@ export function NeatlineArtwork({
         { edge: "bottom" as const, d: `M ${endX} ${endY} H ${start}` },
         { edge: "left" as const, d: `M ${start} ${endY} V ${offset}` },
       ];
-      return <g key={`line-${index}`} fill="none" strokeWidth={widths[index] ?? maxStroke} strokeDasharray={dash}
-        strokeLinecap={dotted ? "round" : "square"} strokeLinejoin="miter" shapeRendering="geometricPrecision">
+      return <g key={`line-${index}`} fill="none" strokeWidth={widths[index] ?? maxStroke}
+        strokeLinecap="square" strokeLinejoin="miter" shapeRendering="geometricPrecision">
         {edgePaths.map(({ edge, d }) => <path key={edge} d={d} data-edge={edge}
           stroke={selection.lineVariant === "colorful" ? LINE_COLORS[edge] : "#354b62"} />)}
       </g>;
@@ -228,11 +224,9 @@ function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: N
         { edge: "bottom" as const, d: `M ${end} ${end} H ${start}` },
         { edge: "left" as const, d: `M ${start} ${end} V ${start}` },
       ];
-      const isDotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
-      const dashArray = line?.pattern === "dashed" ? "7 4" : isDotted ? "0.1 6" : undefined;
       const strokeWidth = Math.max(1.35, Math.min(2.6, width * 1.4));
-      return <g key={index} fill="none" strokeWidth={strokeWidth} strokeDasharray={dashArray}
-        strokeLinecap={isDotted ? "round" : "butt"} strokeLinejoin="miter">
+      return <g key={index} fill="none" strokeWidth={strokeWidth}
+        strokeLinecap="square" strokeLinejoin="miter">
         {paths.map(({ edge, d }) => <path key={edge} d={d}
           stroke={selection.lineVariant === "colorful" ? LINE_COLORS[edge] : "#354b62"} />)}
       </g>;
@@ -300,7 +294,7 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
       <p>Choose a line border or a full rectangular frame. The map keeps a clean white gap · {width} × {height} cm</p></div>
       <span className="neatline-count">{layerCount} {layerCount === 1 ? "layer" : "layers"}</span></div>
     <div className="neatline-tabs" role="tablist" aria-label="Border layer">
-      {([["line", "Line borders"], ["frame", "Full frames (20)"]] as const).map(([id, label]) =>
+      {([["line", "Line borders"], ["frame", "Border"]] as const).map(([id, label]) =>
         <button type="button" role="tab" aria-selected={category === id} className={category === id ? "is-active" : ""} key={id} onClick={() => {
           setCategory(id);
           if (id === "line") setVariant(selection.lineVariant);

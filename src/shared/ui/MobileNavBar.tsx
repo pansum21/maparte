@@ -11,6 +11,7 @@ import {
   FullScreenIcon,
   FrameIcon,
   ScissorsIcon,
+  WallIcon,
 } from "./Icons";
 
 export type MobileTab =
@@ -18,6 +19,7 @@ export type MobileTab =
   | "location"
   | "edit-map"
   | "theme"
+  | "wall"
   | "layout"
   | "frames"
   | "style"
@@ -33,6 +35,7 @@ const tabs: {
   { id: "location", label: "Location", Icon: LocationIcon },
   { id: "edit-map", label: "Edit Map", Icon: ScissorsIcon },
   { id: "theme", label: "Theme", Icon: ThemeIcon },
+  { id: "wall", label: "Wall", Icon: WallIcon },
   { id: "layout", label: "Layout", Icon: LayoutIcon },
   { id: "frames", label: "Border", Icon: FrameIcon },
   { id: "templates", label: "Presets", Icon: SparklesIcon },
@@ -50,6 +53,7 @@ interface MobileNavBarProps {
   onOpenFullScreen: () => void;
   onSettingsClick: () => void;
   settingsOpen: boolean;
+  wallOpen?: boolean;
 }
 
 export default function MobileNavBar({
@@ -60,6 +64,7 @@ export default function MobileNavBar({
   onOpenFullScreen,
   onSettingsClick,
   settingsOpen,
+  wallOpen = false,
 }: MobileNavBarProps) {
   return (
     <div className="mobile-nav-wrapper">
@@ -68,9 +73,11 @@ export default function MobileNavBar({
           <div className="mobile-nav-tabs">
             {tabs.map(({ id, label, Icon }) => {
               const isLocationTab = id === "location";
-              const isActive = isLocationTab
-                ? isLocationVisible
-                : drawerOpen && activeTab === id;
+              const isActive = id === "wall"
+                ? wallOpen
+                : isLocationTab
+                  ? isLocationVisible
+                  : drawerOpen && activeTab === id;
               return (
                 <button
                   key={id}
