@@ -159,4 +159,8 @@ const result = {
   firstFailures: failures.slice(0, 30),
 };
 console.log(JSON.stringify(result, null, 2));
-if (frames.length !== 20 || layouts.length !== 26 || hashes.size !== 20 || failures.length) process.exitCode = 1;
+// The selected frame catalogue is intentionally user-curated and may contain
+// any positive number of unique frames; do not hard-code the old 20-frame set.
+if (frames.length === 0 || layouts.length !== 26 || hashes.size !== frames.length || failures.length) {
+  process.exitCode = 1;
+}

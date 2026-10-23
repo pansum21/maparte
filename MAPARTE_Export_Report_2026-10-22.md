@@ -3,6 +3,8 @@
 **Date:** 22 October 2026  
 **Scope:** Raster export density, PDF page density, export dimensions, and resolution claims.
 
+**Verification update:** 23 October 2026. The original measurements below remain the results for the files supplied on 22 October. Current-code checks and corrected frame-test expectations are recorded at the end.
+
 ## Result
 
 The uploaded PDF named `Print_500DPI.pdf` did not contain 500 PPI at its declared print size. Its measured effective density was about **347 PPI**. The export pipeline has been changed so the raster file dimensions follow the actual WebGL render surface, and PNG/JPG metadata and filenames use the resulting density instead of always claiming 500.
@@ -38,8 +40,23 @@ The PNG print PPI estimates above are conditional on the stated physical print s
 | PDF regression calculation | Passed: a 1889 × 4096 image on a 13.84 × 30 cm page calculates to approximately 346.68 × 346.79 PPI. |
 | Production Vite build | Passed (`npx vite build`). It logged existing non-blocking notices about the missing `VITE_GA_MEASUREMENT_ID` and a font module imported both statically and dynamically. |
 | Diff whitespace check | Passed (`git diff --check`). |
-| TypeScript check | Still fails on three existing `src/shared/ui/AppShell.tsx` type errors: two stale dispatch action shapes (`SET_FIELD`/`SET_DIMENSIONS`) and the unsupported `onCinemaToggle` prop. They are outside the export files changed here. |
+| TypeScript check (22 Oct run) | Failed on three `src/shared/ui/AppShell.tsx` type errors. This was an earlier checkout result and is superseded by the 23 Oct verification update below. |
 
 ## Verification limits
 
 The 100-case run tests the size calculations and all three raster file writers using deterministic canvas fixtures. It does not simulate 100 physical printers or independently judge printed sharpness. The Vite production bundle builds, but an updated live-browser download and a physical print have not yet been independently inspected in this report. Actual print appearance also depends on map-data detail, printer, paper, and viewing distance.
+
+## Current-code verification update — 23 October 2026
+
+The selected-frame catalogue now intentionally contains two user-selected SVG frames. The frame-matrix script previously still required exactly 20 frames, so it returned a failing exit code even when all rendered combinations had zero geometry failures. Its count check now accepts any non-empty set of unique configured frames.
+
+| Check | Current result |
+| --- | --- |
+| TypeScript (`tsc --noEmit`) | Passed |
+| Vite production build | Passed; the build logged a missing optional `VITE_GA_MEASUREMENT_ID`, a font stylesheet imported both statically and dynamically, and a large MapLibre chunk (about 1.05 MB raw / 285 KB gzip). These are warnings, not build failures. |
+| Export calculations and PNG/JPG/PDF writers | 400 cases passed (100 size cases + 300 writer cases) |
+| Line-border matrix | 468 cases passed across 26 layouts |
+| Selected-frame layout matrix | 52 combinations passed (2 selected frames × 26 layouts); zero overlap/gap-geometry failures. Gaps remain even on all four sides per layout, with measured size varying from 0.14 cm to 0.45 cm across aspect ratios. |
+| Vercel | GitHub reports a Vercel-related success status for the feature-branch commit, but its check is “Vercel Preview Comments” and says there are no unresolved comments. It does not prove that a production deployment or full browser flow passed. The preview is protected from this session, so live UI/export verification remains outstanding. |
+
+The matrix scripts test rendered markup and geometry, not every browser/device combination. No physical print test was performed. The previous 22 October supplied-file measurements are not new downloads from the current deployment.
