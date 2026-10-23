@@ -8,8 +8,9 @@ export const NEATLINE_CHANGE_EVENT = "maparte:neatline:change";
 
 type LinePattern = "single" | "double" | "triple" | "dashed" | "dotted" | "double-dotted";
 type LineStyle = { id: string; name: string; kind: "line"; pattern: LinePattern };
-type ArtStyle = { id: string; name: string; kind: "ornament" | "corner"; asset: string };
+type ArtStyle = { id: string; name: string; kind: "ornament" | "corner"; asset: string; variant?: "plain" | "colorful" };
 type BorderStyle = LineStyle | ArtStyle;
+type ArtVariant = "plain" | "colorful";
 export type CornerPosition = "all" | "top" | "bottom" | "left" | "right" | "diagonal-a" | "diagonal-b" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
 export type OrnamentPosition = "top" | "bottom" | "both" | "all-sides";
 export type NeatlineSelection = {
@@ -19,6 +20,8 @@ export type NeatlineSelection = {
   cornerPosition: CornerPosition;
   ornamentPosition: OrnamentPosition;
   thicknesses: Record<string, number[]>;
+  lineVariant: ArtVariant;
+  cornerVariant: ArtVariant;
 };
 
 const lineStyles: LineStyle[] = [
@@ -48,8 +51,16 @@ const cornerStyles: ArtStyle[] = Array.from({ length: 12 }, (_, i) => ({
   name: `Corner ${i + 1}`,
   kind: "corner" as const,
   asset: `/assets/borders/corner-${String(i + 1).padStart(2, "0")}.svg`,
+  variant: "plain" as const,
 }));
-const allStyles: BorderStyle[] = [...lineStyles, ...decorativeStyles, ...cornerStyles];
+const colorfulCornerStyles: ArtStyle[] = Array.from({ length: 8 }, (_, i) => ({
+  id: `border-color-corner-${String(i + 1).padStart(2, "0")}`,
+  name: ["Mughal vine", "Lotus garden", "Peacock leaf", "Marigold", "Royal paisley", "Art deco jewel", "Wildflower", "Heritage scroll"][i],
+  kind: "corner" as const,
+  asset: `/assets/borders/color-corner-${String(i + 1).padStart(2, "0")}.svg`,
+  variant: "colorful" as const,
+}));
+const allStyles: BorderStyle[] = [...lineStyles, ...decorativeStyles, ...cornerStyles, ...colorfulCornerStyles];
 export const NEATLINE_STYLES = lineStyles;
 const DEFAULT_LINE_WIDTHS: Record<LinePattern, number[]> = {
   single: [1.15], double: [1.05, 0.85], triple: [1, 0.8, 0.65], dashed: [1.15],
@@ -67,6 +78,7 @@ const CORNER_LABELS: Record<CornerPosition, string> = {
   "top-left": "Top left", "top-right": "Top right", "bottom-left": "Bottom left", "bottom-right": "Bottom right",
 };
 const CORNER_NAMES = ["top-left", "top-right", "bottom-right", "bottom-left"] as const;
+const LINE_COLORS = ["#b44737", "#276b62", "#bd8735"];
 type CornerName = typeof CORNER_NAMES[number];
 
 const OUTER_MAT_MAX_CM = 0.35;
@@ -103,7 +115,7 @@ function lineCount(pattern: LinePattern): number {
 }
 function isLineId(value: string): boolean { return value === "none" || lineStyles.some((style) => style.id === value); }
 function isOrnamentId(value: string): boolean { return value === "none" || decorativeStyles.some((style) => style.id === value); }
-function isCornerId(value: string): boolean { return value === "none" || cornerStyles.some((style) => style.id === value); }
+function isCornerId(value: string): boolean { return value === "none" || [...cornerStyles, ...colorfulCornerStyles].some((style) => style.id === value); }
 
 function readThicknesses(): Record<string, number[]> {
   if (typeof window === "undefined") return {};
@@ -113,7 +125,7 @@ function readThicknesses(): Record<string, number[]> {
   } catch { return {}; }
 }
 function readSelection(): NeatlineSelection {
-  const empty: NeatlineSelection = { lineId: "none", ornamentId: "none", cornerId: "none", cornerPosition: "all", ornamentPosition: "top", thicknesses: readThicknesses() };
+  const empty: NeatlineSelection = { lineId: "none", ornamentId: "none", cornerId: "none", cornerPosition: "all", ornamentPosition: "top", thicknesses: readThicknesses(), lineVariant: "plain", cornerVariant: "plain" };
   if (typeof window === "undefined") return empty;
   try {
     const stored = window.localStorage.getItem(CONFIG_STORAGE_KEY);
@@ -123,17 +135,21 @@ function readSelection(): NeatlineSelection {
         ...empty,
         ...parsed,
         lineId: parsed.lineId && isLineId(parsed.lineId) ? parsed.lineId : "none",
-        ornamentId: parsed.ornamentId && isOrnamentId(parsed.ornamentId) ? parsed.ornamentId : "none",
+        // Older stored center ornaments were raster traces and looked soft at zoom.
+        // Clear them instead of silently bringing the blurry artwork back.
+        ornamentId: "none",
         cornerId: parsed.cornerId && isCornerId(parsed.cornerId) ? parsed.cornerId : "none",
         cornerPosition: parsed.cornerPosition && CORNER_POSITIONS.includes(parsed.cornerPosition) ? parsed.cornerPosition : "all",
         ornamentPosition: parsed.ornamentPosition && ORNAMENT_POSITIONS.includes(parsed.ornamentPosition) ? parsed.ornamentPosition : "top",
+        lineVariant: parsed.lineVariant === "colorful" ? "colorful" : "plain",
+        cornerVariant: parsed.cornerVariant === "colorful" ? "colorful" : "plain",
         thicknesses: readThicknesses(),
       };
     }
     // Migrate a single old style into its matching layer without losing it.
     const legacy = window.localStorage.getItem(LEGACY_STYLE_KEY) || "none";
     if (isLineId(legacy)) empty.lineId = legacy;
-    else if (isOrnamentId(legacy)) empty.ornamentId = legacy;
+    else if (isOrnamentId(legacy)) empty.ornamentId = "none";
     else if (isCornerId(legacy)) empty.cornerId = legacy;
     return empty;
   } catch { return empty; }
@@ -175,7 +191,7 @@ export function NeatlineArtwork({
 }) {
   const line = lineStyles.find((style) => style.id === selection.lineId);
   const ornament = decorativeStyles.find((style) => style.id === selection.ornamentId);
-  const corner = cornerStyles.find((style) => style.id === selection.cornerId);
+  const corner = [...cornerStyles, ...colorfulCornerStyles].find((style) => style.id === selection.cornerId);
   if (!line && !ornament && !corner) return null;
 
   const metrics = getPosterBorderMetrics(widthCm, heightCm);
@@ -251,9 +267,10 @@ export function NeatlineArtwork({
       addHorizontal("bottom", bottomStart, bottomEnd, innerH - offset);
       addVertical("left", leftStart, leftEnd, offset);
       addVertical("right", rightStart, rightEnd, innerW - offset);
-      return <g key={`line-${offset}`} fill="none" stroke="#354b62" strokeWidth={widths[index] ?? 1.15}
+      return <g key={`line-${offset}`} fill="none" strokeWidth={widths[index] ?? 1.15}
         strokeDasharray={dash} strokeLinecap={dotted ? "round" : "butt"} shapeRendering="geometricPrecision">
-        {segments.map(([x1, y1, x2, y2], segmentIndex) => <line key={segmentIndex} x1={x1} y1={y1} x2={x2} y2={y2} />)}
+        {segments.map(([x1, y1, x2, y2], segmentIndex) => <line key={segmentIndex} x1={x1} y1={y1} x2={x2} y2={y2}
+          stroke={selection.lineVariant === "colorful" ? LINE_COLORS[segmentIndex % LINE_COLORS.length] : "#354b62"} />)}
       </g>;
     })}
     {ornament && ornamentHeight > 0 && ornamentEdges.map((edge) => {
@@ -295,7 +312,7 @@ function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: N
         const isDotted = line?.pattern === "dotted" || line?.pattern === "double-dotted";
         const dash = line?.pattern === "dashed" ? "7 4" : isDotted ? "0.1 6" : undefined;
         const strokeWidth = Math.max(1.35, Math.min(2.6, width * 1.4));
-        return <path key={index} d={path} fill="none" stroke="#354b62" strokeWidth={strokeWidth}
+        return <path key={index} d={path} fill="none" stroke={selection.lineVariant === "colorful" ? LINE_COLORS[index % LINE_COLORS.length] : "#354b62"} strokeWidth={strokeWidth}
           strokeDasharray={dash} strokeLinecap={isDotted ? "round" : "butt"} strokeLinejoin="miter" />;
       }) : null}
       {ornament ? <>
@@ -316,10 +333,11 @@ function lineLabel(index: number, count: number): string {
 
 export function NeatlinePicker({ width, height }: { width: string; height: string }) {
   const [selection, setSelection] = useState<NeatlineSelection>(readSelection);
-  const [category, setCategory] = useState<"line" | "ornament" | "corner">("line");
+  const [category, setCategory] = useState<"line" | "corner">("line");
+  const [variant, setVariant] = useState<ArtVariant>(() => readSelection().lineVariant);
   const [isEditingThickness, setIsEditingThickness] = useState(false);
   const selectedLine = useMemo(() => lineStyles.find((style) => style.id === selection.lineId), [selection.lineId]);
-  const activeCategoryStyles = category === "line" ? lineStyles : category === "ornament" ? decorativeStyles : cornerStyles;
+  const activeCategoryStyles = category === "line" ? lineStyles : variant === "colorful" ? colorfulCornerStyles : cornerStyles;
   const displayedStyles: BorderStyle[] = category === "line" ? [{ id: "none", name: "No line", kind: "line", pattern: "single" }, ...activeCategoryStyles] : activeCategoryStyles;
   const lineWidths = selectedLine ? widthsFor(selectedLine.id, selection.thicknesses) : [];
 
@@ -328,6 +346,7 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
       window.localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify({
         lineId: selection.lineId, ornamentId: selection.ornamentId, cornerId: selection.cornerId,
         cornerPosition: selection.cornerPosition, ornamentPosition: selection.ornamentPosition,
+        lineVariant: selection.lineVariant, cornerVariant: selection.cornerVariant,
       }));
       window.localStorage.setItem(THICKNESS_STORAGE_KEY, JSON.stringify(selection.thicknesses));
       // Keep the original key in sync for older preview and export readers.
@@ -356,7 +375,8 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
   const swatchSelection = (style: BorderStyle): NeatlineSelection => {
     if (style.kind === "line") return { ...selection, lineId: style.id };
     if (style.kind === "ornament") return { ...selection, lineId: selection.lineId === "none" ? "neatline-single" : selection.lineId, ornamentId: style.id };
-    return { ...selection, lineId: selection.lineId === "none" ? "neatline-single" : selection.lineId, cornerId: style.id };
+    return { ...selection, lineId: selection.lineId === "none" ? "neatline-single" : selection.lineId, cornerId: style.id,
+      cornerVariant: style.variant ?? variant };
   };
   const isSelected = (style: BorderStyle) => style.id === "none" ? selection.lineId === "none"
     : style.kind === "line" ? style.id === selection.lineId
@@ -364,17 +384,24 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
 
   return <section className="neatline-picker" aria-labelledby="neatline-heading">
     <div className="neatline-picker-heading"><div><h3 id="neatline-heading">Border styles</h3>
-      <p>लेयर जोड़ें: बेस लाइन + सेंटर डिज़ाइन + कॉर्नर · मैप से बाहर सफेद गैप के साथ · {width} × {height} cm</p></div>
-      <span className="neatline-count">{[selection.lineId !== "none", selection.ornamentId !== "none", selection.cornerId !== "none"].filter(Boolean).length} layers</span></div>
+      <p>लाइन और कॉर्नर अलग चुनें · Plain या Colorful · मैप से बाहर सफेद गैप के साथ · {width} × {height} cm</p></div>
+      <span className="neatline-count">{[selection.lineId !== "none", selection.cornerId !== "none"].filter(Boolean).length} layers</span></div>
     <div className="neatline-tabs" role="tablist" aria-label="Border layer">
-      {([["line", "Base line"], ["ornament", "Center design"], ["corner", "Corner art"]] as const).map(([id, label]) =>
-        <button type="button" role="tab" aria-selected={category === id} className={category === id ? "is-active" : ""} key={id} onClick={() => setCategory(id)}>{label}</button>)}
+      {([["line", "Line border"], ["corner", "Corner design"]] as const).map(([id, label]) =>
+        <button type="button" role="tab" aria-selected={category === id} className={category === id ? "is-active" : ""} key={id} onClick={() => {
+          setCategory(id);
+          setVariant(id === "line" ? selection.lineVariant : selection.cornerVariant);
+        }}>{label}</button>)}
+    </div>
+    <div className="neatline-variants" role="group" aria-label={`${category} color style`}>
+      {([["plain", "Plain"], ["colorful", "Colorful"]] as const).map(([id, label]) => <button key={id} type="button"
+        className={variant === id ? "is-active" : ""} aria-pressed={variant === id} onClick={() => {
+          setVariant(id);
+          if (category === "line") setSelection((current) => ({ ...current, lineVariant: id }));
+          else setSelection((current) => ({ ...current, cornerVariant: id, cornerId: "none" }));
+        }}>{label}</button>)}
     </div>
     <div className="neatline-options" role="group" aria-label={`Choose ${category} border layer`}>
-      {category === "ornament" ? <button type="button" aria-pressed={selection.ornamentId === "none"}
-        className={`neatline-option ${selection.ornamentId === "none" ? "is-selected" : ""}`}
-        onClick={() => setSelection((current) => ({ ...current, ornamentId: "none" }))}>
-        <span className="neatline-swatch neatline-empty" aria-hidden="true"><span /></span><span className="neatline-option-name">No center design</span></button> : null}
       {category === "corner" ? <button type="button" aria-pressed={selection.cornerId === "none"}
         className={`neatline-option ${selection.cornerId === "none" ? "is-selected" : ""}`}
         onClick={() => setSelection((current) => ({ ...current, cornerId: "none" }))}>
@@ -384,10 +411,6 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
         <NeatlineSwatch style={style} selection={swatchSelection(style)} />
         <span className="neatline-option-name">{style.name}</span></button>)}
     </div>
-    {category === "ornament" && selection.ornamentId !== "none" ? <label className="neatline-layer-position">Design position
-      <select value={selection.ornamentPosition} onChange={(event) => setSelection((current) => ({ ...current, ornamentPosition: event.target.value as OrnamentPosition }))}>
-        {ORNAMENT_POSITIONS.map((position) => <option key={position} value={position}>{ORNAMENT_LABELS[position]}</option>)}
-      </select></label> : null}
     {category === "corner" && selection.cornerId !== "none" ? <label className="neatline-layer-position">Corner placement
       <select value={selection.cornerPosition} onChange={(event) => setSelection((current) => ({ ...current, cornerPosition: event.target.value as CornerPosition }))}>
         {CORNER_POSITIONS.map((position) => <option key={position} value={position}>{CORNER_LABELS[position]}</option>)}
