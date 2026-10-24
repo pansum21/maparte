@@ -46,10 +46,6 @@ export default function GeneralHeader({
           <p className="desktop-brand-kicker app-kicker">
             Mapping your visuals
           </p>
-          <p className="desktop-brand-mantra">Map it. Make it yours.</p>
-          <p className="desktop-brand-offer">
-            Create and edit for free. Pay when you download.
-          </p>
         </div>
       </div>
 
