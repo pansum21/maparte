@@ -21,6 +21,12 @@ const layouts = manifest.categories.flatMap((category) => category.layouts.map((
 const failures = [];
 const hashes = new Set();
 const metricsByFrame = new Map();
+const thicknessCases = [
+  ["default", null],
+  ["thin", [0.25, 0.25]],
+  ["thick", [2, 2]],
+  ["uneven", [1.4, 0.35]],
+];
 
 for (const frame of frames) {
   const assetPath = path.join(root, "public", frame.asset.replace(/^\//, ""));
@@ -69,7 +75,7 @@ try {
     || !/width:\s*auto/.test(frameRule) || !/height:\s*auto/.test(frameRule)) {
     failures.push("preview frame SVG is not constrained to the white mat interior");
   }
-  const { NeatlineArtwork, getAiFramePlacement, getPosterBorderMetrics } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
+  const { NeatlineArtwork, frameWidthsFor, getPosterBorderMetrics } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
   for (const layout of layouts) {
     const metrics = getPosterBorderMetrics(layout.widthCm, layout.heightCm, true);
     const unitScaleX = 1000 / metrics.usableWidthCm;
@@ -78,68 +84,113 @@ try {
     let smallestGap = Infinity;
     let largestGap = 0;
     for (const frame of frames) {
+      for (const [thicknessName, thicknessValues] of thicknessCases) {
+      const thicknesses = thicknessValues ? { [frame.id]: thicknessValues } : {};
+      const expectedWidthsMm = frameWidthsFor(frame.id, thicknesses);
       const markup = renderToStaticMarkup(React.createElement(NeatlineArtwork, {
-        selection: { lineId: "none", cornerId: "none", frameId: frame.id, cornerPosition: "all", thicknesses: {}, lineVariant: "plain", cornerVariant: "plain" },
+        selection: { lineId: "none", cornerId: "none", frameId: frame.id, cornerPosition: "all", thicknesses, lineVariant: "plain", cornerVariant: "plain" },
         widthCm: layout.widthCm,
         heightCm: layout.heightCm,
       }));
-      const image = markup.match(/<image\b([^>]*data-full-frame="true"[^>]*)\/?\s*>/);
-      const attrs = Object.fromEntries(["href", "x", "y", "width", "height"].map((name) => {
-        const match = image?.[1].match(new RegExp(`${name}="([^"]+)"`));
-        return [name, match?.[1]];
-      }));
-      if (!image || attrs.href !== frame.asset) {
+      if (/<image\b/.test(markup)) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: selected vector frame did not render`);
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: thumbnail image duplicated the artwork in the poster preview`);
+      }
+      const renderedRects = [...markup.matchAll(/<rect\b([^>]*data-full-frame="true"[^>]*)\/?\s*>/g)];
+      if (renderedRects.length !== 2) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: expected two responsive vector border lines`);
         continue;
       }
-      const numbers = Object.fromEntries(["x", "y", "width", "height"].map((key) => [key, Number(attrs[key])]));
-      if (Object.values(numbers).some((n) => !Number.isFinite(n)) || numbers.width <= 0 || numbers.height <= 0) {
+      const frameRects = renderedRects.map((match) => Object.fromEntries(["x", "y", "width", "height", "stroke-width"].map((name) => {
+        const attr = match[1].match(new RegExp(`${name}="([^"]+)"`));
+        return [name, Number(attr?.[1])];
+      })));
+      if (frameRects.some((rect) => Object.values(rect).some((n) => !Number.isFinite(n)) || rect.width <= 0 || rect.height <= 0 || rect["stroke-width"] <= 0)) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: invalid frame placement`);
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: invalid responsive vector border geometry`);
         continue;
-      }
-      const placement = getAiFramePlacement(layout.widthCm, layout.heightCm);
-      for (const key of ["x", "y", "width", "height"]) {
-        if (Math.abs(numbers[key] - placement[key]) > 0.02) {
-          layoutFailures++;
-          failures.push(`${layout.id}/${frame.id}: ${key} differs from placement metrics`);
-        }
       }
 
-      // Use the actual non-transparent pixels of each SVG, then apply the
-      // same SVG image transform used by the live preview.
-      const bounds = metricsByFrame.get(frame.id);
-      if (!bounds) continue;
-      const artLeft = (numbers.x + numbers.width * (bounds.left / bounds.width)) / unitScaleX;
-      const artRight = (1000 - (numbers.x + numbers.width * ((bounds.right + 1) / bounds.width))) / unitScaleX;
-      const artTop = (numbers.y + numbers.height * (bounds.top / bounds.height)) / unitScaleY;
-      const artBottom = metrics.usableHeightCm - (numbers.y + numbers.height * ((bounds.bottom + 1) / bounds.height)) / unitScaleY;
-      const leftGap = metrics.mapInsetCm - metrics.outerMatCm - artLeft;
-      const rightGap = metrics.mapInsetCm - metrics.outerMatCm - artRight;
-      const topGap = metrics.mapInsetCm - metrics.outerMatCm - artTop;
-      const bottomGap = metrics.mapInsetCm - metrics.outerMatCm - artBottom;
-      const gaps = [leftGap, rightGap, topGap, bottomGap];
+      // The SVG viewBox must match the page-mat aspect so its line strokes
+      // stay physically uniform horizontally and vertically in every layout.
+      const pageWidthCm = Number(layout.widthCm);
+      const pageHeightCm = Number(layout.heightCm);
+      const pageAspect = pageWidthCm / pageHeightCm;
+      const artBoxAspect = pageAspect
+        * (metrics.usableWidthCm / pageWidthCm)
+        / (metrics.usableHeightCm / pageHeightCm);
+      const viewBoxAspect = 1000 / (1000 * metrics.usableHeightCm / metrics.usableWidthCm);
+      if (Math.abs(artBoxAspect - viewBoxAspect) > 1e-8) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: layout would distort frame stroke width`);
+      }
+      const renderedUnitScaleY = (1000 * metrics.usableHeightCm / metrics.usableWidthCm) / metrics.usableHeightCm;
+      if (Math.abs(unitScaleX - renderedUnitScaleY) > 1e-8) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: horizontal and vertical frame scales differ`);
+      }
+      const outer = frameRects[0];
+      const outerEdges = {
+        left: (outer.x - outer["stroke-width"] / 2) / unitScaleX,
+        right: (1000 - outer.x - outer.width - outer["stroke-width"] / 2) / unitScaleX,
+        top: (outer.y - outer["stroke-width"] / 2) / unitScaleY,
+        bottom: (1000 * metrics.usableHeightCm / metrics.usableWidthCm - outer.y - outer.height - outer["stroke-width"] / 2) / unitScaleY,
+      };
+      const artEdges = Object.values(outerEdges);
+      if (artEdges.some((edge) => !Number.isFinite(edge) || edge <= 0)
+        || Math.max(...artEdges) - Math.min(...artEdges) > 0.01) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}: outer artwork inset is uneven across the layout`);
+      }
+      const physicalWidths = frameRects.map((rect) => rect["stroke-width"] / unitScaleX);
+      if (physicalWidths.some((width) => width <= 0 || width > 0.2)) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: line thickness is outside the thin-frame range`);
+      }
+      const physicalWidthsMm = physicalWidths.map((value) => value * 10);
+      const physicalWidthsMmY = frameRects.map((rect) => rect["stroke-width"] / renderedUnitScaleY * 10);
+      if (physicalWidthsMm.some((value, index) => Math.abs(value - expectedWidthsMm[index]) > 0.01)
+        || physicalWidthsMmY.some((value, index) => Math.abs(value - expectedWidthsMm[index]) > 0.01)) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: horizontal/vertical frame line thickness differs from the selected mm value`);
+      }
+      const gaps = [
+        metrics.mapInsetCm - metrics.outerMatCm - outerEdges.left,
+        metrics.mapInsetCm - metrics.outerMatCm - outerEdges.right,
+        metrics.mapInsetCm - metrics.outerMatCm - outerEdges.top,
+        metrics.mapInsetCm - metrics.outerMatCm - outerEdges.bottom,
+      ];
       const min = Math.min(...gaps), max = Math.max(...gaps);
       smallestGap = Math.min(smallestGap, min);
       largestGap = Math.max(largestGap, max);
-      const expectedGap = metrics.gapCm;
-      // Thin banner canvases can legitimately scale the physical gap below
-      // 0.12 cm. Require the gap to stay positive and equal on all four sides;
-      // also ensure it remains within the designed maximum gap.
-      if (gaps.some((gap) => gap <= 0 || Math.abs(gap - expectedGap) > 0.035) || max - min > 0.01) {
+      if (gaps.some((gap) => gap <= 0 || Math.abs(gap - metrics.gapCm) > 0.02) || max - min > 0.01) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: map/frame white gap is not even (${gaps.map((g) => g.toFixed(3)).join(", ")} cm)`);
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: map/frame white gap is not even (${gaps.map((g) => g.toFixed(3)).join(", ")} cm)`);
       }
-      if (numbers.x + numbers.width * 0.02 < 0 || numbers.y + numbers.height * (20 / 1400) < 0) {
+      if (frameRects[1].x <= outer.x || frameRects[1].y <= outer.y
+        || frameRects[1].x + frameRects[1].width >= outer.x + outer.width
+        || frameRects[1].y + frameRects[1].height >= outer.y + outer.height) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: inner frame edge clips the page`);
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: inner line escapes the outer line`);
+      }
+      const inner = frameRects[1];
+      const clearances = [
+        inner.x - inner["stroke-width"] / 2 - outer.x - outer["stroke-width"] / 2,
+        outer.x + outer.width - outer["stroke-width"] / 2 - inner.x - inner.width - inner["stroke-width"] / 2,
+        inner.y - inner["stroke-width"] / 2 - outer.y - outer["stroke-width"] / 2,
+        outer.y + outer.height - outer["stroke-width"] / 2 - inner.y - inner.height - inner["stroke-width"] / 2,
+      ];
+      if (clearances.some((gap) => !Number.isFinite(gap) || gap / unitScaleX <= 0.01)) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: frame lines overlap or touch`);
+      }
       }
     }
     layoutReports.push({
       id: layout.id,
       category: layout.category,
-      frameCases: frames.length,
+      frameCases: frames.length * thicknessCases.length,
       failures: layoutFailures,
       whiteGapCm: Number(metrics.gapCm.toFixed(3)),
       observedGapRangeCm: [Number(smallestGap.toFixed(3)), Number(largestGap.toFixed(3))],
@@ -152,7 +203,8 @@ try {
 const result = {
   frames: frames.length,
   layouts: layouts.length,
-  combinations: frames.length * layouts.length,
+  thicknessCases: thicknessCases.map(([name]) => name),
+  combinations: frames.length * thicknessCases.length * layouts.length,
   uniqueVectorAssets: hashes.size,
   failures: failures.length,
   layoutReports: layoutReports.map(({ id, category, frameCases, failures: count, whiteGapCm, observedGapRangeCm }) => ({ id, category, frameCases, failures: count, whiteGapCm, observedGapRangeCm })),
@@ -161,6 +213,6 @@ const result = {
 console.log(JSON.stringify(result, null, 2));
 // The selected frame catalogue is intentionally user-curated and may contain
 // any positive number of unique frames; do not hard-code the old 20-frame set.
-if (frames.length === 0 || layouts.length !== 26 || hashes.size !== frames.length || failures.length) {
+if (frames.length !== 2 || layouts.length !== 26 || hashes.size !== frames.length || failures.length) {
   process.exitCode = 1;
 }
