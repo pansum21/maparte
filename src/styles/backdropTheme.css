@@ -1064,6 +1064,8 @@ body.has-custom-backdrop .poster-ghost-layer {
 .app-shell.is-cinema-mode .poster-frame {
   max-height: calc(88vh - 60px) !important;
   width: min(calc(100vw - 64px), calc((88vh - 60px) * var(--poster-aspect, 0.6666667))) !important;
+  /* Keep fullscreen paper-edge thickness consistent across device sizes. */
+  border-width: 7px !important;
   margin: 0 auto !important;
   transform: scale(0.96);
   box-shadow:
@@ -1611,7 +1613,7 @@ body.has-custom-backdrop .poster-ghost-layer {
   .app-shell.is-cinema-mode .poster-frame {
     width: min(calc(100vw - 40px), calc((100svh - 190px) * var(--poster-aspect, 0.6666667))) !important;
     max-height: calc(100svh - 190px) !important;
-    border-width: 10px !important;
+    border-width: 7px !important;
     transform: none !important;
   }
 
