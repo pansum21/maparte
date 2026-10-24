@@ -125,7 +125,7 @@ body.has-custom-backdrop .poster-ghost-layer {
   backdrop-filter: blur(28px) saturate(190%);
   -webkit-backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 18px 0 0 18px;
+  border-radius: 0 18px 18px 0;
   box-shadow:
     inset 0 2px 2px rgba(255, 255, 255, 0.28),
     0 24px 60px rgba(0, 0, 0, 0.65),
@@ -134,8 +134,12 @@ body.has-custom-backdrop .poster-ghost-layer {
 
 .export-modal-backdrop.backdrop-theme-modal-backdrop {
   align-items: stretch;
-  justify-content: flex-end;
+  justify-content: flex-start;
   padding: 0;
+  /* Keep the live wall color and map preview behind this panel crisp and true-to-color. */
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 :root[data-backdrop-mode="light"] .export-modal.backdrop-theme-modal {
@@ -153,6 +157,7 @@ body.has-custom-backdrop .poster-ghost-layer {
 
 .backdrop-modal-header {
   margin-bottom: 20px;
+  padding-top: 38px;
 }
 
 .backdrop-modal-badge {
@@ -240,8 +245,8 @@ body.has-custom-backdrop .poster-ghost-layer {
 .backdrop-filter-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .backdrop-search-wrap {
@@ -297,26 +302,41 @@ body.has-custom-backdrop .poster-ghost-layer {
 /* Categories Scroll */
 .backdrop-categories-scroll {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  overflow: visible;
+  padding-bottom: 0;
+  scrollbar-width: none;
 }
 
 .backdrop-category-pill {
-  display: inline-flex;
+  display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  justify-content: flex-start;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 5px;
+  padding: 5px 8px;
+  min-height: 28px;
   border-radius: 999px;
   background: rgba(15, 28, 44, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: rgba(195, 220, 240, 0.85);
-  font-size: 0.78rem;
+  font-size: 0.68rem;
   font-weight: 600;
   white-space: nowrap;
+  text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.backdrop-category-pill .cat-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 :root[data-backdrop-mode="light"] .backdrop-category-pill {
@@ -339,10 +359,16 @@ body.has-custom-backdrop .poster-ghost-layer {
 }
 
 .cat-count {
-  padding: 1px 6px;
+  flex: 0 0 auto;
+  min-width: 17px;
+  height: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.2);
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   font-family: "Spline Sans Mono", monospace;
 }
 
@@ -373,7 +399,7 @@ body.has-custom-backdrop .poster-ghost-layer {
 .backdrop-preset-card {
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 8px;
   background: rgba(18, 36, 56, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
@@ -412,7 +438,7 @@ body.has-custom-backdrop .poster-ghost-layer {
 .backdrop-swatch {
   height: 54px;
   border-radius: 9px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.15);
   overflow: hidden;
@@ -451,7 +477,7 @@ body.has-custom-backdrop .poster-ghost-layer {
 .backdrop-card-info {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .backdrop-card-title-row {
@@ -461,18 +487,32 @@ body.has-custom-backdrop .poster-ghost-layer {
 }
 
 .backdrop-preset-name {
-  font-size: 0.92rem;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.76rem;
   font-weight: 600;
   color: var(--ink);
+  line-height: 1.2;
+}
+
+.backdrop-card-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 18px;
 }
 
 .backdrop-mode-badge {
-  font-size: 0.68rem;
+  font-size: 0.56rem;
   font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 6px;
+  padding: 1px 5px;
+  border-radius: 5px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.035em;
+  line-height: 1.2;
 }
 
 .backdrop-mode-badge.mode--dark {
@@ -488,9 +528,37 @@ body.has-custom-backdrop .poster-ghost-layer {
 }
 
 .backdrop-preset-desc {
-  font-size: 0.76rem;
+  display: block;
+  margin-top: 3px;
+  font-size: 0.68rem;
   color: rgba(160, 185, 205, 0.7);
   line-height: 1.35;
+}
+
+.backdrop-info-button {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(160, 185, 205, 0.5);
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(195, 220, 240, 0.8);
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.backdrop-info-button:hover,
+.backdrop-info-button:focus-visible {
+  border-color: #38bdf8;
+  color: #38bdf8;
+  outline: none;
 }
 
 :root[data-backdrop-mode="light"] .backdrop-preset-desc {
@@ -1060,19 +1128,39 @@ body.has-custom-backdrop .poster-ghost-layer {
   padding-bottom: 40px !important; /* give room for the floating dock */
 }
 
+.app-shell.is-cinema-mode .poster-viewport.is-wall-mockup.has-wall-theme {
+  background-color: var(--wall-bg-color, #0c1a28) !important;
+  background-image: var(--wall-bg-image, none) !important;
+}
+
 /* Poster Frame in Cinema Mode: Scaled, majestic, realistic depth */
 .app-shell.is-cinema-mode .poster-frame {
   max-height: calc(88vh - 60px) !important;
   width: min(calc(100vw - 64px), calc((88vh - 60px) * var(--poster-aspect, 0.6666667))) !important;
-  /* Keep fullscreen paper-edge thickness consistent across device sizes. */
+  /* Keep the paper edge the same thickness on desktop, tablet, and phone. */
   border-width: 7px !important;
   margin: 0 auto !important;
-  transform: scale(0.96);
+  transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 0.96));
+  transform-origin: center;
+  cursor: grab;
+  touch-action: none;
   box-shadow:
     0 32px 72px rgba(0, 0, 0, 0.65),
     0 12px 28px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.08) !important;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border 0.4s ease !important;
+}
+
+.app-shell.is-cinema-mode .poster-frame:active {
+  cursor: grabbing;
+}
+
+.app-shell.is-cinema-mode .poster-viewport.has-user-wall-photo {
+  background-color: var(--wall-bg-color, #0c1a28) !important;
+  background-image: var(--cinema-wall-photo) !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
 }
 
 :root[data-backdrop-mode="light"] .app-shell.is-cinema-mode .poster-frame {
@@ -1096,6 +1184,126 @@ body.has-custom-backdrop .poster-ghost-layer {
   pointer-events: none !important;
   z-index: 9999999 !important;
 }
+
+.cinema-layout-control {
+  position: fixed;
+  left: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 10000001;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.cinema-layout-trigger {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  background: rgba(15, 28, 44, 0.88);
+  color: #f8fafc;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  touch-action: manipulation;
+}
+
+.cinema-layout-trigger svg { width: 18px; height: 18px; }
+.cinema-layout-trigger:hover,
+.cinema-layout-trigger[aria-expanded="true"] { border-color: #38bdf8; background: #0c4a6e; }
+
+.cinema-layout-popover {
+  width: min(420px, calc(100vw - 32px));
+  max-height: min(58vh, 520px);
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(8, 20, 34, 0.95);
+  color: #e2e8f0;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  pointer-events: auto;
+}
+
+.cinema-layout-popover__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.cinema-layout-popover__heading button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font-size: 1.2rem;
+}
+
+.cinema-wall-upload {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.cinema-wall-upload input { max-width: 100%; font-size: 0.72rem; }
+.cinema-wall-upload button {
+  justify-self: start;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  color: inherit;
+  font: inherit;
+  font-size: 0.68rem;
+}
+
+.cinema-placement-controls {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.cinema-placement-controls label {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 8px;
+  font-size: 0.72rem;
+}
+
+.cinema-placement-controls output { color: #7dd3fc; font-variant-numeric: tabular-nums; }
+.cinema-placement-controls input { grid-column: 1 / -1; width: 100%; }
+
+.cinema-layout-group { margin-top: 12px; }
+.cinema-layout-group h3 { margin: 0 0 6px; font-size: 0.74rem; color: #7dd3fc; }
+.cinema-layout-options { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+.cinema-layout-options button {
+  flex: 0 0 auto;
+  max-width: 190px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+.cinema-layout-options button.is-selected { border-color: #38bdf8; background: rgba(2, 132, 199, 0.38); }
 
 /* Top Left, Top Center & Top Right Bars in Cinema Mode */
 .cinema-top-bar-left {
@@ -1396,7 +1604,9 @@ body.has-custom-backdrop .poster-ghost-layer {
   gap: 10px;
   position: absolute;
   top: 18px;
-  right: 20px;
+  left: 20px;
+  right: auto;
+  z-index: 2;
 }
 
 .backdrop-back-to-preview-btn {
@@ -1577,6 +1787,23 @@ body.has-custom-backdrop .poster-ghost-layer {
     height: 100dvh;
     max-height: 100dvh;
     padding: 14px 12px calc(14px + env(safe-area-inset-bottom, 0px));
+    border-radius: 0 18px 18px 0;
+  }
+  .backdrop-modal-top-actions {
+    top: 12px;
+    left: 14px;
+  }
+  .backdrop-modal-header {
+    padding-top: 38px;
+  }
+  .backdrop-categories-scroll {
+    gap: 4px;
+  }
+  .backdrop-category-pill {
+    min-height: 26px;
+    padding: 4px 7px;
+    font-size: 0.64rem;
+    gap: 4px;
   }
   .cinema-top-bar-left {
     top: 12px !important;
@@ -1599,6 +1826,15 @@ body.has-custom-backdrop .poster-ghost-layer {
   .cinema-wall-name {
     max-width: 90px !important;
   }
+  .cinema-layout-control {
+    left: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+  .cinema-layout-popover {
+    width: min(390px, calc(100vw - 20px));
+    max-height: 52vh;
+    padding: 12px;
+  }
 }
 
 
@@ -1614,7 +1850,7 @@ body.has-custom-backdrop .poster-ghost-layer {
     width: min(calc(100vw - 40px), calc((100svh - 190px) * var(--poster-aspect, 0.6666667))) !important;
     max-height: calc(100svh - 190px) !important;
     border-width: 7px !important;
-    transform: none !important;
+    transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 1)) !important;
   }
 
   .cinema-top-bar-left {
@@ -1661,7 +1897,7 @@ body.has-custom-backdrop .poster-ghost-layer {
     width: min(calc(100vw - 20px), calc((100svh - 128px) * var(--poster-aspect, 0.6666667))) !important;
     max-height: calc(100svh - 128px) !important;
     border-width: 7px !important;
-    transform: none !important;
+    transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 1)) !important;
   }
 
   .cinema-top-bar-left {
