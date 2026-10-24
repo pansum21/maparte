@@ -72,6 +72,7 @@ function adsensePlugin() {
         resolvedConfig.root,
         resolvedConfig.build.outDir,
       );
+      fs.mkdirSync(outDir, { recursive: true });
       fs.writeFileSync(
         path.join(outDir, "ads.txt"),
         `google.com, ${publisherId}, DIRECT, f08c47fec0942fa0\n`,
