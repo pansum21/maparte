@@ -60,6 +60,7 @@ export default function BackdropThemeModal({
   const [selectedCategory, setSelectedCategory] = useState<WallCategory>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [mixerMode, setMixerMode] = useState<"solid" | "gradient">("solid");
+  const [openDescriptionId, setOpenDescriptionId] = useState<string | null>(null);
 
   // Keep a local draft for smooth slider dragging and text inputs
   const [customDraft, setCustomDraft] = useState<CustomGradientConfig>(
@@ -246,11 +247,20 @@ export default function BackdropThemeModal({
                   const isSelected =
                     !isCustomActive && backdropState.presetId === preset.id;
                   return (
-                    <button
+                    <div
                       key={preset.id}
-                      type="button"
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={isSelected}
                       className={`backdrop-preset-card ${isSelected ? "is-selected" : ""}`}
                       onClick={() => selectPreset(preset.id)}
+                      onKeyDown={(event) => {
+                        if (event.target !== event.currentTarget) return;
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          selectPreset(preset.id);
+                        }
+                      }}
                     >
                       <div
                         className="backdrop-swatch"
@@ -264,17 +274,37 @@ export default function BackdropThemeModal({
                         <span className="backdrop-swatch-hex">{preset.hex}</span>
                       </div>
                       <div className="backdrop-card-info">
-                        <div className="backdrop-card-title-row">
-                          <span className="backdrop-preset-name">{preset.name}</span>
+                        <span className="backdrop-preset-name" title={preset.name}>
+                          {preset.name}
+                        </span>
+                        <div className="backdrop-card-meta-row">
                           <span className={`backdrop-mode-badge mode--${preset.mode}`}>
                             {preset.mode === "light" ? "Light" : "Dark"}
                           </span>
+                          <button
+                            type="button"
+                            className="backdrop-info-button"
+                            aria-label={`${preset.name} description`}
+                            aria-expanded={openDescriptionId === preset.id}
+                            aria-controls={`wall-description-${preset.id}`}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setOpenDescriptionId((current) => current === preset.id ? null : preset.id);
+                            }}
+                          >
+                            i
+                          </button>
                         </div>
-                        <span className="backdrop-preset-desc">
-                          {preset.description}
-                        </span>
+                        {openDescriptionId === preset.id && (
+                          <span
+                            className="backdrop-preset-desc"
+                            id={`wall-description-${preset.id}`}
+                          >
+                            {preset.description}
+                          </span>
+                        )}
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
