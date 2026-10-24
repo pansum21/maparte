@@ -252,19 +252,9 @@ export function NeatlineArtwork({
 }
 
 function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: NeatlineSelection }) {
-  if (style.kind === "frame") {
-    const widths = frameWidthsFor(style.id, selection.thicknesses);
-    return <span className="neatline-swatch" aria-hidden="true">
-      {style.id !== "none-frame" ? <img src={style.thumbnail} alt="" loading="lazy" /> : null}
-      {widths.length ? <svg className="neatline-artwork neatline-swatch-artwork" viewBox="0 0 120 90" preserveAspectRatio="none">
-        {widths.map((width, index) => {
-          const inset = index === 0 ? 8 : 15;
-          return <rect key={index} x={inset} y={inset} width={120 - inset * 2} height={90 - inset * 2}
-            fill="none" stroke="#303238" strokeWidth={Math.max(0.6, width * 1.25)} />;
-        })}
-      </svg> : null}
-    </span>;
-  }
+  if (style.kind === "frame") return <span className="neatline-swatch" aria-hidden="true">
+    {style.thumbnail ? <img src={style.thumbnail} alt="" loading="lazy" /> : null}
+  </span>;
   if (style.id === "none") return <span className="neatline-swatch neatline-empty" aria-hidden="true">
     <span className="neatline-no-border-map" />
   </span>;
@@ -377,7 +367,7 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
         }}>{label}</button>)}
     </div> : null}
     <div className="neatline-options" role="group" aria-label="Choose a border">
-      {displayedStyles.map((style) => <button key={style.id} type="button" title={style.name} aria-pressed={isSelected(style)}
+      {displayedStyles.map((style) => <button key={style.id} type="button" data-border-style={style.id} title={style.name} aria-pressed={isSelected(style)}
         className={`neatline-option ${isSelected(style) ? "is-selected" : ""}`} onClick={() => selectStyle(style)}>
         <NeatlineSwatch style={style} selection={swatchSelection(style)} />
         <span className="neatline-option-name">{style.name}</span></button>)}
