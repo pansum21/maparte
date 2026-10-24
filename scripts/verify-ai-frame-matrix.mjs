@@ -92,6 +92,10 @@ try {
         widthCm: layout.widthCm,
         heightCm: layout.heightCm,
       }));
+      if (/<image\b/.test(markup)) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: thumbnail image duplicated the artwork in the poster preview`);
+      }
       const renderedRects = [...markup.matchAll(/<rect\b([^>]*data-full-frame="true"[^>]*)\/?\s*>/g)];
       if (renderedRects.length !== 2) {
         layoutFailures++;
@@ -108,9 +112,24 @@ try {
         continue;
       }
 
-      // The rendered artwork uses the same dynamic SVG aspect as the selected
-      // page. Verify its physical stroke widths remain identical in X/Y, and
-      // that the outer stroke leaves an equal map gap on all four sides.
+      // The SVG viewBox must match the page-mat aspect so its line strokes
+      // stay physically uniform horizontally and vertically in every layout.
+      const pageWidthCm = Number(layout.widthCm);
+      const pageHeightCm = Number(layout.heightCm);
+      const pageAspect = pageWidthCm / pageHeightCm;
+      const artBoxAspect = pageAspect
+        * (metrics.usableWidthCm / pageWidthCm)
+        / (metrics.usableHeightCm / pageHeightCm);
+      const viewBoxAspect = 1000 / (1000 * metrics.usableHeightCm / metrics.usableWidthCm);
+      if (Math.abs(artBoxAspect - viewBoxAspect) > 1e-8) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: layout would distort frame stroke width`);
+      }
+      const renderedUnitScaleY = (1000 * metrics.usableHeightCm / metrics.usableWidthCm) / metrics.usableHeightCm;
+      if (Math.abs(unitScaleX - renderedUnitScaleY) > 1e-8) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: horizontal and vertical frame scales differ`);
+      }
       const outer = frameRects[0];
       const outerEdges = {
         left: (outer.x - outer["stroke-width"] / 2) / unitScaleX,
@@ -130,9 +149,11 @@ try {
         failures.push(`${layout.id}/${frame.id}/${thicknessName}: line thickness is outside the thin-frame range`);
       }
       const physicalWidthsMm = physicalWidths.map((value) => value * 10);
-      if (physicalWidthsMm.some((value, index) => Math.abs(value - expectedWidthsMm[index]) > 0.01)) {
+      const physicalWidthsMmY = frameRects.map((rect) => rect["stroke-width"] / renderedUnitScaleY * 10);
+      if (physicalWidthsMm.some((value, index) => Math.abs(value - expectedWidthsMm[index]) > 0.01)
+        || physicalWidthsMmY.some((value, index) => Math.abs(value - expectedWidthsMm[index]) > 0.01)) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}/${thicknessName}: frame thickness control does not match rendered SVG width`);
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: horizontal/vertical frame line thickness differs from the selected mm value`);
       }
       const gaps = [
         metrics.mapInsetCm - metrics.outerMatCm - outerEdges.left,

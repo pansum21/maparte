@@ -35,8 +35,16 @@ function thicknessesFor(lineId, count, value) {
 
 const vite = await createServer({ root, configFile: false, plugins: [react()], server: { middlewareMode: true }, appType: "custom", logLevel: "error" });
 try {
-  const { NeatlineArtwork, frameWidthsFor, getPosterBorderMetrics } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
+  const { NeatlineArtwork, NeatlinePicker, frameWidthsFor, getPosterBorderMetrics } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
   let totalCases = 0;
+  const pickerMarkup = renderToStaticMarkup(React.createElement(NeatlinePicker, { width: "21", height: "29.7" }));
+  for (const frameId of frames) {
+    const swatchButton = pickerMarkup.match(new RegExp(`<button\\b(?=[^>]*data-border-style="${frameId}")[\\s\\S]*?<\\/button>`))?.[0] || "";
+    if (!swatchButton || (swatchButton.match(/<img\b/g) || []).length !== 1 || /neatline-swatch-artwork/.test(swatchButton)) {
+      errors.push(`${frameId}: frame option swatch duplicates the frame artwork with an extra line overlay`);
+    }
+  }
+  totalCases++;
   for (const layout of layouts) {
     let layoutFailures = 0;
     totalCases++;
@@ -154,7 +162,7 @@ try {
     }
     layoutReports.push({ id: layout.id, category: layout.category, cases: 1 + patterns.length * 3 * 2 + frames.length * frameThicknessCases.length, failures: layoutFailures });
   }
-  const result = { layouts: layouts.length, linePatterns: patterns.length, frameStyles: frames.length, frameThicknessCases: frameThicknessCases.map(([name]) => name), cases: totalCases, failures: errors.length, layoutReports, firstFailures: errors.slice(0, 30) };
+  const result = { layouts: layouts.length, linePatterns: patterns.length, frameStyles: frames.length, frameThicknessCases: frameThicknessCases.map(([name]) => name), frameSwatchesChecked: frames.length, cases: totalCases, failures: errors.length, layoutReports, firstFailures: errors.slice(0, 30) };
   console.log(JSON.stringify(result, null, 2));
   if (layouts.length !== 26 || errors.length) process.exitCode = 1;
 } finally {
