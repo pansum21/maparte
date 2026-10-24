@@ -154,8 +154,10 @@
 
   .desktop-brand-copy {
     display: flex;
-    align-items: baseline;
-    gap: 11px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
   }
 
   .desktop-brand-title {
@@ -171,9 +173,28 @@
     margin: 0;
     font-family: "Spline Sans Mono", monospace;
     font-size: 0.67rem;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: rgba(184, 212, 232, 0.5);
+    letter-spacing: 0.04em;
+    color: rgba(184, 212, 232, 0.78);
+  }
+
+  .desktop-brand-mantra,
+  .desktop-brand-offer {
+    margin: 0;
+    font-family: "Spline Sans Mono", monospace;
+    line-height: 1.35;
+  }
+
+  .desktop-brand-mantra {
+    color: #dfba73;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .desktop-brand-offer {
+    color: rgba(184, 212, 232, 0.66);
+    font-size: 0.57rem;
+    letter-spacing: 0;
   }
 
   .general-header-actions {
