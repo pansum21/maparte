@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { layoutGroups } from "@/features/layout/infrastructure/layoutRepository";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
+import { formatLayoutDimensions } from "@/features/layout/infrastructure/layoutRepository";
 import { LayoutIcon } from "@/shared/ui/Icons";
 
 interface Placement {
@@ -100,7 +101,8 @@ export default function CinemaWallDock({
                         type="button"
                         className={form.layout === layout.id ? "is-selected" : ""}
                         aria-pressed={form.layout === layout.id}
-                        title={layout.name}
+                        title={`${layout.name} — ${formatLayoutDimensions(layout)}`}
+                        aria-label={`${layout.name}, ${formatLayoutDimensions(layout)}`}
                         onClick={() => dispatch({
                           type: "SET_LAYOUT",
                           layoutId: layout.id,
@@ -108,7 +110,8 @@ export default function CinemaWallDock({
                           heightCm: formatLayoutCm(layout.heightCm),
                         })}
                       >
-                        {layout.name}
+                        <span className="cinema-layout-option-name">{layout.name}</span>
+                        <span className="cinema-layout-option-size">{formatLayoutDimensions(layout)}</span>
                       </button>
                     ))}
                   </div>
