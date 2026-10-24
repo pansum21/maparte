@@ -107,10 +107,10 @@ export default function FooterNote() {
         </p>
       </div>
 
-      <div className="desktop-footer-middle">
-        <p className="made-note">
-          MAPARTE v{appVersion} | © 2026 | Made with{" "}
-          <span className="heart">❤︎</span> in Dehradun, India
+      <div className="desktop-footer-middle brand-promise">
+        <p className="brand-promise-note">Map it. Make it yours.</p>
+        <p className="brand-offer-note">
+          Create and edit for free. Pay when you download.
         </p>
       </div>
 
