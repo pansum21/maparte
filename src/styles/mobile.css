@@ -1028,24 +1028,6 @@
     color: rgba(184, 212, 232, 0.82);
   }
 
-  .general-header .desktop-brand-mantra,
-  .general-header .desktop-brand-offer {
-    margin: 0;
-    font-family: "Spline Sans Mono", monospace;
-    line-height: 1.3;
-    white-space: normal;
-  }
-
-  .general-header .desktop-brand-mantra {
-    color: #dfba73;
-    font-size: 0.54rem;
-    font-weight: 700;
-  }
-
-  .general-header .desktop-brand-offer {
-    color: rgba(184, 212, 232, 0.7);
-    font-size: 0.48rem;
-  }
 
   .general-header-actions {
     margin-left: auto;
@@ -1900,3 +1882,17 @@
     padding: 0 9px;
   }
 }
+
+  .app-shell > .app-footer .brand-promise {
+    gap: 3px;
+    justify-items: center;
+  }
+
+  .app-shell > .app-footer .brand-promise-note {
+    font-size: 0.68rem;
+  }
+
+  .app-shell > .app-footer .brand-offer-note {
+    font-size: 0.55rem;
+    line-height: 1.4;
+  }
