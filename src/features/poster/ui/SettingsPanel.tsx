@@ -73,14 +73,10 @@ export default function SettingsPanel({
   mobileTab,
   isEditing = false,
   onToggleEditing,
-  isPhoneWallpaper = false,
-  onTogglePhoneWallpaper,
 }: {
   mobileTab?: MobileTab;
   isEditing?: boolean;
   onToggleEditing?: () => void;
-  isPhoneWallpaper?: boolean;
-  onTogglePhoneWallpaper?: () => void;
 }) {
   const { state, dispatch, mapRef, selectedTheme } = usePosterContext();
   const {
@@ -259,16 +255,6 @@ export default function SettingsPanel({
           <div className="accordion-body-inner">
             {!isColorEditorActive ? (
               <>
-              {mobileTab === "layout" ? (
-                <button
-                  type="button"
-                  className="theme-wall-action"
-                  onClick={onTogglePhoneWallpaper}
-                >
-                  <span aria-hidden="true">{isPhoneWallpaper ? "🖼️" : "📱"}</span>
-                  <span>{isPhoneWallpaper ? "Poster View" : "Phone Wallpaper Preview"}</span>
-                </button>
-              ) : null}
               <MapSettingsSection
                 activeMobileTab={mobileTab}
                 form={state.form}

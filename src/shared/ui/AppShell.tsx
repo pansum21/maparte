@@ -26,7 +26,6 @@ import {
 } from "@/features/legal/application/legalDoc";
 import { initBackdropThemeFromStorage } from "@/features/theme/application/useBackdropTheme";
 import CinemaWallDock from "@/features/theme/ui/CinemaWallDock";
-import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 
 const AboutModal = lazy(() => import("@/shared/ui/AboutModal"));
 const LegalModal = lazy(() => import("@/features/legal/ui/LegalModal"));
@@ -52,15 +51,11 @@ function SettingsDrawer({
   onClose,
   isEditing,
   onToggleEditing,
-  isPhoneWallpaper,
-  onTogglePhoneWallpaper,
 }: {
   mobileTab: MobileTab;
   onClose: () => void;
   isEditing: boolean;
   onToggleEditing: () => void;
-  isPhoneWallpaper: boolean;
-  onTogglePhoneWallpaper: () => void;
 }) {
   // Settings sections (especially Layout) contain long tool lists; open the
   // sheet expanded so phone users can reach the same controls without guessing
@@ -93,8 +88,6 @@ function SettingsDrawer({
             mobileTab={mobileTab}
             isEditing={isEditing}
             onToggleEditing={onToggleEditing}
-            isPhoneWallpaper={isPhoneWallpaper}
-            onTogglePhoneWallpaper={onTogglePhoneWallpaper}
           />
         </div>
       </div>
@@ -183,27 +176,6 @@ export default function AppShell() {
   const [cinemaWallPhoto, setCinemaWallPhoto] = useState<string | null>(null);
   const [cinemaPosterPlacement, setCinemaPosterPlacement] = useState({ x: 0, y: 0, scale: 1 });
   const [allCitiesOpen, setAllCitiesOpen] = useState(false);
-
-  const isPhoneWallpaper =
-    state.form.layout === "wallpaper_iphone_15_pro" ||
-    state.form.layout.startsWith("wallpaper_iphone");
-
-  const handleTogglePhoneWallpaper = useCallback(() => {
-    const targetId = isPhoneWallpaper
-      ? "print_a4_portrait"
-      : "wallpaper_iphone_15_pro";
-    const targetSize =
-      targetId === "wallpaper_iphone_15_pro"
-        ? { widthCm: 14.4, heightCm: 31.2 }
-        : { widthCm: 21, heightCm: 29.7 };
-
-    dispatch({
-      type: "SET_LAYOUT",
-      layoutId: targetId,
-      widthCm: formatLayoutCm(targetSize.widthCm),
-      heightCm: formatLayoutCm(targetSize.heightCm),
-    });
-  }, [dispatch, isPhoneWallpaper]);
 
   const handleToggleCinema = useCallback((forceState?: boolean) => {
     setIsCinemaMode((prev) => {
@@ -522,8 +494,6 @@ export default function AppShell() {
               mobileTab={desktopTab}
               isEditing={isEditing}
               onToggleEditing={() => setIsEditing((prev) => !prev)}
-              isPhoneWallpaper={isPhoneWallpaper}
-              onTogglePhoneWallpaper={handleTogglePhoneWallpaper}
             />
           </Suspense>
         </div>
@@ -542,8 +512,6 @@ export default function AppShell() {
           onClose={() => setMobileDrawerOpen(false)}
           isEditing={isEditing}
           onToggleEditing={() => setIsEditing((prev) => !prev)}
-          isPhoneWallpaper={isPhoneWallpaper}
-          onTogglePhoneWallpaper={handleTogglePhoneWallpaper}
         />
       ) : null}
 
