@@ -21,6 +21,12 @@ const layouts = manifest.categories.flatMap((category) => category.layouts.map((
 const failures = [];
 const hashes = new Set();
 const metricsByFrame = new Map();
+const thicknessCases = [
+  ["default", null],
+  ["thin", [0.25, 0.25]],
+  ["thick", [2, 2]],
+  ["uneven", [1.4, 0.35]],
+];
 
 for (const frame of frames) {
   const assetPath = path.join(root, "public", frame.asset.replace(/^\//, ""));
@@ -69,7 +75,7 @@ try {
     || !/width:\s*auto/.test(frameRule) || !/height:\s*auto/.test(frameRule)) {
     failures.push("preview frame SVG is not constrained to the white mat interior");
   }
-  const { NeatlineArtwork, getPosterBorderMetrics } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
+  const { NeatlineArtwork, frameWidthsFor, getPosterBorderMetrics } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
   for (const layout of layouts) {
     const metrics = getPosterBorderMetrics(layout.widthCm, layout.heightCm, true);
     const unitScaleX = 1000 / metrics.usableWidthCm;
@@ -78,15 +84,18 @@ try {
     let smallestGap = Infinity;
     let largestGap = 0;
     for (const frame of frames) {
+      for (const [thicknessName, thicknessValues] of thicknessCases) {
+      const thicknesses = thicknessValues ? { [frame.id]: thicknessValues } : {};
+      const expectedWidthsMm = frameWidthsFor(frame.id, thicknesses);
       const markup = renderToStaticMarkup(React.createElement(NeatlineArtwork, {
-        selection: { lineId: "none", cornerId: "none", frameId: frame.id, cornerPosition: "all", thicknesses: {}, lineVariant: "plain", cornerVariant: "plain" },
+        selection: { lineId: "none", cornerId: "none", frameId: frame.id, cornerPosition: "all", thicknesses, lineVariant: "plain", cornerVariant: "plain" },
         widthCm: layout.widthCm,
         heightCm: layout.heightCm,
       }));
       const renderedRects = [...markup.matchAll(/<rect\b([^>]*data-full-frame="true"[^>]*)\/?\s*>/g)];
       if (renderedRects.length !== 2) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: expected two responsive vector border lines`);
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: expected two responsive vector border lines`);
         continue;
       }
       const frameRects = renderedRects.map((match) => Object.fromEntries(["x", "y", "width", "height", "stroke-width"].map((name) => {
@@ -95,7 +104,7 @@ try {
       })));
       if (frameRects.some((rect) => Object.values(rect).some((n) => !Number.isFinite(n)) || rect.width <= 0 || rect.height <= 0 || rect["stroke-width"] <= 0)) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: invalid responsive vector border geometry`);
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: invalid responsive vector border geometry`);
         continue;
       }
 
@@ -118,7 +127,12 @@ try {
       const physicalWidths = frameRects.map((rect) => rect["stroke-width"] / unitScaleX);
       if (physicalWidths.some((width) => width <= 0 || width > 0.2)) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: line thickness is outside the thin-frame range`);
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: line thickness is outside the thin-frame range`);
+      }
+      const physicalWidthsMm = physicalWidths.map((value) => value * 10);
+      if (physicalWidthsMm.some((value, index) => Math.abs(value - expectedWidthsMm[index]) > 0.01)) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: frame thickness control does not match rendered SVG width`);
       }
       const gaps = [
         metrics.mapInsetCm - metrics.outerMatCm - outerEdges.left,
@@ -131,19 +145,31 @@ try {
       largestGap = Math.max(largestGap, max);
       if (gaps.some((gap) => gap <= 0 || Math.abs(gap - metrics.gapCm) > 0.02) || max - min > 0.01) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: map/frame white gap is not even (${gaps.map((g) => g.toFixed(3)).join(", ")} cm)`);
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: map/frame white gap is not even (${gaps.map((g) => g.toFixed(3)).join(", ")} cm)`);
       }
       if (frameRects[1].x <= outer.x || frameRects[1].y <= outer.y
         || frameRects[1].x + frameRects[1].width >= outer.x + outer.width
         || frameRects[1].y + frameRects[1].height >= outer.y + outer.height) {
         layoutFailures++;
-        failures.push(`${layout.id}/${frame.id}: inner line overlaps or escapes the outer line`);
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: inner line escapes the outer line`);
+      }
+      const inner = frameRects[1];
+      const clearances = [
+        inner.x - inner["stroke-width"] / 2 - outer.x - outer["stroke-width"] / 2,
+        outer.x + outer.width - outer["stroke-width"] / 2 - inner.x - inner.width - inner["stroke-width"] / 2,
+        inner.y - inner["stroke-width"] / 2 - outer.y - outer["stroke-width"] / 2,
+        outer.y + outer.height - outer["stroke-width"] / 2 - inner.y - inner.height - inner["stroke-width"] / 2,
+      ];
+      if (clearances.some((gap) => !Number.isFinite(gap) || gap / unitScaleX <= 0.01)) {
+        layoutFailures++;
+        failures.push(`${layout.id}/${frame.id}/${thicknessName}: frame lines overlap or touch`);
+      }
       }
     }
     layoutReports.push({
       id: layout.id,
       category: layout.category,
-      frameCases: frames.length,
+      frameCases: frames.length * thicknessCases.length,
       failures: layoutFailures,
       whiteGapCm: Number(metrics.gapCm.toFixed(3)),
       observedGapRangeCm: [Number(smallestGap.toFixed(3)), Number(largestGap.toFixed(3))],
@@ -156,7 +182,8 @@ try {
 const result = {
   frames: frames.length,
   layouts: layouts.length,
-  combinations: frames.length * layouts.length,
+  thicknessCases: thicknessCases.map(([name]) => name),
+  combinations: frames.length * thicknessCases.length * layouts.length,
   uniqueVectorAssets: hashes.size,
   failures: failures.length,
   layoutReports: layoutReports.map(({ id, category, frameCases, failures: count, whiteGapCm, observedGapRangeCm }) => ({ id, category, frameCases, failures: count, whiteGapCm, observedGapRangeCm })),
@@ -165,6 +192,6 @@ const result = {
 console.log(JSON.stringify(result, null, 2));
 // The selected frame catalogue is intentionally user-curated and may contain
 // any positive number of unique frames; do not hard-code the old 20-frame set.
-if (frames.length === 0 || layouts.length !== 26 || hashes.size !== frames.length || failures.length) {
+if (frames.length !== 2 || layouts.length !== 26 || hashes.size !== frames.length || failures.length) {
   process.exitCode = 1;
 }

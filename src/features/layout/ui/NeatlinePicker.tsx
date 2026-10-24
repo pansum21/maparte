@@ -37,6 +37,15 @@ const DEFAULT_LINE_WIDTHS: Record<LinePattern, number[]> = {
   single: [2], double: [1.9, 1.5], triple: [1.8, 1.45, 1.1],
 };
 const MAX_LINE_WIDTH = 5;
+const MIN_FRAME_WIDTH_MM = 0.25;
+const DEFAULT_FRAME_WIDTHS_MM: Record<string, number[]> = {
+  "selected-frame-18": [0.75, 0.5],
+  "selected-frame-20": [0.55, 0.55],
+};
+const FRAME_LINE_GAP_MM: Record<string, number> = {
+  "selected-frame-18": 1.7,
+  "selected-frame-20": 1.5,
+};
 const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
   top: "#b44737", right: "#276b62", bottom: "#bd8735", left: "#526b9b",
 };
@@ -152,6 +161,24 @@ function widthsFor(styleId: string, thicknesses: Record<string, number[]>): numb
   });
 }
 
+/** Frame outline widths are stored in mm and kept apart to prevent overlaps. */
+export function frameWidthsFor(styleId: string, thicknesses: Record<string, number[]>): number[] {
+  const defaults = DEFAULT_FRAME_WIDTHS_MM[styleId];
+  if (!defaults) return [];
+  const saved = thicknesses[styleId] || [];
+  const widths = defaults.map((fallback, index) => {
+    const value = Number(saved[index]);
+    return Number.isFinite(value) ? Math.min(2, Math.max(MIN_FRAME_WIDTH_MM, value)) : fallback;
+  });
+  const safeTotal = (FRAME_LINE_GAP_MM[styleId] ?? 1.5) - 0.2;
+  const sum = widths.reduce((total, width) => total + width, 0);
+  if (sum > safeTotal) {
+    const factor = safeTotal / sum;
+    return widths.map((width) => Math.max(MIN_FRAME_WIDTH_MM, width * factor));
+  }
+  return widths;
+}
+
 export function NeatlineArtwork({
   selection,
   className = "",
@@ -171,6 +198,7 @@ export function NeatlineArtwork({
   const innerW = 1000;
   const innerH = innerW * metrics.usableHeightCm / metrics.usableWidthCm;
   const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
+  const frameWidths = frame ? frameWidthsFor(frame.id, selection.thicknesses) : [];
   const maxStroke = widths.length ? Math.max(...widths) : 1;
   const unitScale = innerW / metrics.usableWidthCm;
   // Keep every stroke fully inside the SVG viewport, even at the thickest
@@ -183,14 +211,14 @@ export function NeatlineArtwork({
       : [edgeInset]
     : [];
   const frameLineSpec = frame?.id === "selected-frame-18"
-    ? [{ insetCm: metrics.frameArtInsetCm, widthCm: 0.075 }, { insetCm: metrics.frameArtInsetCm + 0.17, widthCm: 0.05 }]
+    ? [{ insetCm: metrics.frameArtInsetCm, widthMm: frameWidths[0] }, { insetCm: metrics.frameArtInsetCm + 0.17, widthMm: frameWidths[1] }]
     : frame
-      ? [{ insetCm: metrics.frameArtInsetCm, widthCm: 0.055 }, { insetCm: metrics.frameArtInsetCm + 0.15, widthCm: 0.055 }]
+      ? [{ insetCm: metrics.frameArtInsetCm, widthMm: frameWidths[0] }, { insetCm: metrics.frameArtInsetCm + 0.15, widthMm: frameWidths[1] }]
       : [];
   return <svg className={`neatline-artwork ${className}`} viewBox={`0 0 ${innerW} ${innerH}`} preserveAspectRatio="none" aria-hidden="true">
     {frameLineSpec.map((spec, index) => {
       const inset = spec.insetCm * unitScale;
-      const stroke = spec.widthCm * unitScale;
+      const stroke = (spec.widthMm / 10) * unitScale;
       return <rect
         key={`frame-line-${index}`}
         data-full-frame="true"
@@ -224,8 +252,21 @@ export function NeatlineArtwork({
 }
 
 function NeatlineSwatch({ style, selection }: { style: BorderStyle; selection: NeatlineSelection }) {
-  if (style.kind === "frame") return <span className="neatline-swatch" aria-hidden="true">
-    {style.id !== "none-frame" ? <img src={style.thumbnail} alt="" loading="lazy" /> : null}
+  if (style.kind === "frame") {
+    const widths = frameWidthsFor(style.id, selection.thicknesses);
+    return <span className="neatline-swatch" aria-hidden="true">
+      {style.id !== "none-frame" ? <img src={style.thumbnail} alt="" loading="lazy" /> : null}
+      {widths.length ? <svg className="neatline-artwork neatline-swatch-artwork" viewBox="0 0 120 90" preserveAspectRatio="none">
+        {widths.map((width, index) => {
+          const inset = index === 0 ? 8 : 15;
+          return <rect key={index} x={inset} y={inset} width={120 - inset * 2} height={90 - inset * 2}
+            fill="none" stroke="#303238" strokeWidth={Math.max(0.6, width * 1.25)} />;
+        })}
+      </svg> : null}
+    </span>;
+  }
+  if (style.id === "none") return <span className="neatline-swatch neatline-empty" aria-hidden="true">
+    <span className="neatline-no-border-map" />
   </span>;
   const line = style.id === "none" ? undefined : style;
   const widths = line ? widthsFor(line.id, selection.thicknesses) : [];
@@ -259,15 +300,17 @@ function lineLabel(index: number, count: number): string {
 
 export function NeatlinePicker({ width, height }: { width: string; height: string }) {
   const [selection, setSelection] = useState<NeatlineSelection>(readSelection);
-  const [category, setCategory] = useState<"line" | "frame">("line");
   const [variant, setVariant] = useState<ArtVariant>(() => readSelection().lineVariant);
   const [isEditingThickness, setIsEditingThickness] = useState(false);
   const selectedLine = useMemo(() => lineStyles.find((style) => style.id === selection.lineId), [selection.lineId]);
-  const activeCategoryStyles: BorderStyle[] = category === "line" ? lineStyles : frameStyles;
-  const displayedStyles: BorderStyle[] = category === "line"
-    ? [{ id: "none", name: "No line", kind: "line", pattern: "single" }, ...activeCategoryStyles]
-    : [{ id: "none-frame", name: "No frame", kind: "frame", asset: "", thumbnail: "", width: 0, height: 0, accent: "#354b62" }, ...activeCategoryStyles];
+  const selectedFrame = useMemo(() => frameStyles.find((style) => style.id === selection.frameId), [selection.frameId]);
+  const displayedStyles: BorderStyle[] = [
+    { id: "none", name: "No border", kind: "line", pattern: "single" },
+    ...lineStyles,
+    ...frameStyles,
+  ];
   const lineWidths = selectedLine ? widthsFor(selectedLine.id, selection.thicknesses) : [];
+  const frameWidths = selectedFrame ? frameWidthsFor(selectedFrame.id, selection.thicknesses) : [];
   const layerCount = [selection.lineId !== "none", selection.frameId !== "none"].filter(Boolean).length;
 
   useEffect(() => {
@@ -286,7 +329,6 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
     setSelection((current) => {
       if (style.id === "none") return { ...current, lineId: "none", cornerId: "none", frameId: "none" };
       if (style.kind === "line") return { ...current, lineId: style.id, cornerId: "none", frameId: "none" };
-      if (style.id === "none-frame") return { ...current, frameId: "none", cornerId: "none" };
       return { ...current, lineId: "none", cornerId: "none", frameId: style.id };
     });
     setIsEditingThickness(false);
@@ -299,45 +341,62 @@ export function NeatlinePicker({ width, height }: { width: string; height: strin
       return { ...current, thicknesses: { ...current.thicknesses, [selectedLine.id]: next } };
     });
   };
+  const updateFrameThickness = (lineIndex: number, value: number) => {
+    if (!selectedFrame) return;
+    setSelection((current) => {
+      const next = frameWidthsFor(selectedFrame.id, current.thicknesses);
+      next[lineIndex] = value;
+      const safeTotal = (FRAME_LINE_GAP_MM[selectedFrame.id] ?? 1.5) - 0.2;
+      if (next.reduce((total, widthMm) => total + widthMm, 0) > safeTotal) {
+        next[lineIndex] = Math.max(MIN_FRAME_WIDTH_MM, safeTotal - next[1 - lineIndex]);
+      }
+      return { ...current, thicknesses: { ...current.thicknesses, [selectedFrame.id]: next } };
+    });
+  };
+  const frameThicknessMax = (lineIndex: number) => selectedFrame
+    ? Math.max(MIN_FRAME_WIDTH_MM, (FRAME_LINE_GAP_MM[selectedFrame.id] ?? 1.5) - 0.2 - frameWidths[1 - lineIndex])
+    : 2;
   const swatchSelection = (style: BorderStyle): NeatlineSelection => style.kind === "line"
     ? { ...selection, lineId: style.id, cornerId: "none", frameId: "none" }
-    : { ...selection, lineId: "none", cornerId: "none", frameId: style.id === "none-frame" ? "none" : style.id };
+    : { ...selection, lineId: "none", cornerId: "none", frameId: style.id };
   const isSelected = (style: BorderStyle) => style.kind === "line"
-    ? style.id === "none" ? selection.lineId === "none" : style.id === selection.lineId
-    : style.id === "none-frame" ? selection.frameId === "none" : style.id === selection.frameId;
+    ? style.id === "none"
+      ? selection.lineId === "none" && selection.frameId === "none"
+      : style.id === selection.lineId
+    : style.id === selection.frameId;
 
   return <section className="neatline-picker" aria-labelledby="neatline-heading">
     <div className="neatline-picker-heading"><div><h3 id="neatline-heading">Borders</h3>
-      <p>Choose a line border or a full rectangular frame. The map keeps a clean white gap · {width} × {height} cm</p></div>
+      <p>Choose no border, a line border, or a full rectangular frame · {width} × {height} cm</p></div>
       <span className="neatline-count">{layerCount} {layerCount === 1 ? "layer" : "layers"}</span></div>
-    <div className="neatline-tabs" role="tablist" aria-label="Border layer">
-      {([["line", "Line borders"], ["frame", "Border"]] as const).map(([id, label]) =>
-        <button type="button" role="tab" aria-selected={category === id} className={category === id ? "is-active" : ""} key={id} onClick={() => {
-          setCategory(id);
-          if (id === "line") setVariant(selection.lineVariant);
-          if (id !== "line") setVariant("plain");
-        }}>{label}</button>)}
-    </div>
-    {category === "line" ? <div className="neatline-variants" role="group" aria-label="Line color style">
+    {selectedLine ? <div className="neatline-variants" role="group" aria-label="Line color style">
       {([["plain", "Plain"], ["colorful", "Colorful"]] as const).map(([id, label]) => <button key={id} type="button"
         className={variant === id ? "is-active" : ""} aria-pressed={variant === id} onClick={() => {
           setVariant(id);
           setSelection((current) => ({ ...current, lineVariant: id }));
         }}>{label}</button>)}
     </div> : null}
-    <div className="neatline-options" role="group" aria-label={`Choose ${category} border`}>
-      {displayedStyles.map((style) => <button key={`${category}-${style.id}`} type="button" title={style.name} aria-pressed={isSelected(style)}
+    <div className="neatline-options" role="group" aria-label="Choose a border">
+      {displayedStyles.map((style) => <button key={style.id} type="button" title={style.name} aria-pressed={isSelected(style)}
         className={`neatline-option ${isSelected(style) ? "is-selected" : ""}`} onClick={() => selectStyle(style)}>
         <NeatlineSwatch style={style} selection={swatchSelection(style)} />
         <span className="neatline-option-name">{style.name}</span></button>)}
     </div>
-    {category === "line" && selectedLine ? <div className="neatline-edit-wrap"><button type="button" className="neatline-edit-button" aria-expanded={isEditingThickness}
-      onClick={() => setIsEditingThickness((open) => !open)}>{isEditingThickness ? "Close thickness settings" : "Adjust line thickness"}</button>
-      {isEditingThickness ? <fieldset className="neatline-adjustments"><legend>Line thickness</legend>
-        {lineWidths.map((value, index) => <label className="neatline-adjustment" key={`${selectedLine.id}-${index}`}>
+    {selectedLine || selectedFrame ? <div className="neatline-edit-wrap"><button type="button" className="neatline-edit-button" aria-expanded={isEditingThickness}
+      onClick={() => setIsEditingThickness((open) => !open)}>{isEditingThickness ? "Close thickness settings" : `Adjust ${selectedFrame ? "frame" : "line"} thickness`}</button>
+      {isEditingThickness ? <fieldset className="neatline-adjustments"><legend>{selectedFrame ? "Frame line thickness (mm)" : "Line thickness"}</legend>
+        {selectedLine ? lineWidths.map((value, index) => <label className="neatline-adjustment" key={`${selectedLine.id}-${index}`}>
           <span className="neatline-adjustment-label">{lineLabel(index, lineWidths.length)}</span>
           <input type="range" min="0.5" max={MAX_LINE_WIDTH} step="0.1" value={value} onChange={(event) => updateThickness(index, Number(event.target.value))} aria-label={`${lineLabel(index, lineWidths.length)} thickness`} />
-          <output>{value.toFixed(1)}</output></label>)}
-        <p className="neatline-adjustments-note">Set each line thickness independently. The value helps compare line weight.</p></fieldset> : null}</div> : null}
+          <output>{value.toFixed(1)}</output></label>) : null}
+        {selectedFrame ? frameWidths.map((value, index) => {
+          const label = index === 0 ? "Outer frame line" : "Inner frame line";
+          return <label className="neatline-adjustment" key={`${selectedFrame.id}-${index}`}>
+            <span className="neatline-adjustment-label">{label}</span>
+            <input type="range" min={MIN_FRAME_WIDTH_MM} max={frameThicknessMax(index)} step="0.05" value={value}
+              onChange={(event) => updateFrameThickness(index, Number(event.target.value))} aria-label={`${label} thickness`} />
+            <output>{value.toFixed(2)} mm</output></label>;
+        }) : null}
+        <p className="neatline-adjustments-note">Frame-line sliders are capped to keep the parallel lines separate and prevent overlap.</p></fieldset> : null}</div> : null}
   </section>;
 }

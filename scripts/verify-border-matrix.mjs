@@ -19,6 +19,13 @@ const patterns = [
   ["neatline-double", 2],
   ["neatline-triple", 3],
 ];
+const frames = ["selected-frame-18", "selected-frame-20"];
+const frameThicknessCases = [
+  ["default", null],
+  ["thin", [0.25, 0.25]],
+  ["thick", [2, 2]],
+  ["uneven", [1.4, 0.35]],
+];
 const errors = [];
 const layoutReports = [];
 
@@ -28,10 +35,20 @@ function thicknessesFor(lineId, count, value) {
 
 const vite = await createServer({ root, configFile: false, plugins: [react()], server: { middlewareMode: true }, appType: "custom", logLevel: "error" });
 try {
-  const { NeatlineArtwork } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
+  const { NeatlineArtwork, frameWidthsFor, getPosterBorderMetrics } = await vite.ssrLoadModule("/src/features/layout/ui/NeatlinePicker.tsx");
   let totalCases = 0;
   for (const layout of layouts) {
     let layoutFailures = 0;
+    totalCases++;
+    const noneMarkup = renderToStaticMarkup(React.createElement(NeatlineArtwork, {
+      selection: { lineId: "none", cornerId: "none", frameId: "none", cornerPosition: "all", thicknesses: {}, lineVariant: "plain", cornerVariant: "plain" },
+      widthCm: layout.widthCm,
+      heightCm: layout.heightCm,
+    }));
+    if (noneMarkup !== "") {
+      layoutFailures++;
+      errors.push(`${layout.id}/none: no-border selection rendered artwork`);
+    }
     for (const [lineId, count] of patterns) {
       for (const thicknessValue of [null, 0.5, 5]) {
         for (const lineVariant of ["plain", "colorful"]) {
@@ -93,9 +110,51 @@ try {
         }
       }
     }
-    layoutReports.push({ id: layout.id, category: layout.category, cases: patterns.length * 3 * 2, failures: layoutFailures });
+    for (const frameId of frames) {
+      for (const [thicknessName, thicknessValues] of frameThicknessCases) {
+        totalCases++;
+        const thicknesses = thicknessValues ? { [frameId]: thicknessValues } : {};
+        const expectedWidthsMm = frameWidthsFor(frameId, thicknesses);
+        const markup = renderToStaticMarkup(React.createElement(NeatlineArtwork, {
+          selection: { lineId: "none", cornerId: "none", frameId, cornerPosition: "all", thicknesses, lineVariant: "plain", cornerVariant: "plain" },
+          widthCm: layout.widthCm,
+          heightCm: layout.heightCm,
+        }));
+        const rects = [...markup.matchAll(/<rect\b([^>]*data-full-frame="true"[^>]*)\/?\s*>/g)].map((match) => {
+          const attrs = Object.fromEntries(["x", "y", "width", "height", "stroke-width"].map((name) => {
+            const value = match[1].match(new RegExp(`${name}="([^"]+)"`))?.[1];
+            return [name, Number(value)];
+          }));
+          return attrs;
+        });
+        if (rects.length !== 2 || rects.some((rect) => Object.values(rect).some((value) => !Number.isFinite(value)) || rect.width <= 0 || rect.height <= 0 || rect["stroke-width"] <= 0)) {
+          layoutFailures++;
+          errors.push(`${layout.id}/${frameId}/${thicknessName}: invalid or missing vector frame lines`);
+          continue;
+        }
+        const metrics = getPosterBorderMetrics(layout.widthCm, layout.heightCm, true);
+        const unitScale = 1000 / metrics.usableWidthCm;
+        const renderedWidthsMm = rects.map((rect) => rect["stroke-width"] / unitScale * 10);
+        if (renderedWidthsMm.some((value, index) => Math.abs(value - expectedWidthsMm[index]) > 0.01)) {
+          layoutFailures++;
+          errors.push(`${layout.id}/${frameId}/${thicknessName}: frame thickness controls did not reach the vector preview`);
+        }
+        const [outer, inner] = rects;
+        const clearances = [
+          inner.x - inner["stroke-width"] / 2 - outer.x - outer["stroke-width"] / 2,
+          outer.x + outer.width - outer["stroke-width"] / 2 - inner.x - inner.width - inner["stroke-width"] / 2,
+          inner.y - inner["stroke-width"] / 2 - outer.y - outer["stroke-width"] / 2,
+          outer.y + outer.height - outer["stroke-width"] / 2 - inner.y - inner.height - inner["stroke-width"] / 2,
+        ];
+        if (clearances.some((gap) => !Number.isFinite(gap) || gap / unitScale <= 0.01)) {
+          layoutFailures++;
+          errors.push(`${layout.id}/${frameId}/${thicknessName}: frame strokes overlap or touch`);
+        }
+      }
+    }
+    layoutReports.push({ id: layout.id, category: layout.category, cases: 1 + patterns.length * 3 * 2 + frames.length * frameThicknessCases.length, failures: layoutFailures });
   }
-  const result = { layouts: layouts.length, linePatterns: patterns.length, cases: totalCases, failures: errors.length, layoutReports, firstFailures: errors.slice(0, 30) };
+  const result = { layouts: layouts.length, linePatterns: patterns.length, frameStyles: frames.length, frameThicknessCases: frameThicknessCases.map(([name]) => name), cases: totalCases, failures: errors.length, layoutReports, firstFailures: errors.slice(0, 30) };
   console.log(JSON.stringify(result, null, 2));
   if (layouts.length !== 26 || errors.length) process.exitCode = 1;
 } finally {
