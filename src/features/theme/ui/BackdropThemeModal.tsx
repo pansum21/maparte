@@ -222,7 +222,6 @@ export default function BackdropThemeModal({
         {activeTab === "presets" ? (
           <div className="backdrop-presets-view">
             <div className="backdrop-filter-section">
-              <span className="backdrop-preset-count" aria-label="64 wall colors">64 colors</span>
               <div className="backdrop-categories-scroll">
                 {WALL_CATEGORIES.map((cat) => (
                   <button
@@ -290,11 +289,6 @@ export default function BackdropThemeModal({
                         <span className="backdrop-preset-name" title={preset.name}>
                           {preset.name}
                         </span>
-                        <div className="backdrop-card-meta-row">
-                          <span className={`backdrop-mode-badge tone--${tone}`}>
-                            {WALL_TONE_LABELS[tone]}
-                          </span>
-                        </div>
                       </div>
                     </div>
                   );
