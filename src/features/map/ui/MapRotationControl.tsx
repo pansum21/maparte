@@ -58,42 +58,38 @@ export default function MapRotationControl() {
 
   return (
     <section className="map-rotation-control" aria-label="Rotation">
-      <div className="map-rotation-control__heading">
-        <span>Rotation</span>
-        <label className="map-rotation-control__number-label">
-          <span className="sr-only">Rotation angle in degrees</span>
-          <input
-            aria-label="Rotation angle in degrees"
-            className="map-rotation-control__number"
-            type="number"
-            inputMode="numeric"
-            min={0}
-            max={360}
-            step={1}
-            value={valueText}
-            onChange={(event) => {
-              const nextText = event.currentTarget.value;
-              setValueText(nextText);
-              if (nextText.trim() !== "") {
-                const parsed = Number(nextText);
-                if (Number.isFinite(parsed)) {
-                  const next = clampDegrees(parsed);
-                  setDegrees(next);
-                  lastRequestedDegrees.current = next;
-                  mapRef.current?.rotateTo(next, { duration: 0 });
-                }
+      <label className="map-rotation-control__number-label" aria-label="Current map rotation">
+        <input
+          aria-label="Rotation angle in degrees"
+          className="map-rotation-control__number"
+          type="number"
+          inputMode="numeric"
+          min={0}
+          max={360}
+          step={1}
+          value={valueText}
+          onChange={(event) => {
+            const nextText = event.currentTarget.value;
+            setValueText(nextText);
+            if (nextText.trim() !== "") {
+              const parsed = Number(nextText);
+              if (Number.isFinite(parsed)) {
+                const next = clampDegrees(parsed);
+                setDegrees(next);
+                lastRequestedDegrees.current = next;
+                mapRef.current?.rotateTo(next, { duration: 0 });
               }
-            }}
-            onBlur={commitTextValue}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") event.currentTarget.blur();
-            }}
-          />
-          <span aria-hidden="true">°</span>
-        </label>
-      </div>
+            }
+          }}
+          onBlur={commitTextValue}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") event.currentTarget.blur();
+          }}
+        />
+        <span aria-hidden="true">°</span>
+      </label>
 
-      <div className="map-rotation-control__row">
+      <>
         <button
           className="map-rotation-control__arrow"
           type="button"
@@ -120,13 +116,8 @@ export default function MapRotationControl() {
         >
           <RotateRightIcon aria-hidden="true" />
         </button>
-      </div>
-
-      <div className="map-rotation-control__range-labels" aria-hidden="true">
-        <span>0°</span>
-        <span>180°</span>
-        <span>360°</span>
-      </div>
+      </>
+      <span className="map-rotation-control__endpoint" aria-label="Maximum rotation 360 degrees">360°</span>
     </section>
   );
 }

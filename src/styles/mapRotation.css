@@ -1,44 +1,39 @@
 .map-rotation-control {
   grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 52px 40px minmax(70px, 1fr) 40px 52px;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   min-width: 0;
-  padding: 12px;
+  padding: 8px 10px;
   box-sizing: border-box;
   border: 1px solid rgba(125, 216, 240, 0.2);
-  border-radius: 12px;
+  border-radius: 22px;
   background: rgba(8, 18, 30, 0.55);
   color: #e7f4fb;
 }
 
-.map-rotation-control__heading,
-.map-rotation-control__row,
-.map-rotation-control__range-labels {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.map-rotation-control__heading {
-  margin-bottom: 10px;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.map-rotation-control__number-label {
+.map-rotation-control__number-label,
+.map-rotation-control__endpoint {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 3px 7px;
+  justify-content: center;
+  gap: 2px;
+  width: 52px;
+  height: 36px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0 5px;
   border: 1px solid rgba(171, 201, 224, 0.28);
-  border-radius: 8px;
+  border-radius: 12px;
   background: rgba(4, 12, 21, 0.68);
-  color: #b9d9eb;
-  font: 600 0.78rem/1.2 "Spline Sans Mono", monospace;
+  color: #d9edf9;
+  font: 600 0.8rem/1 "Spline Sans Mono", monospace;
 }
 
 .map-rotation-control__number {
-  width: 48px;
+  width: 31px;
   min-width: 0;
   padding: 0;
   border: 0;
@@ -59,13 +54,14 @@
 
 .map-rotation-control__arrow {
   display: inline-grid;
-  flex: 0 0 36px;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  min-width: 0;
   padding: 0;
+  box-sizing: border-box;
   border: 1px solid rgba(171, 201, 224, 0.28);
-  border-radius: 10px;
+  border-radius: 12px;
   background: rgba(31, 56, 75, 0.55);
   color: #d9edf9;
   cursor: pointer;
@@ -77,36 +73,42 @@
 }
 
 .map-rotation-control__arrow svg {
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
 }
 
 .map-rotation-control__slider {
-  flex: 1 1 auto;
+  display: block;
   min-width: 0;
   width: 100%;
+  margin: 0;
   accent-color: #c8e9fb;
   cursor: pointer;
 }
 
-.map-rotation-control__range-labels {
-  margin: 5px 44px 0;
-  color: rgba(194, 220, 236, 0.62);
-  font: 500 0.64rem/1.2 "Spline Sans Mono", monospace;
-}
-
-.edit-map-action-panel {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-@media (max-width: 768px) {
+@media (max-width: 380px) {
   .map-rotation-control {
-    padding: 10px;
+    grid-template-columns: 45px 34px minmax(48px, 1fr) 34px 45px;
+    gap: 5px;
+    padding: 7px;
+    border-radius: 18px;
+  }
+
+  .map-rotation-control__number-label,
+  .map-rotation-control__endpoint {
+    width: 45px;
+    height: 34px;
+    font-size: 0.72rem;
+    border-radius: 10px;
+  }
+
+  .map-rotation-control__number {
+    width: 25px;
   }
 
   .map-rotation-control__arrow {
-    flex-basis: 32px;
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
   }
 }
