@@ -1,10 +1,12 @@
-/* Lift only the city picker panel bottom edge to the preview inner border. */
+/* Match the city picker panel bounds to the wall color panel. */
 .app-shell .all-cities-modal {
-  bottom: 8.2mm;
+  top: 62px;
+  bottom: 45px;
 }
 
-@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+@media (max-width: 768px) {
   .app-shell .all-cities-modal {
-    bottom: calc(86px + env(safe-area-inset-bottom, 0px) + 8.2mm);
+    top: calc(54px + env(safe-area-inset-top, 0px));
+    bottom: 2px;
   }
 }
