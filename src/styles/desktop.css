@@ -734,6 +734,17 @@
     max-height: calc(100vh - 196px);
   }
 
+  /* The Layout drawer sits directly beside the tool rail, like the Wall drawer. */
+  .app-shell[data-desktop-tab="layout"] .desktop-left-panel {
+    left: 64px;
+    width: 374px;
+  }
+
+  .app-shell[data-desktop-tab="layout"] .desktop-settings-slide {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
   .desktop-location-row-wrap {
     display: block;
     position: fixed;
