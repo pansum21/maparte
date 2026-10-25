@@ -734,9 +734,16 @@
     max-height: calc(100vh - 196px);
   }
 
-  /* The Layout drawer sits directly beside the tool rail, like the Wall drawer. */
+  /* Tool panels share one side-attached drawer beside the tool rail. */
   .app-shell[data-desktop-tab="layout"] .desktop-left-panel,
-  .app-shell[data-desktop-tab="theme"] .desktop-left-panel {
+  .app-shell[data-desktop-tab="theme"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="frames"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="templates"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="style"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="layers"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="markers"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="routes"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="settings"] .desktop-left-panel {
     top: 62px;
     right: auto;
     bottom: 38px;
@@ -746,7 +753,14 @@
   }
 
   .app-shell[data-desktop-tab="layout"] .desktop-settings-slide,
-  .app-shell[data-desktop-tab="theme"] .desktop-settings-slide {
+  .app-shell[data-desktop-tab="theme"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="frames"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="templates"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="style"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="layers"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="markers"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="routes"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="settings"] .desktop-settings-slide {
     height: 100%;
     max-height: 100%;
     border-top-left-radius: 0;
