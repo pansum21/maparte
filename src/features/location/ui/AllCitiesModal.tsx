@@ -1,11 +1,12 @@
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import seoCitiesData from "@/data/seoCities.json";
-import cityPhotoManifest from "@/data/cityPhotos.json";
-import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import { useCurrentLocation } from "@/features/location/application/useCurrentLocation";
+import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
 import { useMapSync } from "@/features/map/application/useMapSync";
 import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
+import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import type { SearchResult } from "@/features/location/domain/types";
-import { SearchIcon } from "@/shared/ui/Icons";
+import { LocationIcon, MyLocationIcon, SearchIcon } from "@/shared/ui/Icons";
 
 interface AllCitiesModalProps {
   isOpen: boolean;
@@ -27,12 +28,6 @@ interface SeoCityItem {
   annualSearches?: string;
 }
 
-const CONTINENTS = [
-  "Americas",
-  "Europe",
-  "Asia",
-  "Africa",
-] as const;
 type CityImage = {
   src: string;
   sourcePage: string;
@@ -40,49 +35,108 @@ type CityImage = {
   license: string;
   licenseUrl: string;
 };
-const cityPhotoBySlug = cityPhotoManifest as Record<string, CityImage>;
+
+const CONTINENTS = ["Americas", "Europe", "Asia", "Africa"] as const;
+const cityImageCache = new Map<string, Promise<CityImage | null>>();
+let cityImageManifestPromise: Promise<Record<string, CityImage>> | null = null;
+
+function loadCityImage(slug: string): Promise<CityImage | null> {
+  const cached = cityImageCache.get(slug);
+  if (cached) return cached;
+
+  cityImageManifestPromise ??= fetch("/assets/city-photos/manifest.json")
+    .then((response) => response.ok ? response.json() : {})
+    .catch(() => ({}));
+  const request = cityImageManifestPromise.then((manifest) => manifest[slug] ?? null);
+  cityImageCache.set(slug, request);
+  return request;
+}
 
 function CityPhoto({ city, slug }: { city: string; slug: string }) {
-  const image = cityPhotoBySlug[slug];
-  const [failed, setFailed] = useState(false);
+  const hostRef = useRef<HTMLDivElement>(null);
+  const requestedRef = useRef(false);
+  const [image, setImage] = useState<CityImage | null>(null);
+  const [loadFinished, setLoadFinished] = useState(false);
 
-  useEffect(() => setFailed(false), [slug]);
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host || requestedRef.current) return;
+
+    let active = true;
+    const load = () => {
+      if (!active || requestedRef.current) return;
+      requestedRef.current = true;
+      void loadCityImage(slug).then((result) => {
+        if (active) {
+          setImage(result);
+          setLoadFinished(true);
+        }
+      });
+    };
+
+    if (typeof IntersectionObserver === "undefined") {
+      load();
+      return () => { active = false; };
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        observer.disconnect();
+        load();
+      }
+    }, { rootMargin: "180px" });
+    observer.observe(host);
+    return () => {
+      active = false;
+      observer.disconnect();
+    };
+  }, [slug]);
 
   return (
-    <div className={`city-card-photo${image && !failed ? " has-image" : ""}`}>
-      {image && !failed ? (
+    <div ref={hostRef} className={`city-card-photo${image ? " has-image" : ""}`}>
+      {image ? (
         <img
           src={image.src}
           alt={`${city} city photo`}
           title={`Photo by ${image.author}; ${image.license}. Source: ${image.sourcePage}${image.licenseUrl ? ` (${image.licenseUrl})` : ""}`}
           loading="lazy"
           decoding="async"
-          onError={() => setFailed(true)}
+          onError={() => {
+            setImage(null);
+            setLoadFinished(true);
+          }}
         />
       ) : (
-        <span className="city-photo-unavailable" aria-hidden="true" />
+        <span className={loadFinished ? "city-photo-unavailable" : "city-photo-loading"} aria-hidden="true" />
       )}
     </div>
   );
 }
 
-
-export default function AllCitiesModal({
-  isOpen,
-  onClose,
-}: AllCitiesModalProps) {
+export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps) {
   const { state, dispatch, mapRef } = usePosterContext();
   const { flyToLocation } = useMapSync(state, dispatch, mapRef);
-  const { handleLocationSelect } = useFormHandlers();
+  const {
+    handleChange,
+    handleClearLocation,
+    handleLocationSelect: handleLocationSelectBase,
+    setLocationFocused,
+  } = useFormHandlers();
+  const { locationSuggestions, isLocationSearching, searchNow } =
+    useLocationAutocomplete(state.form.location, state.isLocationFocused);
+  const { handleUseCurrentLocation, isLocatingUser, locationPermissionMessage } =
+    useCurrentLocation(flyToLocation);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedContinent, setSelectedContinent] = useState<string>("All");
+  const [typedQuery, setTypedQuery] = useState<string | null>(null);
+  const [selectedContinent, setSelectedContinent] = useState<string>("Americas");
+  const [showCoords, setShowCoords] = useState(false);
+  const isSearchingCities = typedQuery !== null && typedQuery.trim().length > 0;
+  const normalizedQuery = typedQuery?.trim().toLowerCase() ?? "";
 
-  // Close on Escape
   useEffect(() => {
     if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -90,26 +144,32 @@ export default function AllCitiesModal({
 
   const filteredCities = useMemo(() => {
     const list = seoCitiesData as SeoCityItem[];
-    const q = searchQuery.trim().toLowerCase();
-
     return list.filter((item) => {
-      const matchesContinent =
-        selectedContinent === "All" ||
-        (selectedContinent === "Americas"
-          ? item.continent === "North America" || item.continent === "South America"
-          : item.continent === selectedContinent);
-      if (!matchesContinent) return false;
-
-      if (!q) return true;
-      return (
-        item.city.toLowerCase().includes(q) ||
-        item.country.toLowerCase().includes(q) ||
-        item.landmarks.some((l) => l.toLowerCase().includes(q))
-      );
+      if (isSearchingCities) {
+        return item.city.toLowerCase().includes(normalizedQuery) ||
+          item.country.toLowerCase().includes(normalizedQuery) ||
+          item.landmarks.some((landmark) => landmark.toLowerCase().includes(normalizedQuery));
+      }
+      const matchesContinent = selectedContinent === "Americas"
+        ? item.continent === "North America" || item.continent === "South America"
+        : selectedContinent === "Asia"
+          ? item.continent === "Asia" || item.continent === "Middle East" || item.continent === "Oceania"
+          : item.continent === selectedContinent;
+      return matchesContinent;
     });
-  }, [searchQuery, selectedContinent]);
+  }, [isSearchingCities, normalizedQuery, selectedContinent]);
 
   if (!isOpen) return null;
+
+  const hasCuratedSearchMatch = isSearchingCities && filteredCities.length > 0;
+  const showGeocoderSuggestions = isSearchingCities && !hasCuratedSearchMatch;
+  const suggestions = showGeocoderSuggestions ? locationSuggestions : [];
+  const hasLocationValue = state.form.location.trim().length > 0;
+
+  const onLocationSelect = (result: SearchResult) => {
+    handleLocationSelectBase(result);
+    flyToLocation(result.lat, result.lon);
+  };
 
   const handleCityPick = (item: SeoCityItem) => {
     const fullLabel = `${item.city}, ${item.country}`;
@@ -122,7 +182,7 @@ export default function AllCitiesModal({
       lat: item.lat,
       lon: item.lon,
     };
-    handleLocationSelect(result);
+    handleLocationSelectBase(result);
     dispatch({
       type: "SET_FORM_FIELDS",
       resetDisplayNameOverrides: true,
@@ -139,70 +199,120 @@ export default function AllCitiesModal({
     onClose();
   };
 
-  return (
-    <section
-      className="all-cities-modal"
-      role="dialog"
-      aria-label="100+ World Cities"
-    >
-        <div className="all-cities-modal-header">
-          <div className="all-cities-title-group">
-            <span className="all-cities-badge">Explore by place</span>
-            <h2>100+ World Cities</h2>
-          </div>
-        </div>
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTypedQuery(event.currentTarget.value);
+    handleChange(event);
+    setLocationFocused(true);
+  };
 
-        {/* Search Input Bar */}
+  const clearLocation = () => {
+    setTypedQuery("");
+    handleClearLocation();
+  };
+
+  const useGps = () => {
+    setTypedQuery(null);
+    handleUseCurrentLocation();
+  };
+
+  return (
+    <section className="all-cities-modal" role="dialog" aria-label="Choose a city">
+      <div className="all-cities-search-main">
         <div className="all-cities-search-bar">
-          <span className="all-cities-search-icon" aria-hidden="true">
-            <SearchIcon />
-          </span>
+          <span className="all-cities-search-icon" aria-hidden="true"><SearchIcon /></span>
           <input
             type="text"
             className="all-cities-search-input"
-            placeholder="Search a city, country, or landmark"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            autoFocus
+            name="location"
+            placeholder="Search city or paste Google Maps link"
+            value={state.form.location}
+            onChange={handleInputChange}
+            onFocus={() => setLocationFocused(true)}
+            onBlur={() => setLocationFocused(false)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") void searchNow(event.currentTarget.value);
+            }}
+            autoComplete="off"
           />
-          {searchQuery ? (
+          {hasLocationValue ? (
             <button
               type="button"
-              className="location-clear-btn"
-              onClick={() => setSearchQuery("")}
-            >
-              ✕
-            </button>
+              className="all-cities-clear-btn"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={clearLocation}
+              aria-label="Clear location"
+            >×</button>
           ) : null}
         </div>
-
-        {/* Continent Filter Pills */}
-        <div className="all-cities-continents" role="tablist">
-          {CONTINENTS.map((cont) => {
-            const count = (seoCitiesData as SeoCityItem[]).filter((city) =>
-              cont === "Americas"
-                ? city.continent === "North America" || city.continent === "South America"
-                : city.continent === cont,
-            ).length;
-            return (
-              <button
-                key={cont}
-                type="button"
-                className={`all-cities-continent-pill${selectedContinent === cont ? " is-active" : ""}`}
-                onClick={() => setSelectedContinent(cont)}
-              >
-                <span>{cont}</span>
-                <span className="continent-count">{count}</span>
-              </button>
-            );
-          })}
+        <div className="all-cities-location-actions">
+          <button
+            type="button"
+            className={`all-cities-location-action${isLocatingUser ? " is-locating" : ""}`}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={useGps}
+            disabled={isLocatingUser}
+            aria-label="Use current GPS location"
+            title="Use current GPS location"
+          ><MyLocationIcon /></button>
+          <button
+            type="button"
+            className={`all-cities-location-action${showCoords ? " is-active" : ""}`}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => setShowCoords((value) => !value)}
+            aria-label="Toggle coordinates"
+            title="Show or hide coordinates"
+          ><LocationIcon /></button>
         </div>
 
-        {/* Cities Grid */}
+        {showCoords ? (
+          <div className="all-cities-coordinates">
+            <label>Latitude<input name="latitude" value={state.form.latitude} onChange={handleChange} /></label>
+            <label>Longitude<input name="longitude" value={state.form.longitude} onChange={handleChange} /></label>
+          </div>
+        ) : null}
+
+        {showGeocoderSuggestions ? (
+          <ul className="all-cities-geocoder-results" role="listbox">
+            {suggestions.map((suggestion) => (
+              <li key={suggestion.id}>
+                <button
+                  type="button"
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                    onLocationSelect(suggestion);
+                  }}
+                >{suggestion.label}</button>
+              </li>
+            ))}
+            {isLocationSearching ? <li className="all-cities-geocoder-status">Searching…</li> : null}
+          </ul>
+        ) : null}
+      </div>
+
+      {locationPermissionMessage ? (
+        <p className="location-permission-message">{locationPermissionMessage}</p>
+      ) : null}
+
+      <div className="all-cities-continents" role="tablist" aria-label="City regions">
+        {CONTINENTS.map((continent) => (
+          <button
+            key={continent}
+            type="button"
+            role="tab"
+            aria-selected={selectedContinent === continent}
+            className={`all-cities-continent-pill${selectedContinent === continent ? " is-active" : ""}`}
+            onClick={() => {
+              setSelectedContinent(continent);
+              if (isSearchingCities) setTypedQuery("");
+            }}
+          >{continent}</button>
+        ))}
+      </div>
+
+      {(!isSearchingCities || hasCuratedSearchMatch) ? (
         <div className="all-cities-grid">
           {filteredCities.map((item) => {
-            const isCurrent =
-              state.form.displayCity?.toLowerCase() === item.city.toLowerCase();
+            const isCurrent = state.form.displayCity?.toLowerCase() === item.city.toLowerCase();
             return (
               <button
                 key={item.slug}
@@ -215,13 +325,8 @@ export default function AllCitiesModal({
               </button>
             );
           })}
-
-          {filteredCities.length === 0 ? (
-            <div className="all-cities-empty">
-              <span>No cities found matching "{searchQuery}"</span>
-            </div>
-          ) : null}
         </div>
+      ) : null}
     </section>
   );
 }
