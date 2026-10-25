@@ -735,7 +735,8 @@
   }
 
   /* The Layout drawer sits directly beside the tool rail, like the Wall drawer. */
-  .app-shell[data-desktop-tab="layout"] .desktop-left-panel {
+  .app-shell[data-desktop-tab="layout"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="theme"] .desktop-left-panel {
     top: 62px;
     right: auto;
     bottom: 38px;
@@ -744,7 +745,8 @@
     max-height: none;
   }
 
-  .app-shell[data-desktop-tab="layout"] .desktop-settings-slide {
+  .app-shell[data-desktop-tab="layout"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="theme"] .desktop-settings-slide {
     height: 100%;
     max-height: 100%;
     border-top-left-radius: 0;
