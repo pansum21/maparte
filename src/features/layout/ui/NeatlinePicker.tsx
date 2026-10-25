@@ -84,6 +84,7 @@ export type NeatlineSelection = {
   singleColor?: string;
   gradientFrom?: string;
   gradientTo?: string;
+  designScale?: number;
 };
 
 export const lineStyles: LineStyle[] = [
@@ -114,29 +115,39 @@ export const lineStyles: LineStyle[] = [
 ];
 export const NEATLINE_STYLES = lineStyles;
 
-const DEFAULT_LINE_WIDTHS: Record<LinePattern, number[]> = {
-  single: [4.5],
-  double: [3.8, 2.5],
-  triple: [3.6, 2.4, 1.8],
-  "thick-thin": [6.0, 2.4],
-  "thin-thick": [2.4, 6.0],
-  "triple-sandwich": [2.2, 5.5, 2.2],
-  dashed: [4.5, 2.2],
-  dotted: [2.5, 5.5],
-  "dash-dot": [4.5, 2.2],
-  "notched-corner": [3.2, 4.2],
-  "surveyor-ticks": [3.2, 10.0, 3.2],
-  "greek-key": [4.5, 3.0],
-  "victorian-filigree": [4.5, 3.0],
-  "art-deco-stepped": [5.0, 3.2],
-  "nautical-compass": [4.5, 3.0],
-  "celtic-braid": [4.5, 3.0],
-  "diamond-lattice": [4.5, 3.0],
-  "antique-atlas": [4.5, 3.0],
-  "architectural-grid": [3.0, 4.5],
+export const DEFAULT_LINE_WIDTHS_CM: Record<LinePattern, number[]> = {
+  single: [0.10],
+  double: [0.10, 0.06],
+  triple: [0.10, 0.06, 0.05],
+  "thick-thin": [0.15, 0.06],
+  "thin-thick": [0.06, 0.15],
+  "triple-sandwich": [0.06, 0.14, 0.06],
+  dashed: [0.10, 0.06],
+  dotted: [0.06, 0.14],
+  "dash-dot": [0.10, 0.06],
+  "notched-corner": [0.08, 0.10],
+  "surveyor-ticks": [0.08, 0.22, 0.08],
+  "greek-key": [0.10, 0.08],
+  "victorian-filigree": [0.10, 0.08],
+  "art-deco-stepped": [0.12, 0.08],
+  "nautical-compass": [0.10, 0.08],
+  "celtic-braid": [0.10, 0.08],
+  "diamond-lattice": [0.10, 0.08],
+  "antique-atlas": [0.10, 0.08],
+  "architectural-grid": [0.08, 0.10],
 };
 
-const MAX_LINE_WIDTH = 14.0;
+export const MAX_LINE_WIDTH_CM = 1.00;
+export const MIN_LINE_WIDTH_CM = 0.05;
+
+const DEFAULT_LINE_WIDTHS: Record<LinePattern, number[]> = Object.fromEntries(
+  Object.entries(DEFAULT_LINE_WIDTHS_CM).map(([pattern, arr]) => [
+    pattern,
+    arr.map((cm) => cm * 48.0),
+  ]),
+) as Record<LinePattern, number[]>;
+
+const MAX_LINE_WIDTH = MAX_LINE_WIDTH_CM * 48.0;
 
 const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
   top: "#b44737",
@@ -147,7 +158,23 @@ const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
 
 const OUTER_MAT_MAX_CM = 0.10; // Exactly 1.0 mm outer margin from paper corners
 
-export function getPatternSpanUnits(pattern: LinePattern): number {
+export function hasPatternDesign(pattern: LinePattern): boolean {
+  return [
+    "notched-corner",
+    "surveyor-ticks",
+    "greek-key",
+    "victorian-filigree",
+    "art-deco-stepped",
+    "nautical-compass",
+    "celtic-braid",
+    "diamond-lattice",
+    "antique-atlas",
+    "architectural-grid",
+  ].includes(pattern);
+}
+
+export function getPatternSpanUnits(pattern: LinePattern, designScale = 1.0): number {
+  const scale = Math.max(0.4, Math.min(3.0, designScale));
   switch (pattern) {
     case "single":
       return 0;
@@ -162,21 +189,21 @@ export function getPatternSpanUnits(pattern: LinePattern): number {
     case "triple-sandwich":
       return 14;
     case "notched-corner":
-      return 14;
+      return Math.round(14 * scale);
     case "surveyor-ticks":
-      return 16;
+      return Math.round(16 * scale);
     case "greek-key":
     case "celtic-braid":
     case "diamond-lattice":
     case "architectural-grid":
-      return 20;
+      return Math.round(20 * scale);
     case "art-deco-stepped":
     case "victorian-filigree":
     case "nautical-compass":
     case "antique-atlas":
-      return 22;
+      return Math.round(22 * scale);
     default:
-      return 12;
+      return Math.round(12 * scale);
   }
 }
 
@@ -187,6 +214,7 @@ export function getPosterBorderMetrics(
   customGapCm?: number,
   lineId?: string,
   thicknesses?: Record<string, number[]>,
+  designScale = 1.0,
 ) {
   const width = Number(widthValue) > 0 ? Number(widthValue) : 21;
   const height = Number(heightValue) > 0 ? Number(heightValue) : 29.7;
@@ -216,11 +244,21 @@ export function getPosterBorderMetrics(
     const widths = widthsFor(style.id, thicknesses || {});
     const maxStroke = widths.length ? Math.max(...widths) : 2.0;
     edgeInset = maxStroke / 2 + 0.5;
-    spanUnits = getPatternSpanUnits(style.pattern);
+    spanUnits = getPatternSpanUnits(style.pattern, designScale);
     offInner = edgeInset + spanUnits;
     const innerStrokeWidth = widths[widths.length - 1] ?? maxStroke;
     const innerEdgeUnits = offInner + innerStrokeWidth / 2;
     borderBandCm = innerEdgeUnits / unitScale;
+
+    // On ultra-wide banners with very short heights (e.g. Reddit banner 4 cm, Twitter 6 cm),
+    // cap the border band so the map opening never gets squashed to zero.
+    const maxBandCm = Math.max(0.05, shortSide / 2 - outerMatCm - gapCm - 0.20);
+    if (borderBandCm > maxBandCm) {
+      borderBandCm = maxBandCm;
+      const targetEdgeUnits = borderBandCm * unitScale;
+      offInner = Math.max(edgeInset, targetEdgeUnits - innerStrokeWidth / 2);
+      spanUnits = Math.max(0, offInner - edgeInset);
+    }
   }
 
   // The map frame is placed exactly gapCm (default 1 mm) inside the innermost border stroke edge
@@ -308,6 +346,7 @@ function readSelection(): NeatlineSelection {
     singleColor: "#354b62",
     gradientFrom: "#f43f5e",
     gradientTo: "#fb923c",
+    designScale: 1.0,
   };
   if (typeof window === "undefined") return empty;
   try {
@@ -336,6 +375,10 @@ function readSelection(): NeatlineSelection {
         singleColor: parsed.singleColor || "#354b62",
         gradientFrom: parsed.gradientFrom || "#f43f5e",
         gradientTo: parsed.gradientTo || "#fb923c",
+        designScale:
+          typeof parsed.designScale === "number" && Number.isFinite(parsed.designScale)
+            ? Math.max(0.5, Math.min(2.5, parsed.designScale))
+            : 1.0,
       };
     }
     const legacy = window.localStorage.getItem(LEGACY_STYLE_KEY) || "none";
@@ -350,21 +393,29 @@ export function readNeatlineSelection(): NeatlineSelection {
   return readSelection();
 }
 
-export function widthsFor(
+export function thicknessesInCm(
   styleId: string,
   thicknesses: Record<string, number[]>,
 ): number[] {
   const style = lineStyles.find((item) => item.id === styleId);
   if (!style) return [];
   const saved = thicknesses[styleId] || [];
-  const defaults = DEFAULT_LINE_WIDTHS[style.pattern] || [2.0];
+  const defaults = DEFAULT_LINE_WIDTHS_CM[style.pattern] || [0.10];
   return Array.from({ length: lineCount(style.pattern) }, (_, index) => {
     const value = Number(saved[index]);
-    const maxVal = style.pattern === "surveyor-ticks" && index === 1 ? 20 : MAX_LINE_WIDTH;
-    return Number.isFinite(value)
-      ? Math.min(maxVal, Math.max(0.4, value))
-      : defaults[index] ?? 1.5;
+    if (!Number.isFinite(value)) return defaults[index] ?? 0.10;
+    // Migrate legacy SVG-unit values (> 1.05) to cm
+    const cm = value > 1.05 ? value / 48.0 : value;
+    return Math.min(MAX_LINE_WIDTH_CM, Math.max(MIN_LINE_WIDTH_CM, Math.round(cm * 100) / 100));
   });
+}
+
+export function widthsFor(
+  styleId: string,
+  thicknesses: Record<string, number[]>,
+): number[] {
+  const cmArr = thicknessesInCm(styleId, thicknesses);
+  return cmArr.map((cm) => cm * 48.0);
 }
 
 function lineLabel(pattern: LinePattern, index: number): string {
@@ -432,10 +483,12 @@ export function NeatlineArtwork({
     selection.mapGapCm,
     selection.lineId,
     selection.thicknesses,
+    selection.designScale,
   );
   const { innerW, innerH, edgeInset, offInner, spanUnits } = metrics;
   const widths = widthsFor(line.id, selection.thicknesses);
   const maxStroke = widths.length ? Math.max(...widths) : 1;
+  const dScale = selection.designScale ?? 1.0;
 
   const isMix = selection.colorMode === "mix";
   const gradId = `neatline-grad-${className ? className.trim().replace(/\s+/g, "-") : "main"}`;
@@ -507,7 +560,7 @@ export function NeatlineArtwork({
                     key={edge}
                     d={d}
                     data-edge={edge}
-                    stroke={strokeColor}
+                    stroke={selection.lineVariant === "colorful" && !selection.colorMode ? LINE_COLORS[edge] : strokeColor}
                   />
                 ))}
               </g>
@@ -705,11 +758,13 @@ export function NeatlineArtwork({
 
     case "notched-corner": {
       const off0 = edgeInset;
-      const n = Math.max(8, spanUnits - 2);
+      const n = Math.max(10, spanUnits - 2);
       const ix1 = off0 + 1;
       const iy1 = off0 + 1;
       const ix2 = innerW - off0 - 1;
       const iy2 = innerH - off0 - 1;
+      const motifStroke = Math.max(1.2, Math.min(n / 4, 2.4 * dScale));
+      const dotR = Math.max(1.8, Math.min(n / 4, 2.5 * dScale));
 
       return (
         <svg
@@ -738,15 +793,15 @@ export function NeatlineArtwork({
             strokeWidth={widths[1]}
           />
           {/* Corner Squares strictly within outer/inner boundaries */}
-          <rect x={ix1} y={iy1} width={n} height={n} fill="none" stroke={secondaryColor} strokeWidth={widths[0]} />
-          <rect x={ix2 - n} y={iy1} width={n} height={n} fill="none" stroke={secondaryColor} strokeWidth={widths[0]} />
-          <rect x={ix2 - n} y={iy2 - n} width={n} height={n} fill="none" stroke={secondaryColor} strokeWidth={widths[0]} />
-          <rect x={ix1} y={iy2 - n} width={n} height={n} fill="none" stroke={secondaryColor} strokeWidth={widths[0]} />
+          <rect x={ix1} y={iy1} width={n} height={n} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
+          <rect x={ix2 - n} y={iy1} width={n} height={n} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
+          <rect x={ix2 - n} y={iy2 - n} width={n} height={n} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
+          <rect x={ix1} y={iy2 - n} width={n} height={n} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
           {/* Corner Dots */}
-          <circle cx={ix1 + n / 2} cy={iy1 + n / 2} r={2.5} fill={secondaryColor} />
-          <circle cx={ix2 - n / 2} cy={iy1 + n / 2} r={2.5} fill={secondaryColor} />
-          <circle cx={ix2 - n / 2} cy={iy2 - n / 2} r={2.5} fill={secondaryColor} />
-          <circle cx={ix1 + n / 2} cy={iy2 - n / 2} r={2.5} fill={secondaryColor} />
+          <circle cx={ix1 + n / 2} cy={iy1 + n / 2} r={dotR} fill={secondaryColor} />
+          <circle cx={ix2 - n / 2} cy={iy1 + n / 2} r={dotR} fill={secondaryColor} />
+          <circle cx={ix2 - n / 2} cy={iy2 - n / 2} r={dotR} fill={secondaryColor} />
+          <circle cx={ix1 + n / 2} cy={iy2 - n / 2} r={dotR} fill={secondaryColor} />
         </svg>
       );
     }
@@ -754,7 +809,8 @@ export function NeatlineArtwork({
     case "surveyor-ticks": {
       const off0 = edgeInset;
       const offMid = (off0 + offInner) / 2;
-      const bandWidth = Math.max(4, spanUnits - 4);
+      const bandWidth = Math.max(4, (spanUnits - 4) * 0.7);
+      const dashLen = Math.max(8, Math.round(14 * dScale));
       return (
         <svg
           className={`neatline-artwork ${className}`}
@@ -782,7 +838,7 @@ export function NeatlineArtwork({
             fill="none"
             stroke={secondaryColor}
             strokeWidth={bandWidth}
-            strokeDasharray="14 14"
+            strokeDasharray={`${dashLen} ${dashLen}`}
           />
           {/* Inner 100% clean rectangular border */}
           <rect
@@ -804,8 +860,9 @@ export function NeatlineArtwork({
       const step = spanUnits;
       const midYTop = (off0 + offInner) / 2;
       const midYBot = innerH - (off0 + offInner) / 2;
-      const kw = 36;
-      const kh = Math.min(12, step - 6);
+      const kw = Math.round(36 * dScale);
+      const kh = Math.min(Math.round(16 * dScale), Math.max(8, step - 6));
+      const motifStroke = Math.max(1.4, Math.min(kh / 3, 2.4 * dScale));
 
       return (
         <svg
@@ -836,7 +893,7 @@ export function NeatlineArtwork({
             strokeWidth={widths[1]}
           />
           {/* Bold, classic Greek Key meander runs along top & bottom */}
-          <g fill="none" stroke={secondaryColor} strokeWidth={widths[1]} strokeLinecap="square" strokeLinejoin="miter">
+          <g fill="none" stroke={secondaryColor} strokeWidth={motifStroke} strokeLinecap="square" strokeLinejoin="miter">
             {Array.from({ length: Math.floor((innerW - offInner * 2 - 20) / (kw + 6)) }, (_, i) => {
               const x = offInner + 10 + i * (kw + 6);
               return (
@@ -860,7 +917,7 @@ export function NeatlineArtwork({
             return (
               <g key={`gk-c-${idx}`}>
                 <rect x={cx} y={cy} width={sz} height={sz} fill="none" stroke={primaryColor} strokeWidth={widths[0]} />
-                <rect x={cx + (sz - inSz) / 2} y={cy + (sz - inSz) / 2} width={inSz} height={inSz} fill="none" stroke={secondaryColor} strokeWidth={widths[1]} />
+                <rect x={cx + (sz - inSz) / 2} y={cy + (sz - inSz) / 2} width={inSz} height={inSz} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
                 <rect x={cx + (sz - dotSz) / 2} y={cy + (sz - dotSz) / 2} width={dotSz} height={dotSz} fill={secondaryColor} />
               </g>
             );
@@ -874,8 +931,9 @@ export function NeatlineArtwork({
       const step = spanUnits;
       const midX = innerW / 2;
       const midY = innerH / 2;
-      const dW = 14;
-      const dH = Math.min(16, step - 6);
+      const dW = Math.round(14 * dScale);
+      const dH = Math.min(Math.round(20 * dScale), Math.max(10, step - 6));
+      const motifStroke = Math.max(1.0, 1.4 * dScale);
 
       return (
         <svg
@@ -898,10 +956,10 @@ export function NeatlineArtwork({
             { x: innerW - off0 - 3, y: innerH - off0 - 3, sx: -1, sy: -1 },
             { x: off0 + 3, y: innerH - off0 - 3, sx: 1, sy: -1 },
           ].map(({ x, y, sx, sy }, idx) => (
-            <g key={`vf-c-${idx}`} transform={`translate(${x}, ${y}) scale(${sx}, ${sy})`}>
+            <g key={`vf-c-${idx}`} transform={`translate(${x}, ${y}) scale(${sx * dScale}, ${sy * dScale})`}>
               <path d="M 0 0 L 16 0 C 12 7, 7 12, 0 16 Z" fill={secondaryColor} fillOpacity="0.88" />
-              <path d="M 3 3 Q 12 6, 14 14 T 3 3" fill="none" stroke="#fff" strokeWidth={1.2} />
-              <circle cx="6" cy="6" r="2" fill="#fff" />
+              <path d="M 3 3 Q 12 6, 14 14 T 3 3" fill="none" stroke="#fff" strokeWidth={motifStroke} />
+              <circle cx="6" cy="6" r={Math.max(1.5, 2 * dScale)} fill="#fff" />
             </g>
           ))}
 
@@ -942,17 +1000,17 @@ export function NeatlineArtwork({
             { x: innerW - off0 - 3, y: innerH - off0 - 3, sx: -1, sy: -1 },
             { x: off0 + 3, y: innerH - off0 - 3, sx: 1, sy: -1 },
           ].map(({ x, y, sx, sy }, idx) => (
-            <g key={`ad-c-${idx}`} transform={`translate(${x}, ${y}) scale(${sx}, ${sy})`}>
+            <g key={`ad-c-${idx}`} transform={`translate(${x}, ${y}) scale(${sx * dScale}, ${sy * dScale})`}>
               <polygon points="0,0 16,0 16,4 12,4 12,8 8,8 8,12 4,12 4,16 0,16" fill={primaryColor} />
               <polygon points="2,2 14,2 14,4 10,4 10,8 6,8 6,12 2,12" fill={secondaryColor} />
             </g>
           ))}
 
           {/* Bold Center Chevron Notches */}
-          <polygon points={`${midX - 14},${off0} ${midX},${(off0 + offInner) / 2} ${midX + 14},${off0}`} fill={primaryColor} />
-          <polygon points={`${midX - 14},${innerH - off0} ${midX},${innerH - (off0 + offInner) / 2} ${midX + 14},${innerH - off0}`} fill={primaryColor} />
-          <polygon points={`${off0},${midY - 14} ${(off0 + offInner) / 2},${midY} ${off0},${midY + 14}`} fill={primaryColor} />
-          <polygon points={`${innerW - off0},${midY - 14} ${innerW - (off0 + offInner) / 2},${midY} ${innerW - off0},${midY + 14}`} fill={primaryColor} />
+          <polygon points={`${midX - 14 * dScale},${off0} ${midX},${(off0 + offInner) / 2} ${midX + 14 * dScale},${off0}`} fill={primaryColor} />
+          <polygon points={`${midX - 14 * dScale},${innerH - off0} ${midX},${innerH - (off0 + offInner) / 2} ${midX + 14 * dScale},${innerH - off0}`} fill={primaryColor} />
+          <polygon points={`${off0},${midY - 14 * dScale} ${(off0 + offInner) / 2},${midY} ${off0},${midY + 14 * dScale}`} fill={primaryColor} />
+          <polygon points={`${innerW - off0},${midY - 14 * dScale} ${innerW - (off0 + offInner) / 2},${midY} ${innerW - off0},${midY + 14 * dScale}`} fill={primaryColor} />
         </svg>
       );
     }
@@ -1010,20 +1068,24 @@ export function NeatlineArtwork({
             [rightX, topY],
             [rightX, botY],
             [leftX, botY],
-          ].map(([cx, cy], idx) => (
-            <g key={`nc-c-${idx}`}>
-              <circle cx={cx} cy={cy} r={step / 2 - 3} fill="#fff" stroke={primaryColor} strokeWidth={1.4} />
-              <polygon
-                points={`${cx},${cy - 8} ${cx + 2.5},${cy - 2.5} ${cx + 8},${cy} ${cx + 2.5},${cy + 2.5} ${cx},${cy + 8} ${cx - 2.5},${cy + 2.5} ${cx - 8},${cy} ${cx - 2.5},${cy - 2.5}`}
-                fill={secondaryColor}
-              />
-              <polygon
-                points={`${cx},${cy - 8} ${cx + 2.5},${cy - 2.5} ${cx},${cy} ${cx - 2.5},${cy - 2.5}`}
-                fill={primaryColor}
-              />
-              <circle cx={cx} cy={cy} r={2} fill="#fff" stroke={primaryColor} strokeWidth={1} />
-            </g>
-          ))}
+          ].map(([cx, cy], idx) => {
+            const starR = Math.max(6, Math.round(8 * dScale));
+            const starInner = starR * 0.32;
+            return (
+              <g key={`nc-c-${idx}`}>
+                <circle cx={cx} cy={cy} r={Math.max(8, step / 2 - 3)} fill="#fff" stroke={primaryColor} strokeWidth={Math.max(1, 1.4 * dScale)} />
+                <polygon
+                  points={`${cx},${cy - starR} ${cx + starInner},${cy - starInner} ${cx + starR},${cy} ${cx + starInner},${cy + starInner} ${cx},${cy + starR} ${cx - starInner},${cy + starInner} ${cx - starR},${cy} ${cx - starInner},${cy - starInner}`}
+                  fill={secondaryColor}
+                />
+                <polygon
+                  points={`${cx},${cy - starR} ${cx + starInner},${cy - starInner} ${cx},${cy} ${cx - starInner},${cy - starInner}`}
+                  fill={primaryColor}
+                />
+                <circle cx={cx} cy={cy} r={Math.max(1.5, 2 * dScale)} fill="#fff" stroke={primaryColor} strokeWidth={1} />
+              </g>
+            );
+          })}
         </svg>
       );
     }
@@ -1036,8 +1098,8 @@ export function NeatlineArtwork({
 
       let pTop1 = `M ${offInner} ${topY}`;
       let pTop2 = `M ${offInner} ${topY}`;
-      const waveStep = 24;
-      const amp = 5;
+      const waveStep = Math.max(16, Math.round(24 * dScale));
+      const amp = Math.min(step / 2 - 2, 5 * dScale);
       for (let x = offInner; x <= innerW - offInner - waveStep; x += waveStep) {
         pTop1 += ` Q ${x + waveStep / 4} ${topY - amp}, ${x + waveStep / 2} ${topY} T ${x + waveStep} ${topY}`;
         pTop2 += ` Q ${x + waveStep / 4} ${topY + amp}, ${x + waveStep / 2} ${topY} T ${x + waveStep} ${topY}`;
@@ -1052,6 +1114,7 @@ export function NeatlineArtwork({
 
       const leftX = (off0 + offInner) / 2;
       const rightX = innerW - (off0 + offInner) / 2;
+      const motifStroke = Math.max(1.4, 2.0 * dScale);
 
       return (
         <svg
@@ -1067,10 +1130,10 @@ export function NeatlineArtwork({
           <rect x={offInner} y={offInner} width={innerW - offInner * 2} height={innerH - offInner * 2} fill="none" stroke={secondaryColor} strokeWidth={widths[1]} />
 
           {/* Intertwining Celtic Sine-wave Braid */}
-          <path d={pTop1} fill="none" stroke={secondaryColor} strokeWidth={2.0} />
-          <path d={pTop2} fill="none" stroke={primaryColor} strokeWidth={1.8} />
-          <path d={pBot1} fill="none" stroke={secondaryColor} strokeWidth={2.0} />
-          <path d={pBot2} fill="none" stroke={primaryColor} strokeWidth={1.8} />
+          <path d={pTop1} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
+          <path d={pTop2} fill="none" stroke={primaryColor} strokeWidth={motifStroke * 0.9} />
+          <path d={pBot1} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
+          <path d={pBot2} fill="none" stroke={primaryColor} strokeWidth={motifStroke * 0.9} />
 
           {/* 4 Corner Celtic Knot Rings */}
           {[
@@ -1082,8 +1145,8 @@ export function NeatlineArtwork({
             const cSize = Math.max(8, step - 8);
             return (
               <g key={`cb-c-${idx}`}>
-                <rect x={cx - cSize / 2} y={cy - cSize / 2} width={cSize} height={cSize} rx={3} fill="#fff" stroke={primaryColor} strokeWidth={1.4} />
-                <circle cx={cx} cy={cy} r={cSize * 0.35} fill="none" stroke={secondaryColor} strokeWidth={1.8} />
+                <rect x={cx - cSize / 2} y={cy - cSize / 2} width={cSize} height={cSize} rx={3} fill="#fff" stroke={primaryColor} strokeWidth={motifStroke * 0.7} />
+                <circle cx={cx} cy={cy} r={cSize * 0.35} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
               </g>
             );
           })}
@@ -1098,8 +1161,8 @@ export function NeatlineArtwork({
       const botY = innerH - (off0 + offInner) / 2;
       const leftX = (off0 + offInner) / 2;
       const rightX = innerW - (off0 + offInner) / 2;
-      const dSize = 10;
-      const dStep = 24;
+      const dSize = Math.max(8, Math.round(10 * dScale));
+      const dStep = Math.max(16, Math.round(24 * dScale));
 
       return (
         <svg
@@ -1181,7 +1244,7 @@ export function NeatlineArtwork({
             { x: innerW - off0, y: innerH - off0, sx: -1, sy: -1 },
             { x: off0, y: innerH - off0, sx: 1, sy: -1 },
           ].map(({ x, y, sx, sy }, idx) => (
-            <g key={`aa-c-${idx}`} transform={`translate(${x}, ${y}) scale(${sx}, ${sy})`}>
+            <g key={`aa-c-${idx}`} transform={`translate(${x}, ${y}) scale(${sx * dScale}, ${sy * dScale})`}>
               <path d={`M 0 ${step - 4} A ${step - 4} ${step - 4} 0 0 1 ${step - 4} 0`} fill="none" stroke={secondaryColor} strokeWidth={1.8} />
               <line x1="0" y1="0" x2={(step - 4) * 0.92} y2={(step - 4) * 0.3} stroke={primaryColor} strokeWidth={1.5} />
               <line x1="0" y1="0" x2={(step - 4) * 0.72} y2={(step - 4) * 0.72} stroke={secondaryColor} strokeWidth={1.6} />
@@ -1236,14 +1299,19 @@ export function NeatlineArtwork({
             [rightX, topY],
             [rightX, botY],
             [leftX, botY],
-          ].map(([cx, cy], idx) => (
-            <g key={`ag-c-${idx}`}>
-              <circle cx={cx} cy={cy} r={6} fill="#fff" stroke={secondaryColor} strokeWidth={1.4} />
-              <line x1={cx - 8} y1={cy} x2={cx + 8} y2={cy} stroke={primaryColor} strokeWidth={1.6} />
-              <line x1={cx} y1={cy - 8} x2={cx + 8} y2={cy + 8} stroke={primaryColor} strokeWidth={1.6} />
-              <circle cx={cx} cy={cy} r={1.8} fill={secondaryColor} />
-            </g>
-          ))}
+          ].map(([cx, cy], idx) => {
+            const crossR = Math.max(5, Math.round(8 * dScale));
+            const circR = Math.max(4, Math.round(6 * dScale));
+            const motifStroke = Math.max(1.0, 1.4 * dScale);
+            return (
+              <g key={`ag-c-${idx}`}>
+                <circle cx={cx} cy={cy} r={circR} fill="#fff" stroke={secondaryColor} strokeWidth={motifStroke} />
+                <line x1={cx - crossR} y1={cy} x2={cx + crossR} y2={cy} stroke={primaryColor} strokeWidth={Math.max(1.2, 1.6 * dScale)} />
+                <line x1={cx} y1={cy - crossR} x2={cx + crossR} y2={cy + crossR} stroke={primaryColor} strokeWidth={Math.max(1.2, 1.6 * dScale)} />
+                <circle cx={cx} cy={cy} r={Math.max(1.2, 1.8 * dScale)} fill={secondaryColor} />
+              </g>
+            );
+          })}
         </svg>
       );
     }
@@ -1608,6 +1676,7 @@ export function NeatlinePicker({
           singleColor: selection.singleColor ?? "#354b62",
           gradientFrom: selection.gradientFrom ?? "#f43f5e",
           gradientTo: selection.gradientTo ?? "#fb923c",
+          designScale: selection.designScale ?? 1.0,
         }),
       );
       window.localStorage.setItem(
@@ -1635,16 +1704,25 @@ export function NeatlinePicker({
     setIsEditingThickness(false);
   };
 
-  const updateThickness = (lineIndex: number, value: number) => {
+  const updateThickness = (lineIndex: number, valCm: number) => {
     if (!selectedLine) return;
+    const clampedCm = Math.min(MAX_LINE_WIDTH_CM, Math.max(MIN_LINE_WIDTH_CM, Math.round(valCm * 100) / 100));
     setSelection((current) => {
-      const next = widthsFor(selectedLine.id, current.thicknesses);
-      next[lineIndex] = value;
+      const nextCm = thicknessesInCm(selectedLine.id, current.thicknesses);
+      nextCm[lineIndex] = clampedCm;
       return {
         ...current,
-        thicknesses: { ...current.thicknesses, [selectedLine.id]: next },
+        thicknesses: { ...current.thicknesses, [selectedLine.id]: nextCm },
       };
     });
+  };
+
+  const updateDesignScale = (scale: number) => {
+    const clampedScale = Math.min(2.5, Math.max(0.5, Math.round(scale * 10) / 10));
+    setSelection((current) => ({
+      ...current,
+      designScale: clampedScale,
+    }));
   };
 
   const updateMapGap = (value: number) => {
@@ -1858,12 +1936,8 @@ export function NeatlinePicker({
             <fieldset className="neatline-adjustments">
               <legend>Border thickness &amp; spacing</legend>
 
-              {/* Line thickness sliders */}
-              {lineWidths.map((value, index) => {
-                const maxVal =
-                  selectedLine.pattern === "surveyor-ticks" && index === 1
-                    ? 14
-                    : MAX_LINE_WIDTH;
+              {/* Line thickness sliders: 0.05 cm to 1.00 cm (0.5 mm to 10.0 mm) */}
+              {thicknessesInCm(selectedLine.id, selection.thicknesses).map((cmVal, index) => {
                 return (
                   <label
                     className="neatline-adjustment"
@@ -1874,19 +1948,42 @@ export function NeatlinePicker({
                     </span>
                     <input
                       type="range"
-                      min="0.5"
-                      max={maxVal}
-                      step="0.2"
-                      value={value}
+                      min={MIN_LINE_WIDTH_CM}
+                      max={MAX_LINE_WIDTH_CM}
+                      step="0.05"
+                      value={cmVal}
                       onChange={(event) =>
                         updateThickness(index, Number(event.target.value))
                       }
-                      aria-label={`${lineLabel(selectedLine.pattern, index)} thickness`}
+                      aria-label={`${lineLabel(selectedLine.pattern, index)} thickness in cm`}
                     />
-                    <output>{value.toFixed(1)} pt</output>
+                    <output>{cmVal.toFixed(2)} cm ({(cmVal * 10).toFixed(1)} mm)</output>
                   </label>
                 );
               })}
+
+              {/* Design size & thickness slider for ornamental patterns */}
+              {hasPatternDesign(selectedLine.pattern) ? (
+                <label className="neatline-adjustment" key="design-scale-slider">
+                  <span className="neatline-adjustment-label">
+                    Design size &amp; thickness
+                  </span>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2.5"
+                    step="0.1"
+                    value={selection.designScale ?? 1.0}
+                    onChange={(event) =>
+                      updateDesignScale(Number(event.target.value))
+                    }
+                    aria-label="Design pattern size and thickness scale"
+                  />
+                  <output>
+                    {((selection.designScale ?? 1.0) * 100).toFixed(0)}% ({(selection.designScale ?? 1.0).toFixed(1)}x)
+                  </output>
+                </label>
+              ) : null}
 
               {/* Map spacing gap slider (0.1 to 0.5 cm) requested by user */}
               <label className="neatline-adjustment" key="map-gap-slider">
@@ -1903,7 +2000,9 @@ export function NeatlinePicker({
                 <output>{((selection.mapGapCm ?? 0.1) * 10).toFixed(1)} mm</output>
               </label>
               <p className="neatline-adjustments-note">
-                Clearance gap between inner border line and map (Default: 1.0 mm). Adjust to 2 mm or 3 mm for wider space.
+                {hasPatternDesign(selectedLine.pattern)
+                  ? "Adjust line thickness (0.05–1.0 cm), design pattern size & stroke, or map spacing."
+                  : "Adjust line thickness (0.05–1.0 cm) and map spacing (Default: 1.0 mm)."}
               </p>
             </fieldset>
           ) : null}

@@ -100,7 +100,25 @@ export default function PreviewPanel({
   const setIsEditing = controlledSetIsEditing !== undefined ? controlledSetIsEditing : setInternalIsEditing;
 
   const [neatlineSelection, setNeatlineSelection] = useState<NeatlineSelection>(readNeatlineSelection);
-  const borderMetrics = useMemo(() => getPosterBorderMetrics(form.width, form.height, neatlineSelection.mapGapCm, neatlineSelection.lineId, neatlineSelection.thicknesses), [form.width, form.height, neatlineSelection.mapGapCm, neatlineSelection.lineId, neatlineSelection.thicknesses]);
+  const borderMetrics = useMemo(
+    () =>
+      getPosterBorderMetrics(
+        form.width,
+        form.height,
+        neatlineSelection.mapGapCm,
+        neatlineSelection.lineId,
+        neatlineSelection.thicknesses,
+        neatlineSelection.designScale,
+      ),
+    [
+      form.width,
+      form.height,
+      neatlineSelection.mapGapCm,
+      neatlineSelection.lineId,
+      neatlineSelection.thicknesses,
+      neatlineSelection.designScale,
+    ],
+  );
 
   useEffect(() => {
     const handleNeatlineChange = (event: Event) => {
