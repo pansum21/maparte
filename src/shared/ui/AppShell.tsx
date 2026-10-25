@@ -338,16 +338,18 @@ export default function AppShell() {
       setMobileLocationRowVisible(false);
       setMobileDrawerOpen(false);
       setMobileTab(tab);
-      setBackdropOpen(true);
+      setBackdropOpen((open) => !open);
       return;
     }
     if (tab === "location") {
+      setBackdropOpen(false);
       setMobileLocationRowVisible((isVisible) => !isVisible);
       setMobileDrawerOpen(false);
       return;
     }
 
     setMobileLocationRowVisible(false);
+    setBackdropOpen(false);
 
     if (tab === mobileTab && mobileDrawerOpen) {
       setMobileDrawerOpen(false);
@@ -359,6 +361,7 @@ export default function AppShell() {
 
   const handleDesktopTabChange = (tab: MobileTab) => {
     setDesktopLocationRowVisible(false);
+    setBackdropOpen(false);
     if (tab === desktopTab && desktopPanelOpen) {
       setDesktopPanelOpen(false);
     } else {
@@ -368,6 +371,7 @@ export default function AppShell() {
   };
 
   const handleDesktopLocationToggle = () => {
+    setBackdropOpen(false);
     setDesktopTab("location");
     setDesktopPanelOpen(false);
     setDesktopLocationRowVisible((visible) => !visible);
@@ -467,7 +471,12 @@ export default function AppShell() {
         onSettingsClick={() => handleDesktopTabChange("settings")}
         onToggleCinema={() => handleToggleCinema(true)}
         onOpenAllCities={() => setAllCitiesOpen(true)}
-        onOpenWall={() => setBackdropOpen(true)}
+        wallOpen={backdropOpen}
+        onOpenWall={() => {
+          setDesktopLocationRowVisible(false);
+          setDesktopPanelOpen(false);
+          setBackdropOpen((open) => !open);
+        }}
         isEditing={isEditing}
         onEditMapToggle={() => setIsEditing((prev) => !prev)}
       />
@@ -571,6 +580,7 @@ export default function AppShell() {
           handleToggleCinema(true);
         }}
         onSettingsClick={() => {
+          setBackdropOpen(false);
           setMobileLocationRowVisible(false);
           if (mobileDrawerOpen && mobileTab === "settings") {
             setMobileDrawerOpen(false);
@@ -583,6 +593,7 @@ export default function AppShell() {
         wallOpen={backdropOpen}
         isEditing={isEditing}
         onEditMapToggle={() => {
+          setBackdropOpen(false);
           setMobileDrawerOpen(false);
           setIsEditing((prev) => !prev);
         }}

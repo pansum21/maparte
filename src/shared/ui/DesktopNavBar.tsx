@@ -45,6 +45,7 @@ export interface DesktopNavBarProps {
   onToggleCinema?: () => void;
   onOpenAllCities?: () => void;
   onOpenWall?: () => void;
+  wallOpen?: boolean;
   isEditing?: boolean;
   onEditMapToggle?: () => void;
 }
@@ -59,6 +60,7 @@ export default function DesktopNavBar({
   onToggleCinema,
   onOpenAllCities,
   onOpenWall,
+  wallOpen = false,
   isEditing = false,
   onEditMapToggle,
 }: DesktopNavBarProps) {
@@ -277,6 +279,7 @@ export default function DesktopNavBar({
         <button
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "theme" ? " is-active" : ""}`}
+          aria-pressed={panelOpen && activeTab === "theme"}
           onClick={() => onTabChange("theme")}
           title="Themes & Color Palettes"
           aria-label="Theme"
@@ -290,10 +293,11 @@ export default function DesktopNavBar({
       <div className="desktop-nav-row desktop-nav-row--wall" data-tab="wall">
         <button
           type="button"
-          className="desktop-nav-tab"
+          className={`desktop-nav-tab${wallOpen ? " is-active" : ""}`}
           onClick={onOpenWall}
           title="Change only the wall panel behind the poster"
           aria-label="Wall color"
+          aria-pressed={wallOpen}
         >
           <WallIcon className="desktop-nav-icon" />
           <span className="desktop-nav-label">Wall</span>
@@ -305,6 +309,7 @@ export default function DesktopNavBar({
         <button
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "layout" ? " is-active" : ""}`}
+          aria-pressed={panelOpen && activeTab === "layout"}
           onClick={() => onTabChange("layout")}
           title="Poster Layouts & Dimensions"
           aria-label="Layout"
@@ -319,6 +324,7 @@ export default function DesktopNavBar({
         <button
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "frames" ? " is-active" : ""}`}
+          aria-pressed={panelOpen && activeTab === "frames"}
           onClick={() => onTabChange("frames")}
           title="Map Border Lines"
           aria-label="Border"
@@ -332,6 +338,7 @@ export default function DesktopNavBar({
         <button
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "templates" ? " is-active" : ""}`}
+          aria-pressed={panelOpen && activeTab === "templates"}
           onClick={() => onTabChange("templates")}
           title="Preset styles"
           aria-label="Presets"
@@ -346,6 +353,7 @@ export default function DesktopNavBar({
         <button
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "style" ? " is-active" : ""}`}
+          aria-pressed={panelOpen && activeTab === "style"}
           onClick={() => onTabChange("style")}
           title="Poster Text and Typography"
           aria-label="Text"
@@ -360,6 +368,7 @@ export default function DesktopNavBar({
         <button
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "layers" ? " is-active" : ""}`}
+          aria-pressed={panelOpen && activeTab === "layers"}
           onClick={() => onTabChange("layers")}
           title="Map Layer Filters (Roads, Water, Parks)"
           aria-label="Layers"
@@ -375,6 +384,7 @@ export default function DesktopNavBar({
         <button
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "markers" ? " is-active" : ""}`}
+          aria-pressed={panelOpen && activeTab === "markers"}
           onClick={() => onTabChange("markers")}
           title="Custom Map Markers"
           aria-label="Markers"
@@ -389,6 +399,7 @@ export default function DesktopNavBar({
         <button
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "routes" ? " is-active" : ""}`}
+          aria-pressed={panelOpen && activeTab === "routes"}
           onClick={() => onTabChange("routes")}
           title="Travel Routes & GPX Tracks"
           aria-label="Routes"
@@ -416,8 +427,9 @@ export default function DesktopNavBar({
       <div className="desktop-nav-row desktop-nav-row--settings" data-tab="settings">
         <button
           type="button"
-          className="desktop-nav-tab desktop-nav-tab--settings"
+          className={`desktop-nav-tab desktop-nav-tab--settings${panelOpen && activeTab === "settings" ? " is-active" : ""}`}
           aria-label="Settings & Tools"
+          aria-pressed={panelOpen && activeTab === "settings"}
           title="Settings & Tools"
           onClick={onSettingsClick}
         >
