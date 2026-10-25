@@ -28,12 +28,9 @@ interface SeoCityItem {
 
 const CONTINENTS = [
   "All",
-  "North America",
+  "Americas",
   "Europe",
   "Asia",
-  "South America",
-  "Oceania",
-  "Africa",
 ] as const;
 
 export default function AllCitiesModal({
@@ -63,7 +60,10 @@ export default function AllCitiesModal({
 
     return list.filter((item) => {
       const matchesContinent =
-        selectedContinent === "All" || item.continent === selectedContinent;
+        selectedContinent === "All" ||
+        (selectedContinent === "Americas"
+          ? item.continent === "North America" || item.continent === "South America"
+          : item.continent === selectedContinent);
       if (!matchesContinent) return false;
 
       if (!q) return true;

@@ -1981,7 +1981,7 @@
   z-index: 90;
   top: 38px;
   left: 0;
-  width: min(620px, calc(100vw - 112px));
+  width: min(430px, calc(100vw - 100px));
   max-width: calc(100vw - 80px);
   max-height: min(68vh, 650px);
   display: flex;
