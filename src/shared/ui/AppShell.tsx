@@ -51,11 +51,13 @@ function SettingsDrawer({
   onClose,
   isEditing,
   onToggleEditing,
+  onAdminOpen,
 }: {
   mobileTab: MobileTab;
   onClose: () => void;
   isEditing: boolean;
   onToggleEditing: () => void;
+  onAdminOpen: () => void;
 }) {
   // Settings sections (especially Layout) contain long tool lists; open the
   // sheet expanded so phone users can reach the same controls without guessing
@@ -84,11 +86,20 @@ function SettingsDrawer({
           {...handleProps}
         />
         <div className="mobile-drawer-content">
-          <SettingsPanel
-            mobileTab={mobileTab}
-            isEditing={isEditing}
-            onToggleEditing={onToggleEditing}
-          />
+          {mobileTab === "settings" ? (
+            <AppSettingsModal
+              isOpen
+              presentation="panel"
+              onClose={onClose}
+              onAdminOpen={onAdminOpen}
+            />
+          ) : (
+            <SettingsPanel
+              mobileTab={mobileTab}
+              isEditing={isEditing}
+              onToggleEditing={onToggleEditing}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -170,7 +181,6 @@ export default function AppShell() {
   const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">("about");
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [isCinemaMode, setIsCinemaMode] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [cinemaWallPhoto, setCinemaWallPhoto] = useState<string | null>(null);
@@ -201,7 +211,7 @@ export default function AppShell() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isCinemaMode) {
-        if (backdropOpen || aboutOpen || adminOpen || settingsOpen) return;
+        if (backdropOpen || aboutOpen || adminOpen || (desktopPanelOpen && desktopTab === "settings") || (mobileDrawerOpen && mobileTab === "settings")) return;
         handleToggleCinema(false);
       }
     };
@@ -212,7 +222,10 @@ export default function AppShell() {
     backdropOpen,
     aboutOpen,
     adminOpen,
-    settingsOpen,
+    desktopPanelOpen,
+    desktopTab,
+    mobileDrawerOpen,
+    mobileTab,
     handleToggleCinema,
   ]);
 
@@ -451,7 +464,7 @@ export default function AppShell() {
         isLocationVisible={desktopLocationRowVisible}
         onLocationToggle={handleDesktopLocationToggle}
         onTabChange={handleDesktopTabChange}
-        onSettingsClick={() => setSettingsOpen(true)}
+        onSettingsClick={() => handleDesktopTabChange("settings")}
         onToggleCinema={() => handleToggleCinema(true)}
         onOpenAllCities={() => setAllCitiesOpen(true)}
         onOpenWall={() => setBackdropOpen(true)}
@@ -498,11 +511,20 @@ export default function AppShell() {
           className={`desktop-settings-slide${desktopPanelOpen ? " is-open" : ""}`}
         >
           <Suspense fallback={null}>
-            <SettingsPanel
-              mobileTab={desktopTab}
-              isEditing={isEditing}
-              onToggleEditing={() => setIsEditing((prev) => !prev)}
-            />
+            {desktopTab === "settings" ? (
+              <AppSettingsModal
+                isOpen={desktopPanelOpen}
+                presentation="panel"
+                onClose={() => setDesktopPanelOpen(false)}
+                onAdminOpen={() => setAdminOpen(true)}
+              />
+            ) : (
+              <SettingsPanel
+                mobileTab={desktopTab}
+                isEditing={isEditing}
+                onToggleEditing={() => setIsEditing((prev) => !prev)}
+              />
+            )}
           </Suspense>
         </div>
       </div>
@@ -520,6 +542,7 @@ export default function AppShell() {
           onClose={() => setMobileDrawerOpen(false)}
           isEditing={isEditing}
           onToggleEditing={() => setIsEditing((prev) => !prev)}
+          onAdminOpen={() => setAdminOpen(true)}
         />
       ) : null}
 
@@ -548,10 +571,15 @@ export default function AppShell() {
           handleToggleCinema(true);
         }}
         onSettingsClick={() => {
-          setMobileDrawerOpen(false);
-          setSettingsOpen((open) => !open);
+          setMobileLocationRowVisible(false);
+          if (mobileDrawerOpen && mobileTab === "settings") {
+            setMobileDrawerOpen(false);
+          } else {
+            setMobileTab("settings");
+            setMobileDrawerOpen(true);
+          }
         }}
-        settingsOpen={settingsOpen}
+        settingsOpen={mobileDrawerOpen && mobileTab === "settings"}
         wallOpen={backdropOpen}
         isEditing={isEditing}
         onEditMapToggle={() => {
@@ -594,16 +622,6 @@ export default function AppShell() {
           />
         </Suspense>
       ) : null}
-      {settingsOpen ? (
-        <Suspense fallback={null}>
-          <AppSettingsModal
-            isOpen={settingsOpen}
-            onClose={() => setSettingsOpen(false)}
-            onAdminOpen={() => setAdminOpen(true)}
-          />
-        </Suspense>
-      ) : null}
-
       {backdropOpen ? (
         <Suspense fallback={null}>
           <BackdropThemeModal

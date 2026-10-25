@@ -14,12 +14,14 @@ interface AppSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdminOpen?: () => void;
+  presentation?: "modal" | "panel";
 }
 
 export default function AppSettingsModal({
   isOpen,
   onClose,
   onAdminOpen,
+  presentation = "modal",
 }: AppSettingsModalProps) {
   const { state, dispatch } = usePosterContext();
   const { clearRecent, recent } = useRecentLocations();
@@ -65,16 +67,17 @@ export default function AppSettingsModal({
     setTimeout(() => setClearedRecent(false), 2500);
   };
 
-  return createPortal(
+  const settingsView = (
     <div
-      className="export-modal-backdrop"
-      role="presentation"
-      onClick={onClose}
+      className={presentation === "panel" ? "app-settings-side-panel" : "export-modal-backdrop"}
+      role={presentation === "panel" ? "region" : "presentation"}
+      aria-label={presentation === "panel" ? "App Settings and Tools" : undefined}
+      onClick={presentation === "modal" ? onClose : undefined}
     >
       <div
-        className="export-modal app-settings-modal"
+        className={`export-modal app-settings-modal${presentation === "panel" ? " app-settings-modal--panel" : ""}`}
         role="dialog"
-        aria-modal="true"
+        aria-modal={presentation === "modal"}
         aria-label="App Settings and Preferences"
         onClick={(e) => e.stopPropagation()}
       >
@@ -222,7 +225,8 @@ export default function AppSettingsModal({
           </div>
         </div>
       </div>
-    </div>,
-    document.body,
+    </div>
   );
+
+  return presentation === "panel" ? settingsView : createPortal(settingsView, document.body);
 }
