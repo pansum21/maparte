@@ -83,17 +83,36 @@ export const INSTALL_DIAGNOSTICS_ENABLED = false;
 export interface FontOption {
   value: string;
   label: string;
+  category?: "Sans serif" | "Serif" | "Display" | "Monospace";
 }
 
 export const FONT_OPTIONS: FontOption[] = [
   { value: "", label: "Default (Space Grotesk)" },
-  { value: "Montserrat", label: "Montserrat" },
-  { value: "Playfair Display", label: "Playfair Display" },
-  { value: "Oswald", label: "Oswald" },
-  { value: "Noto Sans JP", label: "Noto Sans JP" },
-  { value: "Source Sans Pro", label: "Source Sans Pro" },
-  { value: "Raleway", label: "Raleway" },
-  { value: "Lato", label: "Lato" },
-  { value: "Merriweather", label: "Merriweather" },
-  { value: "Bebas neue", label: "Bebas Neue" },
+  { value: "Instrument Sans", label: "Instrument Sans", category: "Sans serif" },
+  { value: "Inter", label: "Inter", category: "Sans serif" },
+  { value: "DM Sans", label: "DM Sans", category: "Sans serif" },
+  { value: "Lato", label: "Lato", category: "Sans serif" },
+  { value: "Montserrat", label: "Montserrat", category: "Sans serif" },
+  { value: "Noto Sans JP", label: "Noto Sans JP", category: "Sans serif" },
+  { value: "Poppins", label: "Poppins", category: "Sans serif" },
+  { value: "Raleway", label: "Raleway", category: "Sans serif" },
+  { value: "Source Sans Pro", label: "Source Sans Pro", category: "Sans serif" },
+  { value: "Outfit", label: "Outfit", category: "Sans serif" },
+  { value: "Cormorant Garamond", label: "Cormorant Garamond", category: "Serif" },
+  { value: "DM Serif Display", label: "DM Serif Display", category: "Serif" },
+  { value: "Libre Baskerville", label: "Libre Baskerville", category: "Serif" },
+  { value: "Lora", label: "Lora", category: "Serif" },
+  { value: "Merriweather", label: "Merriweather", category: "Serif" },
+  { value: "Playfair Display", label: "Playfair Display", category: "Serif" },
+  { value: "Cinzel", label: "Cinzel", category: "Display" },
+  { value: "Anton", label: "Anton", category: "Display" },
+  { value: "Bebas Neue", label: "Bebas Neue", category: "Display" },
+  { value: "Oswald", label: "Oswald", category: "Display" },
+  { value: "Josefin Sans", label: "Josefin Sans", category: "Display" },
+  { value: "IBM Plex Mono", label: "IBM Plex Mono", category: "Monospace" },
+  { value: "Spline Sans Mono", label: "Spline Sans Mono", category: "Monospace" },
 ];
+
+export const FONT_FAMILY_COUNT = new Set(
+  FONT_OPTIONS.map((option) => option.value.trim() || "Space Grotesk"),
+).size;
