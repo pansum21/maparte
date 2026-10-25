@@ -26,7 +26,6 @@ import {
   StyleIcon,
   ChevronDownIcon,
   SparklesIcon,
-  ScissorsIcon,
 } from "@/shared/ui/Icons";
 
 import { themeOptions } from "@/features/theme/infrastructure/themeRepository";
@@ -72,8 +71,6 @@ const sectionMap = Object.fromEntries(
 
 export default function SettingsPanel({
   mobileTab,
-  isEditing = false,
-  onToggleEditing,
 }: {
   mobileTab?: MobileTab;
   isEditing?: boolean;
@@ -131,16 +128,7 @@ export default function SettingsPanel({
 
   if (mobileTab === "edit-map") {
     return (
-      <div className="edit-map-action-panel" role="group" aria-label="Edit map actions">
-        <button
-          type="button"
-          className={`edit-map-action${isEditing ? " is-active" : ""}`}
-          onClick={onToggleEditing}
-          aria-pressed={isEditing}
-        >
-          {isEditing ? <span aria-hidden="true">🔒</span> : <ScissorsIcon aria-hidden="true" />}
-          <span>{isEditing ? "Lock Map" : "Edit Map"}</span>
-        </button>
+      <div className="edit-map-action-panel" role="group" aria-label="Edit map controls">
         <MapRotationControl />
       </div>
     );

@@ -1,15 +1,16 @@
 .map-rotation-control {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 52px 40px minmax(70px, 1fr) 40px 52px;
+  grid-template-columns: 44px 36px minmax(64px, 1fr) 36px 48px;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   width: 100%;
   min-width: 0;
-  padding: 8px 10px;
+  min-height: 50px;
+  padding: 5px 7px;
   box-sizing: border-box;
   border: 1px solid rgba(125, 216, 240, 0.2);
-  border-radius: 22px;
+  border-radius: 12px;
   background: rgba(8, 18, 30, 0.55);
   color: #e7f4fb;
 }
@@ -24,20 +25,20 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  width: 52px;
-  height: 36px;
+  width: 100%;
+  height: 34px;
   min-width: 0;
   box-sizing: border-box;
   padding: 0 5px;
   border: 1px solid rgba(171, 201, 224, 0.28);
-  border-radius: 12px;
+  border-radius: 10px;
   background: rgba(4, 12, 21, 0.68);
   color: #d9edf9;
   font: 600 0.8rem/1 "Spline Sans Mono", monospace;
 }
 
 .map-rotation-control__number {
-  width: 31px;
+  width: 24px;
   min-width: 0;
   padding: 0;
   border: 0;
@@ -59,13 +60,13 @@
 .map-rotation-control__arrow {
   display: inline-grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 34px;
   min-width: 0;
   padding: 0;
   box-sizing: border-box;
   border: 1px solid rgba(171, 201, 224, 0.28);
-  border-radius: 12px;
+  border-radius: 10px;
   background: rgba(31, 56, 75, 0.55);
   color: #d9edf9;
   cursor: pointer;
@@ -92,27 +93,27 @@
 
 @media (max-width: 380px) {
   .map-rotation-control {
-    grid-template-columns: 45px 34px minmax(48px, 1fr) 34px 45px;
-    gap: 5px;
-    padding: 7px;
-    border-radius: 18px;
+    grid-template-columns: 40px 32px minmax(48px, 1fr) 32px 45px;
+    gap: 4px;
+    padding: 4px 5px;
+    border-radius: 12px;
   }
 
   .map-rotation-control__number-label,
   .map-rotation-control__endpoint {
-    width: 45px;
-    height: 34px;
+    width: 100%;
+    height: 32px;
     font-size: 0.72rem;
-    border-radius: 10px;
+    border-radius: 9px;
   }
 
   .map-rotation-control__number {
-    width: 25px;
+    width: 21px;
   }
 
   .map-rotation-control__arrow {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
   }
 }
