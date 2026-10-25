@@ -2310,18 +2310,18 @@
   z-index: 120;
   top: 62px;
   bottom: 0;
-  left: clamp(76px, 12.7vw, 130px);
-  width: min(820px, calc(100vw - clamp(76px, 12.7vw, 130px) - 24px));
+  left: 64px;
+  width: min(402px, calc(100vw - 88px));
   max-width: none;
   max-height: none;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 18px;
+  gap: 12px;
+  padding: 12px;
   overflow: hidden;
   border: 1px solid rgba(146, 176, 200, 0.28);
-  border-radius: 22px;
+  border-radius: 14px;
   background: linear-gradient(155deg, rgba(15, 29, 44, 0.97), rgba(8, 18, 30, 0.98));
   backdrop-filter: blur(22px) saturate(145%);
   -webkit-backdrop-filter: blur(22px) saturate(145%);
@@ -2335,12 +2335,12 @@
   align-items: center;
   gap: 12px;
   min-width: 0;
-  height: 58px;
+  height: 36px;
   box-sizing: border-box;
   margin: 0;
   padding: 0 14px;
   border: 1px solid rgba(171, 201, 224, 0.32);
-  border-radius: 16px;
+  border-radius: 8px;
   background: rgba(4, 12, 21, 0.68);
 }
 .all-cities-search-icon { display: inline-flex; flex: 0 0 auto; color: #9fb9cc; }
@@ -2367,8 +2367,8 @@
   flex: 0 0 auto; margin: 0; padding: 0; overflow: visible;
 }
 .all-cities-continent-pill {
-  display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 48px;
-  padding: 8px 10px; border: 1px solid rgba(171, 201, 224, .2); border-radius: 13px;
+  display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 32px;
+  padding: 5px 7px; border: 1px solid rgba(171, 201, 224, .2); border-radius: 12px;
   background: rgba(255,255,255,.055); color: rgba(210, 226, 240, .84);
   font: 650 .88rem/1.2 "Instrument Sans", sans-serif; cursor: pointer;
 }
@@ -2405,25 +2405,25 @@
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   .all-cities-modal {
     top: calc(62px + env(safe-area-inset-top, 0px));
-    right: 8px;
+    right: auto;
     bottom: calc(86px + env(safe-area-inset-bottom, 0px));
-    left: 8px;
-    width: auto;
+    left: 64px;
+    width: min(402px, calc(100vw - 110px));
     max-width: none;
     max-height: none;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 19px;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 14px;
   }
-  .all-cities-search-bar { height: 48px; gap: 8px; padding: 0 10px; border-radius: 13px; }
+  .all-cities-search-bar { height: 36px; gap: 8px; padding: 0 8px; border-radius: 8px; }
   .all-cities-search-icon svg { width: 17px; height: 17px; }
   .all-cities-search-input { font-size: .84rem; padding-right: 74px; }
   .all-cities-location-actions { right: 7px; gap: 5px; }
-  .all-cities-location-action { width: 31px; height: 31px; border-radius: 9px; }
+  .all-cities-location-action { width: 28px; height: 28px; border-radius: 8px; }
   .all-cities-location-action svg { width: 16px; height: 16px; }
   .all-cities-clear-btn { right: 76px; width: 25px; height: 25px; font-size: 1.05rem; }
   .all-cities-continents { gap: 6px; }
-  .all-cities-continent-pill { min-height: 38px; padding: 5px 3px; border-radius: 11px; font-size: .72rem; }
+  .all-cities-continent-pill { min-height: 32px; padding: 4px 3px; border-radius: 9px; font-size: .72rem; }
   .all-cities-grid { gap: 8px; padding-right: 1px; }
   .all-cities-card { border-radius: 12px; }
   .city-card-photo { aspect-ratio: 1.58 / 1; }
