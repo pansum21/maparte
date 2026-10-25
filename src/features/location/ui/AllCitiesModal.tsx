@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import seoCitiesData from "@/data/seoCities.json";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useMapSync } from "@/features/map/application/useMapSync";
@@ -32,6 +32,93 @@ const CONTINENTS = [
   "Europe",
   "Asia",
 ] as const;
+type CityImage = {
+  src: string;
+  sourcePage: string;
+  author: string;
+  license: string;
+  licenseUrl: string;
+};
+const cityImageCache = new Map<string, Promise<CityImage | null>>();
+let cityImageManifestPromise: Promise<Record<string, CityImage>> | null = null;
+
+function loadCityImage(slug: string): Promise<CityImage | null> {
+  const existing = cityImageCache.get(slug);
+  if (existing) return existing;
+
+  cityImageManifestPromise ??= fetch("/assets/city-photos/manifest.json")
+    .then((response) => response.ok ? response.json() : {})
+    .catch(() => ({}));
+  const request = cityImageManifestPromise.then((manifest) => manifest[slug] ?? null);
+  cityImageCache.set(slug, request);
+  return request;
+}
+
+function CityPhoto({ city, slug }: { city: string; slug: string }) {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const requestedRef = useRef(false);
+  const [image, setImage] = useState<CityImage | null>(null);
+  const [loadFinished, setLoadFinished] = useState(false);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host || requestedRef.current) return;
+
+    let active = true;
+    const load = () => {
+      if (!active || requestedRef.current) return;
+      requestedRef.current = true;
+      void loadCityImage(slug).then((result) => {
+        if (active) {
+          setImage(result);
+          setLoadFinished(true);
+        }
+      });
+    };
+
+    if (typeof IntersectionObserver === "undefined") {
+      load();
+      return () => { active = false; };
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          observer.disconnect();
+          load();
+        }
+      },
+      { rootMargin: "180px" },
+    );
+    observer.observe(host);
+    return () => {
+      active = false;
+      observer.disconnect();
+    };
+  }, [slug]);
+
+  return (
+    <div ref={hostRef} className={`city-card-photo${image ? " has-image" : ""}`}>
+      {image ? (
+        <img
+          src={image.src}
+          alt={`${city} city photo`}
+          title={`Photo by ${image.author}; ${image.license}. Source: ${image.sourcePage}${image.licenseUrl ? ` (${image.licenseUrl})` : ""}`}
+          loading="lazy"
+          decoding="async"
+          onError={() => {
+            setImage(null);
+            setLoadFinished(true);
+          }}
+        />
+      ) : (
+        <span className={loadFinished ? "city-photo-unavailable" : "city-photo-loading"} aria-hidden="true" />
+      )}
+    </div>
+  );
+}
+
+
 
 export default function AllCitiesModal({
   isOpen,
@@ -185,31 +272,8 @@ export default function AllCitiesModal({
                 className={`all-cities-card${isCurrent ? " is-active" : ""}`}
                 onClick={() => handleCityPick(item)}
               >
-                <div className="city-card-top">
-                  <div className="city-card-title-stack">
-                    <span className="city-card-name">{item.city}</span>
-                    <span className="city-card-country">{item.country}</span>
-                  </div>
-                  {item.rank ? (
-                    <span className="city-card-rank-tag">#{item.rank}</span>
-                  ) : null}
-                </div>
-                {item.annualSearches ? (
-                  <div className="city-card-searches">
-                    <span className="city-card-fire" aria-hidden="true">🔥</span>
-                    <span className="city-card-search-text">{item.annualSearches}</span>
-                  </div>
-                ) : null}
-                <div className="city-card-tagline">{item.tagline}</div>
-                {item.landmarks && item.landmarks.length > 0 ? (
-                  <div className="city-card-landmarks">
-                    {item.landmarks.slice(0, 3).map((lm) => (
-                      <span key={lm} className="city-landmark-chip">
-                        {lm}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
+                <CityPhoto city={item.city} slug={item.slug} />
+                <span className="city-card-name">{item.city}</span>
               </button>
             );
           })}
