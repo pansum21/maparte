@@ -1977,28 +1977,47 @@
    81 CURATED WORLD CITIES MODAL
    ══════════════════════════════════════════════════════════ */
 .all-cities-modal {
-  width: min(840px, 94vw) !important;
-  max-width: min(840px, 94vw) !important;
-  max-height: min(88vh, 860px) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  padding: 24px !important;
-  background: rgba(11, 20, 32, 0.94) !important;
-  backdrop-filter: blur(28px) !important;
-  -webkit-backdrop-filter: blur(28px) !important;
-  border: 1px solid rgba(140, 175, 200, 0.22) !important;
-  border-radius: 20px !important;
+  position: absolute;
+  z-index: 90;
+  top: calc(100% + 7px);
+  left: 0;
+  width: min(620px, calc(100vw - 112px));
+  max-width: calc(100vw - 80px);
+  max-height: min(68vh, 650px);
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  overflow: hidden;
+  background: linear-gradient(155deg, rgba(15, 29, 44, 0.98), rgba(8, 18, 30, 0.98));
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  border: 1px solid rgba(146, 176, 200, 0.28);
+  border-radius: 16px;
   box-shadow:
-    0 32px 80px rgba(0, 0, 0, 0.75),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    0 22px 55px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.11);
   color: #ffffff;
+}
+
+.all-cities-loading {
+  position: absolute;
+  z-index: 90;
+  top: calc(100% + 7px);
+  left: 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(146, 176, 200, 0.28);
+  border-radius: 14px;
+  background: rgba(10, 20, 31, 0.98);
+  color: rgba(220, 237, 249, 0.84);
+  font-size: 0.82rem;
 }
 
 .all-cities-modal-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .all-cities-badge {
@@ -2010,12 +2029,12 @@
   color: #38bdf8;
   font-size: 0.72rem;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .all-cities-title-group h2 {
-  font-size: 1.35rem;
-  margin: 0 0 6px 0;
+  font-size: 1.08rem;
+  margin: 0;
   color: #ffffff;
 }
 
@@ -2033,7 +2052,7 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 8px 12px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .all-cities-search-input {
@@ -2047,11 +2066,12 @@
 
 .all-cities-continents {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 16px;
-  overflow-x: auto;
+  margin-bottom: 10px;
+  overflow: visible;
   scrollbar-width: none;
-  padding-bottom: 4px;
+  padding-bottom: 0;
 }
 
 .all-cities-continent-pill {
@@ -2091,11 +2111,13 @@
 
 .all-cities-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 8px;
   overflow-y: auto;
-  max-height: 50vh;
-  padding-right: 4px;
+  max-height: min(48vh, 430px);
+  padding: 0 2px 2px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }

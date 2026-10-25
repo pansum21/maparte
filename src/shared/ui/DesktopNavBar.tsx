@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
@@ -35,6 +35,10 @@ import {
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
 
+const AllCitiesPanel = lazy(
+  () => import("@/features/location/ui/AllCitiesModal"),
+);
+
 export interface DesktopNavBarProps {
   activeTab: MobileTab;
   panelOpen: boolean;
@@ -44,6 +48,8 @@ export interface DesktopNavBarProps {
   onSettingsClick?: () => void;
   onToggleCinema?: () => void;
   onOpenAllCities?: () => void;
+  allCitiesOpen?: boolean;
+  onCloseAllCities?: () => void;
   onOpenWall?: () => void;
   wallOpen?: boolean;
   isEditing?: boolean;
@@ -59,6 +65,8 @@ export default function DesktopNavBar({
   onSettingsClick,
   onToggleCinema,
   onOpenAllCities,
+  allCitiesOpen = false,
+  onCloseAllCities,
   onOpenWall,
   wallOpen = false,
   isEditing = false,
@@ -229,29 +237,35 @@ export default function DesktopNavBar({
             onClearRecent={clearRecent}
           />
 
-          <div className="desktop-quick-cities-strip" role="toolbar" aria-label="Quick cities">
-            {POPULAR_CITIES.slice(0, 3).map((city) => (
+          {allCitiesOpen ? (
+            <Suspense fallback={<div className="all-cities-loading">Loading cities…</div>}>
+              <AllCitiesPanel isOpen onClose={onCloseAllCities ?? (() => undefined)} />
+            </Suspense>
+          ) : (
+            <div className="desktop-quick-cities-strip" role="toolbar" aria-label="Quick cities">
+              {POPULAR_CITIES.slice(0, 3).map((city) => (
+                <button
+                  key={city.id}
+                  type="button"
+                  className="desktop-quick-city-pill"
+                  onClick={() => onPopularCityClick(city)}
+                  title={`Explore ${city.name}, ${city.country}`}
+                >
+                  <span className="city-pill-flag">{city.flag}</span>
+                  <span className="city-pill-name">{city.name}</span>
+                </button>
+              ))}
               <button
-                key={city.id}
                 type="button"
-                className="desktop-quick-city-pill"
-                onClick={() => onPopularCityClick(city)}
-                title={`Explore ${city.name}, ${city.country}`}
+                className="desktop-quick-city-pill desktop-all-cities-btn"
+                onClick={onOpenAllCities}
+                title="Explore 100+ World Cities"
               >
-                <span className="city-pill-flag">{city.flag}</span>
-                <span className="city-pill-name">{city.name}</span>
+                <span className="plus-icon-badge">＋</span>
+                <span className="all-cities-text">100+ Cities</span>
               </button>
-            ))}
-            <button
-              type="button"
-              className="desktop-quick-city-pill desktop-all-cities-btn"
-              onClick={onOpenAllCities}
-              title="Explore Top 100 World Cities across 6 continents"
-            >
-              <span className="plus-icon-badge">➕</span>
-              <span className="all-cities-text">100 Cities</span>
-            </button>
-          </div>
+            </div>
+          )}
 
           {locationPermissionMessage ? (
             <p className="location-permission-message">{locationPermissionMessage}</p>

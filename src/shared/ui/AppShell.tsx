@@ -42,9 +42,6 @@ const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
 const BackdropThemeModal = lazy(
   () => import("@/features/theme/ui/BackdropThemeModal"),
 );
-const AllCitiesModal = lazy(
-  () => import("@/features/location/ui/AllCitiesModal"),
-);
 
 function SettingsDrawer({
   mobileTab,
@@ -360,6 +357,7 @@ export default function AppShell() {
   };
 
   const handleDesktopTabChange = (tab: MobileTab) => {
+    setAllCitiesOpen(false);
     setDesktopLocationRowVisible(false);
     setBackdropOpen(false);
     if (tab === desktopTab && desktopPanelOpen) {
@@ -371,6 +369,7 @@ export default function AppShell() {
   };
 
   const handleDesktopLocationToggle = () => {
+    setAllCitiesOpen(false);
     setBackdropOpen(false);
     setDesktopTab("location");
     setDesktopPanelOpen(false);
@@ -471,6 +470,8 @@ export default function AppShell() {
         onSettingsClick={() => handleDesktopTabChange("settings")}
         onToggleCinema={() => handleToggleCinema(true)}
         onOpenAllCities={() => setAllCitiesOpen(true)}
+        allCitiesOpen={allCitiesOpen}
+        onCloseAllCities={() => setAllCitiesOpen(false)}
         wallOpen={backdropOpen}
         onOpenWall={() => {
           setDesktopLocationRowVisible(false);
@@ -643,14 +644,6 @@ export default function AppShell() {
         </Suspense>
       ) : null}
 
-      {allCitiesOpen ? (
-        <Suspense fallback={null}>
-          <AllCitiesModal
-            isOpen={allCitiesOpen}
-            onClose={() => setAllCitiesOpen(false)}
-          />
-        </Suspense>
-      ) : null}
     </div>
   );
 }

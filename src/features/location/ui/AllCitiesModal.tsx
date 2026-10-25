@@ -106,23 +106,15 @@ export default function AllCitiesModal({
   };
 
   return (
-    <div
-      className="export-modal-backdrop"
+    <section
+      className="all-cities-modal"
       role="dialog"
-      aria-modal="true"
-      onClick={onClose}
+      aria-label="100+ World Cities"
     >
-      <div
-        className="export-modal all-cities-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
         <div className="all-cities-modal-header">
           <div className="all-cities-title-group">
-            <span className="all-cities-badge">🌍 Top 100 Most Searched World Cities</span>
-            <h2>Top 100 World Destinations</h2>
-            <p>
-              The 100 most visited, searched and traveled cities on Earth with real-time popularity &amp; search trends.
-            </p>
+            <span className="all-cities-badge">Explore by place</span>
+            <h2>100+ World Cities</h2>
           </div>
           <button
             type="button"
@@ -142,7 +134,7 @@ export default function AllCitiesModal({
           <input
             type="text"
             className="all-cities-search-input"
-            placeholder="Search by city, country or landmark (e.g. Tokyo, Eiffel Tower, Manhattan)..."
+            placeholder="Search a city, country, or landmark"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             autoFocus
@@ -228,7 +220,6 @@ export default function AllCitiesModal({
             </div>
           ) : null}
         </div>
-      </div>
-    </div>
+    </section>
   );
 }
