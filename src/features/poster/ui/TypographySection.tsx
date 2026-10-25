@@ -2,6 +2,10 @@ import { useState } from "react";
 import type { PosterForm } from "@/features/poster/application/posterReducer";
 import { FONT_FAMILY_COUNT, type FontOption } from "@/core/config";
 import {
+  MAX_POSTER_FONT_SIZE,
+  MIN_POSTER_FONT_SIZE,
+} from "@/features/poster/domain/textLayout";
+import {
   PLACEHOLDER_EXAMPLE_CITY,
   PLACEHOLDER_EXAMPLE_COUNTRY,
 } from "@/features/location/ui/constants";
@@ -11,6 +15,7 @@ interface TypographySectionProps {
   onChange: (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => void;
+  onNumericBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onFontChange: (fontFamily: string) => void;
   fontOptions: FontOption[];
 }
@@ -19,6 +24,7 @@ interface TypographySectionProps {
 export default function TypographySection({
   form,
   onChange,
+  onNumericBlur,
   onFontChange,
   fontOptions,
 }: TypographySectionProps) {
@@ -173,6 +179,22 @@ export default function TypographySection({
             </div>
           ) : null}
         </div>
+        <label className="font-size-field">
+          <span>Font Size</span>
+          <input
+            className="font-size-input"
+            type="number"
+            name="fontSize"
+            min={MIN_POSTER_FONT_SIZE}
+            max={MAX_POSTER_FONT_SIZE}
+            step={1}
+            inputMode="numeric"
+            aria-label="Poster font size, 8 to 72"
+            value={form.fontSize}
+            onChange={onChange}
+            onBlur={onNumericBlur}
+          />
+        </label>
 
       </section>
     </>

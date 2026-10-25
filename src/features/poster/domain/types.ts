@@ -30,6 +30,7 @@ export interface ExportOptions {
   displayContinent?: string;
   customDate?: string;
   fontFamily: string;
+  fontSize: number;
   showPosterText: boolean;
   showOverlay?: boolean;
   includeCredits?: boolean;
@@ -49,6 +50,7 @@ export interface Typography {
   displayContinent?: string;
   customDate?: string;
   fontFamily: string;
+  fontSize: number;
   showPosterText: boolean;
   includeCredits?: boolean;
 }

@@ -22,6 +22,7 @@ import {
   COUNTRY_FONT_BASE_PX,
   COORDS_FONT_BASE_PX,
   ATTRIBUTION_FONT_BASE_PX,
+  getPosterFontScale,
   formatCityLabel,
   computeCityFontScale,
   computeAttributionColor,
@@ -44,6 +45,7 @@ interface LayeredSvgOptions {
   displayCountry: string;
   customDate?: string;
   fontFamily?: string;
+  fontSize?: number;
   showPosterText: boolean;
   showOverlay: boolean;
   includeCredits: boolean;
@@ -221,6 +223,7 @@ export async function createLayeredSvgBlobFromMap({
   displayCountry,
   customDate,
   fontFamily,
+  fontSize = 16,
   showPosterText,
   showOverlay,
   includeCredits,
@@ -483,6 +486,7 @@ export async function createLayeredSvgBlobFromMap({
 
     const dimScale =
       Math.min(exportWidth, exportHeight) / TEXT_DIMENSION_REFERENCE_PX;
+    const fontScale = getPosterFontScale(fontSize);
     const maxContentWidth = exportWidth * 0.88;
 
     let vectorTypographySvg = "";
@@ -490,28 +494,28 @@ export async function createLayeredSvgBlobFromMap({
     if (showPosterText) {
       const hasTagline = Boolean(customDate && customDate.trim().length > 0);
       const cityLabel = formatCityLabel(displayCity);
-      let cityFontSize = CITY_FONT_BASE_PX * dimScale * computeCityFontScale(displayCity);
+      let cityFontSize = CITY_FONT_BASE_PX * dimScale * fontScale * computeCityFontScale(displayCity);
 
       // SVG auto-fit: ensure city name never overflows export width
       const approxCityWidth = cityLabel.length * cityFontSize * 0.65;
       if (approxCityWidth > maxContentWidth && approxCityWidth > 0) {
-        cityFontSize = Math.max(12, cityFontSize * (maxContentWidth / approxCityWidth));
+        cityFontSize = Math.max(12 * dimScale * fontScale, cityFontSize * (maxContentWidth / approxCityWidth));
       }
 
-      let countryFontSize = COUNTRY_FONT_BASE_PX * dimScale;
+      let countryFontSize = COUNTRY_FONT_BASE_PX * dimScale * fontScale;
       const approxCountryWidth = displayCountry.length * countryFontSize * 0.65;
       if (approxCountryWidth > maxContentWidth && approxCountryWidth > 0) {
-        countryFontSize = Math.max(10, countryFontSize * (maxContentWidth / approxCountryWidth));
+        countryFontSize = Math.max(10 * dimScale * fontScale, countryFontSize * (maxContentWidth / approxCountryWidth));
       }
 
       const coordsText = formatCoordinates(center.lat, center.lon);
-      let coordinateFontSize = COORDS_FONT_BASE_PX * dimScale;
+      let coordinateFontSize = COORDS_FONT_BASE_PX * dimScale * fontScale;
       const approxCoordsWidth = coordsText.length * coordinateFontSize * 0.6;
       if (approxCoordsWidth > maxContentWidth && approxCoordsWidth > 0) {
-        coordinateFontSize = Math.max(8, coordinateFontSize * (maxContentWidth / approxCoordsWidth));
+        coordinateFontSize = Math.max(8 * dimScale * fontScale, coordinateFontSize * (maxContentWidth / approxCoordsWidth));
       }
 
-      const taglineFontSize = Math.max(12, Math.round(countryFontSize * 0.88));
+      const taglineFontSize = Math.max(12 * dimScale * fontScale, Math.round(countryFontSize * 0.88));
       const cityY = exportHeight * TEXT_CITY_Y_RATIO;
       const lineY = exportHeight * TEXT_DIVIDER_Y_RATIO;
       const countryY = exportHeight * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
@@ -536,7 +540,7 @@ export async function createLayeredSvgBlobFromMap({
 `;
     }
 
-    let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale;
+    let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale * fontScale;
     const osmText = "© OpenStreetMap contributors";
     const appText = `✦ MAPARTE • ${APP_CREDIT_URL}`;
     const approxOsmWidth = osmText.length * attributionFontSize * 0.6;
@@ -545,7 +549,7 @@ export async function createLayeredSvgBlobFromMap({
     const availableAttrWidth = exportWidth - (edgeMargin * 2) - (includeCredits ? exportWidth * 0.04 : 0);
     const requiredAttrWidth = approxOsmWidth + approxAppWidth;
     if (requiredAttrWidth > availableAttrWidth && requiredAttrWidth > 0) {
-      attributionFontSize = Math.max(7, attributionFontSize * (availableAttrWidth / requiredAttrWidth));
+      attributionFontSize = Math.max(7 * dimScale * fontScale, attributionFontSize * (availableAttrWidth / requiredAttrWidth));
     }
 
     const attrY = exportHeight * (1 - TEXT_EDGE_MARGIN_RATIO);

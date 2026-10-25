@@ -67,6 +67,7 @@ export const DEFAULT_FORM: PosterForm = {
   displayContinent: "Europe",
   customDate: "",
   fontFamily: "",
+  fontSize: "16",
   showPosterText: true,
   includeCredits: true,
   includeLandcover: true,

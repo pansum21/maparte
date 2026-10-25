@@ -16,6 +16,7 @@ import {
   formatCityLabel,
   computeCityFontScale,
   computeAttributionColor,
+  getPosterFontScale,
 } from "@/features/poster/domain/textLayout";
 
 export function drawPosterText(
@@ -31,9 +32,11 @@ export function drawPosterText(
   showOverlay: boolean,
   includeCredits: boolean = true,
   customDate?: string,
+  fontSize: number = 16,
 ): void {
   const textColor = theme.ui?.text || "#111111";
   const landColor = theme.map?.land || "#808080";
+  const fontScale = getPosterFontScale(fontSize);
   const attributionColor = computeAttributionColor(textColor, landColor, showOverlay);
   const attributionAlpha = showOverlay ? 0.55 : 0.9;
   const titleFontFamily = fontFamily
@@ -48,32 +51,32 @@ export function drawPosterText(
 
   if (showPosterText) {
     const cityLabel = formatCityLabel(city);
-    let cityFontSize = CITY_FONT_BASE_PX * dimScale * computeCityFontScale(city);
+    let cityFontSize = CITY_FONT_BASE_PX * dimScale * fontScale * computeCityFontScale(city);
 
     // Auto-fit city label: measure text and ensure it never overflows canvas edges
     ctx.font = `700 ${cityFontSize}px ${titleFontFamily}`;
     const measuredCityWidth = ctx.measureText(cityLabel).width;
     if (measuredCityWidth > maxContentWidth && measuredCityWidth > 0) {
-      cityFontSize = Math.max(12, cityFontSize * (maxContentWidth / measuredCityWidth));
+      cityFontSize = Math.max(12 * dimScale * fontScale, cityFontSize * (maxContentWidth / measuredCityWidth));
     }
 
     const hasTagline = Boolean(customDate && customDate.trim());
-    let countryFontSize = COUNTRY_FONT_BASE_PX * dimScale;
+    let countryFontSize = COUNTRY_FONT_BASE_PX * dimScale * fontScale;
     ctx.font = `300 ${countryFontSize}px ${titleFontFamily}`;
     const measuredCountryWidth = ctx.measureText(country.toUpperCase()).width;
     if (measuredCountryWidth > maxContentWidth && measuredCountryWidth > 0) {
-      countryFontSize = Math.max(10, countryFontSize * (maxContentWidth / measuredCountryWidth));
+      countryFontSize = Math.max(10 * dimScale * fontScale, countryFontSize * (maxContentWidth / measuredCountryWidth));
     }
 
     const coordsString = formatCoordinates(center.lat, center.lon);
-    let coordinateFontSize = COORDS_FONT_BASE_PX * dimScale;
+    let coordinateFontSize = COORDS_FONT_BASE_PX * dimScale * fontScale;
     ctx.font = `400 ${coordinateFontSize}px ${bodyFontFamily}`;
     const measuredCoordsWidth = ctx.measureText(coordsString).width;
     if (measuredCoordsWidth > maxContentWidth && measuredCoordsWidth > 0) {
-      coordinateFontSize = Math.max(8, coordinateFontSize * (maxContentWidth / measuredCoordsWidth));
+      coordinateFontSize = Math.max(8 * dimScale * fontScale, coordinateFontSize * (maxContentWidth / measuredCoordsWidth));
     }
 
-    const taglineFontSize = 68 * dimScale;
+    const taglineFontSize = 68 * dimScale * fontScale;
     const cityY = height * TEXT_CITY_Y_RATIO;
     const lineY = height * TEXT_DIVIDER_Y_RATIO;
     const countryY = height * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
@@ -113,7 +116,7 @@ export function drawPosterText(
   const osmText = "\u00a9 OpenStreetMap contributors";
   const appText = `✦ MAPARTE • ${APP_CREDIT_URL}`;
 
-  let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale;
+  let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale * fontScale;
   ctx.font = `300 ${attributionFontSize}px ${bodyFontFamily}`;
   const osmWidth = ctx.measureText(osmText).width;
   const appWidth = includeCredits ? ctx.measureText(appText).width : 0;
@@ -122,7 +125,7 @@ export function drawPosterText(
   const requiredAttributionWidth = osmWidth + appWidth;
 
   if (requiredAttributionWidth > availableAttributionWidth && requiredAttributionWidth > 0) {
-    attributionFontSize = Math.max(7, attributionFontSize * (availableAttributionWidth / requiredAttributionWidth));
+    attributionFontSize = Math.max(7 * dimScale * fontScale, attributionFontSize * (availableAttributionWidth / requiredAttributionWidth));
   }
 
   ctx.fillStyle = attributionColor;

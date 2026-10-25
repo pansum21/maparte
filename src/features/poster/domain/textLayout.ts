@@ -21,6 +21,15 @@ export const CITY_FONT_MIN_PX = 110;
 export const COUNTRY_FONT_BASE_PX = 92;
 export const COORDS_FONT_BASE_PX = 58;
 export const ATTRIBUTION_FONT_BASE_PX = 50;
+export const DEFAULT_POSTER_FONT_SIZE = 16;
+export const MIN_POSTER_FONT_SIZE = 8;
+export const MAX_POSTER_FONT_SIZE = 72;
+
+export function getPosterFontScale(fontSize?: number): number {
+  const size = Number.isFinite(fontSize) ? Number(fontSize) : DEFAULT_POSTER_FONT_SIZE;
+  return Math.max(MIN_POSTER_FONT_SIZE, Math.min(MAX_POSTER_FONT_SIZE, size)) /
+    DEFAULT_POSTER_FONT_SIZE;
+}
 
 export function isLatinScript(text: string | undefined | null): boolean {
   if (!text) {
