@@ -10,6 +10,7 @@
         "@capacitor/core": "^8.5.3",
         "@vercel/analytics": "^2.0.1",
         "@vercel/speed-insights": "^2.0.0",
+        "emoji-picker-react": "^4.22.2",
         "jszip": "^3.10.2",
         "maplibre-gl": "^5.19.0",
         "react": "^18.3.1",
@@ -386,6 +387,8 @@
 
     "elementtree": ["elementtree@0.1.7", "", { "dependencies": { "sax": "1.1.4" } }, "sha512-wkgGT6kugeQk/P6VZ/f4T+4HB41BVgNBq5CDIZVbQ02nvTVqAiVTbskxxu3eA/X96lMlfYOwnLQpN2v5E1zDEg=="],
 
+    "emoji-picker-react": ["emoji-picker-react@4.22.3", "", { "dependencies": { "shipstyles": "1.0.0" }, "peerDependencies": { "react": ">=16.8" } }, "sha512-jrAkkoN69l5lA2Xp6P5axqoK1YdHNS1+MKMlLxwltnnnaXrojUjZaolgI/U8vdx8vFWqG42yYqpLSR83f6pwiw=="],
+
     "emoji-regex": ["emoji-regex@8.0.0", "", {}, "sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A=="],
 
     "env-paths": ["env-paths@2.2.1", "", {}, "sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A=="],
@@ -641,6 +644,8 @@
     "shebang-command": ["shebang-command@2.0.0", "", { "dependencies": { "shebang-regex": "^3.0.0" } }, "sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA=="],
 
     "shebang-regex": ["shebang-regex@3.0.0", "", {}, "sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A=="],
+
+    "shipstyles": ["shipstyles@1.0.0", "", {}, "sha512-1AcihfXo/mSxqeOdoKqq/5TNv+vSH0dBYPFq88PUX5FBkK5pRmY5TP9SuMNio85PQ+euUI67+KpSVk1cUVDCgA=="],
 
     "signal-exit": ["signal-exit@3.0.7", "", {}, "sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ=="],
 

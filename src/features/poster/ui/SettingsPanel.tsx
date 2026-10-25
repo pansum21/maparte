@@ -380,6 +380,7 @@ export default function SettingsPanel({
               <TypographySection
                 form={state.form}
                 onChange={handleChange}
+                onNumericBlur={handleNumericFieldBlur}
                 onFontChange={(fontFamily) =>
                   dispatch({ type: "SET_FIELD", name: "fontFamily", value: fontFamily })
                 }
