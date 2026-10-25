@@ -40,7 +40,7 @@
 }
 
 .map-rotation-control__number-label {
-  transform: translateY(3mm);
+  transform: translateY(-0.2mm);
 }
 
 .map-rotation-control__number {
