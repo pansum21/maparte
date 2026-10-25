@@ -135,7 +135,6 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
       },
     });
     flyToLocation(item.lat, item.lon);
-    onClose();
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

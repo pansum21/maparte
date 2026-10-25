@@ -38,10 +38,11 @@ const AllCitiesModal = lazy(() => import("@/features/location/ui/AllCitiesModal"
 const AdminControlModal = lazy(
   () => import("@/features/admin/ui/AdminControlModal"),
 );
-const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
-const BackdropThemeModal = lazy(
-  () => import("@/features/theme/ui/BackdropThemeModal"),
-);
+const loadAppSettingsModal = () => import("@/shared/ui/AppSettingsModal");
+const AppSettingsModal = lazy(loadAppSettingsModal);
+const loadBackdropThemeModal = () =>
+  import("@/features/theme/ui/BackdropThemeModal");
+const BackdropThemeModal = lazy(loadBackdropThemeModal);
 
 function SettingsDrawer({
   mobileTab,
@@ -140,6 +141,15 @@ function AppUpdateNotice({
 
 export default function AppShell() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
+
+  // Warm the two panels that otherwise download their lazy chunks on first click.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadAppSettingsModal().catch(() => undefined);
+      void loadBackdropThemeModal().catch(() => undefined);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const handleUpdateReady = () => setUpdateAvailable(true);
