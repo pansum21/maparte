@@ -57,7 +57,6 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
   const { flyToLocation } = useMapSync(state, dispatch, mapRef);
   const {
     handleChange,
-    handleClearLocation,
     handleLocationSelect: handleLocationSelectBase,
     setLocationFocused,
   } = useFormHandlers();
