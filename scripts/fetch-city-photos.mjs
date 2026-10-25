@@ -7,7 +7,7 @@ const manifestPath = path.join(outputDir, "manifest.json");
 const cities = JSON.parse(
   await readFile(path.join(root, "src/data/seoCities.json"), "utf8"),
 );
-const userAgent = "MapArteCityPhotoBuilder/1.0 (https://map.art.whatsell.app/)";
+const userAgent = "MapArteCityPhotoBuilder/1.0 (https://maparte.vercel.app/)";
 
 const cleanText = (value = "") =>
   String(value)
