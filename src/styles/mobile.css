@@ -1651,6 +1651,57 @@
     display: none;
   }
 
+  [data-mobile-tab="markers"] .mobile-drawer-content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: 8px;
+  }
+
+  [data-mobile-tab="markers"] .mobile-drawer-content .settings-panel {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  [data-mobile-tab="markers"] .mobile-section--markers,
+  [data-mobile-tab="markers"] .mobile-section--markers > .accordion-body,
+  [data-mobile-tab="markers"] .mobile-section--markers > .accordion-body > .accordion-body-inner {
+    min-height: 0;
+  }
+
+  [data-mobile-tab="markers"] .mobile-section--markers {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+  [data-mobile-tab="markers"] .mobile-section--markers > .accordion-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  [data-mobile-tab="markers"] .mobile-section--markers > .accordion-body > .accordion-body-inner {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    padding-bottom: 8px;
+  }
+
+  [data-mobile-tab="markers"] .marker-settings-screen--emoji {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+  }
+
   /* Routes tab: show only the routes section */
   [data-mobile-tab="routes"] .mobile-section:not(.mobile-section--routes) {
     display: none;

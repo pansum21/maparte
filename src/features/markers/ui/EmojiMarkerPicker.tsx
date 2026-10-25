@@ -12,7 +12,7 @@ export default function EmojiMarkerPicker({ onSelect }: EmojiMarkerPickerProps) 
         theme={Theme.DARK}
         emojiStyle={EmojiStyle.NATIVE}
         width="100%"
-        height={320}
+        height="100%"
         lazyLoadEmojis
         previewConfig={{ showPreview: false }}
         searchPlaceHolder="Search emojis and flags"

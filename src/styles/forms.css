@@ -1875,6 +1875,19 @@ label.color-field-label {
   gap: 12px;
 }
 
+.marker-settings-screen--emoji,
+.marker-settings-screen--emoji .markers-section__content,
+.marker-settings-screen--emoji .marker-emoji-picker-wrap,
+.marker-settings-screen--emoji .marker-emoji-picker-wrap .EmojiPickerReact {
+  min-height: 0;
+}
+
+.marker-settings-screen--emoji .markers-section__content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
 .markers-section-head {
   display: flex;
   align-items: flex-start;
@@ -2548,6 +2561,9 @@ button.marker-color-edit-btn:focus-visible {
 
 .marker-emoji-picker-wrap {
   width: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
   overflow: hidden;
   border: 1px solid rgba(151, 183, 207, 0.22);
   border-radius: 10px;
@@ -2567,12 +2583,33 @@ button.marker-color-edit-btn:focus-visible {
   --epr-focus-bg-color: rgba(56, 189, 248, 0.2);
   --epr-emoji-size: 25px;
   --epr-category-navigation-button-size: 26px;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
   border: 0 !important;
   border-radius: 0 !important;
 }
 
+.marker-emoji-picker-wrap .epr-body {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.marker-emoji-picker-wrap .epr-body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 .marker-emoji-picker-loading {
-  min-height: 320px;
+  min-height: 0;
+  flex: 1 1 auto;
   display: grid;
   place-items: center;
   border: 1px solid rgba(151, 183, 207, 0.22);

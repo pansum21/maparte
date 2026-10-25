@@ -362,7 +362,9 @@ export default function MarkersSection() {
     : "Click an icon to drop a marker on the current map location. Marker settings apply to all markers and can be moved directly on the map. In marker edit mode, drag to move, use the arrow keys for fine nudging, use two-finger pinch or mouse wheel to resize, and use scroll or the +/- map controls to zoom.";
 
   return (
-    <section className="panel-block color-editor-screen marker-settings-screen">
+    <section
+      className={`panel-block color-editor-screen marker-settings-screen${markerPickerTab === "emoji" ? " marker-settings-screen--emoji" : ""}`}
+    >
       {isDeleteAllModalOpen ? (
         <DeleteAllMarkersModal
           markerCount={markers.length}
