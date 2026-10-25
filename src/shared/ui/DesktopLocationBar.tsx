@@ -91,8 +91,15 @@ export default function DesktopLocationBar() {
                   onChange={handleChange}
                   onFocus={() => setLocationFocused(true)}
                   onBlur={() => setLocationFocused(false)}
-                  onKeyDown={(e) => { if (e.key === "Enter") void searchNow(e.currentTarget.value); }}
-                  placeholder={PLACEHOLDER_LOCATION_SEARCH}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const value = e.currentTarget.value;
+                      void searchNow(value).then((result) => {
+                        if (result) onLocationSelect(result);
+                      });
+                    }
+                  }}
+                  placeholder={state.isLocationFocused ? "" : PLACEHOLDER_LOCATION_SEARCH}
                   autoComplete="off"
                 />
                 {hasLocationValue ? (

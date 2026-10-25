@@ -61,7 +61,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!assets/|docs/|privacy|imprint|cities/|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|favicon|icon).*)$",
+      "source": "/((?!api/|assets/|docs/|privacy|imprint|cities/|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|favicon|icon).*)$",
       "destination": "/index.html"
     }
   ]

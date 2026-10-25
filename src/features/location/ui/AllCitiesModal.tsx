@@ -179,15 +179,11 @@ export default function AllCitiesModal({
         {/* Continent Filter Pills */}
         <div className="all-cities-continents" role="tablist">
           {CONTINENTS.map((cont) => {
-            const count =
-              cont === "All"
-                ? (seoCitiesData as SeoCityItem[]).length
-                : (seoCitiesData as SeoCityItem[]).filter((city) =>
-                    cont === "Americas"
-                      ? city.continent === "North America" ||
-                        city.continent === "South America"
-                      : city.continent === cont,
-                  ).length;
+            const count = (seoCitiesData as SeoCityItem[]).filter((city) =>
+              cont === "Americas"
+                ? city.continent === "North America" || city.continent === "South America"
+                : city.continent === cont,
+            ).length;
             return (
               <button
                 key={cont}
