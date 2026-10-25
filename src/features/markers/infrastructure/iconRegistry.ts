@@ -26,7 +26,10 @@ import {
 } from "react-icons/fa6";
 import { IoMdFlower } from "react-icons/io";
 import { SlTarget } from "react-icons/sl";
-import type { MarkerIconDefinition } from "@/features/markers/domain/types";
+import type {
+  MarkerIconDefinition,
+  MarkerItem,
+} from "@/features/markers/domain/types";
 import { MARKER_FEATURED_ICON_COUNT } from "@/features/markers/infrastructure/constants";
 
 function createSvgIcon(id: string, label: string, component: IconType) {
@@ -89,14 +92,46 @@ export const featuredMarkerIcons = predefinedMarkerIcons.slice(
   MARKER_FEATURED_ICON_COUNT,
 );
 
-export function getAllMarkerIcons(customIcons: MarkerIconDefinition[]) {
-  return [...predefinedMarkerIcons, ...customIcons];
+function createEmojiIcon(iconId: string): MarkerIconDefinition | null {
+  if (!iconId.startsWith("emoji:")) return null;
+  const emoji = iconId
+    .slice("emoji:".length)
+    .split("-")
+    .map((codePoint) => Number.parseInt(codePoint, 16))
+    .filter(Number.isFinite)
+    .map((codePoint) => String.fromCodePoint(codePoint))
+    .join("");
+  if (!emoji) return null;
+
+  return {
+    id: iconId,
+    label: `${emoji} Emoji`,
+    source: "predefined",
+    kind: "emoji",
+    emoji,
+  };
+}
+
+export function getAllMarkerIcons(
+  customIcons: MarkerIconDefinition[],
+  markers: MarkerItem[] = [],
+) {
+  const emojiIconIds = new Set(
+    markers.map((marker) => marker.iconId).filter((iconId) => iconId.startsWith("emoji:")),
+  );
+  const emojiIcons = [...emojiIconIds]
+    .map(createEmojiIcon)
+    .filter((icon): icon is MarkerIconDefinition => icon !== null);
+  return [...predefinedMarkerIcons, ...customIcons, ...emojiIcons];
 }
 
 export function findMarkerIcon(
   iconId: string,
   customIcons: MarkerIconDefinition[],
 ) {
+  const emojiIcon = createEmojiIcon(iconId);
+  if (emojiIcon) return emojiIcon;
+
   return (
     getAllMarkerIcons(customIcons).find((icon) => icon.id === iconId) ?? null
   );

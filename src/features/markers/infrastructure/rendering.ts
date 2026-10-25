@@ -82,6 +82,16 @@ export async function drawMarkersOnCanvas(
       const y = point.y * scaleY;
       const size = marker.size * Math.max(scaleX, scaleY) * sizeScale;
 
+      if (icon.kind === "emoji" && icon.emoji) {
+        ctx.save();
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = `${size}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+        ctx.fillText(icon.emoji, x, y);
+        ctx.restore();
+        return;
+      }
+
       const image = await resolveMarkerImage(
         icon,
         marker.color,

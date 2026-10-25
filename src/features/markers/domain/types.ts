@@ -1,7 +1,7 @@
 import type { IconType } from "react-icons";
 
 export type MarkerIconSource = "predefined" | "custom";
-export type MarkerIconKind = "svg" | "image";
+export type MarkerIconKind = "svg" | "image" | "emoji";
 
 export interface MarkerIconDefinition {
   id: string;
@@ -12,6 +12,7 @@ export interface MarkerIconDefinition {
   component?: IconType;
   svgMarkup?: string;
   dataUrl?: string;
+  emoji?: string;
 }
 
 export interface MarkerItem {

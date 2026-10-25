@@ -29,7 +29,11 @@ const MarkerVisual = memo(function MarkerVisual({
         } as CSSProperties
       }
     >
-      {isThemeTintedMarkerSvg ? (
+      {icon.kind === "emoji" && icon.emoji ? (
+        <span className="marker-visual__emoji" aria-hidden="true">
+          {icon.emoji}
+        </span>
+      ) : isThemeTintedMarkerSvg ? (
         <span
           className="marker-visual__image-mask"
           aria-hidden="true"

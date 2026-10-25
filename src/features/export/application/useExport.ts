@@ -264,7 +264,7 @@ export function useExport() {
             includeCredits,
             markers: hasVisibleMarkers ? state.markers : [],
             markerIcons: hasVisibleOverlays
-              ? getAllMarkerIcons(state.customMarkerIcons)
+              ? getAllMarkerIcons(state.customMarkerIcons, state.markers)
               : [],
             routes: visibleRoutes,
             neatlineSvg,
@@ -320,7 +320,7 @@ export function useExport() {
           includeCredits,
           markers: hasVisibleMarkers ? state.markers : [],
           markerIcons: hasVisibleOverlays
-            ? getAllMarkerIcons(state.customMarkerIcons)
+            ? getAllMarkerIcons(state.customMarkerIcons, state.markers)
             : [],
           markerProjection: hasVisibleOverlays ? markerProjection : undefined,
           markerScaleX: hasVisibleOverlays ? markerScaleX : undefined,
@@ -359,7 +359,7 @@ export function useExport() {
             includeCredits,
             markers: hasVisibleMarkers ? state.markers : [],
             markerIcons: hasVisibleOverlays
-              ? getAllMarkerIcons(state.customMarkerIcons)
+              ? getAllMarkerIcons(state.customMarkerIcons, state.markers)
               : [],
             routes: visibleRoutes,
             neatlineSvg,

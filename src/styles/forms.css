@@ -2513,6 +2513,75 @@ button.marker-color-edit-btn:focus-visible {
   gap: 10px;
 }
 
+.marker-picker-mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 3px;
+  border: 1px solid rgba(151, 183, 207, 0.18);
+  border-radius: 9px;
+  background: rgba(8, 17, 27, 0.62);
+}
+
+.marker-picker-mode-tabs button {
+  min-height: 32px;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #9db8c9;
+  font-size: 0.72rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.marker-picker-mode-tabs button.is-active {
+  border-color: rgba(112, 184, 222, 0.28);
+  background: rgba(34, 67, 91, 0.78);
+  color: #d9f1ff;
+}
+
+.marker-picker-mode-tabs button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.marker-emoji-picker-wrap {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(151, 183, 207, 0.22);
+  border-radius: 10px;
+}
+
+.marker-emoji-picker-wrap .EmojiPickerReact {
+  --epr-bg-color: #0b1723;
+  --epr-category-label-bg-color: #0b1723;
+  --epr-text-color: #d9e6ef;
+  --epr-picker-border-color: rgba(151, 183, 207, 0.18);
+  --epr-search-input-bg-color: #142433;
+  --epr-search-input-bg-color-active: #142433;
+  --epr-search-input-text-color: #e8f3fa;
+  --epr-search-input-placeholder-color: #91a9ba;
+  --epr-highlight-color: #38bdf8;
+  --epr-hover-bg-color: rgba(56, 189, 248, 0.12);
+  --epr-focus-bg-color: rgba(56, 189, 248, 0.2);
+  --epr-emoji-size: 25px;
+  --epr-category-navigation-button-size: 26px;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.marker-emoji-picker-loading {
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(151, 183, 207, 0.22);
+  border-radius: 10px;
+  background: rgba(8, 17, 27, 0.72);
+  color: #9db8c9;
+  font-size: 0.78rem;
+}
+
 .marker-picker__section-title {
   margin: 0;
   font-size: 0.72rem;
@@ -2699,6 +2768,14 @@ button.marker-picker__clear-uploaded {
 .marker-visual__image {
   width: 100%;
   height: 100%;
+}
+
+.marker-visual__emoji {
+  display: block;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-size: calc(var(--marker-size) * 0.9);
+  line-height: 1;
+  filter: drop-shadow(0 1px 1px rgba(3, 10, 18, 0.45));
 }
 
 .marker-visual__image-mask {
