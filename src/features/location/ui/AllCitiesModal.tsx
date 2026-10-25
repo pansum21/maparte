@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import "./AllCitiesModal.css";
 import seoCitiesData from "@/data/seoCities.json";
 import { useCurrentLocation } from "@/features/location/application/useCurrentLocation";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
