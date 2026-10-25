@@ -1,21 +1,3 @@
-import { lazy, Suspense, useState } from "react";
-import { usePosterContext } from "@/features/poster/ui/PosterContext";
-import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
-import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
-import { useCurrentLocation } from "@/features/location/application/useCurrentLocation";
-import { useRecentLocations } from "@/features/location/application/useRecentLocations";
-import { useMapSync } from "@/features/map/application/useMapSync";
-import LocationSuggestionsDropdown from "@/features/location/ui/LocationSuggestionsDropdown";
-import {
-  POPULAR_CITIES,
-  type PopularCity,
-} from "@/features/location/domain/popularCities";
-import type { SearchResult } from "@/features/location/domain/types";
-import {
-  PLACEHOLDER_LOCATION_SEARCH,
-  PLACEHOLDER_EXAMPLE_LATITUDE,
-  PLACEHOLDER_EXAMPLE_LONGITUDE,
-} from "@/features/location/ui/constants";
 import {
   LocationIcon,
   ThemeIcon,
@@ -27,17 +9,11 @@ import {
   StyleIcon,
   SettingsIcon,
   SparklesIcon,
-  SearchIcon,
-  MyLocationIcon,
   WallIcon,
   ScissorsIcon,
   LockIcon,
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
-
-const AllCitiesPanel = lazy(
-  () => import("@/features/location/ui/AllCitiesModal"),
-);
 
 export interface DesktopNavBarProps {
   activeTab: MobileTab;
@@ -47,9 +23,6 @@ export interface DesktopNavBarProps {
   onLocationToggle: () => void;
   onSettingsClick?: () => void;
   onToggleCinema?: () => void;
-  onOpenAllCities?: () => void;
-  allCitiesOpen?: boolean;
-  onCloseAllCities?: () => void;
   onOpenWall?: () => void;
   wallOpen?: boolean;
   isEditing?: boolean;
@@ -64,67 +37,11 @@ export default function DesktopNavBar({
   onLocationToggle,
   onSettingsClick,
   onToggleCinema,
-  onOpenAllCities,
-  allCitiesOpen = false,
-  onCloseAllCities,
   onOpenWall,
   wallOpen = false,
   isEditing = false,
   onEditMapToggle,
 }: DesktopNavBarProps) {
-  const { state, dispatch, mapRef } = usePosterContext();
-  const {
-    handleChange,
-    handleLocationSelect: handleLocationSelectBase,
-    handleClearLocation,
-    setLocationFocused,
-  } = useFormHandlers();
-  const { flyToLocation } = useMapSync(state, dispatch, mapRef);
-  const { locationSuggestions, isLocationSearching, searchNow } =
-    useLocationAutocomplete(state.form.location, state.isLocationFocused);
-  const {
-    handleUseCurrentLocation,
-    isLocatingUser,
-    locationPermissionMessage,
-  } = useCurrentLocation(flyToLocation);
-  const { recent, removeRecent, clearRecent } = useRecentLocations();
-
-  const [showCoords, setShowCoords] = useState(false);
-
-  const hasLocationValue = state.form.location.trim().length > 0;
-
-  const onLocationSelect = (location: SearchResult) => {
-    handleLocationSelectBase(location);
-    flyToLocation(location.lat, location.lon);
-  };
-
-  const onPopularCityClick = (city: PopularCity) => {
-    const fullLabel = `${city.name}, ${city.country}`;
-    const searchResult: SearchResult = {
-      id: `popular:${city.id}`,
-      label: fullLabel,
-      city: city.name,
-      country: city.country,
-      continent: city.continent,
-      lat: city.lat,
-      lon: city.lon,
-    };
-    handleLocationSelectBase(searchResult);
-    dispatch({
-      type: "SET_FORM_FIELDS",
-      resetDisplayNameOverrides: true,
-      fields: {
-        location: fullLabel,
-        latitude: city.lat.toFixed(6),
-        longitude: city.lon.toFixed(6),
-        displayCity: city.name,
-        displayCountry: city.country,
-        displayContinent: city.continent,
-      },
-    });
-    flyToLocation(city.lat, city.lon);
-  };
-
   return (
     <nav
       className={`desktop-nav-bar${panelOpen ? " has-panel-open" : ""}${isLocationVisible ? " is-location-open" : ""}`}
@@ -145,137 +62,6 @@ export default function DesktopNavBar({
           <span className="desktop-nav-label">Location</span>
         </button>
 
-        <div className="desktop-nav-companion desktop-companion-location">
-          <div className="location-search-main-row">
-            <div className="location-search-box">
-              <span className="location-search-icon" aria-hidden="true">
-                <SearchIcon />
-              </span>
-              <input
-                className="desktop-search-input"
-                name="location"
-                value={state.form.location}
-                onChange={handleChange}
-                onFocus={() => setLocationFocused(true)}
-                onBlur={() => setLocationFocused(false)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    const value = e.currentTarget.value;
-                    void searchNow(value).then((result) => {
-                      if (result) onLocationSelect(result);
-                    });
-                  }
-                }}
-                placeholder={state.isLocationFocused ? "" : PLACEHOLDER_LOCATION_SEARCH}
-                autoComplete="off"
-              />
-              {hasLocationValue ? (
-                <button
-                  type="button"
-                  className="desktop-search-clear-btn"
-                  aria-label="Clear location"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={handleClearLocation}
-                >
-                  ✕
-                </button>
-              ) : null}
-            </div>
-
-            <div className="location-search-actions">
-              <button
-                type="button"
-                className={`location-action-btn${isLocatingUser ? " is-locating" : ""}`}
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={handleUseCurrentLocation}
-                disabled={isLocatingUser}
-                aria-label="Use current GPS location"
-                title="Use current GPS location"
-              >
-                <MyLocationIcon className="location-current-icon" />
-              </button>
-              <button
-                type="button"
-                className={`location-action-btn${showCoords ? " is-active" : ""}`}
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => setShowCoords((v) => !v)}
-                aria-label="Toggle coordinate fields"
-                title="Show/hide Latitude & Longitude"
-              >
-                <LocationIcon />
-              </button>
-            </div>
-
-            {showCoords ? (
-              <div className="desktop-horizontal-coords">
-                <label>
-                  Lat:
-                  <input
-                    name="latitude"
-                    value={state.form.latitude}
-                    onChange={handleChange}
-                    placeholder={PLACEHOLDER_EXAMPLE_LATITUDE}
-                  />
-                </label>
-                <label>
-                  Lon:
-                  <input
-                    name="longitude"
-                    value={state.form.longitude}
-                    onChange={handleChange}
-                    placeholder={PLACEHOLDER_EXAMPLE_LONGITUDE}
-                  />
-                </label>
-              </div>
-            ) : null}
-          </div>
-
-          <LocationSuggestionsDropdown
-            query={state.form.location}
-            isFocused={state.isLocationFocused}
-            suggestions={locationSuggestions}
-            isSearching={isLocationSearching}
-            onSelect={onLocationSelect}
-            recent={recent}
-            onRecentSelect={onLocationSelect}
-            onRecentRemove={removeRecent}
-            onClearRecent={clearRecent}
-          />
-
-          {allCitiesOpen ? (
-            <Suspense fallback={<div className="all-cities-loading">Loading cities…</div>}>
-              <AllCitiesPanel isOpen onClose={onCloseAllCities ?? (() => undefined)} />
-            </Suspense>
-          ) : (
-            <div className="desktop-quick-cities-strip" role="toolbar" aria-label="Quick cities">
-              {POPULAR_CITIES.slice(0, 3).map((city) => (
-                <button
-                  key={city.id}
-                  type="button"
-                  className="desktop-quick-city-pill"
-                  onClick={() => onPopularCityClick(city)}
-                  title={`Explore ${city.name}, ${city.country}`}
-                >
-                  <span className="city-pill-flag">{city.flag}</span>
-                  <span className="city-pill-name">{city.name}</span>
-                </button>
-              ))}
-              <button
-                type="button"
-                className="desktop-quick-city-pill desktop-all-cities-btn"
-                onClick={onOpenAllCities}
-                title="Explore 100+ World Cities"
-              >
-                <span className="plus-icon-badge">＋</span>
-                <span className="all-cities-text">100+ Cities</span>
-              </button>
-            </div>
-          )}
-
-          {locationPermissionMessage ? (
-            <p className="location-permission-message">{locationPermissionMessage}</p>
-          ) : null}
-        </div>
       </div>
 
       {/* ── 2. EDIT MAP ROW ── */}
