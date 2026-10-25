@@ -35,12 +35,13 @@ function CityPhoto({ city, slug, priority }: { city: string; slug: string; prior
   const imageSrc = `/assets/city-photos/${slug}.webp`;
 
   return (
-    <div className={`city-card-photo${imageFailed ? "" : " has-image"}`}>
+    <div className={`city-card-photo${imageFailed ? "" : " has-image"}`} style={{ display: "grid", width: "100%", height: "112px", minHeight: "112px", flex: "0 0 112px", overflow: "hidden" }}>
       {imageFailed ? (
         <span className="city-photo-unavailable" aria-hidden="true" />
       ) : (
         <img
           src={imageSrc}
+          style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }}
           alt={`${city} city photo`}
           loading={priority ? "eager" : "lazy"}
           decoding="async"
@@ -256,10 +257,11 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
                 key={item.slug}
                 type="button"
                 className={`all-cities-card${isCurrent ? " is-active" : ""}`}
+                style={{ display: "flex", flexDirection: "column", minHeight: "148px", overflow: "hidden" }}
                 onClick={() => handleCityPick(item)}
               >
                 <CityPhoto city={item.city} slug={item.slug} priority={index < 8} />
-                <span className="city-card-name">{item.city}</span>
+                <span className="city-card-name" style={{ display: "block", flex: "0 0 auto", minHeight: "36px", boxSizing: "border-box", color: "#fff", visibility: "visible", position: "relative" }}>{item.city}</span>
               </button>
             );
           })}
