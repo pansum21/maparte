@@ -14,6 +14,10 @@
   color: #e7f4fb;
 }
 
+.edit-map-action-panel {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .map-rotation-control__number-label,
 .map-rotation-control__endpoint {
   display: inline-flex;
