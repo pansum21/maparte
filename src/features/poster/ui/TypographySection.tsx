@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { PosterForm } from "@/features/poster/application/posterReducer";
 import { FONT_FAMILY_COUNT, type FontOption } from "@/core/config";
 import {
@@ -10,6 +11,7 @@ interface TypographySectionProps {
   onChange: (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => void;
+  onFontChange: (fontFamily: string) => void;
   fontOptions: FontOption[];
 }
 
@@ -17,10 +19,47 @@ interface TypographySectionProps {
 export default function TypographySection({
   form,
   onChange,
+  onFontChange,
   fontOptions,
 }: TypographySectionProps) {
-  const defaultOptions = fontOptions.filter((option) => !option.category);
   const fontCategories = ["Sans serif", "Serif", "Display", "Monospace"] as const;
+  const [fontPickerOpen, setFontPickerOpen] = useState(false);
+  const uniqueFontOptions = fontOptions.filter((option, index, options) => {
+    const key = option.value.trim().toLowerCase() || "space grotesk";
+    return options.findIndex((candidate) =>
+      (candidate.value.trim().toLowerCase() || "space grotesk") === key,
+    ) === index;
+  });
+  const selectedFont =
+    uniqueFontOptions.find(
+      (option) =>
+        (option.value.trim().toLowerCase() || "space grotesk") ===
+        (form.fontFamily.trim().toLowerCase() || "space grotesk"),
+    ) ?? uniqueFontOptions.find((option) => !option.value) ?? uniqueFontOptions[0];
+
+  const renderFontOption = (fontOption: FontOption) => {
+    const selected = fontOption.value === selectedFont?.value;
+    return (
+      <button
+        className={`font-picker-option${selected ? " is-selected" : ""}`}
+        key={fontOption.value || "default"}
+        type="button"
+        role="option"
+        aria-selected={selected}
+        style={{
+          fontFamily: fontOption.value
+            ? `"${fontOption.value}", sans-serif`
+            : '"Space Grotesk", sans-serif',
+        }}
+        onClick={() => {
+          onFontChange(fontOption.value);
+          setFontPickerOpen(false);
+        }}
+      >
+        {fontOption.label}
+      </button>
+    );
+  };
 
   return (
     <>
@@ -83,42 +122,57 @@ export default function TypographySection({
             placeholder="e.g. 14.02.2024 • Where We Met"
           />
         </label>
-        <label>
+        <div className="font-picker-field">
           <span className="font-select-label-row">
-            <span>Font</span>
+            <span id="font-picker-label">Font</span>
             <small className="font-count-pill">{FONT_FAMILY_COUNT} fonts</small>
           </span>
-          <select
-            className="form-control-tall"
-            name="fontFamily"
-            value={form.fontFamily}
-            onChange={onChange}
-            style={{
-              fontFamily: form.fontFamily
-                ? `"${form.fontFamily}", "Space Grotesk", sans-serif`
-                : '"Space Grotesk", sans-serif',
-            }}
+          <button
+            aria-controls="poster-font-options"
+            aria-expanded={fontPickerOpen}
+            aria-haspopup="listbox"
+            aria-label={`Font family: ${selectedFont?.label ?? "Default (Space Grotesk)"}`}
+            className="font-picker-trigger form-control-tall"
+            type="button"
+            onClick={() => setFontPickerOpen((open) => !open)}
           >
-            {defaultOptions.map((fontOption) => (
-              <option key={fontOption.value || "default"} value={fontOption.value}>
-                {fontOption.label}
-              </option>
-            ))}
-            {fontCategories.map((category) => {
-              const options = fontOptions.filter((option) => option.category === category);
-              if (options.length === 0) return null;
-              return (
-                <optgroup key={category} label={category}>
-                  {options.map((fontOption) => (
-                    <option key={fontOption.value} value={fontOption.value}>
-                      {fontOption.label}
-                    </option>
-                  ))}
-                </optgroup>
-              );
-            })}
-          </select>
-        </label>
+            <span
+              style={{
+                fontFamily: form.fontFamily
+                  ? `"${form.fontFamily}", "Space Grotesk", sans-serif`
+                  : '"Space Grotesk", sans-serif',
+              }}
+            >
+              {selectedFont?.label ?? "Default (Space Grotesk)"}
+            </span>
+            <span
+              className={`font-picker-chevron${fontPickerOpen ? " is-open" : ""}`}
+              aria-hidden="true"
+            >
+              ⌄
+            </span>
+          </button>
+          {fontPickerOpen ? (
+            <div
+              className="font-picker-options"
+              id="poster-font-options"
+              role="listbox"
+              aria-labelledby="font-picker-label"
+            >
+              {uniqueFontOptions.filter((option) => !option.category).map(renderFontOption)}
+              {fontCategories.map((category) => {
+                const options = uniqueFontOptions.filter((option) => option.category === category);
+                if (options.length === 0) return null;
+                return (
+                  <div className="font-picker-group" key={category}>
+                    <span className="font-picker-group-label">{category}</span>
+                    {options.map(renderFontOption)}
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
 
       </section>
     </>

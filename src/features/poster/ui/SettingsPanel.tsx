@@ -380,6 +380,9 @@ export default function SettingsPanel({
               <TypographySection
                 form={state.form}
                 onChange={handleChange}
+                onFontChange={(fontFamily) =>
+                  dispatch({ type: "SET_FIELD", name: "fontFamily", value: fontFamily })
+                }
                 fontOptions={FONT_OPTIONS}
               />
             ) : null}
