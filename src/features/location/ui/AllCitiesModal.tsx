@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import seoCitiesData from "@/data/seoCities.json";
 import { useCurrentLocation } from "@/features/location/application/useCurrentLocation";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
@@ -28,65 +28,24 @@ interface SeoCityItem {
   annualSearches?: string;
 }
 
-type CityImage = {
-  src: string;
-  sourcePage: string;
-  author: string;
-  license: string;
-  licenseUrl: string;
-};
-
 const CONTINENTS = ["Americas", "Europe", "Asia", "Africa"] as const;
-const cityImageCache = new Map<string, Promise<CityImage | null>>();
-let cityImageManifestPromise: Promise<Record<string, CityImage>> | null = null;
 
-function loadCityImage(slug: string): Promise<CityImage | null> {
-  const cached = cityImageCache.get(slug);
-  if (cached) return cached;
-
-  cityImageManifestPromise ??= fetch("/assets/city-photos/manifest.json")
-    .then((response) => response.ok ? response.json() : {})
-    .catch(() => ({}));
-  const request = cityImageManifestPromise.then((manifest) => manifest[slug] ?? null);
-  cityImageCache.set(slug, request);
-  return request;
-}
-
-function CityPhoto({ city, slug }: { city: string; slug: string }) {
-  const requestedRef = useRef(false);
-  const [image, setImage] = useState<CityImage | null>(null);
-  const [loadFinished, setLoadFinished] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    if (!requestedRef.current) {
-      requestedRef.current = true;
-      void loadCityImage(slug).then((result) => {
-        if (active) {
-          setImage(result);
-          setLoadFinished(true);
-        }
-      });
-    }
-    return () => { active = false; };
-  }, [slug]);
+function CityPhoto({ city, slug, priority }: { city: string; slug: string; priority: boolean }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSrc = `/assets/city-photos/${slug}.webp`;
 
   return (
-    <div className={`city-card-photo${image ? " has-image" : ""}`}>
-      {image ? (
-        <img
-          src={image.src}
-          alt={`${city} city photo`}
-          title={`Photo by ${image.author}; ${image.license}. Source: ${image.sourcePage}${image.licenseUrl ? ` (${image.licenseUrl})` : ""}`}
-          loading="lazy"
-          decoding="async"
-          onError={() => {
-            setImage(null);
-            setLoadFinished(true);
-          }}
-        />
+    <div className={`city-card-photo${imageFailed ? "" : " has-image"}`}>
+      {imageFailed ? (
+        <span className="city-photo-unavailable" aria-hidden="true" />
       ) : (
-        <span className={loadFinished ? "city-photo-unavailable" : "city-photo-loading"} aria-hidden="true" />
+        <img
+          src={imageSrc}
+          alt={`${city} city photo`}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          onError={() => setImageFailed(true)}
+        />
       )}
     </div>
   );
@@ -290,7 +249,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
 
       {(!isSearchingCities || hasCuratedSearchMatch) ? (
         <div className="all-cities-grid">
-          {filteredCities.map((item) => {
+          {filteredCities.map((item, index) => {
             const isCurrent = state.form.displayCity?.toLowerCase() === item.city.toLowerCase();
             return (
               <button
@@ -299,7 +258,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
                 className={`all-cities-card${isCurrent ? " is-active" : ""}`}
                 onClick={() => handleCityPick(item)}
               >
-                <CityPhoto city={item.city} slug={item.slug} />
+                <CityPhoto city={item.city} slug={item.slug} priority={index < 8} />
                 <span className="city-card-name">{item.city}</span>
               </button>
             );
