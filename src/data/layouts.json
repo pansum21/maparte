@@ -6,6 +6,36 @@
       "name": "Print",
       "layouts": [
         {
+          "id": "print_a0_portrait",
+          "name": "A0 Portrait",
+          "description": "ISO A0 portrait print format.",
+          "width": 84.1,
+          "height": 118.9,
+          "unit": "cm",
+          "posterWidthCm": 84.1,
+          "posterHeightCm": 118.9
+        },
+        {
+          "id": "print_a1_portrait",
+          "name": "A1 Portrait",
+          "description": "ISO A1 portrait print format.",
+          "width": 59.4,
+          "height": 84.1,
+          "unit": "cm",
+          "posterWidthCm": 59.4,
+          "posterHeightCm": 84.1
+        },
+        {
+          "id": "print_a2_portrait",
+          "name": "A2 Portrait",
+          "description": "ISO A2 portrait print format.",
+          "width": 42,
+          "height": 59.4,
+          "unit": "cm",
+          "posterWidthCm": 42,
+          "posterHeightCm": 59.4
+        },
+        {
           "id": "print_a3_portrait",
           "name": "A3 Portrait",
           "description": "ISO A3 portrait format.",
@@ -44,6 +74,56 @@
           "unit": "cm",
           "posterWidthCm": 21.6,
           "posterHeightCm": 27.9
+        },
+        {
+          "id": "print_legal_us_portrait",
+          "name": "Legal (US) Portrait",
+          "description": "US Legal portrait print format.",
+          "width": 21.59,
+          "height": 35.56,
+          "unit": "cm",
+          "posterWidthCm": 21.59,
+          "posterHeightCm": 35.56
+        },
+        {
+          "id": "print_tabloid_us_portrait",
+          "name": "Tabloid (US) Portrait",
+          "description": "US Tabloid portrait print format.",
+          "width": 27.94,
+          "height": 43.18,
+          "unit": "cm",
+          "posterWidthCm": 27.94,
+          "posterHeightCm": 43.18
+        },
+        {
+          "id": "print_poster_12x18_in",
+          "name": "Poster 12 × 18 in",
+          "description": "Common medium poster print size.",
+          "width": 30.48,
+          "height": 45.72,
+          "unit": "cm",
+          "posterWidthCm": 30.48,
+          "posterHeightCm": 45.72
+        },
+        {
+          "id": "print_poster_18x24_in",
+          "name": "Poster 18 × 24 in",
+          "description": "Common large poster print size.",
+          "width": 45.72,
+          "height": 60.96,
+          "unit": "cm",
+          "posterWidthCm": 45.72,
+          "posterHeightCm": 60.96
+        },
+        {
+          "id": "print_poster_24x36_in",
+          "name": "Poster 24 × 36 in",
+          "description": "Common extra-large poster print size.",
+          "width": 60.96,
+          "height": 91.44,
+          "unit": "cm",
+          "posterWidthCm": 60.96,
+          "posterHeightCm": 91.44
         }
       ]
     },
@@ -188,26 +268,6 @@
           "posterHeightCm": 12.56
         },
         {
-          "id": "wallpaper_iphone_15_pro",
-          "name": "iPhone 15 Pro",
-          "description": "Vertical wallpaper format for iPhone 15 Pro.",
-          "width": 1179,
-          "height": 2556,
-          "unit": "px",
-          "posterWidthCm": 13.84,
-          "posterHeightCm": 30
-        },
-        {
-          "id": "wallpaper_iphone_15_pro_max",
-          "name": "iPhone 15 Pro Max",
-          "description": "Vertical wallpaper format for iPhone 15 Pro Max.",
-          "width": 1290,
-          "height": 2796,
-          "unit": "px",
-          "posterWidthCm": 13.84,
-          "posterHeightCm": 30
-        },
-        {
           "id": "wallpaper_samsung_galaxy_s24_ultra",
           "name": "Galaxy S24 Ultra",
           "description": "Vertical wallpaper format for Samsung Galaxy S24 Ultra.",
@@ -246,6 +306,32 @@
           "unit": "px",
           "posterWidthCm": 4.06,
           "posterHeightCm": 6.77
+        }
+      ]
+    },
+    {
+      "id": "iphone_wallpaper",
+      "name": "iPhone Wallpaper",
+      "layouts": [
+        {
+          "id": "wallpaper_iphone_15_pro",
+          "name": "iPhone 15 Pro",
+          "description": "Vertical wallpaper format for iPhone 15 Pro.",
+          "width": 1179,
+          "height": 2556,
+          "unit": "px",
+          "posterWidthCm": 13.84,
+          "posterHeightCm": 30
+        },
+        {
+          "id": "wallpaper_iphone_15_pro_max",
+          "name": "iPhone 15 Pro Max",
+          "description": "Vertical wallpaper format for iPhone 15 Pro Max.",
+          "width": 1290,
+          "height": 2796,
+          "unit": "px",
+          "posterWidthCm": 13.84,
+          "posterHeightCm": 30
         }
       ]
     },

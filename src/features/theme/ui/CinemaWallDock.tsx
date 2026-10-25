@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
-import DownloadModal from "@/features/export/ui/DownloadModal";
 import { layoutGroups } from "@/features/layout/infrastructure/layoutRepository";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { LayoutIcon } from "@/shared/ui/Icons";
@@ -29,7 +28,6 @@ export default function CinemaWallDock({
   const { state, dispatch } = usePosterContext();
   const { form } = state;
   const cityName = form.displayCity || form.location || "Custom City";
-  const [isDownloadOpen, setIsDownloadOpen] = useState(false);
   const [layoutOpen, setLayoutOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -55,9 +53,6 @@ export default function CinemaWallDock({
       </div>
 
       <div className="cinema-top-bar-right">
-        <button type="button" className="cinema-top-download-btn" onClick={() => setIsDownloadOpen(true)} title="Download High-Resolution Image">
-          <span aria-hidden="true">⬇</span><span>Download</span>
-        </button>
         <button type="button" className="cinema-top-exit-btn" onClick={onExit} title="Exit Fullscreen Wall View & Back to Editor (Esc)" aria-label="Back to Editor">
           <span className="cinema-exit-icon" aria-hidden="true">←</span>
           <span className="cinema-exit-text">Back to Editor</span>
@@ -127,7 +122,6 @@ export default function CinemaWallDock({
         </button>
       </div>
 
-      <DownloadModal isOpen={isDownloadOpen} onClose={() => setIsDownloadOpen(false)} />
     </div>
   );
 }

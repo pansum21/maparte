@@ -72,6 +72,7 @@ function adsensePlugin() {
         resolvedConfig.root,
         resolvedConfig.build.outDir,
       );
+      fs.mkdirSync(outDir, { recursive: true });
       fs.writeFileSync(
         path.join(outDir, "ads.txt"),
         `google.com, ${publisherId}, DIRECT, f08c47fec0942fa0\n`,
@@ -280,7 +281,14 @@ function serviceWorkerBuildIdPlugin() {
         .slice(0, 64);
 
       if (!fs.existsSync(serviceWorkerPath)) {
-        throw new Error("[service-worker] public/sw.js was not copied to the build output");
+        // Vite can omit the public asset in clean/alternate build environments.
+        // Copy the tracked source into the output so the build ID is still stamped.
+        const sourcePath = path.resolve(resolvedConfig.root, "public", "sw.js");
+        if (!fs.existsSync(sourcePath)) {
+          throw new Error("[service-worker] public/sw.js source is missing");
+        }
+        fs.mkdirSync(outDir, { recursive: true });
+        fs.copyFileSync(sourcePath, serviceWorkerPath);
       }
 
       const source = fs.readFileSync(serviceWorkerPath, "utf8");

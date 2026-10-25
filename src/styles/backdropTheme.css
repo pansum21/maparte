@@ -112,8 +112,9 @@ body.has-custom-backdrop .poster-ghost-layer {
 /* Modal layout */
 .export-modal.backdrop-theme-modal {
   width: min(100%, 420px);
-  height: 100dvh;
-  max-height: 100dvh;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
   overflow-y: auto;
   padding: 18px 16px;
   background: linear-gradient(
@@ -125,17 +126,29 @@ body.has-custom-backdrop .poster-ghost-layer {
   backdrop-filter: blur(28px) saturate(190%);
   -webkit-backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 0 18px 18px 0;
+  border-radius: 18px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   box-shadow:
     inset 0 2px 2px rgba(255, 255, 255, 0.28),
     0 24px 60px rgba(0, 0, 0, 0.65),
     0 0 40px rgba(56, 189, 248, 0.18);
 }
 
+.export-modal.backdrop-theme-modal::-webkit-scrollbar {
+  display: none;
+}
+
 .export-modal-backdrop.backdrop-theme-modal-backdrop {
   align-items: stretch;
   justify-content: flex-start;
-  padding: 0;
+  height: 100dvh;
+  /* Keep the wall drawer between the app header and desktop footer. */
+  padding: 62px 0 38px calc(64px + env(safe-area-inset-left, 0px));
+  /* Keep the live wall color and map preview behind this panel crisp and true-to-color. */
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   /* Keep the live wall color and map preview behind this panel crisp and true-to-color. */
   background: transparent !important;
   backdrop-filter: none !important;
@@ -156,8 +169,139 @@ body.has-custom-backdrop .poster-ghost-layer {
 }
 
 .backdrop-modal-header {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
+  padding-top: 0;
   padding-top: 38px;
+}
+
+.backdrop-modal-heading-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.backdrop-modal-heading-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.backdrop-modal-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  flex: 0 0 auto;
+  padding-top: 2px;
+}
+
+.backdrop-selected-wall-name {
+  display: block;
+  margin-top: 3px;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.backdrop-selected-wall-desc {
+  margin: 4px 0 0;
+  color: rgba(160, 185, 205, 0.85);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+:root[data-backdrop-mode="light"] .backdrop-selected-wall-desc {
+  color: #475569;
+}
+
+.backdrop-customize-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 11px;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 999px;
+  background: rgba(8, 47, 73, 0.62);
+  color: #e0f2fe;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.backdrop-customize-btn:hover,
+.backdrop-customize-btn:focus-visible {
+  background: rgba(2, 132, 199, 0.42);
+  border-color: #38bdf8;
+  outline: none;
+}
+
+:root[data-backdrop-mode="light"] .backdrop-customize-btn {
+  background: rgba(224, 242, 254, 0.84);
+  color: #0c4a6e;
+  border-color: rgba(2, 132, 199, 0.36);
+}
+
+.backdrop-wall-info-button {
+  width: 22px;
+  height: 22px;
+  flex-basis: 22px;
+  font-size: 0.72rem;
+}
+
+.backdrop-seo-description {
+  margin: 7px 0 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: rgba(195, 220, 240, 0.82);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+:root[data-backdrop-mode="light"] .backdrop-seo-description {
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #475569;
+}
+
+.backdrop-seo-copy {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.backdrop-tone-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.backdrop-tone-group {
+  min-width: 0;
+}
+
+.backdrop-tone-heading {
+  margin: 0 0 5px;
+  color: rgba(195, 220, 240, 0.72);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:root[data-backdrop-mode="light"] .backdrop-tone-heading {
+  color: #64748b;
 }
 
 .backdrop-modal-badge {
@@ -301,30 +445,36 @@ body.has-custom-backdrop .poster-ghost-layer {
 
 /* Categories Scroll */
 .backdrop-categories-scroll {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
   gap: 5px;
   overflow: visible;
   padding-bottom: 0;
   scrollbar-width: none;
 }
 
+.backdrop-categories-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .backdrop-category-pill {
   display: flex;
+  width: 100%;
+  min-width: 0;
   flex: 0 1 auto;
   min-width: 0;
   max-width: 100%;
   justify-content: flex-start;
   align-items: center;
-  gap: 5px;
-  padding: 5px 8px;
-  min-height: 28px;
+  gap: 4px;
+  padding: 3px 6px;
+  min-height: 23px;
   border-radius: 999px;
   background: rgba(15, 28, 44, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: rgba(195, 220, 240, 0.85);
-  font-size: 0.68rem;
+  font-size: 0.61rem;
   font-weight: 600;
   white-space: nowrap;
   text-align: left;
@@ -360,15 +510,15 @@ body.has-custom-backdrop .poster-ghost-layer {
 
 .cat-count {
   flex: 0 0 auto;
-  min-width: 17px;
-  height: 17px;
+  min-width: 15px;
+  height: 15px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.2);
-  font-size: 0.62rem;
+  font-size: 0.56rem;
   font-family: "Spline Sans Mono", monospace;
 }
 
@@ -385,14 +535,14 @@ body.has-custom-backdrop .poster-ghost-layer {
 /* Presets Grid */
 .backdrop-presets-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 22px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin-bottom: 0;
 }
 
 @media (max-width: 600px) {
   .backdrop-presets-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -559,6 +709,30 @@ body.has-custom-backdrop .poster-ghost-layer {
   border-color: #38bdf8;
   color: #38bdf8;
   outline: none;
+}
+
+.backdrop-mode-badge.tone--mid-dark {
+  background: rgba(100, 116, 139, 0.18);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+}
+
+.backdrop-mode-badge.tone--mid-light {
+  background: rgba(203, 213, 225, 0.18);
+  color: #e2e8f0;
+  border: 1px solid rgba(203, 213, 225, 0.24);
+}
+
+:root[data-backdrop-mode="light"] .backdrop-mode-badge.tone--mid-dark {
+  color: #475569;
+  background: rgba(100, 116, 139, 0.1);
+  border-color: rgba(100, 116, 139, 0.2);
+}
+
+:root[data-backdrop-mode="light"] .backdrop-mode-badge.tone--mid-light {
+  color: #334155;
+  background: rgba(203, 213, 225, 0.42);
+  border-color: rgba(100, 116, 139, 0.18);
 }
 
 :root[data-backdrop-mode="light"] .backdrop-preset-desc {
@@ -1137,6 +1311,8 @@ body.has-custom-backdrop .poster-ghost-layer {
 .app-shell.is-cinema-mode .poster-frame {
   max-height: calc(88vh - 60px) !important;
   width: min(calc(100vw - 64px), calc((88vh - 60px) * var(--poster-aspect, 0.6666667))) !important;
+  /* Keep the paper edge the same thickness on desktop, tablet, and phone. */
+  border-width: 7px !important;
   margin: 0 auto !important;
   transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 0.96));
   transform-origin: center;
@@ -1780,28 +1956,32 @@ body.has-custom-backdrop .poster-ghost-layer {
 }
 
 @media (max-width: 768px) {
+  .export-modal-backdrop.backdrop-theme-modal-backdrop {
+    padding: calc(54px + env(safe-area-inset-top, 0px)) 0 max(8px, env(safe-area-inset-bottom, 0px)) calc(58px + env(safe-area-inset-left, 0px));
+  }
   .export-modal.backdrop-theme-modal {
-    width: min(420px, calc(100vw - 12px));
-    height: 100dvh;
-    max-height: 100dvh;
+    width: min(420px, calc(100vw - 70px - env(safe-area-inset-left, 0px)));
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
     padding: 14px 12px calc(14px + env(safe-area-inset-bottom, 0px));
-    border-radius: 0 18px 18px 0;
+    border-radius: 18px;
   }
   .backdrop-modal-top-actions {
     top: 12px;
     left: 14px;
   }
   .backdrop-modal-header {
-    padding-top: 38px;
+    padding-top: 0;
   }
   .backdrop-categories-scroll {
     gap: 4px;
   }
   .backdrop-category-pill {
-    min-height: 26px;
-    padding: 4px 7px;
-    font-size: 0.64rem;
-    gap: 4px;
+    min-height: 22px;
+    padding: 2px 5px;
+    font-size: 0.59rem;
+    gap: 3px;
   }
   .cinema-top-bar-left {
     top: 12px !important;
@@ -1847,7 +2027,7 @@ body.has-custom-backdrop .poster-ghost-layer {
   .app-shell.is-cinema-mode .poster-frame {
     width: min(calc(100vw - 40px), calc((100svh - 190px) * var(--poster-aspect, 0.6666667))) !important;
     max-height: calc(100svh - 190px) !important;
-    border-width: 10px !important;
+    border-width: 7px !important;
     transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 1)) !important;
   }
 
