@@ -6,12 +6,19 @@
   gap: 5px;
   width: 100%;
   min-width: 0;
+  align-self: stretch;
+  justify-self: stretch;
+  margin: 0;
   box-sizing: border-box;
   color: #e7f4fb;
 }
 
 .edit-map-action-panel {
   grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  margin: 0;
+  gap: 0;
+  box-sizing: border-box;
 }
 
 .map-rotation-control__number-label,
@@ -30,6 +37,10 @@
   background: rgba(4, 12, 21, 0.68);
   color: #d9edf9;
   font: 600 0.8rem/1 "Spline Sans Mono", monospace;
+}
+
+.map-rotation-control__number-label {
+  transform: translateY(0.2mm);
 }
 
 .map-rotation-control__number {
