@@ -324,7 +324,7 @@
   /* ── Location Companion Input (Pixel-Perfect Match with Image 2) ── */
   .desktop-companion-location {
     position: relative;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     gap: 7px;
