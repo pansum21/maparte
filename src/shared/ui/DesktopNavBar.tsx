@@ -68,7 +68,7 @@ export default function DesktopNavBar({
       <div className="desktop-nav-row" data-tab="edit-map">
         <button
           type="button"
-          className={`desktop-nav-tab${isEditing ? " is-active" : ""}`}
+          className={`desktop-nav-tab${isEditing || (panelOpen && activeTab === "edit-map") ? " is-active" : ""}`}
           onClick={onEditMapToggle}
           title={isEditing ? "Lock map editing" : "Unlock map editing"}
           aria-label={isEditing ? "Lock Map" : "Edit Map"}

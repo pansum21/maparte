@@ -469,6 +469,8 @@ export default function AppShell() {
         isEditing={isEditing}
         onEditMapToggle={() => {
           setAllCitiesOpen(false);
+          setDesktopTab("edit-map");
+          setDesktopPanelOpen(true);
           setIsEditing((prev) => !prev);
         }}
       />
@@ -587,7 +589,8 @@ export default function AppShell() {
         onEditMapToggle={() => {
           setAllCitiesOpen(false);
           setBackdropOpen(false);
-          setMobileDrawerOpen(false);
+          setMobileTab("edit-map");
+          setMobileDrawerOpen(true);
           setIsEditing((prev) => !prev);
         }}
       />

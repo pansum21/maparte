@@ -8,6 +8,7 @@ import type { MobileTab } from "@/shared/ui/MobileNavBar";
 
 import LocationSection from "@/features/location/ui/LocationSection";
 import MapSettingsSection from "@/features/map/ui/MapSettingsSection";
+import MapRotationControl from "@/features/map/ui/MapRotationControl";
 import LayersSection from "@/features/map/ui/LayersSection";
 import MarkersSection from "@/features/markers/ui/MarkersSection";
 import RoutesSection from "@/features/routes/ui/RoutesSection";
@@ -140,6 +141,7 @@ export default function SettingsPanel({
           {isEditing ? <span aria-hidden="true">🔒</span> : <ScissorsIcon aria-hidden="true" />}
           <span>{isEditing ? "Lock Map" : "Edit Map"}</span>
         </button>
+        <MapRotationControl />
       </div>
     );
   }
