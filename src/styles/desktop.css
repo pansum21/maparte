@@ -1977,16 +1977,20 @@
    81 CURATED WORLD CITIES MODAL
    ══════════════════════════════════════════════════════════ */
 .all-cities-modal {
-  position: absolute;
+  position: fixed;
   z-index: 90;
-  top: 38px;
-  left: 0;
-  width: min(430px, calc(100vw - 100px));
-  max-width: calc(100vw - 80px);
-  max-height: min(68vh, 650px);
+  top: 62px;
+  right: auto;
+  bottom: 0;
+  left: 64px;
+  width: min(430px, calc(100vw - 64px));
+  max-width: calc(100vw - 64px);
+  height: auto;
+  max-height: none;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 5px 16px 16px;
   overflow: hidden;
   background: linear-gradient(155deg, rgba(15, 29, 44, 0.98), rgba(8, 18, 30, 0.98));
   backdrop-filter: blur(22px) saturate(145%);
@@ -2000,10 +2004,13 @@
 }
 
 .all-cities-loading {
-  position: absolute;
+  position: fixed;
   z-index: 90;
-  top: 38px;
-  left: 0;
+  top: 62px;
+  bottom: 0;
+  left: 64px;
+  width: min(430px, calc(100vw - 64px));
+  box-sizing: border-box;
   padding: 14px 16px;
   border: 1px solid rgba(146, 176, 200, 0.28);
   border-radius: 14px;
@@ -2018,6 +2025,7 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
+  flex: 0 0 auto;
 }
 
 .all-cities-badge {
@@ -2065,8 +2073,8 @@
 }
 
 .all-cities-continents {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
   margin-bottom: 10px;
   overflow: visible;
@@ -2075,7 +2083,8 @@
 }
 
 .all-cities-continent-pill {
-  display: inline-flex;
+  display: flex;
+  justify-content: center;
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
@@ -2113,8 +2122,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
   gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
-  max-height: min(48vh, 430px);
+  max-height: none;
   padding: 0 2px 2px 0;
   scrollbar-width: none;
   -ms-overflow-style: none;

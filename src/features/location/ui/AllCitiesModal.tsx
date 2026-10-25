@@ -5,7 +5,7 @@ import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useMapSync } from "@/features/map/application/useMapSync";
 import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
 import type { SearchResult } from "@/features/location/domain/types";
-import { CloseIcon, SearchIcon } from "@/shared/ui/Icons";
+import { SearchIcon } from "@/shared/ui/Icons";
 
 interface AllCitiesModalProps {
   isOpen: boolean;
@@ -28,10 +28,10 @@ interface SeoCityItem {
 }
 
 const CONTINENTS = [
-  "All",
   "Americas",
   "Europe",
   "Asia",
+  "Africa",
 ] as const;
 type CityImage = {
   src: string;
@@ -150,14 +150,6 @@ export default function AllCitiesModal({
             <span className="all-cities-badge">Explore by place</span>
             <h2>100+ World Cities</h2>
           </div>
-          <button
-            type="button"
-            className="modal-close-btn"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <CloseIcon />
-          </button>
         </div>
 
         {/* Search Input Bar */}
