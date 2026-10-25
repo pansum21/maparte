@@ -148,7 +148,7 @@ body.has-custom-backdrop .poster-ghost-layer {
   justify-content: flex-start;
   height: 100dvh;
   /* Align the drawer with the app's inner bottom frame line. */
-  padding: 62px 0 2px calc(64px + env(safe-area-inset-left, 0px));
+  padding: 62px 0 45px calc(64px + env(safe-area-inset-left, 0px));
   /* Keep the live wall color and map preview behind this panel crisp and true-to-color. */
   background: transparent !important;
   backdrop-filter: none !important;
