@@ -136,8 +136,8 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                 <div className="guide-feature-grid">
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">⚡</div>
-                    <h4>100% Free &amp; Instant in Browser</h4>
-                    <p>No mandatory sign-ups, subscriptions, or paywalls to design. Everything renders smoothly right inside your web browser in seconds.</p>
+                    <h4>100% Free &amp; Unlimited Design</h4>
+                    <p>No mandatory sign-ups, subscriptions, or paywalls to design. Create, restyle, and preview unlimited maps smoothly in your browser for free.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🔒</div>
@@ -147,7 +147,22 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🖼️</div>
                     <h4>Zero Watermarks Always</h4>
-                    <p>Every exported poster and mobile wallpaper is completely clean without annoying center watermarks or forced ads on your artwork, featuring a discreet gallery studio signature in the lower neatline.</p>
+                    <p>Every exported poster and mobile wallpaper is completely clean without annoying center watermarks, featuring a discreet gallery studio signature in the lower neatline.</p>
+                  </div>
+                  <div className="guide-feature-card">
+                    <div className="feature-card-icon">📐</div>
+                    <h4>36 Layouts &amp; 19 Borders</h4>
+                    <p>Calibrated for A-series (A4–A0), US inches (8x10" to 24x36"), square prints, and 19 neatlines with cm/mm thickness and dynamic design scaling.</p>
+                  </div>
+                  <div className="guide-feature-card">
+                    <div className="feature-card-icon">💧</div>
+                    <h4>3D Watermorphism &amp; Markers</h4>
+                    <p>Liquid color gradients (Imperial Gold, Sunset Rose, Ocean Royal) paired with glossy 3D emoji markers to commemorate dates, weddings, and trips.</p>
+                  </div>
+                  <div className="guide-feature-card">
+                    <div className="feature-card-icon">🛋️</div>
+                    <h4>Cinema Wall Mockups</h4>
+                    <p>Real-world 3D living room preview with 5 moulding finishes (Black, Oak, White, Gold, Frameless) across 64 paint shades with realistic glass reflections.</p>
                   </div>
                 </div>
               </section>
@@ -303,30 +318,30 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                 <span className="guide-pill-badge">📖 Creator Walkthrough &amp; Print Handbook</span>
                 <h2 className="guide-hero-title">How to Create, Frame &amp; Print Your Custom Map</h2>
                 <p className="guide-hero-desc">
-                  Everything you need to know about designing high-resolution cartography, picking the right paper stock, and framing standard gallery prints.
+                  Design for Free. Pay Only for the High-Res Download. Everything you need to know about designing high-resolution cartography, picking the right paper stock, and framing standard gallery prints with 100% free unlimited styling.
                 </p>
               </div>
 
               {/* How to Create in 3 Steps */}
               <section className="guide-content-section">
                 <h3 className="guide-section-heading">
-                  <span className="qa-indicator">HOW</span> How to Create Your Custom Map in 3 Simple Steps?
+                  <span className="qa-indicator">HOW</span> How to Create Your Custom Map Art in 3 Simple Steps?
                 </h3>
                 <div className="guide-steps-grid">
                   <div className="guide-step-card">
                     <div className="step-badge">STEP 1</div>
-                    <h4>Search &amp; Frame Your Location</h4>
-                    <p>Search any city, neighborhood, or GPS coordinate in the Location bar. Pan, zoom, and rotate the canvas to frame your favorite streets.</p>
+                    <h4>Explore &amp; Design Your Map Art for Free</h4>
+                    <p>Search any city, town, island, or exact GPS coordinates in our free online map maker. Select from 36 standard print layouts (A-Series, US Inches, Square, &amp; Social Banners), rotate 0°–360° with precision snapping, and frame your favorite streets with zero sign-up required.</p>
                   </div>
                   <div className="guide-step-card">
                     <div className="step-badge">STEP 2</div>
-                    <h4>Style, Themes &amp; Milestone Dates</h4>
-                    <p>Choose from 12+ cartographic themes (Carrara, Asphalt, Terracotta, Midnight). Customize titles, add wedding dates or coordinates, and drop custom pins.</p>
+                    <h4>Unlimited Free Editing, Themes &amp; 19 Borders</h4>
+                    <p>Restyle as many custom street maps or travel memory maps as you want—every editing tool is 100% free! Choose from 12+ cartographic themes and 3D liquid watermorphism gradients, select from 19 neatline borders with physical cm/mm thickness and dynamic design scaling, drop 3D emoji markers, or upload GPX routes.</p>
                   </div>
                   <div className="guide-step-card">
                     <div className="step-badge">STEP 3</div>
-                    <h4>Wall Preview &amp; Download</h4>
-                    <p>Preview your poster framed against 64 real wall paint colors in Cinema Mode. Download instantly in Ultra-HD PNG, vector PDF, or scalable SVG.</p>
+                    <h4>Realistic Room Preview, Instant Download &amp; Print Anywhere</h4>
+                    <p>Preview your poster framed against 64 interior wall paint shades with 5 authentic moulding finishes in Cinema Stage mode. Once you love your design, unlock the high-resolution, print-ready digital file (Ultra-HD PNG, JPG, print-calibrated PDF, scalable vector SVG) with a quick one-time payment. Print locally same-day or at home for huge savings!</p>
                   </div>
                 </div>
               </section>
@@ -338,24 +353,34 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                 </h3>
                 <div className="guide-feature-grid">
                   <div className="guide-feature-card">
-                    <div className="feature-card-icon">🎨</div>
-                    <h4>Theme &amp; Layout Switcher</h4>
-                    <p>Toggle between minimal monochrome, rich terracotta, and luxury midnight blue themes. Calibrate dimensions from standard A4 to 70x100 cm posters.</p>
+                    <div className="feature-card-icon">🧭</div>
+                    <h4>Precision 360° Rotation &amp; Geocoding</h4>
+                    <p>Search any global village, mountain, or street via OpenStreetMap. Rotate map orientation smoothly from 0° to 360° with 15° snap increments and 1-click recentering.</p>
+                  </div>
+                  <div className="guide-feature-card">
+                    <div className="feature-card-icon">📐</div>
+                    <h4>36 Print Layouts &amp; Wallpapers</h4>
+                    <p>Calibrate dimensions across international A-series (A4–A0), US inches (8x10" to 24x36"), square formats, and phone wallpapers or social banners.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🖼️</div>
-                    <h4>Wall Color &amp; Frame Mockup</h4>
-                    <p>Test how your poster looks inside Classic Black, Natural Scandinavian Oak, Modern White, or Gold frames with realistic glass reflections.</p>
+                    <h4>19 Borders &amp; Dynamic Design Scale</h4>
+                    <p>Choose from classic single/double lines or 10 ornamental frames (Greek Key, Art Deco, Victorian Filigree). Adjust line thickness (0.05–1.00 cm) and motif scale (0.5x–2.5x).</p>
                   </div>
                   <div className="guide-feature-card">
-                    <div className="feature-card-icon">📺</div>
-                    <h4>Cinema Fullscreen Mode</h4>
-                    <p>Click Cinema Mode (or press fullscreen) to hide all editing sidebars and view an immersive stage of your artwork on your monitor or TV.</p>
+                    <div className="feature-card-icon">💧</div>
+                    <h4>3D Watermorphism &amp; Color Palettes</h4>
+                    <p>Blend liquid gradients (Imperial Gold, Sunset Rose, Ocean Royal) or curated minimal monochromes (Carrara, Noir) across roads, water, parks, and land.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">📍</div>
-                    <h4>Pin Markers &amp; GPX Routes</h4>
-                    <p>Drop heart pins or custom icons on special meeting points, or upload GPX tracks to map your cycling or running milestones.</p>
+                    <h4>3D Emoji Markers &amp; GPX Track Routes</h4>
+                    <p>Drop glossy 3D heart, ring, home, flag, and airplane pins to highlight special memories, or upload GPX tracks to map marathons, cycling, and hikes.</p>
+                  </div>
+                  <div className="guide-feature-card">
+                    <div className="feature-card-icon">🛋️</div>
+                    <h4>Backdrop Cinema Wall &amp; 5 Real Frames</h4>
+                    <p>Preview inside Classic Black, Natural Scandinavian Oak, Museum White, Brushed Gold, or Frameless styles against 64 paint colors with realistic glare.</p>
                   </div>
                 </div>
               </section>
@@ -452,37 +477,100 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                 <div className="guide-faq-accordion">
                   <details className="guide-faq-item" open>
                     <summary className="guide-faq-question">
-                      Can I print my map on my home printer?
+                      How can I generate and design custom city maps for free?
                     </summary>
                     <p className="guide-faq-answer">
-                      Yes! Our PNG and vector PDF files are calibrated for standard international paper sizes (A4, A3, Letter, 18x24", 50x70 cm). For best results on home inkjet printers, use heavyweight matte photo paper (200+ gsm).
+                      You can easily design, style, and edit unlimited custom city maps online using our free editor tool. Simply type any city, town, or GPS coordinates in the world, customize the layout across 36 formats, and experiment with 12+ color themes and 19 neatline borders. Editing and designing your map is 100% free with no hidden charges, trial lockouts, or mandatory account creation.
                     </p>
                   </details>
 
                   <details className="guide-faq-item">
                     <summary className="guide-faq-question">
-                      Can I create a map of a small village or rural countryside?
+                      Where can I download the high-resolution printable map art?
                     </summary>
                     <p className="guide-faq-answer">
-                      Yes! Maparte is powered by global OpenStreetMap cartography, which covers every road, lane, coast, river, and coordinate on planet Earth. Simply search the place name or zoom anywhere on the globe.
+                      Right here on Maparte! Once you are completely satisfied with your custom design and room mockup, you can instantly download the high-resolution, print-ready digital file directly from our website after making a quick, one-time payment. Files are delivered in Ultra-HD 300+ DPI PNG, ultra-crisp JPG, print-calibrated PDF, and infinite-resolution vector SVG.
                     </p>
                   </details>
 
                   <details className="guide-faq-item">
                     <summary className="guide-faq-question">
-                      Are digital downloads watermark-free?
+                      Is there a limit to how many maps I can create, edit, and preview?
                     </summary>
                     <p className="guide-faq-answer">
-                      Yes, 100%! All exported digital files (including free wallpapers and paid Ultra-HD prints) are completely clean without intrusive center watermarks. Every export includes a discreet studio signature in the lower neatline border, calibrated for gallery framing.
+                      Not at all! There is absolutely zero limit. You can create, restyle, rotate, and preview as many custom street maps, anniversary gifts, or travel memory posters as you want for free. Every styling tool, color palette, and living room wall mockup is 100% free. You only pay when you decide to download the final high-quality file for printing.
                     </p>
                   </details>
 
                   <details className="guide-faq-item">
                     <summary className="guide-faq-question">
-                      Can I customize the title, date, and subtitle text?
+                      Why is Maparte a great cheaper alternative to pre-printed map brands like Mapiful or Grafomap?
                     </summary>
                     <p className="guide-faq-answer">
-                      Yes! Under the Typography and Layout settings, you can edit the primary city name, subtitle, country, coordinates, and add any special occasion date (e.g., '14.02.2024 • Where We First Met').
+                      Most premium pre-printed map brands charge heavily ($45 to $80+) plus shipping, and charge $15 to $50 just for digital files. Maparte serves as a budget-friendly, creator-first alternative: all designing and editing tools are 100% free, and Ultra-HD digital downloads start at an accessible fraction of that price. You receive immediate digital delivery and can print locally the very same day at Walgreens, CVS, or Staples, saving up to 80% overall.
+                    </p>
+                  </details>
+
+                  <details className="guide-faq-item">
+                    <summary className="guide-faq-question">
+                      What is the difference between digital map art downloads and pre-printed posters?
+                    </summary>
+                    <p className="guide-faq-answer">
+                      Digital map art downloads provide immediate access without waiting days or weeks for shipping, eliminate the risk of damaged or bent tubes in transit, and give you complete freedom over where and how you print. You can print multiple copies for family, choose your preferred local paper stock (matte, cotton rag, or canvas), and re-print anytime, all while avoiding costly international courier fees.
+                    </p>
+                  </details>
+
+                  <details className="guide-faq-item">
+                    <summary className="guide-faq-question">
+                      What is the best way to print my downloaded custom map poster?
+                    </summary>
+                    <p className="guide-faq-answer">
+                      Because Maparte exports files with exact physical dimensions and embedded DPI metadata, printing is effortless: you can print at home on any inkjet printer using heavyweight matte photo paper (200+ gsm), pick up same-day prints from your local Walgreens, CVS, Staples, or Office Depot, or upload to fine-art labs like WhiteWall or Mpix for archival Hahnemühle framing.
+                    </p>
+                  </details>
+
+                  <details className="guide-faq-item">
+                    <summary className="guide-faq-question">
+                      Are the digital map downloads 100% watermark-free?
+                    </summary>
+                    <p className="guide-faq-answer">
+                      Yes, 100%! All downloaded files (including our free clean mobile wallpapers and paid Ultra-HD prints) have zero intrusive center watermarks or distracting advertisements. Every export features an elegant, discreet studio signature in the lower neatline border, mathematically calibrated for gallery framing.
+                    </p>
+                  </details>
+
+                  <details className="guide-faq-item">
+                    <summary className="guide-faq-question">
+                      How can I make a custom anniversary or couple map gift?
+                    </summary>
+                    <p className="guide-faq-answer">
+                      Creating a custom anniversary map is simple and heartfelt: search the location where you first met, had your first date, or exchanged wedding vows. Under Typography, customize the title with your names and special occasion date (e.g., '14.02.2024 • Where Our Story Began'), drop a glossy 3D heart or wedding ring emoji marker on your exact venue, and preview it in Scandinavian Oak or Gallery Gold framing.
+                    </p>
+                  </details>
+
+                  <details className="guide-faq-item">
+                    <summary className="guide-faq-question">
+                      Can I create a map of a small village, rural countryside, or exact GPS coordinates?
+                    </summary>
+                    <p className="guide-faq-answer">
+                      Yes! Maparte is powered by global OpenStreetMap cartography, which covers every road, country lane, footpath, coastline, canal, and GPS coordinate on planet Earth. Simply type the village name or paste exact latitude and longitude coordinates into the search bar, then zoom in to capture your exact neighborhood.
+                    </p>
+                  </details>
+
+                  <details className="guide-faq-item">
+                    <summary className="guide-faq-question">
+                      What paper stock and frame finishes look best for minimalist map art?
+                    </summary>
+                    <p className="guide-faq-answer">
+                      For paper, we strongly recommend Enhanced Matte Paper (210–250 gsm) because it absorbs ambient light without glare, delivering deep contrast and crisp street typography. For frames, Maparte offers 5 calibrated finishes: Classic Matte Black, Natural Scandinavian Oak, Modern Museum White, Brushed Gallery Gold, and Frameless Floating acrylic.
+                    </p>
+                  </details>
+
+                  <details className="guide-faq-item">
+                    <summary className="guide-faq-question">
+                      How do the 19 neatline borders and design scale controls work?
+                    </summary>
+                    <p className="guide-faq-answer">
+                      Maparte features 19 distinct framing styles: classic single/double/triple neatlines, drafting ticks, and 10 ornamental rectangular frames (Greek Key, Victorian Filigree, Art Deco Stepped, Celtic Braid, Nautical Compass, Diamond Lattice, Antique Atlas, etc.). You can adjust line thickness from 0.05 cm (0.5 mm) up to 1.00 cm (10.0 mm), and for ornamental frames, use the dedicated Design Size slider (0.5x to 2.5x) to scale corner motifs so fine details stay crisp at any thickness.
                     </p>
                   </details>
 
@@ -491,7 +579,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                       How does the Buy One Get One (BOGO) guarantee work?
                     </summary>
                     <p className="guide-faq-answer">
-                      Our 1-Time BOGO promo code (Buy One Get One Free) is exclusively included with our $9.99 All-in-One Master Bundle tier. Upon purchase, a unique coupon code is delivered directly to your email, unlocking a 100% free second Ultra-HD download for a matching pair or gift.
+                      Our Buy One Get One Free (BOGO) promo code is exclusively included with our $9.99 All-in-One Master Bundle tier. Upon purchase, a unique coupon code is delivered directly to your email, unlocking a 100% free second Ultra-HD download for a matching pair (e.g., His &amp; Hers hometowns, or engagement &amp; wedding venues).
                     </p>
                   </details>
                 </div>
