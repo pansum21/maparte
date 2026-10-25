@@ -1,6 +1,11 @@
 import { useCallback } from "react";
 import { usePosterContext } from "../ui/PosterContext";
 import { clamp } from "@/shared/geo/math";
+import {
+  DEFAULT_POSTER_FONT_SIZE,
+  MAX_POSTER_FONT_SIZE,
+  MIN_POSTER_FONT_SIZE,
+} from "@/features/poster/domain/textLayout";
 import { recordRecentLocation } from "@/features/location/application/useRecentLocations";
 import type { SearchResult } from "@/features/location/domain/types";
 import {
@@ -56,7 +61,16 @@ export function useFormHandlers() {
     (event: React.FocusEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
       const trimmed = String(value ?? "").trim();
-      if (!trimmed) return;
+      if (!trimmed) {
+        if (name === "fontSize") {
+          dispatch({
+            type: "SET_FIELD",
+            name,
+            value: String(DEFAULT_POSTER_FONT_SIZE),
+          });
+        }
+        return;
+      }
 
       const parsed = Number(trimmed);
       if (!Number.isFinite(parsed)) return;
@@ -67,6 +81,19 @@ export function useFormHandlers() {
           name: "distance",
           value: String(
             Math.round(clamp(parsed, MIN_DISTANCE_METERS, MAX_DISTANCE_METERS)),
+          ),
+        });
+        return;
+      }
+
+      if (name === "fontSize") {
+        dispatch({
+          type: "SET_FIELD",
+          name,
+          value: String(
+            Math.round(
+              clamp(parsed, MIN_POSTER_FONT_SIZE, MAX_POSTER_FONT_SIZE),
+            ),
           ),
         });
         return;

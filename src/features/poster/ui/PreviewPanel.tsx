@@ -459,6 +459,7 @@ export default function PreviewPanel({
             lat={formLat}
             lon={formLon}
             fontFamily={form.fontFamily}
+            fontSize={Number(form.fontSize) || 16}
             textColor={effectiveTheme.ui.text}
             landColor={effectiveTheme.map.land}
             showPosterText={form.showPosterText}

@@ -12,6 +12,7 @@ import {
   COORDS_FONT_BASE_PX,
   ATTRIBUTION_FONT_BASE_PX,
   formatCityLabel,
+  getPosterFontScale,
   computeCityFontScale,
   computeAttributionColor,
 } from "@/features/poster/domain/textLayout";
@@ -22,6 +23,7 @@ interface PosterTextOverlayProps {
   lat: number;
   lon: number;
   fontFamily: string;
+  fontSize: number;
   textColor: string;
   landColor: string;
   showPosterText: boolean;
@@ -41,6 +43,7 @@ export default function PosterTextOverlay({
   lat,
   lon,
   fontFamily,
+  fontSize,
   textColor,
   landColor,
   showPosterText,
@@ -49,6 +52,7 @@ export default function PosterTextOverlay({
   customDate,
 }: PosterTextOverlayProps) {
   const toCqMin = (px: number) => (px / TEXT_DIMENSION_REFERENCE_PX) * 100;
+  const fontScale = getPosterFontScale(fontSize);
 
   const titleFont = fontFamily
     ? `"${fontFamily}", "Space Grotesk", sans-serif`
@@ -58,11 +62,11 @@ export default function PosterTextOverlay({
     : '"IBM Plex Mono", monospace';
 
   const cityLabel = formatCityLabel(city);
-  const cityFontSize = `${toCqMin(CITY_FONT_BASE_PX) * computeCityFontScale(city)}cqmin`;
-  const countryFontSize = `${toCqMin(COUNTRY_FONT_BASE_PX)}cqmin`;
-  const coordsFontSize = `${toCqMin(COORDS_FONT_BASE_PX)}cqmin`;
-  const taglineFontSize = `${toCqMin(68)}cqmin`;
-  const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX)}cqmin`;
+  const cityFontSize = `${toCqMin(CITY_FONT_BASE_PX * fontScale) * computeCityFontScale(city)}cqmin`;
+  const countryFontSize = `${toCqMin(COUNTRY_FONT_BASE_PX * fontScale)}cqmin`;
+  const coordsFontSize = `${toCqMin(COORDS_FONT_BASE_PX * fontScale)}cqmin`;
+  const taglineFontSize = `${toCqMin(68 * fontScale)}cqmin`;
+  const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX * fontScale)}cqmin`;
   const attributionColor = computeAttributionColor(textColor, landColor, showOverlay);
   const attributionOpacity = showOverlay ? 0.55 : 0.9;
   const hasTagline = Boolean(customDate && customDate.trim());
