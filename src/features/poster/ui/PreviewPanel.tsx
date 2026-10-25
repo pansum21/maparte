@@ -144,13 +144,14 @@ export default function PreviewPanel({
   }, [setContainerWidth]);
 
   useEffect(() => {
+    if (!form.showPosterText) return;
     const family = form.fontFamily.trim();
     if (!family) return;
 
     void ensureFont(family).catch(() => {
       // Ignore font loading failures; fallback stack remains in place.
     });
-  }, [form.fontFamily]);
+  }, [form.fontFamily, form.showPosterText]);
 
   useEffect(() => {
     const map = mapRef.current;
