@@ -6,7 +6,7 @@ import {
 } from "../domain/occasionTemplates";
 import { getTheme } from "@/features/theme/infrastructure/themeRepository";
 import { createMarkerItem } from "@/features/markers/infrastructure/helpers";
-import { CheckIcon, SparklesIcon, TrashIcon } from "@/shared/ui/Icons";
+import { InfoIcon, SparklesIcon, TrashIcon } from "@/shared/ui/Icons";
 import { DEFAULT_LAT, DEFAULT_LON } from "@/core/config";
 
 interface TemplatesSectionProps {
@@ -18,8 +18,7 @@ export default function TemplatesSection({
 }: TemplatesSectionProps) {
   const { state, dispatch } = usePosterContext();
   const [appliedId, setAppliedId] = useState<string | null>(null);
-
-  const hasMarkers = state.markers.length > 0;
+  const [openInfoId, setOpenInfoId] = useState<string | null>(null);
 
   const handleToggleTemplate = (template: OccasionTemplate) => {
     // If already active, toggle OFF / unclick!
@@ -80,53 +79,29 @@ export default function TemplatesSection({
     onTemplateApplied?.(template);
   };
 
-  const handleToggleMarkerOnly = (template: OccasionTemplate) => {
-    if (hasMarkers) {
-      dispatch({ type: "CLEAR_MARKERS" });
-    } else {
-      const lat = Number(state.form.latitude) || DEFAULT_LAT;
-      const lon = Number(state.form.longitude) || DEFAULT_LON;
-      const marker = createMarkerItem({
-        lat,
-        lon,
-        defaults: state.markerDefaults,
-        iconId: template.markerIconId,
-      });
-      dispatch({ type: "ADD_MARKER", marker });
-    }
-  };
-
   return (
     <div className="occasion-templates-section" aria-label="Occasion Templates">
       <div className="occasion-templates-header">
         <div className="occasion-templates-title-row">
           <SparklesIcon className="occasion-templates-icon" />
           <h2 className="occasion-templates-title">Occasion Presets</h2>
-        </div>
-        <p className="occasion-templates-sub">
-          1-Click designer templates. Click again to unclick or remove.
-        </p>
-      </div>
-
-      {hasMarkers ? (
-        <div className="template-marker-banner" role="status">
-          <div className="marker-banner-info">
-            <span className="marker-banner-icon" aria-hidden="true">💡</span>
-            <span className="marker-banner-text">
-              <strong>Marker Active:</strong> Drag it with your mouse to your exact street or house!
-            </span>
-          </div>
           <button
             type="button"
-            className="template-clear-marker-pill"
-            onClick={() => dispatch({ type: "CLEAR_MARKERS" })}
-            title="Remove marker from map"
+            className="occasion-info-btn occasion-header-info-btn"
+            aria-label="About occasion presets"
+            aria-expanded={openInfoId === "__guide"}
+            aria-controls="occasion-presets-guide"
+            onClick={() => setOpenInfoId((current) => current === "__guide" ? null : "__guide")}
           >
-            <TrashIcon className="btn-icon" />
-            <span>Remove Marker</span>
+            <InfoIcon aria-hidden="true" />
           </button>
         </div>
-      ) : null}
+        {openInfoId === "__guide" ? (
+          <p className="occasion-templates-sub" id="occasion-presets-guide">
+            Apply a preset to update the map theme, typography, poster text, and occasion marker. Select Remove Preset to clear its marker and restore the location labels.
+          </p>
+        ) : null}
+      </div>
 
       <div className="occasion-templates-grid">
         {OCCASION_TEMPLATES.map((tmpl) => {
@@ -138,39 +113,58 @@ export default function TemplatesSection({
               key={tmpl.id}
               className={`occasion-card${isApplied ? " is-applied" : ""}`}
             >
-              <div className="occasion-card-top">
+              <div className="occasion-card-heading">
+                <h3 className="occasion-card-title">{tmpl.title}</h3>
                 <span className="occasion-card-badge">{tmpl.badge}</span>
                 <div
                   className="occasion-card-palette"
+                  role="img"
+                  aria-label={`${theme.name} color palette`}
                   title={`Theme: ${theme.name}`}
                 >
                   <span
                     className="palette-dot"
-                    style={{ background: theme.ui.bg }}
+                    style={{ background: theme.ui.bg, color: theme.ui.bg }}
+                    title="Background"
                   />
                   <span
                     className="palette-dot"
-                    style={{ background: theme.map.water }}
+                    style={{ background: theme.map.water, color: theme.map.water }}
+                    title="Water"
                   />
                   <span
                     className="palette-dot"
-                    style={{ background: theme.ui.text }}
+                    style={{ background: theme.map.land, color: theme.map.land }}
+                    title="Land"
+                  />
+                  <span
+                    className="palette-dot"
+                    style={{ background: theme.ui.text, color: theme.ui.text }}
+                    title="Text"
                   />
                 </div>
+                <button
+                  type="button"
+                  className="occasion-info-btn"
+                  aria-label={`More information about ${tmpl.title}`}
+                  aria-expanded={openInfoId === tmpl.id}
+                  aria-controls={`occasion-info-${tmpl.id}`}
+                  onClick={() => setOpenInfoId((current) => current === tmpl.id ? null : tmpl.id)}
+                >
+                  <InfoIcon aria-hidden="true" />
+                </button>
               </div>
 
-              <h3 className="occasion-card-title">{tmpl.title}</h3>
-              <p className="occasion-card-tagline">{tmpl.tagline}</p>
-              <p className="occasion-card-desc">{tmpl.description}</p>
-
-              <div className="occasion-card-meta">
-                <span className="occasion-card-font">
-                  Font: <strong>{tmpl.fontFamily}</strong>
-                </span>
-                <span className="occasion-card-theme">
-                  Theme: <strong>{theme.name}</strong>
-                </span>
-              </div>
+              {openInfoId === tmpl.id ? (
+                <div className="occasion-card-info" id={`occasion-info-${tmpl.id}`}>
+                  <p className="occasion-card-tagline">{tmpl.tagline}</p>
+                  <p className="occasion-card-desc">{tmpl.description}</p>
+                  <div className="occasion-card-meta">
+                    <span>Font: <strong>{tmpl.fontFamily}</strong></span>
+                    <span>Theme: <strong>{theme.name}</strong></span>
+                  </div>
+                </div>
+              ) : null}
 
               <div className="occasion-card-actions">
                 <button
@@ -179,14 +173,14 @@ export default function TemplatesSection({
                   onClick={() => handleToggleTemplate(tmpl)}
                   title={
                     isApplied
-                      ? "Click to remove preset and revert text"
+                      ? "Remove this preset"
                       : "Click to apply preset"
                   }
                 >
                   {isApplied ? (
                     <>
-                      <CheckIcon className="apply-btn-icon" />
-                      <span>Applied • Click to Unapply</span>
+                      <TrashIcon className="apply-btn-icon" />
+                      <span>Remove Preset</span>
                     </>
                   ) : (
                     <>
@@ -195,17 +189,6 @@ export default function TemplatesSection({
                     </>
                   )}
                 </button>
-
-                {isApplied ? (
-                  <button
-                    type="button"
-                    className="occasion-card-marker-toggle-btn"
-                    onClick={() => handleToggleMarkerOnly(tmpl)}
-                    title={hasMarkers ? "Remove marker icon only" : "Place marker back on map"}
-                  >
-                    {hasMarkers ? "❌ Remove Marker Only" : "📍 Put Marker Back"}
-                  </button>
-                ) : null}
               </div>
             </div>
           );

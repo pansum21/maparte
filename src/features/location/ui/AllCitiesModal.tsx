@@ -1,10 +1,13 @@
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import "./AllCitiesModal.css";
 import seoCitiesData from "@/data/seoCities.json";
-import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import { useCurrentLocation } from "@/features/location/application/useCurrentLocation";
+import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
 import { useMapSync } from "@/features/map/application/useMapSync";
 import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
+import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import type { SearchResult } from "@/features/location/domain/types";
-import { CloseIcon, SearchIcon } from "@/shared/ui/Icons";
+import { LocationIcon, MyLocationIcon, SearchIcon } from "@/shared/ui/Icons";
 
 interface AllCitiesModalProps {
   isOpen: boolean;
@@ -26,32 +29,53 @@ interface SeoCityItem {
   annualSearches?: string;
 }
 
-const CONTINENTS = [
-  "All",
-  "North America",
-  "Europe",
-  "Asia",
-  "South America",
-  "Oceania",
-  "Africa",
-] as const;
+const CONTINENTS = ["Americas", "Europe", "Asia", "Africa"] as const;
 
-export default function AllCitiesModal({
-  isOpen,
-  onClose,
-}: AllCitiesModalProps) {
+function CityPhoto({ city, slug, priority }: { city: string; slug: string; priority: boolean }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSrc = `/assets/city-photos/${slug}.webp`;
+
+  return (
+    <div className={`city-card-photo${imageFailed ? "" : " has-image"}`} style={{ display: "grid", width: "100%", height: "112px", minHeight: "112px", flex: "0 0 112px", overflow: "hidden" }}>
+      {imageFailed ? (
+        <span className="city-photo-unavailable" aria-hidden="true" />
+      ) : (
+        <img
+          src={imageSrc}
+          style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }}
+          alt={`${city} city photo`}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          onError={() => setImageFailed(true)}
+        />
+      )}
+    </div>
+  );
+}
+
+export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps) {
   const { state, dispatch, mapRef } = usePosterContext();
   const { flyToLocation } = useMapSync(state, dispatch, mapRef);
-  const { handleLocationSelect } = useFormHandlers();
+  const {
+    handleChange,
+    handleLocationSelect: handleLocationSelectBase,
+    setLocationFocused,
+  } = useFormHandlers();
+  const { locationSuggestions, isLocationSearching, searchNow } =
+    useLocationAutocomplete(state.form.location, state.isLocationFocused);
+  const { handleUseCurrentLocation, isLocatingUser, locationPermissionMessage } =
+    useCurrentLocation(flyToLocation);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedContinent, setSelectedContinent] = useState<string>("All");
+  const [typedQuery, setTypedQuery] = useState<string | null>(null);
+  const [selectedContinent, setSelectedContinent] = useState<string>("Americas");
+  const [showCoords, setShowCoords] = useState(false);
+  const isSearchingCities = typedQuery !== null && typedQuery.trim().length > 0;
+  const normalizedQuery = typedQuery?.trim().toLowerCase() ?? "";
 
-  // Close on Escape
   useEffect(() => {
     if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -59,23 +83,32 @@ export default function AllCitiesModal({
 
   const filteredCities = useMemo(() => {
     const list = seoCitiesData as SeoCityItem[];
-    const q = searchQuery.trim().toLowerCase();
-
     return list.filter((item) => {
-      const matchesContinent =
-        selectedContinent === "All" || item.continent === selectedContinent;
-      if (!matchesContinent) return false;
-
-      if (!q) return true;
-      return (
-        item.city.toLowerCase().includes(q) ||
-        item.country.toLowerCase().includes(q) ||
-        item.landmarks.some((l) => l.toLowerCase().includes(q))
-      );
+      if (isSearchingCities) {
+        return item.city.toLowerCase().includes(normalizedQuery) ||
+          item.country.toLowerCase().includes(normalizedQuery) ||
+          item.landmarks.some((landmark) => landmark.toLowerCase().includes(normalizedQuery));
+      }
+      const matchesContinent = selectedContinent === "Americas"
+        ? item.continent === "North America" || item.continent === "South America"
+        : selectedContinent === "Asia"
+          ? item.continent === "Asia" || item.continent === "Middle East" || item.continent === "Oceania"
+          : item.continent === selectedContinent;
+      return matchesContinent;
     });
-  }, [searchQuery, selectedContinent]);
+  }, [isSearchingCities, normalizedQuery, selectedContinent]);
 
   if (!isOpen) return null;
+
+  const hasCuratedSearchMatch = isSearchingCities && filteredCities.length > 0;
+  const showGeocoderSuggestions = isSearchingCities && !hasCuratedSearchMatch;
+  const suggestions = showGeocoderSuggestions ? locationSuggestions : [];
+  const hasLocationValue = state.form.location.trim().length > 0;
+
+  const onLocationSelect = (result: SearchResult) => {
+    handleLocationSelectBase(result);
+    flyToLocation(result.lat, result.lon);
+  };
 
   const handleCityPick = (item: SeoCityItem) => {
     const fullLabel = `${item.city}, ${item.country}`;
@@ -88,7 +121,7 @@ export default function AllCitiesModal({
       lat: item.lat,
       lon: item.lon,
     };
-    handleLocationSelect(result);
+    handleLocationSelectBase(result);
     dispatch({
       type: "SET_FORM_FIELDS",
       resetDisplayNameOverrides: true,
@@ -105,130 +138,133 @@ export default function AllCitiesModal({
     onClose();
   };
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTypedQuery(event.currentTarget.value);
+    handleChange(event);
+    setLocationFocused(true);
+  };
+
+  const useGps = () => {
+    setTypedQuery(null);
+    handleUseCurrentLocation();
+  };
+
   return (
-    <div
-      className="export-modal-backdrop"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
-    >
-      <div
-        className="export-modal all-cities-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="all-cities-modal-header">
-          <div className="all-cities-title-group">
-            <span className="all-cities-badge">🌍 Top 100 Most Searched World Cities</span>
-            <h2>Top 100 World Destinations</h2>
-            <p>
-              The 100 most visited, searched and traveled cities on Earth with real-time popularity &amp; search trends.
-            </p>
-          </div>
+    <section className="all-cities-modal" role="dialog" aria-label="Choose a city">
+      <div className="all-cities-search-main">
+        <div
+          className="all-cities-search-bar"
+          style={{ display: "flex", alignItems: "center", gap: "5px", height: "42px", padding: "4px 6px", boxSizing: "border-box", overflow: "hidden" }}
+        >
           <button
             type="button"
-            className="modal-close-btn"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-
-        {/* Search Input Bar */}
-        <div className="all-cities-search-bar">
-          <span className="all-cities-search-icon" aria-hidden="true">
-            <SearchIcon />
-          </span>
+            className={`all-cities-location-action${showCoords ? " is-active" : ""}`}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => setShowCoords((value) => !value)}
+            aria-label="Toggle coordinates"
+            title="Show or hide coordinates"
+            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(31, 56, 75, .62)", color: "rgba(210, 231, 245, .9)", cursor: "pointer" }}
+          ><LocationIcon /></button>
+          <button
+            type="button"
+            className={`all-cities-location-action${isLocatingUser ? " is-locating" : ""}`}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={useGps}
+            disabled={isLocatingUser}
+            aria-label="Use current GPS location"
+            title="Use current GPS location"
+            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(31, 56, 75, .62)", color: "rgba(210, 231, 245, .9)", cursor: "pointer" }}
+          ><MyLocationIcon /></button>
           <input
             type="text"
             className="all-cities-search-input"
-            placeholder="Search by city, country or landmark (e.g. Tokyo, Eiffel Tower, Manhattan)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            autoFocus
+            name="location"
+            placeholder="City, state, or Google Maps link"
+            value={state.form.location}
+            onChange={handleInputChange}
+            onFocus={() => setLocationFocused(true)}
+            onBlur={() => setLocationFocused(false)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") void searchNow(event.currentTarget.value);
+            }}
+            autoComplete="off"
+            style={{ flex: "1 1 auto", minWidth: 0, width: 0, height: "30px", boxSizing: "border-box", padding: "0 8px", border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(4, 12, 21, .68)", color: "#fff", fontSize: "14px", outline: "none" }}
           />
-          {searchQuery ? (
-            <button
-              type="button"
-              className="location-clear-btn"
-              onClick={() => setSearchQuery("")}
-            >
-              ✕
-            </button>
-          ) : null}
+          <button
+            type="button"
+            className="all-cities-search-icon"
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => void searchNow(state.form.location)}
+            aria-label="Search location"
+            title="Search location"
+            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(31, 56, 75, .62)", color: "#9fb9cc", cursor: "pointer" }}
+          ><SearchIcon /></button>
         </div>
 
-        {/* Continent Filter Pills */}
-        <div className="all-cities-continents" role="tablist">
-          {CONTINENTS.map((cont) => {
-            const count =
-              cont === "All"
-                ? (seoCitiesData as SeoCityItem[]).length
-                : (seoCitiesData as SeoCityItem[]).filter(
-                    (c) => c.continent === cont,
-                  ).length;
-            return (
-              <button
-                key={cont}
-                type="button"
-                className={`all-cities-continent-pill${selectedContinent === cont ? " is-active" : ""}`}
-                onClick={() => setSelectedContinent(cont)}
-              >
-                <span>{cont}</span>
-                <span className="continent-count">{count}</span>
-              </button>
-            );
-          })}
-        </div>
+        {showCoords ? (
+          <div className="all-cities-coordinates">
+            <label>Latitude<input name="latitude" value={state.form.latitude} onChange={handleChange} /></label>
+            <label>Longitude<input name="longitude" value={state.form.longitude} onChange={handleChange} /></label>
+          </div>
+        ) : null}
 
-        {/* Cities Grid */}
+        {showGeocoderSuggestions ? (
+          <ul className="all-cities-geocoder-results" role="listbox">
+            {suggestions.map((suggestion) => (
+              <li key={suggestion.id}>
+                <button
+                  type="button"
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                    onLocationSelect(suggestion);
+                  }}
+                >{suggestion.label}</button>
+              </li>
+            ))}
+            {isLocationSearching ? <li className="all-cities-geocoder-status">Searching…</li> : null}
+          </ul>
+        ) : null}
+      </div>
+
+      {locationPermissionMessage ? (
+        <p className="location-permission-message">{locationPermissionMessage}</p>
+      ) : null}
+
+      <div className="all-cities-continents" role="tablist" aria-label="City regions">
+        {CONTINENTS.map((continent) => (
+          <button
+            key={continent}
+            type="button"
+            role="tab"
+            aria-selected={selectedContinent === continent}
+            className={`all-cities-continent-pill${selectedContinent === continent ? " is-active" : ""}`}
+            onClick={() => {
+              setSelectedContinent(continent);
+              if (isSearchingCities) setTypedQuery("");
+            }}
+          >{continent}</button>
+        ))}
+      </div>
+
+      {(!isSearchingCities || hasCuratedSearchMatch) ? (
         <div className="all-cities-grid">
-          {filteredCities.map((item) => {
-            const isCurrent =
-              state.form.displayCity?.toLowerCase() === item.city.toLowerCase();
+          {filteredCities.map((item, index) => {
+            const isCurrent = state.form.displayCity?.toLowerCase() === item.city.toLowerCase();
             return (
               <button
                 key={item.slug}
                 type="button"
                 className={`all-cities-card${isCurrent ? " is-active" : ""}`}
+                style={{ display: "flex", flexDirection: "column", minHeight: "148px", overflow: "hidden" }}
                 onClick={() => handleCityPick(item)}
               >
-                <div className="city-card-top">
-                  <div className="city-card-title-stack">
-                    <span className="city-card-name">{item.city}</span>
-                    <span className="city-card-country">{item.country}</span>
-                  </div>
-                  {item.rank ? (
-                    <span className="city-card-rank-tag">#{item.rank}</span>
-                  ) : null}
-                </div>
-                {item.annualSearches ? (
-                  <div className="city-card-searches">
-                    <span className="city-card-fire" aria-hidden="true">🔥</span>
-                    <span className="city-card-search-text">{item.annualSearches}</span>
-                  </div>
-                ) : null}
-                <div className="city-card-tagline">{item.tagline}</div>
-                {item.landmarks && item.landmarks.length > 0 ? (
-                  <div className="city-card-landmarks">
-                    {item.landmarks.slice(0, 3).map((lm) => (
-                      <span key={lm} className="city-landmark-chip">
-                        {lm}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
+                <CityPhoto city={item.city} slug={item.slug} priority={index < 8} />
+                <span className="city-card-name" style={{ display: "block", flex: "0 0 auto", minHeight: "36px", boxSizing: "border-box", color: "#fff", visibility: "visible", position: "relative" }}>{item.city}</span>
               </button>
             );
           })}
-
-          {filteredCities.length === 0 ? (
-            <div className="all-cities-empty">
-              <span>No cities found matching "{searchQuery}"</span>
-            </div>
-          ) : null}
         </div>
-      </div>
-    </div>
+      ) : null}
+    </section>
   );
 }

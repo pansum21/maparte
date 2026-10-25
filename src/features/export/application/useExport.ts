@@ -258,12 +258,13 @@ export function useExport() {
             displayCountry: form.displayCountry || "",
             customDate: form.customDate,
             fontFamily: form.fontFamily.trim(),
+            fontSize: Number(form.fontSize) || 16,
             showPosterText: form.showPosterText,
             showOverlay: form.showMarkers,
             includeCredits,
             markers: hasVisibleMarkers ? state.markers : [],
             markerIcons: hasVisibleOverlays
-              ? getAllMarkerIcons(state.customMarkerIcons)
+              ? getAllMarkerIcons(state.customMarkerIcons, state.markers)
               : [],
             routes: visibleRoutes,
             neatlineSvg,
@@ -312,13 +313,14 @@ export function useExport() {
           displayCountry: form.displayCountry || "",
           customDate: form.customDate,
           fontFamily: form.fontFamily.trim(),
+          fontSize: Number(form.fontSize) || 16,
           showPosterText: form.showPosterText,
           showOverlay: form.showMarkers,
           neatlineSvg,
           includeCredits,
           markers: hasVisibleMarkers ? state.markers : [],
           markerIcons: hasVisibleOverlays
-            ? getAllMarkerIcons(state.customMarkerIcons)
+            ? getAllMarkerIcons(state.customMarkerIcons, state.markers)
             : [],
           markerProjection: hasVisibleOverlays ? markerProjection : undefined,
           markerScaleX: hasVisibleOverlays ? markerScaleX : undefined,
@@ -351,12 +353,13 @@ export function useExport() {
             displayCountry: form.displayCountry || "",
             customDate: form.customDate,
             fontFamily: form.fontFamily.trim(),
+            fontSize: Number(form.fontSize) || 16,
             showPosterText: form.showPosterText,
             showOverlay: form.showMarkers,
             includeCredits,
             markers: hasVisibleMarkers ? state.markers : [],
             markerIcons: hasVisibleOverlays
-              ? getAllMarkerIcons(state.customMarkerIcons)
+              ? getAllMarkerIcons(state.customMarkerIcons, state.markers)
               : [],
             routes: visibleRoutes,
             neatlineSvg,

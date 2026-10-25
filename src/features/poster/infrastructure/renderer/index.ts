@@ -52,6 +52,7 @@ export async function compositeExport(
     displayCountry,
     customDate,
     fontFamily,
+    fontSize = 16,
     showPosterText = true,
     showOverlay = true,
     includeCredits = true,
@@ -149,6 +150,7 @@ export async function compositeExport(
     showOverlay,
     includeCredits,
     customDate,
+    fontSize,
   );
   ctx.restore();
 

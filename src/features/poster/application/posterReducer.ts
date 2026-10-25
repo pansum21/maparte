@@ -35,6 +35,7 @@ export interface PosterForm {
   displayContinent: string;
   customDate?: string;
   fontFamily: string;
+  fontSize: string;
   showPosterText: boolean;
   includeCredits: boolean;
   includeLandcover: boolean;

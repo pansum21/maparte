@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import type {
@@ -35,6 +35,9 @@ import {
 } from "@/features/theme/domain/types";
 import { getThemeColorByPath } from "@/features/theme/domain/colorPaths";
 import { normalizeHexColor } from "@/shared/utils/color";
+
+const loadEmojiMarkerPicker = () => import("./EmojiMarkerPicker");
+const EmojiMarkerPicker = lazy(loadEmojiMarkerPicker);
 
 function readFileAsDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
@@ -123,6 +126,7 @@ export default function MarkersSection() {
     activeMarkerId,
   } = state;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [markerPickerTab, setMarkerPickerTab] = useState<"icons" | "emoji">("icons");
   const [isDefaultColorPickerOpen, setIsDefaultColorPickerOpen] =
     useState(false);
   const [openMarkerColorPickerId, setOpenMarkerColorPickerId] = useState<
@@ -358,7 +362,9 @@ export default function MarkersSection() {
     : "Click an icon to drop a marker on the current map location. Marker settings apply to all markers and can be moved directly on the map. In marker edit mode, drag to move, use the arrow keys for fine nudging, use two-finger pinch or mouse wheel to resize, and use scroll or the +/- map controls to zoom.";
 
   return (
-    <section className="panel-block color-editor-screen marker-settings-screen">
+    <section
+      className={`panel-block color-editor-screen marker-settings-screen${markerPickerTab === "emoji" ? " marker-settings-screen--emoji" : ""}`}
+    >
       {isDeleteAllModalOpen ? (
         <DeleteAllMarkersModal
           markerCount={markers.length}
@@ -435,18 +441,57 @@ export default function MarkersSection() {
 
       <div className="markers-section__content">
         {!isMarkerEditorActive && !isSettingsOpen ? (
-          <MarkerPicker
-            markerColor={markerDefaults.color}
-            customIcons={customMarkerIcons}
-            onIconClick={addMarker}
-            onUploadIcon={handleUploadIcon}
-            onRemoveUploadedIcon={(iconId) =>
-              dispatch({ type: "REMOVE_CUSTOM_MARKER_ICON", iconId })
-            }
-            onClearUploadedIcons={() =>
-              dispatch({ type: "CLEAR_CUSTOM_MARKER_ICONS" })
-            }
-          />
+          <>
+            <div className="marker-picker-mode-tabs" role="tablist" aria-label="Marker type">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={markerPickerTab === "icons"}
+                className={markerPickerTab === "icons" ? "is-active" : ""}
+                onClick={() => setMarkerPickerTab("icons")}
+              >
+                Marker Icons
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={markerPickerTab === "emoji"}
+                className={markerPickerTab === "emoji" ? "is-active" : ""}
+                onPointerEnter={() => void loadEmojiMarkerPicker()}
+                onPointerDown={() => void loadEmojiMarkerPicker()}
+                onFocus={() => void loadEmojiMarkerPicker()}
+                onClick={() => setMarkerPickerTab("emoji")}
+              >
+                Emojis
+              </button>
+            </div>
+            {markerPickerTab === "icons" ? (
+              <MarkerPicker
+                markerColor={markerDefaults.color}
+                customIcons={customMarkerIcons}
+                onIconClick={addMarker}
+                onUploadIcon={handleUploadIcon}
+                onRemoveUploadedIcon={(iconId) =>
+                  dispatch({ type: "REMOVE_CUSTOM_MARKER_ICON", iconId })
+                }
+                onClearUploadedIcons={() =>
+                  dispatch({ type: "CLEAR_CUSTOM_MARKER_ICONS" })
+                }
+              />
+            ) : (
+              <Suspense
+                fallback={(
+                  <div className="marker-emoji-picker-loading" role="status">
+                    Loading emojis…
+                  </div>
+                )}
+              >
+                <EmojiMarkerPicker
+                  onSelect={(_emoji, unified) => addMarker(`emoji:${unified}`)}
+                />
+              </Suspense>
+            )}
+          </>
         ) : null}
 
         {!isMarkerEditorActive && isSettingsOpen ? (

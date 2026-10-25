@@ -80,7 +80,7 @@ export default function MobileNavBar({
             {tabs.map(({ id, label, Icon }) => {
               const isLocationTab = id === "location";
               const isActive = id === "edit-map"
-                ? isEditing
+                ? isEditing || (drawerOpen && activeTab === "edit-map")
                 : id === "wall"
                 ? wallOpen
                 : isLocationTab

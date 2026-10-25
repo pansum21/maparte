@@ -1,0 +1,12 @@
+/* Match the city picker panel bounds to the wall color panel. */
+.app-shell .all-cities-modal {
+  top: 62px;
+  bottom: 45px;
+}
+
+@media (max-width: 768px) {
+  .app-shell .all-cities-modal {
+    top: calc(54px + env(safe-area-inset-top, 0px));
+    bottom: 2px;
+  }
+}

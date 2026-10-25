@@ -147,8 +147,8 @@ body.has-custom-backdrop .poster-ghost-layer {
   align-items: stretch;
   justify-content: flex-start;
   height: 100dvh;
-  /* Keep the wall drawer between the app header and desktop footer. */
-  padding: 62px 0 38px calc(64px + env(safe-area-inset-left, 0px));
+  /* Align the drawer with the app's inner bottom frame line. */
+  padding: 62px 0 45px calc(64px + env(safe-area-inset-left, 0px));
   /* Keep the live wall color and map preview behind this panel crisp and true-to-color. */
   background: transparent !important;
   backdrop-filter: none !important;
@@ -1980,7 +1980,7 @@ body.has-custom-backdrop .poster-ghost-layer {
 
 @media (max-width: 768px) {
   .export-modal-backdrop.backdrop-theme-modal-backdrop {
-    padding: calc(54px + env(safe-area-inset-top, 0px)) 0 max(8px, env(safe-area-inset-bottom, 0px)) calc(58px + env(safe-area-inset-left, 0px));
+    padding: calc(54px + env(safe-area-inset-top, 0px)) 0 2px calc(58px + env(safe-area-inset-left, 0px));
   }
   .export-modal.backdrop-theme-modal {
     width: min(420px, calc(100vw - 70px - env(safe-area-inset-left, 0px)));

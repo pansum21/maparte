@@ -1,4 +1,4 @@
-import { memo, type CSSProperties } from "react";
+import { memo, useEffect, useState, type CSSProperties } from "react";
 import type { MarkerIconDefinition } from "@/features/markers/domain/types";
 
 interface MarkerVisualProps {
@@ -14,6 +14,9 @@ const MarkerVisual = memo(function MarkerVisual({
   color,
   className = "",
 }: MarkerVisualProps) {
+  const [emojiAssetFailed, setEmojiAssetFailed] = useState(false);
+  useEffect(() => setEmojiAssetFailed(false), [icon.emojiAssetUrl]);
+
   const isThemeTintedMarkerSvg =
     icon.kind === "image" &&
     Boolean(icon.tintWithMarkerColor) &&
@@ -29,7 +32,22 @@ const MarkerVisual = memo(function MarkerVisual({
         } as CSSProperties
       }
     >
-      {isThemeTintedMarkerSvg ? (
+      {icon.kind === "emoji" && icon.emoji ? (
+        icon.emojiAssetUrl && !emojiAssetFailed ? (
+          <img
+            className="marker-visual__emoji-image"
+            src={icon.emojiAssetUrl}
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            onError={() => setEmojiAssetFailed(true)}
+          />
+        ) : (
+          <span className="marker-visual__emoji" aria-hidden="true">
+            {icon.emoji}
+          </span>
+        )
+      ) : isThemeTintedMarkerSvg ? (
         <span
           className="marker-visual__image-mask"
           aria-hidden="true"
