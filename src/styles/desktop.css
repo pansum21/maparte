@@ -1979,7 +1979,7 @@
 .all-cities-modal {
   position: absolute;
   z-index: 90;
-  top: calc(100% + 7px);
+  top: 38px;
   left: 0;
   width: min(620px, calc(100vw - 112px));
   max-width: calc(100vw - 80px);
@@ -2002,7 +2002,7 @@
 .all-cities-loading {
   position: absolute;
   z-index: 90;
-  top: calc(100% + 7px);
+  top: 38px;
   left: 0;
   padding: 14px 16px;
   border: 1px solid rgba(146, 176, 200, 0.28);
