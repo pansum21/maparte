@@ -144,11 +144,6 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
     setLocationFocused(true);
   };
 
-  const clearLocation = () => {
-    setTypedQuery("");
-    handleClearLocation();
-  };
-
   const useGps = () => {
     setTypedQuery(null);
     handleUseCurrentLocation();
@@ -158,7 +153,15 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
     <section className="all-cities-modal" role="dialog" aria-label="Choose a city">
       <div className="all-cities-search-main">
         <div className="all-cities-search-bar">
-          <span className="all-cities-search-icon" aria-hidden="true"><SearchIcon /></span>
+          <button
+            type="button"
+            className="all-cities-search-icon"
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => void searchNow(state.form.location)}
+            aria-label="Search location"
+            title="Search location"
+            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 34px", width: "34px", height: "34px", padding: 0, border: 0, borderRadius: "8px", background: "transparent", color: "#9fb9cc", cursor: "pointer" }}
+          ><SearchIcon /></button>
           <input
             type="text"
             className="all-cities-search-input"
@@ -173,17 +176,8 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
             }}
             autoComplete="off"
           />
-          {hasLocationValue ? (
-            <button
-              type="button"
-              className="all-cities-clear-btn"
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={clearLocation}
-              aria-label="Clear location"
-            >×</button>
-          ) : null}
         </div>
-        <div className="all-cities-location-actions">
+        <div className="all-cities-location-actions" style={{ right: "8px", gap: "5px" }}>
           <button
             type="button"
             className={`all-cities-location-action${isLocatingUser ? " is-locating" : ""}`}
