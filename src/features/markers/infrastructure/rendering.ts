@@ -9,9 +9,10 @@ function serializeSvgWithColor(svgMarkup: string, color: string) {
   return svgMarkup.split("currentColor").join(color);
 }
 
-function loadImage(src: string) {
+function loadImage(src: string, crossOrigin = false) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();
+    if (crossOrigin) image.crossOrigin = "anonymous";
     image.onload = () => resolve(image);
     image.onerror = () => reject(new Error("Could not load marker icon."));
     image.src = src;
@@ -83,6 +84,15 @@ export async function drawMarkersOnCanvas(
       const size = marker.size * Math.max(scaleX, scaleY) * sizeScale;
 
       if (icon.kind === "emoji" && icon.emoji) {
+        if (icon.emojiAssetUrl) {
+          try {
+            const image = await loadImage(icon.emojiAssetUrl, true);
+            ctx.drawImage(image, x - size / 2, y - size / 2, size, size);
+            return;
+          } catch {
+            // Keep exports working if the external 3D artwork CDN is unavailable.
+          }
+        }
         ctx.save();
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";

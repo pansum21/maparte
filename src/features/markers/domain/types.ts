@@ -13,6 +13,7 @@ export interface MarkerIconDefinition {
   svgMarkup?: string;
   dataUrl?: string;
   emoji?: string;
+  emojiAssetUrl?: string;
 }
 
 export interface MarkerItem {

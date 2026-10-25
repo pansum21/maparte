@@ -31,6 +31,7 @@ import type {
   MarkerItem,
 } from "@/features/markers/domain/types";
 import { MARKER_FEATURED_ICON_COUNT } from "@/features/markers/infrastructure/constants";
+import { getEmojiAssetUrl } from "@/features/markers/infrastructure/fluentEmojiAssets";
 
 function createSvgIcon(id: string, label: string, component: IconType) {
   return {
@@ -109,6 +110,7 @@ function createEmojiIcon(iconId: string): MarkerIconDefinition | null {
     source: "predefined",
     kind: "emoji",
     emoji,
+    emojiAssetUrl: getEmojiAssetUrl(iconId.slice("emoji:".length)),
   };
 }
 

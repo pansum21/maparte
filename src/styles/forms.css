@@ -2815,6 +2815,14 @@ button.marker-picker__clear-uploaded {
   filter: drop-shadow(0 1px 1px rgba(3, 10, 18, 0.45));
 }
 
+.marker-visual__emoji-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 2px rgba(3, 10, 18, 0.38));
+}
+
 .marker-visual__image-mask {
   width: 100%;
   height: 100%;
