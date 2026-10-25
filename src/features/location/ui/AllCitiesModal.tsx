@@ -1,5 +1,6 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import seoCitiesData from "@/data/seoCities.json";
+import cityPhotoManifest from "@/data/cityPhotos.json";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useMapSync } from "@/features/map/application/useMapSync";
 import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
@@ -39,85 +40,31 @@ type CityImage = {
   license: string;
   licenseUrl: string;
 };
-const cityImageCache = new Map<string, Promise<CityImage | null>>();
-let cityImageManifestPromise: Promise<Record<string, CityImage>> | null = null;
-
-function loadCityImage(slug: string): Promise<CityImage | null> {
-  const existing = cityImageCache.get(slug);
-  if (existing) return existing;
-
-  cityImageManifestPromise ??= fetch("/assets/city-photos/manifest.json")
-    .then((response) => response.ok ? response.json() : {})
-    .catch(() => ({}));
-  const request = cityImageManifestPromise.then((manifest) => manifest[slug] ?? null);
-  cityImageCache.set(slug, request);
-  return request;
-}
+const cityPhotoBySlug = cityPhotoManifest as Record<string, CityImage>;
 
 function CityPhoto({ city, slug }: { city: string; slug: string }) {
-  const hostRef = useRef<HTMLDivElement>(null);
-  const requestedRef = useRef(false);
-  const [image, setImage] = useState<CityImage | null>(null);
-  const [loadFinished, setLoadFinished] = useState(false);
+  const image = cityPhotoBySlug[slug];
+  const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    const host = hostRef.current;
-    if (!host || requestedRef.current) return;
-
-    let active = true;
-    const load = () => {
-      if (!active || requestedRef.current) return;
-      requestedRef.current = true;
-      void loadCityImage(slug).then((result) => {
-        if (active) {
-          setImage(result);
-          setLoadFinished(true);
-        }
-      });
-    };
-
-    if (typeof IntersectionObserver === "undefined") {
-      load();
-      return () => { active = false; };
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          observer.disconnect();
-          load();
-        }
-      },
-      { rootMargin: "180px" },
-    );
-    observer.observe(host);
-    return () => {
-      active = false;
-      observer.disconnect();
-    };
-  }, [slug]);
+  useEffect(() => setFailed(false), [slug]);
 
   return (
-    <div ref={hostRef} className={`city-card-photo${image ? " has-image" : ""}`}>
-      {image ? (
+    <div className={`city-card-photo${image && !failed ? " has-image" : ""}`}>
+      {image && !failed ? (
         <img
           src={image.src}
           alt={`${city} city photo`}
           title={`Photo by ${image.author}; ${image.license}. Source: ${image.sourcePage}${image.licenseUrl ? ` (${image.licenseUrl})` : ""}`}
           loading="lazy"
           decoding="async"
-          onError={() => {
-            setImage(null);
-            setLoadFinished(true);
-          }}
+          onError={() => setFailed(true)}
         />
       ) : (
-        <span className={loadFinished ? "city-photo-unavailable" : "city-photo-loading"} aria-hidden="true" />
+        <span className="city-photo-unavailable" aria-hidden="true" />
       )}
     </div>
   );
 }
-
 
 
 export default function AllCitiesModal({
@@ -243,8 +190,11 @@ export default function AllCitiesModal({
             const count =
               cont === "All"
                 ? (seoCitiesData as SeoCityItem[]).length
-                : (seoCitiesData as SeoCityItem[]).filter(
-                    (c) => c.continent === cont,
+                : (seoCitiesData as SeoCityItem[]).filter((city) =>
+                    cont === "Americas"
+                      ? city.continent === "North America" ||
+                        city.continent === "South America"
+                      : city.continent === cont,
                   ).length;
             return (
               <button
