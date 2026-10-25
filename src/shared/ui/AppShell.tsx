@@ -34,7 +34,7 @@ const AnnouncementModal = lazy(
   () => import("@/features/updates/ui/AnnouncementModal"),
 );
 const ExportFab = lazy(() => import("@/features/export/ui/ExportFab"));
-const DesktopLocationBar = lazy(() => import("@/shared/ui/DesktopLocationBar"));
+const AllCitiesModal = lazy(() => import("@/features/location/ui/AllCitiesModal"));
 const AdminControlModal = lazy(
   () => import("@/features/admin/ui/AdminControlModal"),
 );
@@ -162,8 +162,6 @@ export default function AppShell() {
   // Mobile state
   const [mobileTab, setMobileTab] = useState<MobileTab>("theme");
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const [mobileLocationRowVisible, setMobileLocationRowVisible] =
-    useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [deviceView, setDeviceView] = useState<"phone" | "tablet" | "desktop">(
     "desktop",
@@ -172,8 +170,6 @@ export default function AppShell() {
   // Desktop state
   const [desktopTab, setDesktopTab] = useState<MobileTab>("theme");
   const [desktopPanelOpen, setDesktopPanelOpen] = useState(false);
-  const [desktopLocationRowVisible, setDesktopLocationRowVisible] =
-    useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">("about");
   const [backdropOpen, setBackdropOpen] = useState(false);
@@ -268,7 +264,6 @@ export default function AppShell() {
   useEffect(() => {
     const preload = () => {
       void import("@/features/poster/ui/SettingsPanel");
-      void import("@/shared/ui/DesktopLocationBar");
       void import("@/features/export/ui/ExportFab");
       void import("@/features/updates/ui/AnnouncementModal");
     };
@@ -331,23 +326,21 @@ export default function AppShell() {
   }, [mobileDrawerOpen]);
 
   const handleMobileTabChange = (tab: MobileTab) => {
+    if (tab === "location") {
+      setBackdropOpen(false);
+      setAllCitiesOpen((open) => !open);
+      setMobileDrawerOpen(false);
+      return;
+    }
+    setAllCitiesOpen(false);
     if (tab === "wall") {
-      setMobileLocationRowVisible(false);
       setMobileDrawerOpen(false);
       setMobileTab(tab);
       setBackdropOpen((open) => !open);
       return;
     }
-    if (tab === "location") {
-      setBackdropOpen(false);
-      setMobileLocationRowVisible((isVisible) => !isVisible);
-      setMobileDrawerOpen(false);
-      return;
-    }
 
-    setMobileLocationRowVisible(false);
     setBackdropOpen(false);
-
     if (tab === mobileTab && mobileDrawerOpen) {
       setMobileDrawerOpen(false);
     } else {
@@ -358,7 +351,6 @@ export default function AppShell() {
 
   const handleDesktopTabChange = (tab: MobileTab) => {
     setAllCitiesOpen(false);
-    setDesktopLocationRowVisible(false);
     setBackdropOpen(false);
     if (tab === desktopTab && desktopPanelOpen) {
       setDesktopPanelOpen(false);
@@ -369,11 +361,10 @@ export default function AppShell() {
   };
 
   const handleDesktopLocationToggle = () => {
-    setAllCitiesOpen(false);
     setBackdropOpen(false);
     setDesktopTab("location");
     setDesktopPanelOpen(false);
-    setDesktopLocationRowVisible((visible) => !visible);
+    setAllCitiesOpen((open) => !open);
   };
 
   const handleMobileMarkerSizeChange = useCallback(
@@ -464,17 +455,14 @@ export default function AppShell() {
       <DesktopNavBar
         activeTab={desktopTab}
         panelOpen={desktopPanelOpen}
-        isLocationVisible={desktopLocationRowVisible}
+        isLocationVisible={allCitiesOpen}
         onLocationToggle={handleDesktopLocationToggle}
         onTabChange={handleDesktopTabChange}
         onSettingsClick={() => handleDesktopTabChange("settings")}
         onToggleCinema={() => handleToggleCinema(true)}
-        onOpenAllCities={() => setAllCitiesOpen(true)}
-        allCitiesOpen={allCitiesOpen}
-        onCloseAllCities={() => setAllCitiesOpen(false)}
         wallOpen={backdropOpen}
         onOpenWall={() => {
-          setDesktopLocationRowVisible(false);
+          setAllCitiesOpen(false);
           setDesktopPanelOpen(false);
           setBackdropOpen((open) => !open);
         }}
@@ -482,13 +470,12 @@ export default function AppShell() {
         onEditMapToggle={() => setIsEditing((prev) => !prev)}
       />
 
-      <div
-        className={`mobile-location-row-wrap${mobileLocationRowVisible ? "" : " is-hidden"}`}
-      >
-        <Suspense fallback={null}>
-          <DesktopLocationBar />
-        </Suspense>
-      </div>
+      <Suspense fallback={null}>
+        <AllCitiesModal
+          isOpen={allCitiesOpen}
+          onClose={() => setAllCitiesOpen(false)}
+        />
+      </Suspense>
 
       {isMobileViewport && isMarkerEditorActive && activeMarker ? (
         <div
@@ -574,15 +561,16 @@ export default function AppShell() {
       <MobileNavBar
         activeTab={mobileTab}
         drawerOpen={mobileDrawerOpen}
-        isLocationVisible={mobileLocationRowVisible}
+        isLocationVisible={allCitiesOpen}
         onTabChange={handleMobileTabChange}
         onOpenFullScreen={() => {
+          setAllCitiesOpen(false);
           setMobileDrawerOpen(false);
           handleToggleCinema(true);
         }}
         onSettingsClick={() => {
           setBackdropOpen(false);
-          setMobileLocationRowVisible(false);
+          setAllCitiesOpen(false);
           if (mobileDrawerOpen && mobileTab === "settings") {
             setMobileDrawerOpen(false);
           } else {
