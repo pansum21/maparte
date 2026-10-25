@@ -151,32 +151,19 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
   return (
     <section className="all-cities-modal" role="dialog" aria-label="Choose a city">
       <div className="all-cities-search-main">
-        <div className="all-cities-search-bar">
+        <div
+          className="all-cities-search-bar"
+          style={{ display: "flex", alignItems: "center", gap: "5px", height: "42px", padding: "4px 6px", boxSizing: "border-box", overflow: "hidden" }}
+        >
           <button
             type="button"
-            className="all-cities-search-icon"
+            className={`all-cities-location-action${showCoords ? " is-active" : ""}`}
             onMouseDown={(event) => event.preventDefault()}
-            onClick={() => void searchNow(state.form.location)}
-            aria-label="Search location"
-            title="Search location"
-            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 34px", width: "34px", height: "34px", padding: 0, border: 0, borderRadius: "8px", background: "transparent", color: "#9fb9cc", cursor: "pointer" }}
-          ><SearchIcon /></button>
-          <input
-            type="text"
-            className="all-cities-search-input"
-            name="location"
-            placeholder="Search city or paste Google Maps link"
-            value={state.form.location}
-            onChange={handleInputChange}
-            onFocus={() => setLocationFocused(true)}
-            onBlur={() => setLocationFocused(false)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") void searchNow(event.currentTarget.value);
-            }}
-            autoComplete="off"
-          />
-        </div>
-        <div className="all-cities-location-actions" style={{ right: "8px", gap: "5px" }}>
+            onClick={() => setShowCoords((value) => !value)}
+            aria-label="Toggle coordinates"
+            title="Show or hide coordinates"
+            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(31, 56, 75, .62)", color: "rgba(210, 231, 245, .9)", cursor: "pointer" }}
+          ><LocationIcon /></button>
           <button
             type="button"
             className={`all-cities-location-action${isLocatingUser ? " is-locating" : ""}`}
@@ -185,15 +172,32 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
             disabled={isLocatingUser}
             aria-label="Use current GPS location"
             title="Use current GPS location"
+            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(31, 56, 75, .62)", color: "rgba(210, 231, 245, .9)", cursor: "pointer" }}
           ><MyLocationIcon /></button>
+          <input
+            type="text"
+            className="all-cities-search-input"
+            name="location"
+            placeholder="City, state, or Google Maps link"
+            value={state.form.location}
+            onChange={handleInputChange}
+            onFocus={() => setLocationFocused(true)}
+            onBlur={() => setLocationFocused(false)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") void searchNow(event.currentTarget.value);
+            }}
+            autoComplete="off"
+            style={{ flex: "1 1 auto", minWidth: 0, width: 0, height: "30px", boxSizing: "border-box", padding: "0 8px", border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(4, 12, 21, .68)", color: "#fff", fontSize: "14px", outline: "none" }}
+          />
           <button
             type="button"
-            className={`all-cities-location-action${showCoords ? " is-active" : ""}`}
+            className="all-cities-search-icon"
             onMouseDown={(event) => event.preventDefault()}
-            onClick={() => setShowCoords((value) => !value)}
-            aria-label="Toggle coordinates"
-            title="Show or hide coordinates"
-          ><LocationIcon /></button>
+            onClick={() => void searchNow(state.form.location)}
+            aria-label="Search location"
+            title="Search location"
+            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(31, 56, 75, .62)", color: "#9fb9cc", cursor: "pointer" }}
+          ><SearchIcon /></button>
         </div>
 
         {showCoords ? (
