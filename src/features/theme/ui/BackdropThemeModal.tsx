@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { CloseIcon, CheckIcon } from "@/shared/ui/Icons";
+import { CheckIcon } from "@/shared/ui/Icons";
 import {
-  BACKDROP_PRESETS,
   WALL_CATEGORIES,
   type WallCategory,
   type CustomGradientConfig,
@@ -40,10 +39,35 @@ function sanitizeHex(val?: string): string {
   return "#1e293b";
 }
 
+type WallTone = "dark" | "mid-dark" | "mid-light" | "light";
+
+const WALL_TONE_ORDER: WallTone[] = ["dark", "mid-dark", "mid-light", "light"];
+const WALL_TONE_LABELS: Record<WallTone, string> = {
+  dark: "Dark",
+  "mid-dark": "Mid-Dark",
+  "mid-light": "Mid-Light",
+  light: "Light",
+};
+
+function getWallTone(hex: string): WallTone {
+  const normalized = sanitizeHex(hex).slice(1);
+  const channels = [0, 2, 4].map((offset) => {
+    const value = parseInt(normalized.slice(offset, offset + 2), 16) / 255;
+    return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  });
+  const luminance = 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  if (luminance < 0.12) return "dark";
+  if (luminance < 0.30) return "mid-dark";
+  if (luminance < 0.60) return "mid-light";
+  return "light";
+}
+
+const WALL_SEO_DESCRIPTION =
+  "Preview your framed map poster against 64 interior paint tones inspired by Scandinavian neutrals, USA and Europe designer palettes, and timber walls, or customize a wall color with real-time preview.";
+
 export default function BackdropThemeModal({
   isOpen,
   onClose,
-  onEnterCinema,
 }: BackdropThemeModalProps) {
   const {
     backdropState,
@@ -58,9 +82,8 @@ export default function BackdropThemeModal({
   );
 
   const [selectedCategory, setSelectedCategory] = useState<WallCategory>("all");
-  const [searchQuery, setSearchQuery] = useState("");
   const [mixerMode, setMixerMode] = useState<"solid" | "gradient">("solid");
-  const [openDescriptionId, setOpenDescriptionId] = useState<string | null>(null);
+  const [showWallInfo, setShowWallInfo] = useState(false);
 
   // Keep a local draft for smooth slider dragging and text inputs
   const [customDraft, setCustomDraft] = useState<CustomGradientConfig>(
@@ -82,22 +105,29 @@ export default function BackdropThemeModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Filter presets by category and search
+  // Keep wall colors grouped from darkest to lightest within the selected category.
   const filteredPresets = useMemo(() => {
     return presets.filter((preset) => {
       const matchesCategory =
         selectedCategory === "all" || preset.category === selectedCategory;
       if (!matchesCategory) return false;
 
-      if (!searchQuery.trim()) return true;
-      const q = searchQuery.toLowerCase().trim();
-      return (
-        preset.name.toLowerCase().includes(q) ||
-        preset.description.toLowerCase().includes(q) ||
-        preset.hex.toLowerCase().includes(q)
-      );
+      return true;
+    }).sort((a, b) => {
+      const toneDifference = WALL_TONE_ORDER.indexOf(getWallTone(a.hex)) - WALL_TONE_ORDER.indexOf(getWallTone(b.hex));
+      return toneDifference || presets.indexOf(a) - presets.indexOf(b);
     });
-  }, [presets, selectedCategory, searchQuery]);
+  }, [presets, selectedCategory]);
+
+  const groupedPresets = useMemo(
+    () => WALL_TONE_ORDER.map((tone) => ({
+      tone,
+      presets: filteredPresets.filter((preset) => getWallTone(preset.hex) === tone),
+    })).filter((group) => group.presets.length > 0),
+    [filteredPresets],
+  );
+
+  const selectedPreset = presets.find((preset) => preset.id === backdropState.presetId);
 
   // Real-time auto-saving custom updater
   const handleUpdateField = useCallback(
@@ -133,7 +163,7 @@ export default function BackdropThemeModal({
     [handleSolidColorChange],
   );
 
-  const isCustomActive = backdropState.type === "custom";
+  const isCustomActive = activeTab === "custom";
 
   if (!isOpen) return null;
 
@@ -147,70 +177,51 @@ export default function BackdropThemeModal({
         className="export-modal backdrop-theme-modal"
         role="dialog"
         aria-modal="true"
-        aria-label="Room Wall Color & Preview Settings"
+        aria-label="Wall Color"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="backdrop-modal-top-actions">
-          <button
-            type="button"
-            className="export-modal-close"
-            onClick={onClose}
-            aria-label="Close wall color settings"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-
         <div className="backdrop-modal-header">
-          <h2 className="backdrop-modal-title">Room Wall Color Preview</h2>
-          <p className="backdrop-modal-sub">
-            Preview your framed map poster against 64 authentic interior paint tones (Scandinavian neutrals, USA &amp; Europe designer palettes, timber slats) or mix your own custom wall paint with real-time auto-save.
+          <div className="backdrop-modal-heading-row">
+            <div className="backdrop-modal-heading-copy">
+              <h2 className="backdrop-modal-title">Wall Color</h2>
+              <span className="backdrop-selected-wall-name">
+                {isCustomActive ? "Custom Wall Color" : selectedPreset?.name ?? "Select a wall color"}
+              </span>
+              <p className="backdrop-selected-wall-desc">
+                {isCustomActive
+                  ? "Your custom wall paint is previewed live behind the map poster."
+                  : selectedPreset?.description ?? "Choose a wall tone to preview behind your map poster."}
+              </p>
+            </div>
+            <div className="backdrop-modal-actions">
+              <button
+                type="button"
+                className="backdrop-info-button backdrop-wall-info-button"
+                aria-label="About wall color preview"
+                aria-expanded={showWallInfo}
+                aria-controls="wall-color-seo-description"
+                onClick={() => setShowWallInfo((visible) => !visible)}
+              >
+                i
+              </button>
+              <button
+                type="button"
+                className="backdrop-customize-btn"
+                onClick={() => setActiveTab(isCustomActive ? "presets" : "custom")}
+              >
+                {isCustomActive ? "Wall Colors" : "Customize Wall Color"}
+              </button>
+            </div>
+          </div>
+          <p className="backdrop-seo-description" id="wall-color-seo-description" hidden={!showWallInfo}>
+            {WALL_SEO_DESCRIPTION}
           </p>
-        </div>
-
-        {/* Tab switch */}
-        <div className="backdrop-tabs-row">
-          <button
-            type="button"
-            className={`backdrop-tab-btn ${activeTab === "presets" ? "is-active" : ""}`}
-            onClick={() => setActiveTab("presets")}
-          >
-            Curated Wall Colors (64)
-          </button>
-          <button
-            type="button"
-            className={`backdrop-tab-btn ${activeTab === "custom" ? "is-active" : ""}`}
-            onClick={() => setActiveTab("custom")}
-          >
-            Custom Wall Paint Mixer
-          </button>
+          <span className="backdrop-seo-copy">{WALL_SEO_DESCRIPTION}</span>
         </div>
 
         {activeTab === "presets" ? (
           <div className="backdrop-presets-view">
-            {/* Search and Category Filter */}
             <div className="backdrop-filter-section">
-              <div className="backdrop-search-wrap">
-                <input
-                  type="text"
-                  className="backdrop-search-input"
-                  placeholder="Search 64 walls (e.g. Alabaster, Sage, Oak, Slate, Navy)..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    className="backdrop-search-clear"
-                    onClick={() => setSearchQuery("")}
-                    aria-label="Clear search"
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-
-              {/* Horizontal Category Filter Pills */}
               <div className="backdrop-categories-scroll">
                 {WALL_CATEGORIES.map((cat) => (
                   <button
@@ -229,21 +240,22 @@ export default function BackdropThemeModal({
             {/* Presets Grid */}
             {filteredPresets.length === 0 ? (
               <div className="backdrop-empty-state">
-                <p>No wall colors found matching &ldquo;{searchQuery}&rdquo;</p>
+                <p>No wall colors found in this group.</p>
                 <button
                   type="button"
                   className="backdrop-reset-btn"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setSelectedCategory("all");
-                  }}
+                  onClick={() => setSelectedCategory("all")}
                 >
                   Clear Filters
                 </button>
               </div>
             ) : (
-              <div className="backdrop-presets-grid">
-                {filteredPresets.map((preset) => {
+              <div className="backdrop-tone-groups">
+                {groupedPresets.map(({ tone, presets: tonePresets }) => (
+                  <section className="backdrop-tone-group" key={tone} aria-label={`${WALL_TONE_LABELS[tone]} wall colors`}>
+                    <h3 className="backdrop-tone-heading">{WALL_TONE_LABELS[tone]}</h3>
+                    <div className="backdrop-presets-grid">
+                {tonePresets.map((preset) => {
                   const isSelected =
                     !isCustomActive && backdropState.presetId === preset.id;
                   return (
@@ -277,36 +289,13 @@ export default function BackdropThemeModal({
                         <span className="backdrop-preset-name" title={preset.name}>
                           {preset.name}
                         </span>
-                        <div className="backdrop-card-meta-row">
-                          <span className={`backdrop-mode-badge mode--${preset.mode}`}>
-                            {preset.mode === "light" ? "Light" : "Dark"}
-                          </span>
-                          <button
-                            type="button"
-                            className="backdrop-info-button"
-                            aria-label={`${preset.name} description`}
-                            aria-expanded={openDescriptionId === preset.id}
-                            aria-controls={`wall-description-${preset.id}`}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              setOpenDescriptionId((current) => current === preset.id ? null : preset.id);
-                            }}
-                          >
-                            i
-                          </button>
-                        </div>
-                        {openDescriptionId === preset.id && (
-                          <span
-                            className="backdrop-preset-desc"
-                            id={`wall-description-${preset.id}`}
-                          >
-                            {preset.description}
-                          </span>
-                        )}
                       </div>
                     </div>
                   );
                 })}
+                    </div>
+                  </section>
+                ))}
               </div>
             )}
           </div>

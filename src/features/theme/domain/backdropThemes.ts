@@ -33,7 +33,6 @@ export interface BackdropThemeState {
 }
 
 export const WALL_CATEGORIES: { id: WallCategory; label: string; count: number }[] = [
-  { id: "all", label: "All Colors", count: 64 },
   { id: "popular", label: "Flagship", count: 10 },
   { id: "neutral", label: "Warm Neutrals & Creams", count: 8 },
   { id: "scandi", label: "Scandinavian & Slates", count: 8 },
