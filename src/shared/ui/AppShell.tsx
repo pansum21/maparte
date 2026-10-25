@@ -65,7 +65,11 @@ function SettingsDrawer({
   });
 
   return (
-    <div className="mobile-drawer" role="dialog" aria-label="Settings">
+    <div
+      className={`mobile-drawer${mobileTab === "edit-map" ? " mobile-drawer--edit-map" : ""}`}
+      role="dialog"
+      aria-label="Settings"
+    >
       <div
         className="mobile-drawer-backdrop"
         onClick={onClose}
