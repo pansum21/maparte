@@ -2387,8 +2387,10 @@
 }
 .all-cities-card:hover { border-color: rgba(56, 189, 248, .78); transform: translateY(-1px); }
 .all-cities-card.is-active { border-color: #38bdf8; box-shadow: 0 0 0 1px rgba(56,189,248,.38); }
-.city-card-photo { width: 100%; height: auto; aspect-ratio: 1.58 / 1; flex: 0 0 auto; }
-.city-card-name { padding: 10px 12px 11px; font: 700 .9rem/1.2 "Instrument Sans", sans-serif; }
+.city-card-photo { display: grid; width: 100%; height: 112px; min-height: 112px; aspect-ratio: auto; flex: 0 0 112px; }
+.city-card-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.city-photo-unavailable { width: 100%; height: 100%; background: linear-gradient(135deg, rgba(35,59,77,.9), rgba(15,29,44,.96)); }
+.city-card-name { display: block; flex: 0 0 auto; min-height: 36px; box-sizing: border-box; padding: 10px 12px; color: #fff; font: 700 .9rem/1.2 "Instrument Sans", sans-serif; text-align: left; visibility: visible; }
 .all-cities-geocoder-results {
   position: absolute; z-index: 4; top: calc(100% + 8px); left: 0; right: 0; max-height: min(42vh, 360px);
   margin: 0; padding: 6px; overflow: auto; list-style: none; border: 1px solid rgba(146,176,200,.24);
@@ -2426,6 +2428,6 @@
   .all-cities-continent-pill { min-height: 32px; padding: 4px 3px; border-radius: 9px; font-size: .72rem; }
   .all-cities-grid { gap: 8px; padding-right: 1px; }
   .all-cities-card { border-radius: 12px; }
-  .city-card-photo { aspect-ratio: 1.58 / 1; }
-  .city-card-name { padding: 8px 9px; font-size: .78rem; }
+  .city-card-photo { height: 112px; min-height: 112px; flex-basis: 112px; }
+  .city-card-name { min-height: 34px; padding: 8px 9px; font-size: .78rem; }
 }
