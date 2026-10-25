@@ -467,7 +467,10 @@ export default function AppShell() {
           setBackdropOpen((open) => !open);
         }}
         isEditing={isEditing}
-        onEditMapToggle={() => setIsEditing((prev) => !prev)}
+        onEditMapToggle={() => {
+          setAllCitiesOpen(false);
+          setIsEditing((prev) => !prev);
+        }}
       />
 
       <Suspense fallback={null}>
@@ -582,6 +585,7 @@ export default function AppShell() {
         wallOpen={backdropOpen}
         isEditing={isEditing}
         onEditMapToggle={() => {
+          setAllCitiesOpen(false);
           setBackdropOpen(false);
           setMobileDrawerOpen(false);
           setIsEditing((prev) => !prev);
