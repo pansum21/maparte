@@ -26,7 +26,8 @@ export type MobileTab =
   | "style"
   | "layers"
   | "markers"
-  | "routes";
+  | "routes"
+  | "settings";
 
 const tabs: {
   id: MobileTab;
