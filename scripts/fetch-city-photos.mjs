@@ -146,14 +146,12 @@ async function mapLimit(items, limit, task) {
   return output;
 }
 
-await rm(outputDir, { recursive: true, force: true });
-await mkdir(outputDir, { recursive: true });
-
-if (process.env.VERCEL !== "1") {
-  await writeFile(manifestPath, JSON.stringify({}, null, 2));
-  console.log("City photo download skipped outside Vercel build.");
+if (process.env.FETCH_CITY_PHOTOS !== "1") {
+  console.log("City photo refresh skipped; static city assets are preserved.");
   process.exit(0);
 }
+
+await mkdir(outputDir, { recursive: true });
 
 const pageResults = await mapLimit(cities, 8, async (city) => queryCityPage(city));
 const pageBySlug = new Map();

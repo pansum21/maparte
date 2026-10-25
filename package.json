@@ -6,7 +6,7 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "dev": "bunx --bun vite --host",
-    "build": "node scripts/fetch-city-photos.mjs && bunx --bun vite build",
+    "build": "bunx --bun vite build",
     "preview": "bunx --bun vite preview --host",
     "typecheck": "tsc --noEmit",
     "verify:exports": "node scripts/verify-export-resolution.mjs",
