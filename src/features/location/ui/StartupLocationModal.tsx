@@ -13,7 +13,9 @@ import {
   requestCurrentPositionWithRetry,
 } from "@/features/location/infrastructure";
 import { MyLocationIcon } from "@/shared/ui/Icons";
-import { usePosterDispatch } from "@/features/poster/ui/PosterContext";
+import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import { createMarkerItem } from "@/features/markers/infrastructure/helpers";
+import { PLACEHOLDER_LOCATION_SEARCH } from "./constants";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
 import {
   recordRecentLocation,
@@ -41,8 +43,15 @@ interface StartupLocationModalProps {
 export default function StartupLocationModal({
   onComplete,
 }: StartupLocationModalProps) {
-  const { dispatch } = usePosterDispatch();
-  const [isOpen, setIsOpen] = useState(true);
+  const { state, dispatch } = usePosterContext();
+  const [isOpen, setIsOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem("maparte_startup_location_dismissed") !== "true";
+    } catch {
+      return true;
+    }
+  });
   const [isClosing, setIsClosing] = useState(false);
   const [locationInput, setLocationInput] = useState("");
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -58,6 +67,9 @@ export default function StartupLocationModal({
   const { recent, removeRecent, clearRecent } = useRecentLocations();
 
   const closeModal = () => {
+    try {
+      localStorage.setItem("maparte_startup_location_dismissed", "true");
+    } catch {}
     setIsClosing(true);
     window.setTimeout(() => {
       setIsOpen(false);
@@ -78,7 +90,7 @@ export default function StartupLocationModal({
           distance: String(DEFAULT_DISTANCE_METERS),
           displayCity: DEFAULT_CITY,
           displayCountry: DEFAULT_COUNTRY,
-          displayContinent: "Europe",
+          displayContinent: "Asia",
         },
       });
       return;
@@ -244,6 +256,15 @@ export default function StartupLocationModal({
       </div>
 
       <div className="startup-location-card is-visible">
+        <button
+          type="button"
+          className="startup-location-close-btn"
+          onClick={closeModal}
+          aria-label="Skip location setup and go to editor"
+          title="Close (use default city)"
+        >
+          ✕
+        </button>
         <p className="startup-location-title" id="startup-location-title">
           Choose Location
         </p>
@@ -261,8 +282,8 @@ export default function StartupLocationModal({
           }}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => setTimeout(() => setIsInputFocused(false), 120)}
-          onKeyDown={(e) => { if (e.key === "Enter") void searchNow(e.currentTarget.value); }}
-          placeholder="Type a city or place"
+          onKeyDown={async (e) => { if (e.key === "Enter") { const results = await searchNow(e.currentTarget.value); if (results && results.length > 0 && results[0].fromGoogleMaps) { onSuggestionSelect(results[0]); } } }}
+          placeholder={PLACEHOLDER_LOCATION_SEARCH}
           autoComplete="off"
         />
         <LocationSuggestionsDropdown

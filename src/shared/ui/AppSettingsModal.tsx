@@ -153,12 +153,12 @@ export default function AppSettingsModal({
             <h3 className="app-settings-card-title">Export Quality & Engine</h3>
             <div className="settings-quality-info">
               <div className="quality-badge-row">
-                <span className="quality-pill">✨ 500 DPI Active</span>
+                <span className="quality-pill">✨ Ultra-HD Engine</span>
                 <span className="quality-pill">📐 Vector SVG Engine</span>
-                <span className="quality-pill">🎁 BOGO Free Trial</span>
+                <span className="quality-pill">🎁 Master Bundle BOGO</span>
               </div>
               <p className="quality-desc">
-                Your posters download with vector clarity and 500 DPI ultra-high definition.
+                Your posters download with scalable vector clarity or high-density raster calibrated up to 48 Megapixels.
                 Printed posters stay razor sharp at any wall size.
               </p>
             </div>

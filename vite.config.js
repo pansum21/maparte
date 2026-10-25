@@ -298,6 +298,46 @@ function serviceWorkerBuildIdPlugin() {
   };
 }
 
+
+function googleMapsResolverPlugin() {
+  return {
+    name: "google-maps-resolver",
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        if (req.url && req.url.startsWith("/api/resolve-maps-url")) {
+          const parsedUrl = new URL(req.url, "http://localhost");
+          const targetUrl = parsedUrl.searchParams.get("url");
+          if (!targetUrl) {
+            res.statusCode = 400;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: "Missing url parameter" }));
+            return;
+          }
+          try {
+            const fetchRes = await fetch(targetUrl, {
+              method: "GET",
+              redirect: "follow",
+              headers: {
+                "User-Agent":
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              },
+            });
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ expandedUrl: fetchRes.url }));
+          } catch (err) {
+            res.statusCode = 500;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: "Failed to resolve", message: err.message }));
+          }
+          return;
+        }
+        next();
+      });
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
     react(),
@@ -305,6 +345,7 @@ export default defineConfig({
     legalPagesPlugin(),
     cityPagesPlugin(),
     serviceWorkerBuildIdPlugin(),
+    googleMapsResolverPlugin(),
   ],
   define: {
     "import.meta.env.VITE_APP_VERSION": JSON.stringify(appVersion),

@@ -92,12 +92,12 @@ export default function MobileNavBar({
                   type="button"
                   className={`mobile-nav-tab${isActive ? " is-active" : ""}`}
                   onClick={() => id === "edit-map" ? onEditMapToggle?.() : onTabChange(id)}
-                  aria-label={id === "edit-map" ? (isEditing ? "Lock Map" : "Edit Map") : label}
+                  aria-label={label}
                   aria-current={!isLocationTab && id !== "edit-map" && activeTab === id ? "page" : undefined}
                   aria-pressed={isActive}
                 >
-                  {id === "edit-map" && isEditing ? <LockIcon className="mobile-nav-icon" /> : <Icon className="mobile-nav-icon" />}
-                  <span className="mobile-nav-label">{id === "edit-map" && isEditing ? "Lock Map" : label}</span>
+                  <Icon className="mobile-nav-icon" />
+                  <span className="mobile-nav-label">{label}</span>
                 </button>
               );
             })}

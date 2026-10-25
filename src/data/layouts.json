@@ -124,6 +124,26 @@
           "unit": "cm",
           "posterWidthCm": 60.96,
           "posterHeightCm": 91.44
+        },
+        {
+          "id": "print_poster_50x70_cm",
+          "name": "Poster 50 × 70 cm (B2)",
+          "description": "Popular global gallery poster frame size (IKEA, Target).",
+          "width": 50,
+          "height": 70,
+          "unit": "cm",
+          "posterWidthCm": 50,
+          "posterHeightCm": 70
+        },
+        {
+          "id": "print_poster_70x100_cm",
+          "name": "Poster 70 × 100 cm (B1)",
+          "description": "Large statement poster frame size (IKEA Ribba, Habitat).",
+          "width": 70,
+          "height": 100,
+          "unit": "cm",
+          "posterWidthCm": 70,
+          "posterHeightCm": 100
         }
       ]
     },
@@ -300,7 +320,7 @@
         {
           "id": "wallpaper_xteink_x4",
           "name": "Xteink X4 (E-Ink)",
-          "description": "Native Xteink X4 format (480x800). Exports exactly at this resolution when using 300 DPI.",
+          "description": "Native Xteink X4 format (480x800) for E-Ink screen displays.",
           "width": 480,
           "height": 800,
           "unit": "px",

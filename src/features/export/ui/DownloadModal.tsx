@@ -12,6 +12,9 @@ import {
   type PaidTier,
 } from "@/features/export/infrastructure/planTier";
 import { CloseIcon, DownloadIcon, LoaderIcon } from "@/shared/ui/Icons";
+import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
+import { getLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 
 interface DownloadModalProps {
   isOpen: boolean;
@@ -148,6 +151,16 @@ export default function DownloadModal({
   defaultFormat = "png",
 }: DownloadModalProps) {
   const { isExporting, exportPoster } = useExport();
+  const { state } = usePosterContext();
+  const { form } = state;
+  const widthCm = Number(form.width) || 21;
+  const heightCm = Number(form.height) || 29.7;
+  const widthInches = widthCm / 2.54;
+  const heightInches = heightCm / 2.54;
+  const canvasSize = resolveCanvasSize(widthInches, heightInches, 500);
+  const megapixels = ((canvasSize.width * canvasSize.height) / 1e6).toFixed(1);
+  const layoutOption = getLayoutOption(form.layout);
+  const layoutName = layoutOption ? layoutOption.name : `${widthCm} × ${heightCm} cm`;
   const resolveInitialTier = (fmt: ExportFormat): SelectedTier => {
     if (fmt === "jpg") return "jpg";
     if (fmt === "image_bundle") return "duo";
@@ -358,7 +371,7 @@ export default function DownloadModal({
             </div>
             <h3 id="download-modal-title">Download Custom Map Art</h3>
             <p className="download-modal-subtitle">
-              Choose your format & print quality • Clean, watermark-free art
+              Choose your format & print quality • Clean, gallery-ready art (no center watermarks)
             </p>
           </div>
           <button
@@ -382,6 +395,39 @@ export default function DownloadModal({
           <span className="explore-first-icon" aria-hidden="true">🎨</span>
           <div className="explore-first-content">
             <strong>Before you download, explore the editor:</strong> Try another theme, layout, border, or map detail while everything is still editable. Find the version you love first, then save it.
+          </div>
+        </div>
+
+        {/* Live File Specifications for Currently Selected Poster */}
+        <div className="selected-spec-box" role="region" aria-label="Exact File Specifications">
+          <div className="selected-spec-header">
+            <span className="spec-badge">📍 Exact File Specifications</span>
+            <span className="spec-layout-tag">{layoutName}</span>
+          </div>
+          <div className="selected-spec-grid">
+            <div className="spec-item">
+              <span className="spec-label">Print Size</span>
+              <strong className="spec-value">{widthCm} × {heightCm} cm ({widthInches.toFixed(1)}" × {heightInches.toFixed(1)}")</strong>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Pixel Dimensions</span>
+              <strong className="spec-value">{canvasSize.width} × {canvasSize.height} px ({megapixels} MP)</strong>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Effective Density</span>
+              <strong className="spec-value">{canvasSize.effectiveDpi} PPI</strong>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Print Quality Standard</span>
+              <strong className="spec-value">
+                {canvasSize.effectiveDpi >= 300
+                  ? "✓ Exceeds 300 DPI Lab Standard"
+                  : "✓ Optimized for Large Wall Viewing"}
+              </strong>
+            </div>
+          </div>
+          <div className="spec-disclaimer">
+            <span>🛡️ <strong>100% Calibrated Reality:</strong> File downloads contain these exact rendered pixel dimensions and embedded physical density metadata (PNG pHYs / JPG JFIF / PDF MediaBox). Scalable vector SVG contains mathematical paths.</span>
           </div>
         </div>
 

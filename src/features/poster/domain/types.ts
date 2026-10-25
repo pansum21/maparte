@@ -15,6 +15,7 @@ export interface CanvasSize {
   requestedDpi: number;
   effectiveDpiX: number;
   effectiveDpiY: number;
+  effectiveDpi: number;
 }
 
 /** Options passed to the export compositor (map snapshot + text overlay). */

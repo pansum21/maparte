@@ -39,6 +39,8 @@ import {
   DEFAULT_DISTANCE_METERS,
   DEFAULT_LAT,
   DEFAULT_LON,
+  DEFAULT_CITY,
+  DEFAULT_COUNTRY,
 } from "@/core/config";
 
 import { resolveCityFromUrl } from "@/features/location/domain/cityRouteResolver";
@@ -50,11 +52,10 @@ const defaultLayoutWidthCm = Number(
 const defaultLayoutHeightCm = Number(
   defaultLayoutOption?.heightCm ?? DEFAULT_POSTER_HEIGHT_CM,
 );
-const DEFAULT_LOCATION_LABEL =
-  "Hanover, Region Hannover, Lower Saxony, Germany";
+const DEFAULT_LOCATION_LABEL = "Dehradun, Uttarakhand, India";
 
 export const DEFAULT_FORM: PosterForm = {
-  location: DEFAULT_LOCATION_LABEL,
+  location: "",
   latitude: DEFAULT_LAT.toFixed(6),
   longitude: DEFAULT_LON.toFixed(6),
   distance: String(DEFAULT_DISTANCE_METERS),
@@ -62,9 +63,9 @@ export const DEFAULT_FORM: PosterForm = {
   height: String(defaultLayoutHeightCm),
   theme: defaultThemeName,
   layout: defaultLayoutId,
-  displayCity: "Hanover",
-  displayCountry: "Germany",
-  displayContinent: "Europe",
+  displayCity: DEFAULT_CITY,
+  displayCountry: DEFAULT_COUNTRY,
+  displayContinent: "Asia",
   customDate: "",
   fontFamily: "",
   showPosterText: true,

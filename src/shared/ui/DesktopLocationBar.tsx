@@ -91,7 +91,7 @@ export default function DesktopLocationBar() {
                   onChange={handleChange}
                   onFocus={() => setLocationFocused(true)}
                   onBlur={() => setLocationFocused(false)}
-                  onKeyDown={(e) => { if (e.key === "Enter") void searchNow(e.currentTarget.value); }}
+                  onKeyDown={async (e) => { if (e.key === "Enter") { const results = await searchNow(e.currentTarget.value); if (results && results.length > 0 && results[0].fromGoogleMaps) { onLocationSelect(results[0]); } } }}
                   placeholder={PLACEHOLDER_LOCATION_SEARCH}
                   autoComplete="off"
                 />

@@ -8,7 +8,7 @@ import {
   MAX_MARKER_SIZE,
   MIN_MARKER_SIZE,
 } from "@/features/markers/domain/constants";
-import { createDefaultMarkerSettings } from "@/features/markers/infrastructure/helpers";
+import { createDefaultMarkerSettings, createMarkerItem } from "@/features/markers/infrastructure/helpers";
 import { featuredMarkerIcons } from "@/features/markers/infrastructure/iconRegistry";
 import { clamp } from "@/shared/geo/math";
 import type { Route, RouteDefaults } from "@/features/routes/domain/types";
@@ -196,14 +196,38 @@ export function posterReducer(
     case "RESET_COLORS":
       return { ...state, customColors: {} };
 
-    case "SELECT_LOCATION":
+    case "SELECT_LOCATION": {
+      const isGmaps = Boolean(action.location.fromGoogleMaps);
+      let nextMarkers = state.markers;
+      let nextShowMarkers = state.form.showMarkers;
+
+      if (isGmaps) {
+        const pinMarker = createMarkerItem({
+          lat: action.location.lat,
+          lon: action.location.lon,
+          defaults: state.markerDefaults,
+          iconId: "pin",
+        });
+        const alreadyExists = state.markers.some(
+          (m) =>
+            Math.abs(m.lat - action.location.lat) < 0.00001 &&
+            Math.abs(m.lon - action.location.lon) < 0.00001,
+        );
+        if (!alreadyExists) {
+          nextMarkers = [...state.markers, pinMarker];
+        }
+        nextShowMarkers = true;
+      }
+
       return {
         ...state,
         selectedLocation: action.location,
         isLocationFocused: false,
         displayNameOverrides: { city: false, country: false },
+        markers: nextMarkers,
         form: {
           ...state.form,
+          showMarkers: nextShowMarkers,
           location: action.location.label,
           latitude: action.location.lat.toFixed(6),
           longitude: action.location.lon.toFixed(6),
@@ -212,6 +236,7 @@ export function posterReducer(
           displayContinent: action.location.continent || "",
         },
       };
+    }
 
     case "SET_USER_LOCATION":
       return {

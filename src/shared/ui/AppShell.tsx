@@ -26,6 +26,7 @@ import {
 } from "@/features/legal/application/legalDoc";
 import { initBackdropThemeFromStorage } from "@/features/theme/application/useBackdropTheme";
 import CinemaWallDock from "@/features/theme/ui/CinemaWallDock";
+import BackdropThemeModal from "@/features/theme/ui/BackdropThemeModal";
 
 const AboutModal = lazy(() => import("@/shared/ui/AboutModal"));
 const LegalModal = lazy(() => import("@/features/legal/ui/LegalModal"));
@@ -39,9 +40,6 @@ const AdminControlModal = lazy(
   () => import("@/features/admin/ui/AdminControlModal"),
 );
 const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
-const BackdropThemeModal = lazy(
-  () => import("@/features/theme/ui/BackdropThemeModal"),
-);
 const AllCitiesModal = lazy(
   () => import("@/features/location/ui/AllCitiesModal"),
 );
@@ -191,6 +189,11 @@ export default function AppShell() {
     setIsCinemaMode((prev) => {
       const next = typeof forceState === "boolean" ? forceState : !prev;
       if (next) {
+        setDesktopLocationRowVisible(false);
+        setIsEditing(false);
+        setDesktopPanelOpen(false);
+        setBackdropOpen(false);
+        setMobileDrawerOpen(false);
         if (
           typeof document !== "undefined" &&
           document.documentElement.requestFullscreen &&
@@ -362,6 +365,7 @@ export default function AppShell() {
   const handleDesktopTabChange = (tab: MobileTab) => {
     setDesktopLocationRowVisible(false);
     setBackdropOpen(false);
+    setIsEditing(false);
     if (tab === desktopTab && desktopPanelOpen) {
       setDesktopPanelOpen(false);
     } else {
@@ -372,9 +376,22 @@ export default function AppShell() {
 
   const handleDesktopLocationToggle = () => {
     setBackdropOpen(false);
+    setIsEditing(false);
     setDesktopTab("location");
     setDesktopPanelOpen(false);
     setDesktopLocationRowVisible((visible) => !visible);
+  };
+
+  const handleEditMapToggle = () => {
+    setIsEditing((prev) => {
+      const next = !prev;
+      if (next) {
+        setDesktopLocationRowVisible(false);
+        setDesktopPanelOpen(false);
+        setBackdropOpen(false);
+      }
+      return next;
+    });
   };
 
   const handleMobileMarkerSizeChange = useCallback(
@@ -468,17 +485,23 @@ export default function AppShell() {
         isLocationVisible={desktopLocationRowVisible}
         onLocationToggle={handleDesktopLocationToggle}
         onTabChange={handleDesktopTabChange}
-        onSettingsClick={() => handleDesktopTabChange("settings")}
+        onSettingsClick={() => {
+          setIsEditing(false);
+          setDesktopLocationRowVisible(false);
+          setBackdropOpen(false);
+          handleDesktopTabChange("settings");
+        }}
         onToggleCinema={() => handleToggleCinema(true)}
         onOpenAllCities={() => setAllCitiesOpen(true)}
         wallOpen={backdropOpen}
         onOpenWall={() => {
           setDesktopLocationRowVisible(false);
+          setIsEditing(false);
           setDesktopPanelOpen(false);
           setBackdropOpen((open) => !open);
         }}
         isEditing={isEditing}
-        onEditMapToggle={() => setIsEditing((prev) => !prev)}
+        onEditMapToggle={handleEditMapToggle}
       />
 
       <div
@@ -634,13 +657,11 @@ export default function AppShell() {
         </Suspense>
       ) : null}
       {backdropOpen ? (
-        <Suspense fallback={null}>
-          <BackdropThemeModal
-            isOpen={backdropOpen}
-            onClose={() => setBackdropOpen(false)}
-            onEnterCinema={() => handleToggleCinema(true)}
-          />
-        </Suspense>
+        <BackdropThemeModal
+          isOpen={backdropOpen}
+          onClose={() => setBackdropOpen(false)}
+          onEnterCinema={() => handleToggleCinema(true)}
+        />
       ) : null}
 
       {allCitiesOpen ? (

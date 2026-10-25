@@ -542,6 +542,7 @@ button.install-prompt-dismiss:hover {
 }
 
 .startup-location-card {
+  position: relative;
   width: min(390px, calc(100% - 24px));
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 22px;
@@ -570,6 +571,31 @@ button.install-prompt-dismiss:hover {
 .startup-location-card.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.startup-location-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #bae6fd;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.15s ease;
+}
+
+.startup-location-close-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #ffffff;
 }
 
 .startup-location-title {

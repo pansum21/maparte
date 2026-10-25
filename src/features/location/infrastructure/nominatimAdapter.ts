@@ -12,6 +12,10 @@ import {
   getLocationSearchCacheKey,
   getReverseGeocodeCacheKey,
 } from "./cacheKeys";
+import {
+  parseCoordinatesOrGoogleMaps,
+  resolveGoogleMapsLocation,
+} from "./googleMapsParser";
 
 // Deduplicate concurrent requests for the same query/coordinates
 const inFlightSearchRequests = new Map<string, Promise<SearchResult[]>>();
@@ -29,6 +33,74 @@ export function createNominatimAdapter(
     const lookup = String(query ?? "").trim();
     if (lookup.length < 2) {
       return [];
+    }
+
+    // 0. Check for Google Maps URLs or raw coordinates
+    const gmapsOrCoords = parseCoordinatesOrGoogleMaps(lookup);
+    if (gmapsOrCoords) {
+      if (gmapsOrCoords.lat != null && gmapsOrCoords.lon != null) {
+        try {
+          const rev = await reverseGeocode(gmapsOrCoords.lat, gmapsOrCoords.lon);
+          const customLabel = gmapsOrCoords.placeName
+            ? `${gmapsOrCoords.placeName}, ${rev.city || rev.country}`
+            : rev.label;
+          const customCity = gmapsOrCoords.placeName || rev.city;
+          const result: SearchResult = {
+            ...rev,
+            id: `gmaps:${gmapsOrCoords.lat.toFixed(6)},${gmapsOrCoords.lon.toFixed(6)}`,
+            label: customLabel,
+            city: customCity,
+            lat: gmapsOrCoords.lat,
+            lon: gmapsOrCoords.lon,
+            fromGoogleMaps: true,
+          };
+          return [result];
+        } catch {
+          const fallbackLabel = gmapsOrCoords.placeName
+            ? `${gmapsOrCoords.placeName} (${gmapsOrCoords.lat.toFixed(6)}, ${gmapsOrCoords.lon.toFixed(6)})`
+            : `${gmapsOrCoords.lat.toFixed(6)}, ${gmapsOrCoords.lon.toFixed(6)}`;
+          const result: SearchResult = {
+            id: `gmaps:${gmapsOrCoords.lat.toFixed(6)},${gmapsOrCoords.lon.toFixed(6)}`,
+            label: fallbackLabel,
+            city: gmapsOrCoords.placeName || "",
+            country: "",
+            lat: gmapsOrCoords.lat,
+            lon: gmapsOrCoords.lon,
+            fromGoogleMaps: true,
+          };
+          return [result];
+        }
+      }
+
+      if (gmapsOrCoords.shortUrl) {
+        try {
+          const resolved = await resolveGoogleMapsLocation(lookup, signal);
+          if (resolved && resolved.lat != null && resolved.lon != null) {
+            const rev = await reverseGeocode(resolved.lat, resolved.lon);
+            const customLabel = resolved.placeName
+              ? `${resolved.placeName}, ${rev.city || rev.country}`
+              : rev.label;
+            const customCity = resolved.placeName || rev.city;
+            const result: SearchResult = {
+              ...rev,
+              id: `gmaps:${resolved.lat.toFixed(6)},${resolved.lon.toFixed(6)}`,
+              label: customLabel,
+              city: customCity,
+              lat: resolved.lat,
+              lon: resolved.lon,
+              fromGoogleMaps: true,
+            };
+            return [result];
+          }
+        } catch {
+          // Fall through if resolution fails
+        }
+
+        if (gmapsOrCoords.placeName) {
+          const fallbackResults = await searchLocations(gmapsOrCoords.placeName, limit, signal);
+          return fallbackResults.map((r, i) => (i === 0 ? { ...r, fromGoogleMaps: true } : r));
+        }
+      }
     }
 
     const normalizedLimit = Math.max(1, Math.min(Math.round(limit), 10));
@@ -66,6 +138,35 @@ export function createNominatimAdapter(
     const lookup = String(query ?? "").trim();
     if (!lookup) {
       throw new Error("Location is required.");
+    }
+
+    // Check for Google Maps or coordinates
+    const gmapsOrCoords = parseCoordinatesOrGoogleMaps(lookup);
+    if (gmapsOrCoords && gmapsOrCoords.lat != null && gmapsOrCoords.lon != null) {
+      try {
+        const rev = await reverseGeocode(gmapsOrCoords.lat, gmapsOrCoords.lon);
+        return {
+          ...rev,
+          id: `gmaps:${gmapsOrCoords.lat.toFixed(6)},${gmapsOrCoords.lon.toFixed(6)}`,
+          label: gmapsOrCoords.placeName
+            ? `${gmapsOrCoords.placeName}, ${rev.city || rev.country}`
+            : rev.label,
+          city: gmapsOrCoords.placeName || rev.city,
+          lat: gmapsOrCoords.lat,
+          lon: gmapsOrCoords.lon,
+          fromGoogleMaps: true,
+        };
+      } catch {
+        return {
+          id: `gmaps:${gmapsOrCoords.lat.toFixed(6)},${gmapsOrCoords.lon.toFixed(6)}`,
+          label: `${gmapsOrCoords.lat.toFixed(6)}, ${gmapsOrCoords.lon.toFixed(6)}`,
+          city: gmapsOrCoords.placeName || "",
+          country: "",
+          lat: gmapsOrCoords.lat,
+          lon: gmapsOrCoords.lon,
+          fromGoogleMaps: true,
+        };
+      }
     }
 
     const cacheKey = getGeocodeCacheKey(lookup);

@@ -11,7 +11,7 @@ const CITY_DATABASE = {
     country: "United States", continent: "North America", lat: 40.7128, lon: -74.0060, distance: 15000,
     tagline: "The Iconic Manhattan Grid & Hudson River Estuary",
     landmarks: ["Manhattan Grid", "Central Park", "Brooklyn Bridge", "Hudson River", "Times Square", "SoHo"],
-    description: "Transform New York City into museum-quality wall art. Featuring Manhattan's legendary 1811 Commissioners' street grid, the rectangular oasis of Central Park, the Brooklyn waterfront, and Staten Island ferry routes in true 500 DPI Ultra-HD."
+    description: "Transform New York City into museum-quality wall art. Featuring Manhattan's legendary 1811 Commissioners' street grid, the rectangular oasis of Central Park, the Brooklyn waterfront, and Staten Island ferry routes in ultra-high resolution (up to 500 PPI Ultra-HD)."
   },
   "Paris": {
     country: "France", continent: "Europe", lat: 48.8566, lon: 2.3522, distance: 12000,
@@ -35,13 +35,13 @@ const CITY_DATABASE = {
     country: "Italy", continent: "Europe", lat: 41.9028, lon: 12.4964, distance: 11000,
     tagline: "The Eternal City of Seven Hills & Tiber River Bridges",
     landmarks: ["Colosseum", "Tiber River", "Vatican City", "Trastevere", "Pantheon", "Villa Borghese"],
-    description: "Celebrate your romantic trip to Rome, Italy with a custom framed map poster. Trace the meandering curves of the River Tiber, ancient cobblestone alleys of Trastevere, and classical imperial plazas in 500 DPI."
+    description: "Celebrate your romantic trip to Rome, Italy with a custom framed map poster. Trace the meandering curves of the River Tiber, ancient cobblestone alleys of Trastevere, and classical imperial plazas in ultra-high resolution (up to 500 PPI)."
   },
   "Mumbai": {
     country: "India", continent: "Asia", lat: 18.9220, lon: 72.8347, distance: 14000,
     tagline: "The City of Dreams & Coastal Marine Drive",
     landmarks: ["Marine Drive", "Gateway of India", "Bandra-Worli Sea Link", "Colaba", "Juhu Beach", "CSMT Terminus"],
-    description: "Design museum-grade custom map posters of Mumbai (Bombay), India. Featuring the iconic crescent curve of Marine Drive (Queen's Necklace), the Bandra-Worli Sea Link over the Arabian Sea, and the colonial heritage grid of South Bombay in true 500 DPI Ultra-HD."
+    description: "Design museum-grade custom map posters of Mumbai (Bombay), India. Featuring the iconic crescent curve of Marine Drive (Queen's Necklace), the Bandra-Worli Sea Link over the Arabian Sea, and the colonial heritage grid of South Bombay in ultra-high resolution (up to 500 PPI Ultra-HD)."
   },
   "Delhi": {
     country: "India", continent: "Asia", lat: 28.6139, lon: 77.2090, distance: 16000,
@@ -77,7 +77,7 @@ const CITY_DATABASE = {
     country: "United States", continent: "North America", lat: 41.8781, lon: -87.6298, distance: 14000,
     tagline: "The Windy City's Lakefront Horizon & Chicago River Grid",
     landmarks: ["Lake Michigan Coastline", "Chicago River", "The Loop", "Millennium Park", "Lincoln Park", "Navy Pier"],
-    description: "Frame Chicago, Illinois in 500 DPI Ultra-HD. Trace the expansive blue waterfront of Lake Michigan, the engineering marvel of the Chicago River, and the iconic orthogonal Loop street grid."
+    description: "Frame Chicago, Illinois in ultra-high resolution (up to 500 PPI Ultra-HD). Trace the expansive blue waterfront of Lake Michigan, the engineering marvel of the Chicago River, and the iconic orthogonal Loop street grid."
   },
   "San Francisco": {
     country: "United States", continent: "North America", lat: 37.7749, lon: -122.4194, distance: 13000,
@@ -305,7 +305,7 @@ const CITY_DATABASE = {
     country: "Belgium", continent: "Europe", lat: 50.8503, lon: 4.3517, distance: 10000,
     tagline: "Capital of Europe with Historic Pentagon Street Ring",
     landmarks: ["Grand Place", "Pentagon Inner Ring", "Royal Palace", "Jubilee Park (Cinquantenaire)", "European Quarter"],
-    description: "Showcase Brussels (Bruxelles), Belgium in 500 DPI cartography. Highlighting the historic pentagonal city center, royal boulevards, and green suburban parks."
+    description: "Showcase Brussels (Bruxelles), Belgium in high-resolution (up to 500 PPI) cartography. Highlighting the historic pentagonal city center, royal boulevards, and green suburban parks."
   },
   "Munich": {
     country: "Germany", continent: "Europe", lat: 48.1351, lon: 11.5820, distance: 12000,
@@ -389,7 +389,7 @@ const CITY_DATABASE = {
     country: "Malaysia", continent: "Asia", lat: 3.1390, lon: 101.6869, distance: 14000,
     tagline: "Tropical Metropolis of Petronas Towers & River Confluence",
     landmarks: ["Petronas Twin Towers", "Klang River", "Gombak River", "KLCC Park", "Bukit Bintang", "Batu Caves"],
-    description: "Showcase Kuala Lumpur, Malaysia in rich 500 DPI. Highlighting the historic muddy confluence of the Klang and Gombak rivers, lush city parks, and towering twin spires."
+    description: "Showcase Kuala Lumpur, Malaysia in rich high-resolution (up to 500 PPI). Highlighting the historic muddy confluence of the Klang and Gombak rivers, lush city parks, and towering twin spires."
   },
   "Manila": {
     country: "Philippines", continent: "Asia", lat: 14.5995, lon: 120.9842, distance: 14000,

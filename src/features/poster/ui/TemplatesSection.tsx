@@ -31,9 +31,9 @@ export default function TemplatesSection({
       const defaultCity =
         state.selectedLocation?.city ||
         state.form.location.split(",")[0]?.trim() ||
-        "Hanover";
+        "Dehradun";
       const defaultCountry =
-        state.selectedLocation?.country || "Germany";
+        state.selectedLocation?.country || "India";
 
       dispatch({
         type: "SET_FORM_FIELDS",

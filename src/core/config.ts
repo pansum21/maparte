@@ -33,7 +33,7 @@ export const DEFAULT_CONTAINER_PX = 600;
 /** Duration (ms) for flyTo animation when selecting a location. */
 export const FLY_TO_DURATION_MS = 1800;
 
-/** Hanover, Germany — default fallback when geolocation is denied. */
+/** Dehradun, India — default fallback when geolocation is denied. */
 export const DEFAULT_LAT = 30.3165;
 export const DEFAULT_LON = 78.0322;
 export const DEFAULT_CITY = "Dehradun";

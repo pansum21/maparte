@@ -15,7 +15,7 @@ function escapeAttr(str) {
 }
 
 export function transformHtmlForCity(html, city) {
-  const cityTitle = `${city.city} Custom Map Poster &amp; Wall Art | 500 DPI Print — MAPARTE`;
+  const cityTitle = `${city.city} Custom Map Poster &amp; Wall Art | Ultra-HD Map Art — MAPARTE`;
   const cityDesc = escapeAttr(city.description);
   const cityMetaDesc = escapeAttr(city.metaDescription || city.description);
   const cityUrl = `https://maparte.vercel.app/cities/${city.slug}`;
@@ -139,11 +139,11 @@ export function transformHtmlForCity(html, city) {
             ${city.description}
           </p>
           <div style="display: inline-flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
-            <a href="/cities/${city.slug}" style="background: linear-gradient(135deg, #dfba73, #c49d56); color: #0b1722; font-weight: 700; padding: 13px 28px; border-radius: 8px; text-decoration: none; font-size: 1rem; box-shadow: 0 4px 14px rgba(223, 186, 115, 0.35);">🎨 Customize ${escapeAttr(city.city)} Map Poster Live in 500 DPI</a>
+            <a href="/cities/${city.slug}" style="background: linear-gradient(135deg, #dfba73, #c49d56); color: #0b1722; font-weight: 700; padding: 13px 28px; border-radius: 8px; text-decoration: none; font-size: 1rem; box-shadow: 0 4px 14px rgba(223, 186, 115, 0.35);">🎨 Customize ${escapeAttr(city.city)} Map Poster Live in Ultra-HD</a>
             <a href="#popular-cities" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; padding: 13px 26px; border-radius: 8px; text-decoration: none; font-size: 0.95rem;">Browse Other Cities</a>
           </div>
           <div style="margin-top: 24px; font-size: 0.88rem; color: #94a3b8;">
-            Geographic Coordinates: <strong>${Number(city.lat).toFixed(4)}° N, ${Number(city.lon).toFixed(4)}° E</strong> • Formats: <strong>500 DPI PNG, Vector PDF &amp; Layered SVG</strong>
+            Geographic Coordinates: <strong>${Number(city.lat).toFixed(4)}° N, ${Number(city.lon).toFixed(4)}° E</strong> • Formats: <strong>Ultra-HD PNG, Vector PDF &amp; Layered SVG</strong>
           </div>
           <div style="margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
             ${landmarksHtml}

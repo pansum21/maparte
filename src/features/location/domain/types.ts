@@ -7,6 +7,7 @@ export interface Location {
   continent?: string;
   lat: number;
   lon: number;
+  fromGoogleMaps?: boolean;
 }
 
 export interface SearchResult extends Location {}

@@ -15,7 +15,7 @@ interface LocationSectionProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onLocationFocus: () => void;
   onLocationBlur: () => void;
-  searchNow: (query: string) => Promise<void>;
+  searchNow: (query: string) => Promise<SearchResult[] | void>;
   isLocationFocused: boolean;
   locationSuggestions: SearchResult[];
   isLocationSearching: boolean;
@@ -68,7 +68,7 @@ export default function LocationSection({
                 onChange={onChange}
                 onFocus={onLocationFocus}
                 onBlur={onLocationBlur}
-                onKeyDown={(e) => { if (e.key === "Enter") void searchNow(e.currentTarget.value); }}
+                onKeyDown={async (e) => { if (e.key === "Enter") { const results = await searchNow(e.currentTarget.value); if (Array.isArray(results) && results.length > 0 && results[0].fromGoogleMaps) { onLocationSelect(results[0]); } } }}
                 placeholder={PLACEHOLDER_LOCATION_SEARCH}
                 autoComplete="off"
               />

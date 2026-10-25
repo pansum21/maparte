@@ -46,21 +46,7 @@
   border-color: rgba(125, 211, 252, 0.58) !important;
 }
 
-.app-shell.is-cinema-mode .cinema-layout-popover {
-  position: relative !important;
-  z-index: 10000002 !important;
-  width: min(420px, calc(100vw - 32px));
-  max-height: none;
-  overflow: visible !important;
-  padding: 8px;
-  pointer-events: auto !important;
-  background: rgba(11, 26, 38, 0.92) !important;
-  border-color: rgba(125, 211, 252, 0.24) !important;
-  color: #e2e8f0 !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.46) !important;
-  backdrop-filter: blur(20px) saturate(1.25);
-  -webkit-backdrop-filter: blur(20px) saturate(1.25);
-}
+
 
 .app-shell.is-cinema-mode .cinema-wall-upload {
   display: grid;
@@ -235,9 +221,10 @@
   }
 
   .app-shell.is-cinema-mode .cinema-layout-popover {
-    width: min(420px, calc(100vw - 24px));
-    max-height: none;
-    padding: 7px;
+    width: min(420px, calc(100vw - 24px)) !important;
+    max-height: calc(100svh - 150px) !important;
+    overflow-y: auto !important;
+    padding: 10px !important;
   }
 
   .app-shell.is-cinema-mode .cinema-wall-upload {
@@ -276,7 +263,9 @@
 
 @media (max-width: 360px) {
   .app-shell.is-cinema-mode .cinema-layout-popover {
-    width: calc(100vw - 24px);
+    width: calc(100vw - 24px) !important;
+    max-height: calc(100svh - 150px) !important;
+    overflow-y: auto !important;
   }
 
   .app-shell.is-cinema-mode .cinema-layout-options button {
@@ -391,4 +380,330 @@
     min-height: 32px;
     margin: 4px 2px 0;
   }
+}
+
+
+/* Cinema Dock responsive rules */
+.app-shell.is-cinema-mode .cinema-dock-container {
+  position: fixed !important;
+  left: max(16px, env(safe-area-inset-left, 0px)) !important;
+  bottom: max(16px, env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 10000005 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  pointer-events: auto !important;
+}
+
+@media (max-width: 600px) {
+  .app-shell.is-cinema-mode .cinema-dock-container {
+    left: max(8px, env(safe-area-inset-left, 0px)) !important;
+    right: max(8px, env(safe-area-inset-right, 0px)) !important;
+    bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
+    align-items: center !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-floating-dock {
+    max-width: 100% !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    padding: 4px 6px !important;
+    gap: 4px !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-dock-btn {
+    min-height: 32px !important;
+    padding: 4px 8px !important;
+    font-size: 0.72rem !important;
+  }
+}
+
+
+/* ── Clean Blank Background & Higher Priority Popover Typography ── */
+.app-shell.is-cinema-mode {
+  background-color: #0b1522 !important;
+  background-image: none !important;
+}
+
+.app-shell.is-cinema-mode .poster-viewport {
+  background-color: #0b1522 !important;
+  background-image: none !important;
+}
+
+.app-shell.is-cinema-mode .poster-viewport.has-user-wall-photo {
+  background-color: #0b1522 !important;
+  background-image: var(--cinema-wall-photo) !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-group h3 {
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: #7dd3fc !important;
+  margin: 12px 0 6px !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-options {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-options button {
+  min-height: 48px !important;
+  padding: 6px 10px !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-option-name {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #f8fafc !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-option-size {
+  font-size: 11.5px !important;
+  font-weight: 400 !important;
+  color: #94a3b8 !important;
+  margin-top: 3px !important;
+}
+
+.app-shell.is-cinema-mode .cinema-placement-controls label {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: #e2e8f0 !important;
+}
+
+.app-shell.is-cinema-mode .cinema-placement-controls output {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #38bdf8 !important;
+}
+
+
+.app-shell.is-cinema-mode .cinema-floating-dock-wrap,
+.cinema-floating-dock-wrap {
+  position: fixed !important;
+  left: max(20px, env(safe-area-inset-left, 0px)) !important;
+  bottom: max(16px, env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 10000010 !important;
+  pointer-events: auto !important;
+}
+
+.app-shell.is-cinema-mode .cinema-floating-dock,
+.cinema-floating-dock {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: fit-content !important;
+  max-width: calc(100vw - 32px) !important;
+  gap: 5px !important;
+  padding: 5px 8px !important;
+  box-sizing: border-box !important;
+}
+
+/* Dock buttons shifted snugly to the left side with safe gap (NO overlap) */
+.app-shell.is-cinema-mode .cinema-dock-btn,
+.cinema-dock-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  min-height: 36px !important;
+  padding: 5px 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 11px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #f1f5f9 !important;
+  font-family: inherit !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  white-space: nowrap !important;
+  touch-action: manipulation !important;
+  flex-shrink: 0 !important;
+}
+
+.app-shell.is-cinema-mode .cinema-dock-upload-btn,
+.cinema-dock-upload-btn {
+  padding: 5px 12px !important;
+}
+
+.app-shell.is-cinema-mode .cinema-dock-divider,
+.cinema-dock-divider {
+  width: 1px !important;
+  height: 20px !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  margin: 0 4px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Both Panels (Adjust & Layout) have the EXACT same bottom gap to the dock (8px) */
+.app-shell.is-cinema-mode .cinema-panel-popover,
+.app-shell.is-cinema-mode .cinema-layout-popover,
+.app-shell.is-cinema-mode .cinema-placement-popover,
+.cinema-panel-popover,
+.cinema-layout-popover,
+.cinema-placement-popover {
+  position: fixed !important;
+  left: max(20px, env(safe-area-inset-left, 0px)) !important;
+  top: auto !important;
+  bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 46px + 8px) !important;
+  width: min(420px, calc(100vw - 32px)) !important;
+  height: auto !important;
+  max-height: calc(100svh - max(16px, env(safe-area-inset-bottom, 0px)) - 46px - 8px - 40px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+  border-radius: 20px !important;
+  padding: 14px 16px 10px 16px !important;
+  pointer-events: auto !important;
+  background: rgba(10, 22, 34, 0.75) !important;
+  border: 1px solid rgba(125, 211, 252, 0.32) !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75) !important;
+  backdrop-filter: blur(26px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(1.6) !important;
+  z-index: 10000020 !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(56, 189, 248, 0.35) transparent !important;
+}
+
+.app-shell.is-cinema-mode .cinema-panel-popover::-webkit-scrollbar,
+.app-shell.is-cinema-mode .cinema-layout-popover::-webkit-scrollbar,
+.app-shell.is-cinema-mode .cinema-placement-popover::-webkit-scrollbar,
+.cinema-panel-popover::-webkit-scrollbar,
+.cinema-layout-popover::-webkit-scrollbar,
+.cinema-placement-popover::-webkit-scrollbar {
+  width: 5px !important;
+}
+
+.app-shell.is-cinema-mode .cinema-panel-popover::-webkit-scrollbar-track,
+.app-shell.is-cinema-mode .cinema-layout-popover::-webkit-scrollbar-track,
+.app-shell.is-cinema-mode .cinema-placement-popover::-webkit-scrollbar-track,
+.cinema-panel-popover::-webkit-scrollbar-track,
+.cinema-layout-popover::-webkit-scrollbar-track,
+.cinema-placement-popover::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.app-shell.is-cinema-mode .cinema-panel-popover::-webkit-scrollbar-thumb,
+.app-shell.is-cinema-mode .cinema-layout-popover::-webkit-scrollbar-thumb,
+.app-shell.is-cinema-mode .cinema-placement-popover::-webkit-scrollbar-thumb,
+.cinema-panel-popover::-webkit-scrollbar-thumb,
+.cinema-layout-popover::-webkit-scrollbar-thumb,
+.cinema-placement-popover::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.35) !important;
+  border-radius: 999px !important;
+}
+
+/* Heading */
+.app-shell.is-cinema-mode .cinema-layout-popover .cinema-panel-popover__heading,
+.cinema-layout-popover .cinema-panel-popover__heading {
+  margin-bottom: 8px !important;
+  padding-bottom: 6px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  justify-content: flex-start !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-popover .cinema-panel-popover__title,
+.cinema-layout-popover .cinema-panel-popover__title {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-group h3 {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  color: #7dd3fc !important;
+  margin: 6px 0 4px !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-options {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-options button {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-height: 44px !important;
+  padding: 6px 6px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  border-radius: 9px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #e2e8f0 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-options button:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(125, 211, 252, 0.45) !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-options button.is-selected {
+  background: rgba(14, 165, 233, 0.22) !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.35) !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-option-name {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  color: #f8fafc !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-option-size {
+  font-size: 9.5px !important;
+  font-weight: 400 !important;
+  color: #94a3b8 !important;
+  margin-top: 2px !important;
+  line-height: 1.1 !important;
+}
+
+/* Actions: Tightened so Done button sits close to the bottom border with NO dead space */
+.app-shell.is-cinema-mode .cinema-layout-popover .cinema-panel-popover__actions,
+.cinema-layout-popover .cinema-panel-popover__actions {
+  margin-top: 8px !important;
+  padding-top: 6px !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.app-shell.is-cinema-mode .cinema-layout-popover .cinema-btn-primary {
+  padding: 6px 18px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: 9px !important;
+  margin: 0 !important;
 }

@@ -22,13 +22,13 @@ useful output is a poster file produced through the interface.
 
 ## Main
 
-- [MAPARTE](https://maparte.app): The app itself — create and export a map poster
-- [Source code](https://github.com/yousifamanuel/maparte): AGPL-3.0 licensed, contributions welcome
+- [MAPARTE](https://maparte.vercel.app): The app itself — create and export a map poster
+- [Source code](https://github.com/pansum21/maparte): AGPL-3.0 licensed, contributions welcome
 
 ## Legal
 
-- [Privacy Policy](https://maparte.app/privacy): What is collected, analytics and consent
-- [Imprint](https://maparte.app/imprint): Operator and contact details
+- [Privacy Policy](https://maparte.vercel.app/privacy): What is collected, analytics and consent
+- [Imprint](https://maparte.vercel.app/imprint): Operator and contact details
 
 ## Optional
 

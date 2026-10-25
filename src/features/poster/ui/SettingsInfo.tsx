@@ -5,6 +5,7 @@ interface SettingsInfoProps {
   posterSize: string;
   markers: string;
   coordinates: string;
+  resolution?: string;
 }
 
 export default function SettingsInfo({
@@ -14,12 +15,14 @@ export default function SettingsInfo({
   posterSize,
   markers,
   coordinates,
+  resolution,
 }: SettingsInfoProps) {
   const rows = [
     { label: "Location", value: location },
     { label: "Theme", value: theme },
     { label: "Layout", value: layout },
     { label: "Poster Size", value: posterSize },
+    ...(resolution ? [{ label: "Resolution", value: resolution }] : []),
     { label: "Markers", value: markers },
     { label: "Coordinates", value: coordinates },
   ];

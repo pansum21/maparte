@@ -50,5 +50,6 @@ export function resolveCanvasSize(
     requestedDpi: dpi,
     effectiveDpiX: width / safeWidthInches,
     effectiveDpiY: height / safeHeightInches,
+    effectiveDpi: Math.floor(Math.min(width / safeWidthInches, height / safeHeightInches)),
   };
 }

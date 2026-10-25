@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
@@ -31,7 +31,7 @@ import {
   MyLocationIcon,
   WallIcon,
   ScissorsIcon,
-  LockIcon,
+  RotateIcon,
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
 
@@ -82,15 +82,116 @@ export default function DesktopNavBar({
   const { recent, removeRecent, clearRecent } = useRecentLocations();
 
   const [showCoords, setShowCoords] = useState(false);
+  const [bearing, setBearing] = useState(0);
+  const searchedLocationRef = useRef<{ lat: number; lon: number } | null>(null);
+
+  useEffect(() => {
+    if (
+      state.selectedLocation &&
+      typeof state.selectedLocation.lat === "number" &&
+      typeof state.selectedLocation.lon === "number" &&
+      Number.isFinite(state.selectedLocation.lat) &&
+      Number.isFinite(state.selectedLocation.lon)
+    ) {
+      searchedLocationRef.current = {
+        lat: state.selectedLocation.lat,
+        lon: state.selectedLocation.lon,
+      };
+    } else if (!searchedLocationRef.current) {
+      const lat = Number.parseFloat(state.form.latitude);
+      const lon = Number.parseFloat(state.form.longitude);
+      if (Number.isFinite(lat) && Number.isFinite(lon)) {
+        searchedLocationRef.current = { lat, lon };
+      }
+    }
+  }, [state.selectedLocation, state.form.latitude, state.form.longitude]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const syncBearing = () => {
+      const b = map.getBearing();
+      const norm = Math.round(((b % 360) + 360) % 360);
+      setBearing((prev) => (prev === 360 && norm === 0 ? 360 : norm));
+    };
+
+    syncBearing();
+    map.on("rotate", syncBearing);
+    return () => {
+      map.off("rotate", syncBearing);
+    };
+  }, [mapRef, isEditing]);
+
+  const handleBearingChange = (newBearing: number) => {
+    const map = mapRef.current;
+    const clamped = Math.max(0, Math.min(360, newBearing));
+    setBearing(clamped);
+    if (!map) return;
+    map.setBearing(clamped === 360 ? 0 : clamped);
+  };
+
+  const handleSnap0 = () => {
+    const map = mapRef.current;
+    setBearing(0);
+    if (map) {
+      map.setBearing(0);
+    }
+  };
+
+  const handleSnap360 = () => {
+    const map = mapRef.current;
+    setBearing(360);
+    if (map) {
+      map.setBearing(0);
+    }
+  };
+
+  const handleResetRotation = () => {
+    const map = mapRef.current;
+    setBearing(0);
+    if (map) {
+      map.rotateTo(0, { duration: 300 });
+    }
+  };
+
+  const handleZoomIn = () => {
+    const map = mapRef.current;
+    if (map) map.zoomTo(map.getZoom() + 0.5, { duration: 250 });
+  };
+
+  const handleZoomOut = () => {
+    const map = mapRef.current;
+    if (map) map.zoomTo(map.getZoom() - 0.5, { duration: 250 });
+  };
+
+  const handleRecenter = () => {
+    const target = searchedLocationRef.current ?? {
+      lat: Number.parseFloat(state.form.latitude),
+      lon: Number.parseFloat(state.form.longitude),
+    };
+    if (Number.isFinite(target.lat) && Number.isFinite(target.lon)) {
+      flyToLocation(target.lat, target.lon, false);
+      dispatch({
+        type: "SET_FORM_FIELDS",
+        fields: {
+          latitude: target.lat.toFixed(6),
+          longitude: target.lon.toFixed(6),
+        },
+      });
+    }
+  };
 
   const hasLocationValue = state.form.location.trim().length > 0;
 
   const onLocationSelect = (location: SearchResult) => {
+    searchedLocationRef.current = { lat: location.lat, lon: location.lon };
     handleLocationSelectBase(location);
     flyToLocation(location.lat, location.lon);
   };
 
   const onPopularCityClick = (city: PopularCity) => {
+    searchedLocationRef.current = { lat: city.lat, lon: city.lon };
     const fullLabel = `${city.name}, ${city.country}`;
     const searchResult: SearchResult = {
       id: `popular:${city.id}`,
@@ -150,8 +251,8 @@ export default function DesktopNavBar({
                 onChange={handleChange}
                 onFocus={() => setLocationFocused(true)}
                 onBlur={() => setLocationFocused(false)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") void searchNow(e.currentTarget.value);
+                onKeyDown={async (e) => {
+                  if (e.key === "Enter") { const results = await searchNow(e.currentTarget.value); if (results && results.length > 0 && results[0].fromGoogleMaps) { onLocationSelect(results[0]); } }
                 }}
                 placeholder={PLACEHOLDER_LOCATION_SEARCH}
                 autoComplete="off"
@@ -265,13 +366,103 @@ export default function DesktopNavBar({
           type="button"
           className={`desktop-nav-tab${isEditing ? " is-active" : ""}`}
           onClick={onEditMapToggle}
-          title={isEditing ? "Lock map editing" : "Unlock map editing"}
-          aria-label={isEditing ? "Lock Map" : "Edit Map"}
+          title={isEditing ? "Finish editing map & lock position" : "Unlock map editing & rotation"}
+          aria-label="Edit Map"
           aria-pressed={isEditing}
         >
-          {isEditing ? <LockIcon className="desktop-nav-icon" /> : <ScissorsIcon className="desktop-nav-icon" />}
-          <span className="desktop-nav-label">{isEditing ? "Lock Map" : "Edit Map"}</span>
+          <ScissorsIcon className="desktop-nav-icon" />
+          <span className="desktop-nav-label">Edit Map</span>
         </button>
+
+        {isEditing ? (
+          <div
+            className="desktop-nav-companion desktop-companion-edit-map"
+            role="toolbar"
+            aria-label="Map editing and rotation controls"
+          >
+            <div className="edit-map-companion-panel">
+              <div className="edit-map-top-row">
+                <span className="edit-map-title">ROTATION</span>
+
+                <div className="edit-map-top-actions">
+                  <button
+                    type="button"
+                    className="edit-map-action-pill edit-map-action-pill--reset"
+                    onClick={handleResetRotation}
+                    title="Reset rotation to North (0°)"
+                  >
+                    <RotateIcon className="edit-map-action-icon" />
+                    <span>Reset 0°</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="edit-map-action-pill edit-map-action-pill--recenter"
+                    onClick={handleRecenter}
+                    title="Recenter map to city coordinates"
+                  >
+                    <span className="edit-map-action-glyph">⛶</span>
+                    <span>Recenter</span>
+                  </button>
+
+                  <div className="edit-map-zoom-group" aria-label="Map zoom controls">
+                    <button
+                      type="button"
+                      className="edit-map-zoom-btn"
+                      onClick={handleZoomIn}
+                      title="Zoom in"
+                      aria-label="Zoom in"
+                    >
+                      ➕
+                    </button>
+                    <button
+                      type="button"
+                      className="edit-map-zoom-btn"
+                      onClick={handleZoomOut}
+                      title="Zoom out"
+                      aria-label="Zoom out"
+                    >
+                      ➖
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="edit-map-slider-row">
+                <button
+                  type="button"
+                  className="edit-map-angle-box edit-map-angle-box--left"
+                  onClick={handleSnap0}
+                  title="Click to reset rotation to 0°"
+                  aria-label={`Current map rotation: ${bearing} degrees (click to reset to 0)`}
+                >
+                  {bearing}°
+                </button>
+
+                <input
+                  type="range"
+                  className="edit-map-rotation-slider"
+                  min="0"
+                  max="360"
+                  step="1"
+                  value={bearing}
+                  onChange={(e) => handleBearingChange(Number(e.target.value))}
+                  aria-label="Map rotation slider"
+                />
+
+                <button
+                  type="button"
+                  className="edit-map-angle-box edit-map-angle-box--right"
+                  onClick={handleSnap360}
+                  title="Click to snap to 360°"
+                  aria-label={`Remaining rotation angle: ${360 - bearing} degrees (click to snap to 360)`}
+                >
+                  {360 - bearing}°
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {/* ── 3. THEME ROW (Theme + Wall Color) ── */}

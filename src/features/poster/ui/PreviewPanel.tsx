@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -38,6 +39,7 @@ import {
   getLayoutOption,
 } from "@/features/layout/infrastructure/layoutRepository";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
+import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import {
   NeatlineArtwork,
   getPosterBorderMetrics,
@@ -50,8 +52,7 @@ const LOCKED_HINT = "Map is locked to prevent unintended movement.";
 const UNLOCK_HINT = `${LOCKED_HINT}\nClick to unlock map editing.`;
 const COUNTRY_VIEW_ZOOM_LEVEL = 10;
 const CONTINENT_VIEW_ZOOM_LEVEL = 6;
-const DEFAULT_LOCATION_LABEL =
-  "Hanover, Region Hannover, Lower Saxony, Germany";
+const DEFAULT_LOCATION_LABEL = "Dehradun, Uttarakhand, India";
 
 interface PreviewPanelProps {
   isCinemaMode?: boolean;
@@ -99,7 +100,7 @@ export default function PreviewPanel({
   const setIsEditing = controlledSetIsEditing !== undefined ? controlledSetIsEditing : setInternalIsEditing;
 
   const [neatlineSelection, setNeatlineSelection] = useState<NeatlineSelection>(readNeatlineSelection);
-  const borderMetrics = getPosterBorderMetrics(form.width, form.height, neatlineSelection.frameId !== "none");
+  const borderMetrics = useMemo(() => getPosterBorderMetrics(form.width, form.height, neatlineSelection.mapGapCm, neatlineSelection.lineId, neatlineSelection.thicknesses), [form.width, form.height, neatlineSelection.mapGapCm, neatlineSelection.lineId, neatlineSelection.thicknesses]);
 
   useEffect(() => {
     const handleNeatlineChange = (event: Event) => {
@@ -209,6 +210,8 @@ export default function PreviewPanel({
   const layoutOption =
     getLayoutOption(form.layout) ?? createCustomLayoutOption(widthCm, heightCm);
   const posterSizeLabel = formatLayoutDimensions(layoutOption);
+  const previewCanvasSize = resolveCanvasSize(widthCm / 2.54, heightCm / 2.54, 500);
+  const resolutionInfoLabel = `${previewCanvasSize.width} × ${previewCanvasSize.height} px (${previewCanvasSize.effectiveDpi} PPI)`;
   const layoutLabel = `${layoutOption.name} (${formatLayoutDimensions(layoutOption)})`;
   const infoLocationLabel =
     [form.displayCity, form.displayCountry].filter(Boolean).join(", ") ||
@@ -222,14 +225,14 @@ export default function PreviewPanel({
   const isCountryContinentView =
     mapZoom >= CONTINENT_VIEW_ZOOM_LEVEL && mapZoom < COUNTRY_VIEW_ZOOM_LEVEL;
   const cityLabel = isCityCountryView
-    ? form.displayCity || form.location || "Hanover"
+    ? form.displayCity || form.location || "Dehradun"
     : isCountryContinentView
-      ? form.displayCountry || "Germany"
+      ? form.displayCountry || "India"
       : form.displayContinent || "Earth";
   const countryLabel = isCityCountryView
-    ? form.displayCountry || "Germany"
+    ? form.displayCountry || "India"
     : isCountryContinentView
-      ? form.displayContinent || "Europe"
+      ? form.displayContinent || "Asia"
       : "Earth";
 
   const handleStartEditing = useCallback(() => {
@@ -359,16 +362,20 @@ export default function PreviewPanel({
         className={`poster-viewport${isCinemaMode ? " is-wall-mockup" : ""}${wallPhoto && isCinemaMode ? " has-user-wall-photo" : ""}`}
         style={wallPhoto && isCinemaMode ? { "--cinema-wall-photo": `url("${wallPhoto}")` } as CSSProperties : undefined}
       >
-        {/* Desktop ghost layer: canvas clone of the main map at reduced opacity */}
-        <div className="poster-ghost-layer" aria-hidden="true">
-          <canvas
-            ref={ghostCanvasRef}
-            className="poster-ghost-canvas"
-          />
-        </div>
-        <div className="desktop-layout-label" aria-hidden="true">
-          {layoutLabel}
-        </div>
+        {/* Desktop ghost layer: canvas clone of the main map at reduced opacity (hidden in cinema mode) */}
+        {!isCinemaMode ? (
+          <>
+            <div className="poster-ghost-layer" aria-hidden="true">
+              <canvas
+                ref={ghostCanvasRef}
+                className="poster-ghost-canvas"
+              />
+            </div>
+            <div className="desktop-layout-label" aria-hidden="true">
+              {layoutLabel}
+            </div>
+          </>
+        ) : null}
         <div
           ref={frameRef}
           className="poster-frame"
@@ -417,7 +424,7 @@ export default function PreviewPanel({
             zoom={mapZoom}
             mapRef={mapRef}
             interactive={isEditing && !isMarkerEditorActive}
-            allowRotation={isEditing && isRotationEnabled}
+            allowRotation={isEditing}
             minZoom={mapMinZoom}
             maxZoom={mapMaxZoom}
             overzoomScale={overzoomScale}
@@ -476,21 +483,24 @@ export default function PreviewPanel({
         </div>
       </div>
 
-      <div className="desktop-right-panel">
-        <SettingsInfo
-          location={infoLocationLabel}
-          theme={effectiveTheme.name}
-          layout={infoLayoutLabel}
-          posterSize={posterSizeLabel}
-          markers={markersLabel}
-          coordinates={coordinatesLabel}
-        />
-        <AdUnit
-          slot={AD_SLOT_SIDEBAR}
-          enabled={ADS_SIDEBAR_ENABLED}
-          className="sidebar-ad-slot"
-        />
-      </div>
+      {!isCinemaMode ? (
+        <div className="desktop-right-panel">
+          <SettingsInfo
+            location={infoLocationLabel}
+            theme={effectiveTheme.name}
+            layout={infoLayoutLabel}
+            posterSize={posterSizeLabel}
+            resolution={resolutionInfoLabel}
+            markers={markersLabel}
+            coordinates={coordinatesLabel}
+          />
+          <AdUnit
+            slot={AD_SLOT_SIDEBAR}
+            enabled={ADS_SIDEBAR_ENABLED}
+            className="sidebar-ad-slot"
+          />
+        </div>
+      ) : null}
     </section>
   );
 }

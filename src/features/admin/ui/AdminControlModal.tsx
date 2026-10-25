@@ -103,7 +103,7 @@ export default function AdminControlModal({
               </div>
               <p style={{ margin: "4px 0 0", fontSize: "0.78rem", color: "rgba(205, 225, 240, 0.8)" }}>
                 {isAdmin
-                  ? "Unlimited 500 DPI Ultra-HD downloads are free for you on this device."
+                  ? "Unlimited Ultra-HD downloads are free for you on this device."
                   : "Paywall and credit limits are currently active for testing."}
               </p>
             </div>

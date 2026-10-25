@@ -6,7 +6,7 @@ interface UseLocationAutocompleteReturn {
   locationSuggestions: SearchResult[];
   isLocationSearching: boolean;
   clearLocationSuggestions: () => void;
-  searchNow: (query: string) => Promise<void>;
+  searchNow: (query: string) => Promise<SearchResult[]>;
 }
 
 const DEBOUNCE_DELAY_MS = 450;
@@ -23,11 +23,11 @@ export function useLocationAutocomplete(
   const debounceIdRef = useRef<number | undefined>(undefined);
   const abortRef = useRef<AbortController | null>(null);
 
-  const performSearch = useCallback(async (query: string) => {
+  const performSearch = useCallback(async (query: string): Promise<SearchResult[]> => {
     const q = String(query ?? "").trim();
     if (q.length < 2) {
       setLocationSuggestions([]);
-      return;
+      return [];
     }
 
     abortRef.current?.abort();
@@ -42,13 +42,15 @@ export function useLocationAutocomplete(
       if (latestQueryRef.current === q) {
         setLocationSuggestions(results);
       }
+      return results;
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
-        return;
+        return [];
       }
       if (latestQueryRef.current === q) {
         setLocationSuggestions([]);
       }
+      return [];
     } finally {
       if (abortRef.current === controller) {
         abortRef.current = null;
@@ -60,11 +62,11 @@ export function useLocationAutocomplete(
   }, []);
 
   const searchNow = useCallback(
-    async (query: string) => {
+    async (query: string): Promise<SearchResult[]> => {
       // Cancel any pending debounce so it doesn't fire again after the immediate search
       window.clearTimeout(debounceIdRef.current);
       debounceIdRef.current = undefined;
-      await performSearch(query);
+      return await performSearch(query);
     },
     [performSearch],
   );

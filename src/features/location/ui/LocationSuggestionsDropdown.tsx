@@ -70,6 +70,9 @@ export default function LocationSuggestionsDropdown({
                   onSelect(suggestion);
                 }}
               >
+                {suggestion.fromGoogleMaps ? (
+                  <span aria-hidden="true" style={{ marginRight: 6 }}>📍</span>
+                ) : null}
                 {suggestion.label}
               </button>
             </li>

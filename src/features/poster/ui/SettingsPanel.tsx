@@ -137,8 +137,8 @@ export default function SettingsPanel({
           onClick={onToggleEditing}
           aria-pressed={isEditing}
         >
-          {isEditing ? <span aria-hidden="true">🔒</span> : <ScissorsIcon aria-hidden="true" />}
-          <span>{isEditing ? "Lock Map" : "Edit Map"}</span>
+          <ScissorsIcon aria-hidden="true" />
+          <span>Edit Map</span>
         </button>
       </div>
     );

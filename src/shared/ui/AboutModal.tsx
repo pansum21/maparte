@@ -122,7 +122,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
               {/* Hero Banner */}
               <div className="guide-hero-banner">
                 <span className="guide-pill-badge">✨ 100% Client-Side • Privacy-First • No Watermarks</span>
-                <h2 className="guide-hero-title">Design Museum-Quality Custom Map Posters in True 500 DPI</h2>
+                <h2 className="guide-hero-title">Design Museum-Quality Custom Map Posters in Ultra-HD & Scalable Vector</h2>
                 <p className="guide-hero-desc">
                   Celebrate your life milestones with bespoke cartographic artwork. Whether it is where you first met, where you exchanged vows, bought your first home, or your favorite travel retreat, MAPARTE turns your memories into timeless wall art.
                 </p>
@@ -147,15 +147,15 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🖼️</div>
                     <h4>Zero Watermarks Always</h4>
-                    <p>Every exported poster and mobile wallpaper is completely clean without annoying center watermarks or forced ads on your artwork.</p>
+                    <p>Every exported poster and mobile wallpaper is completely clean without annoying center watermarks or forced ads on your artwork, featuring a discreet gallery studio signature in the lower neatline.</p>
                   </div>
                 </div>
               </section>
 
-              {/* Why 500 DPI? */}
+              {/* Why Ultra-HD? */}
               <section className="guide-content-section">
                 <h3 className="guide-section-heading">
-                  <span className="qa-indicator">WHY</span> Why Does True 500 DPI Ultra-HD Matter for Map Art?
+                  <span className="qa-indicator">WHY</span> Why Ultra-HD Resolution & Density Metadata Matter for Map Art?
                 </h3>
                 <div className="guide-comparison-card">
                   <div className="comparison-col comparison-col--bad">
@@ -171,9 +171,9 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                   <div className="comparison-col comparison-col--good">
                     <span className="comparison-badge comparison-badge--gold">MAPARTE Ultra-HD Studio</span>
                     <ul>
-                      <li>✅ True 500 DPI Ultra-HD &amp; Infinite Vector SVG</li>
+                      <li>✅ Up to 48 MP Ultra-HD &amp; Infinite Vector SVG</li>
                       <li>✅ Laser-sharp coastlines, canals, and alleyways up to 70x100 cm</li>
-                      <li>✅ Affordable with built-in Buy One Get One (BOGO) rewards</li>
+                      <li>✅ Accessible pricing with Buy One Get One (BOGO) Master Bundle</li>
                       <li>✅ Watermark-free downloads &amp; live room wall mockup</li>
                     </ul>
                   </div>
@@ -197,7 +197,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                   <div className="guide-milestone-card">
                     <span className="milestone-icon">💍</span>
                     <h4>Wedding &amp; Paper Anniversary</h4>
-                    <p>The traditional 1st wedding anniversary gift is paper. A framed 500 DPI map print of your venue is timeless.</p>
+                    <p>The traditional 1st wedding anniversary gift is paper. A framed Ultra-HD map print of your venue is timeless.</p>
                   </div>
                   <div className="guide-milestone-card">
                     <span className="milestone-icon">🏡</span>
@@ -326,7 +326,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                   <div className="guide-step-card">
                     <div className="step-badge">STEP 3</div>
                     <h4>Wall Preview &amp; Download</h4>
-                    <p>Preview your poster framed against 64 real wall paint colors in Cinema Mode. Download instantly in 500 DPI Ultra-HD PNG, vector PDF, or SVG.</p>
+                    <p>Preview your poster framed against 64 real wall paint colors in Cinema Mode. Download instantly in Ultra-HD PNG, vector PDF, or scalable SVG.</p>
                   </div>
                 </div>
               </section>
@@ -429,7 +429,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                   <div className="guide-print-card">
                     <span className="print-type-badge">🏪 Same-Day Local Pickup</span>
                     <h4>Staples, Office Depot, Walgreens &amp; CVS</h4>
-                    <p>Upload your 500 DPI file to their photo portal for budget-friendly same-day printing on heavy matte cardstock in 18x24" or 24x36".</p>
+                    <p>Upload your Ultra-HD file to their photo portal for budget-friendly same-day printing on heavy matte cardstock in 18x24", 24x36", or 50x70 cm.</p>
                   </div>
                   <div className="guide-print-card">
                     <span className="print-type-badge">🌐 Fine-Art Delivered Prints</span>
@@ -455,7 +455,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                       Can I print my map on my home printer?
                     </summary>
                     <p className="guide-faq-answer">
-                      Yes! Our 500 DPI PNG and vector PDF files are calibrated for standard international paper sizes (A4, A3, Letter). For best results on home inkjet printers, use heavyweight matte photo paper (200+ gsm).
+                      Yes! Our PNG and vector PDF files are calibrated for standard international paper sizes (A4, A3, Letter, 18x24", 50x70 cm). For best results on home inkjet printers, use heavyweight matte photo paper (200+ gsm).
                     </p>
                   </details>
 
@@ -473,7 +473,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                       Are digital downloads watermark-free?
                     </summary>
                     <p className="guide-faq-answer">
-                      Yes, 100%! All exported digital files (including free wallpapers and paid 500 DPI prints) are completely clean without any center watermarks or branding on your art.
+                      Yes, 100%! All exported digital files (including free wallpapers and paid Ultra-HD prints) are completely clean without intrusive center watermarks. Every export includes a discreet studio signature in the lower neatline border, calibrated for gallery framing.
                     </p>
                   </details>
 
@@ -491,7 +491,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                       How does the Buy One Get One (BOGO) guarantee work?
                     </summary>
                     <p className="guide-faq-answer">
-                      Every paid tier purchase automatically grants you a 1-Time BOGO promo code unlocking an additional free Ultra-HD download, allowing you to design a matching pair of prints or gift a second map to someone special.
+                      Our 1-Time BOGO promo code (Buy One Get One Free) is exclusively included with our $9.99 All-in-One Master Bundle tier. Upon purchase, a unique coupon code is delivered directly to your email, unlocking a 100% free second Ultra-HD download for a matching pair or gift.
                     </p>
                   </details>
                 </div>

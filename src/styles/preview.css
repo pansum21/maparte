@@ -1069,6 +1069,10 @@
 .poster-map-window {
   position: absolute;
   /* Equal physical white margin on every edge, independent of poster ratio. */
+  top: var(--map-inset-y, 5.56%);
+  bottom: var(--map-inset-y, 5.56%);
+  left: var(--map-inset-x, 7.86%);
+  right: var(--map-inset-x, 7.86%);
   inset-block: var(--map-inset-y, 5.56%);
   inset-inline: var(--map-inset-x, 7.86%);
   overflow: hidden;
@@ -1086,6 +1090,10 @@
 .poster-frame .neatline-artwork.preview-neatline {
   position: absolute;
   z-index: 6;
+  top: var(--mat-inset-y, 1.18%);
+  bottom: var(--mat-inset-y, 1.18%);
+  left: var(--mat-inset-x, 1.67%);
+  right: var(--mat-inset-x, 1.67%);
   inset: var(--mat-inset-y, 1.18%) var(--mat-inset-x, 1.67%);
   width: auto;
   height: auto;

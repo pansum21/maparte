@@ -312,6 +312,80 @@
   color: rgba(160, 185, 205, 0.75);
 }
 
+/* Selected Layout Live Specification Card */
+.selected-spec-box {
+  margin: 12px 0 16px;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(223, 186, 115, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  text-align: left;
+}
+
+.selected-spec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.spec-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #dfba73;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.spec-layout-tag {
+  font-size: 0.76rem;
+  padding: 3px 8px;
+  background: rgba(223, 186, 115, 0.16);
+  border: 1px solid rgba(223, 186, 115, 0.32);
+  border-radius: 6px;
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.selected-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spec-label {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.spec-value {
+  font-size: 0.82rem;
+  color: #f1f5f9;
+  font-family: "Spline Sans Mono", monospace;
+  font-weight: 600;
+}
+
+.spec-disclaimer {
+  font-size: 0.72rem;
+  color: #a0aec0;
+  line-height: 1.45;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
 .explore-first-banner {
   display: flex;
   align-items: center;

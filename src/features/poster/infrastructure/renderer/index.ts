@@ -164,6 +164,7 @@ export async function compositeExport(
     requestedDpi: 0,
     effectiveDpiX: widthInches > 0 ? width / widthInches : 0,
     effectiveDpiY: heightInches > 0 ? height / heightInches : 0,
+    effectiveDpi: Math.floor(Math.min(widthInches > 0 ? width / widthInches : 0, heightInches > 0 ? height / heightInches : 0)),
   };
 
   return { canvas, size };
