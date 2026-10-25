@@ -53,18 +53,13 @@ function loadCityImage(slug: string): Promise<CityImage | null> {
 }
 
 function CityPhoto({ city, slug }: { city: string; slug: string }) {
-  const hostRef = useRef<HTMLDivElement>(null);
   const requestedRef = useRef(false);
   const [image, setImage] = useState<CityImage | null>(null);
   const [loadFinished, setLoadFinished] = useState(false);
 
   useEffect(() => {
-    const host = hostRef.current;
-    if (!host || requestedRef.current) return;
-
     let active = true;
-    const load = () => {
-      if (!active || requestedRef.current) return;
+    if (!requestedRef.current) {
       requestedRef.current = true;
       void loadCityImage(slug).then((result) => {
         if (active) {
@@ -72,28 +67,12 @@ function CityPhoto({ city, slug }: { city: string; slug: string }) {
           setLoadFinished(true);
         }
       });
-    };
-
-    if (typeof IntersectionObserver === "undefined") {
-      load();
-      return () => { active = false; };
     }
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        observer.disconnect();
-        load();
-      }
-    }, { rootMargin: "180px" });
-    observer.observe(host);
-    return () => {
-      active = false;
-      observer.disconnect();
-    };
+    return () => { active = false; };
   }, [slug]);
 
   return (
-    <div ref={hostRef} className={`city-card-photo${image ? " has-image" : ""}`}>
+    <div className={`city-card-photo${image ? " has-image" : ""}`}>
       {image ? (
         <img
           src={image.src}
