@@ -1,10 +1,10 @@
 /* Lift only the city picker panel bottom edge to the preview inner border. */
 .app-shell .all-cities-modal {
-  bottom: 0.8mm;
+  bottom: 8mm;
 }
 
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   .app-shell .all-cities-modal {
-    bottom: calc(86px + env(safe-area-inset-bottom, 0px) + 0.8mm);
+    bottom: calc(86px + env(safe-area-inset-bottom, 0px) + 8mm);
   }
 }
