@@ -459,9 +459,10 @@ export default function BackdropThemeModal({
                 className="mixer-apply-btn"
                 onClick={() => {
                   updateCustomGradient(customDraft);
+                  onClose();
                 }}
               >
-                ✓ Apply Wall Color
+                ✓ Set Wall Color &amp; Close
               </button>
             </div>
           </div>
