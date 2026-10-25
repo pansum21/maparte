@@ -342,6 +342,7 @@ export default function AppShell() {
       return;
     }
     if (tab === "location") {
+      setBackdropOpen(false);
       setMobileLocationRowVisible((isVisible) => !isVisible);
       setMobileDrawerOpen(false);
       return;
