@@ -17,6 +17,7 @@ function escapeAttr(str) {
 export function transformHtmlForCity(html, city) {
   const cityTitle = `${city.city} Custom Map Poster &amp; Wall Art | 500 DPI Print — MAPARTE`;
   const cityDesc = escapeAttr(city.description);
+  const cityMetaDesc = escapeAttr(city.metaDescription || city.description);
   const cityUrl = `https://maparte.vercel.app/cities/${city.slug}`;
   const keywords = `${city.city} map poster, ${city.city} city map print, ${city.city} custom map art, ${city.city} street map, ${city.city} wall art, buy ${city.city} map, ${city.city} map wallpaper, free map generator, maparte`;
 
@@ -28,7 +29,7 @@ export function transformHtmlForCity(html, city) {
   // 2. Meta description & keywords
   result = result.replace(
     /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/,
-    `<meta name="description" content="${cityDesc}" />`,
+    `<meta name="description" content="${cityMetaDesc}" />`,
   );
   result = result.replace(
     /<meta\s+name="keywords"\s+content="[^"]*"\s*\/?>/,
@@ -52,7 +53,7 @@ export function transformHtmlForCity(html, city) {
   );
   result = result.replace(
     /property="og:description"\s+content="[^"]*"/,
-    `property="og:description" content="${cityDesc}"`,
+    `property="og:description" content="${cityMetaDesc}"`,
   );
   result = result.replace(
     /name="twitter:title"\s+content="[^"]*"/,
@@ -60,7 +61,7 @@ export function transformHtmlForCity(html, city) {
   );
   result = result.replace(
     /name="twitter:description"\s+content="[^"]*"/,
-    `name="twitter:description" content="${cityDesc}"`,
+    `name="twitter:description" content="${cityMetaDesc}"`,
   );
 
   // 5. Schema JSON-LD injection for Breadcrumb and City Product
