@@ -714,7 +714,7 @@
   .desktop-nav-tab--settings {
     margin-top: auto;
     margin-bottom: 6px;
-    cursor: default;
+    cursor: pointer;
   }
 
   .desktop-nav-tab--settings:disabled {
