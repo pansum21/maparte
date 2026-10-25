@@ -1,7 +1,5 @@
-import { useCallback, useRef } from "react";
-import { ensureFont } from "@/core/services";
 import type { PosterForm } from "@/features/poster/application/posterReducer";
-import type { FontOption } from "@/core/config";
+import { FONT_FAMILY_COUNT, type FontOption } from "@/core/config";
 import {
   PLACEHOLDER_EXAMPLE_CITY,
   PLACEHOLDER_EXAMPLE_COUNTRY,
@@ -21,22 +19,8 @@ export default function TypographySection({
   onChange,
   fontOptions,
 }: TypographySectionProps) {
-  const previewsRequested = useRef(false);
-
-  // Each <option> previews itself in its own typeface, which means every family
-  // has to be loaded for the dropdown to look right. That is a lot of bytes for
-  // the many users who never change the font, so hold off until they actually
-  // reach for the control rather than paying it on mount.
-  const preloadFontPreviews = useCallback(() => {
-    if (previewsRequested.current) return;
-    previewsRequested.current = true;
-
-    const families = fontOptions
-      .map((option) => String(option.value || "").trim())
-      .filter(Boolean);
-
-    void Promise.allSettled(families.map((family) => ensureFont(family)));
-  }, [fontOptions]);
+  const defaultOptions = fontOptions.filter((option) => !option.category);
+  const fontCategories = ["Sans serif", "Serif", "Display", "Monospace"] as const;
 
   return (
     <>
@@ -100,29 +84,39 @@ export default function TypographySection({
           />
         </label>
         <label>
-          Font
+          <span className="font-select-label-row">
+            <span>Font</span>
+            <small className="font-count-pill">{FONT_FAMILY_COUNT} fonts</small>
+          </span>
           <select
             className="form-control-tall"
             name="fontFamily"
             value={form.fontFamily}
             onChange={onChange}
-            onFocus={preloadFontPreviews}
-            onMouseDown={preloadFontPreviews}
-            onTouchStart={preloadFontPreviews}
+            style={{
+              fontFamily: form.fontFamily
+                ? `"${form.fontFamily}", "Space Grotesk", sans-serif`
+                : '"Space Grotesk", sans-serif',
+            }}
           >
-            {fontOptions.map((fontOption) => (
-              <option
-                key={fontOption.value || "default"}
-                value={fontOption.value}
-                style={{
-                  fontFamily: fontOption.value
-                    ? `"${fontOption.value}", "Space Grotesk", sans-serif`
-                    : `"Space Grotesk", sans-serif`,
-                }}
-              >
+            {defaultOptions.map((fontOption) => (
+              <option key={fontOption.value || "default"} value={fontOption.value}>
                 {fontOption.label}
               </option>
             ))}
+            {fontCategories.map((category) => {
+              const options = fontOptions.filter((option) => option.category === category);
+              if (options.length === 0) return null;
+              return (
+                <optgroup key={category} label={category}>
+                  {options.map((fontOption) => (
+                    <option key={fontOption.value} value={fontOption.value}>
+                      {fontOption.label}
+                    </option>
+                  ))}
+                </optgroup>
+              );
+            })}
           </select>
         </label>
 

@@ -17,6 +17,70 @@ import type { IFontLoader } from "./ports";
  * Neue ships 400 only).
  */
 const FONT_LOADERS: Record<string, () => Promise<unknown>> = {
+  "instrument sans": () =>
+    Promise.all([
+      import("@fontsource/instrument-sans/500.css"),
+      import("@fontsource/instrument-sans/700.css"),
+    ]),
+  inter: () =>
+    Promise.all([
+      import("@fontsource/inter/300.css"),
+      import("@fontsource/inter/400.css"),
+      import("@fontsource/inter/700.css"),
+    ]),
+  "dm sans": () =>
+    Promise.all([
+      import("@fontsource/dm-sans/300.css"),
+      import("@fontsource/dm-sans/400.css"),
+      import("@fontsource/dm-sans/700.css"),
+    ]),
+  outfit: () =>
+    Promise.all([
+      import("@fontsource/outfit/300.css"),
+      import("@fontsource/outfit/400.css"),
+      import("@fontsource/outfit/700.css"),
+    ]),
+  "cormorant garamond": () =>
+    Promise.all([
+      import("@fontsource/cormorant-garamond/300.css"),
+      import("@fontsource/cormorant-garamond/400.css"),
+      import("@fontsource/cormorant-garamond/700.css"),
+    ]),
+  "dm serif display": () => import("@fontsource/dm-serif-display/400.css"),
+  "libre baskerville": () =>
+    Promise.all([
+      import("@fontsource/libre-baskerville/400.css"),
+      import("@fontsource/libre-baskerville/700.css"),
+    ]),
+  lora: () =>
+    Promise.all([
+      import("@fontsource/lora/400.css"),
+      import("@fontsource/lora/700.css"),
+    ]),
+  cinzel: () =>
+    Promise.all([
+      import("@fontsource/cinzel/400.css"),
+      import("@fontsource/cinzel/700.css"),
+    ]),
+  "josefin sans": () =>
+    Promise.all([
+      import("@fontsource/josefin-sans/300.css"),
+      import("@fontsource/josefin-sans/400.css"),
+      import("@fontsource/josefin-sans/700.css"),
+    ]),
+  poppins: () =>
+    Promise.all([
+      import("@fontsource/poppins/300.css"),
+      import("@fontsource/poppins/400.css"),
+      import("@fontsource/poppins/700.css"),
+    ]),
+  anton: () => import("@fontsource/anton/400.css"),
+  "ibm plex mono": () =>
+    Promise.all([
+      import("@fontsource/ibm-plex-mono/300.css"),
+      import("@fontsource/ibm-plex-mono/700.css"),
+    ]),
+  "spline sans mono": () => import("@fontsource/spline-sans-mono/700.css"),
   montserrat: () =>
     Promise.all([
       import("@fontsource/montserrat/300.css"),
