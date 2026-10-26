@@ -2297,9 +2297,7 @@
   z-index: 90;
   top: 62px;
   right: auto;
-  bottom: 0;
-  left: 64px;
-  width: min(430px, calc(100vw - 64px));
+  bottom: 45px; left: 64px; width: min(374px, calc(100vw - 64px));
   max-width: calc(100vw - 64px);
   height: auto;
   max-height: none;
@@ -2312,7 +2310,7 @@
   backdrop-filter: blur(22px) saturate(145%);
   -webkit-backdrop-filter: blur(22px) saturate(145%);
   border: 1px solid rgba(146, 176, 200, 0.28);
-  border-radius: 16px;
+  border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 18px; border-bottom-right-radius: 18px;
   box-shadow:
     0 22px 55px rgba(0, 0, 0, 0.62),
     inset 0 1px 0 rgba(255, 255, 255, 0.11);
@@ -2323,9 +2321,7 @@
   position: fixed;
   z-index: 90;
   top: 62px;
-  bottom: 0;
-  left: 64px;
-  width: min(430px, calc(100vw - 64px));
+  bottom: 45px; left: 64px; width: min(374px, calc(100vw - 64px));
   box-sizing: border-box;
   padding: 14px 16px;
   border: 1px solid rgba(146, 176, 200, 0.28);
@@ -2625,9 +2621,7 @@
   position: fixed;
   z-index: 120;
   top: 62px;
-  bottom: 0;
-  left: 64px;
-  width: min(402px, calc(100vw - 88px));
+  bottom: 45px; left: 64px; width: min(374px, calc(100vw - 64px));
   max-width: none;
   max-height: none;
   box-sizing: border-box;
@@ -2637,7 +2631,7 @@
   padding: 12px;
   overflow: hidden;
   border: 1px solid rgba(146, 176, 200, 0.28);
-  border-radius: 14px;
+  border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 18px; border-bottom-right-radius: 18px;
   background: linear-gradient(155deg, rgba(15, 29, 44, 0.97), rgba(8, 18, 30, 0.98));
   backdrop-filter: blur(22px) saturate(145%);
   -webkit-backdrop-filter: blur(22px) saturate(145%);
@@ -2731,7 +2725,7 @@
     max-height: none;
     gap: 12px;
     padding: 12px;
-    border-radius: 14px;
+    border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 18px; border-bottom-right-radius: 18px;
   }
   .all-cities-search-bar { height: 36px; gap: 8px; padding: 0 8px; border-radius: 8px; }
   .all-cities-search-icon svg { width: 17px; height: 17px; }

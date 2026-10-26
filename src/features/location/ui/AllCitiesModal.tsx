@@ -108,6 +108,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
   const onLocationSelect = (result: SearchResult) => {
     handleLocationSelectBase(result);
     flyToLocation(result.lat, result.lon);
+    onClose();
   };
 
   const handleCityPick = (item: SeoCityItem) => {
@@ -190,6 +191,23 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
             autoComplete="off"
             style={{ flex: "1 1 auto", minWidth: 0, width: 0, height: "30px", boxSizing: "border-box", padding: "0 8px", border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(4, 12, 21, .68)", color: "#fff", fontSize: "14px", outline: "none" }}
           />
+          {hasLocationValue ? (
+            <button
+              type="button"
+              className="all-cities-clear-btn"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => {
+                setTypedQuery("");
+                dispatch({
+                  type: "SET_FORM_FIELDS",
+                  fields: { location: "" },
+                });
+              }}
+              aria-label="Clear location input"
+              title="Clear input"
+              style={{ display: "inline-grid", placeItems: "center", flex: "0 0 24px", width: "24px", height: "24px", padding: 0, border: "none", borderRadius: "50%", background: "rgba(255, 255, 255, 0.12)", color: "#d9e8f5", cursor: "pointer", fontSize: "12px", lineHeight: "1" }}
+            >✕</button>
+          ) : null}
           <button
             type="button"
             className="all-cities-search-icon"
@@ -199,6 +217,14 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
             title="Search location"
             style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(31, 56, 75, .62)", color: "#9fb9cc", cursor: "pointer" }}
           ><SearchIcon /></button>
+          <button
+            type="button"
+            className="all-cities-close-btn"
+            onClick={onClose}
+            aria-label="Close location panel"
+            title="Close location panel"
+            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(255, 255, 255, 0.22)", borderRadius: "7px", background: "rgba(255, 255, 255, 0.08)", color: "#e2e8f0", cursor: "pointer", fontSize: "14px", fontWeight: "bold" }}
+          >✕</button>
         </div>
 
         {showCoords ? (

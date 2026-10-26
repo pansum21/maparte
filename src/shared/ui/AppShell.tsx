@@ -190,6 +190,7 @@ export default function AppShell() {
       const next = typeof forceState === "boolean" ? forceState : !prev;
       if (next) {
         setDesktopLocationRowVisible(false);
+        setAllCitiesOpen(false);
         setIsEditing(false);
         setDesktopPanelOpen(false);
         setBackdropOpen(false);
@@ -364,6 +365,7 @@ export default function AppShell() {
 
   const handleDesktopTabChange = (tab: MobileTab) => {
     setDesktopLocationRowVisible(false);
+    setAllCitiesOpen(false);
     setBackdropOpen(false);
     setIsEditing(false);
     if (tab === desktopTab && desktopPanelOpen) {
@@ -375,11 +377,11 @@ export default function AppShell() {
   };
 
   const handleDesktopLocationToggle = () => {
+    setDesktopLocationRowVisible(false);
     setBackdropOpen(false);
     setIsEditing(false);
-    setDesktopTab("location");
     setDesktopPanelOpen(false);
-    setDesktopLocationRowVisible((visible) => !visible);
+    setAllCitiesOpen((open) => !open);
   };
 
   const handleEditMapToggle = () => {
@@ -389,6 +391,7 @@ export default function AppShell() {
         setDesktopLocationRowVisible(false);
         setDesktopPanelOpen(false);
         setBackdropOpen(false);
+        setAllCitiesOpen(false);
       }
       return next;
     });
@@ -482,12 +485,14 @@ export default function AppShell() {
       <DesktopNavBar
         activeTab={desktopTab}
         panelOpen={desktopPanelOpen}
-        isLocationVisible={desktopLocationRowVisible}
+        isLocationVisible={allCitiesOpen}
+        allCitiesOpen={allCitiesOpen}
         onLocationToggle={handleDesktopLocationToggle}
         onTabChange={handleDesktopTabChange}
         onSettingsClick={() => {
           setIsEditing(false);
           setDesktopLocationRowVisible(false);
+          setAllCitiesOpen(false);
           setBackdropOpen(false);
           handleDesktopTabChange("settings");
         }}
@@ -498,6 +503,7 @@ export default function AppShell() {
           setDesktopLocationRowVisible(false);
           setIsEditing(false);
           setDesktopPanelOpen(false);
+          setAllCitiesOpen(false);
           setBackdropOpen((open) => !open);
         }}
         isEditing={isEditing}

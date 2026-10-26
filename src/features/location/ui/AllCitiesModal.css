@@ -1,12 +1,23 @@
-/* Match the city picker panel bounds to the wall color panel. */
+/* Match the city picker panel bounds and width to the wall color and tool panels. */
 .app-shell .all-cities-modal {
   top: 62px;
   bottom: 45px;
+  left: 64px;
+  width: min(374px, calc(100vw - 64px));
+  max-width: calc(100vw - 64px);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
 }
 
 @media (max-width: 768px) {
   .app-shell .all-cities-modal {
     top: calc(54px + env(safe-area-inset-top, 0px));
     bottom: 2px;
+    left: 0;
+    width: 100%;
+    max-width: 100vw;
+    border-radius: 18px 18px 0 0;
   }
 }
