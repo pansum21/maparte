@@ -495,21 +495,52 @@ const CITY_DATABASE = {
   }
 };
 
+const directoryPath = path.resolve(__dirname, '../src/data/cityDirectory.json');
+const cityDirectory = JSON.parse(fs.readFileSync(directoryPath, 'utf8'));
+
 const output = [];
 
-for (const [cityName, data] of Object.entries(CITY_DATABASE)) {
-  const slug = `${cityName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-map-poster`;
+for (let i = 0; i < cityDirectory.length; i++) {
+  const item = cityDirectory[i];
+  const custom = CITY_DATABASE[item.city] || Object.values(CITY_DATABASE).find(c => c.slug === item.slug);
+
+  const landmarks = custom?.landmarks && custom.landmarks.length > 0
+    ? custom.landmarks
+    : (item.landmarks && item.landmarks.length > 0
+        ? item.landmarks
+        : [
+            `${item.city} City Center`,
+            `${item.city} Waterfront & Riverways`,
+            `${item.city} Historic Quarter`,
+            'Metropolitan District',
+            'Botanical Gardens & Parks'
+          ]);
+
+  const tagline = custom?.tagline || (
+    item.isCapital
+      ? `Historic Capital City of ${item.country} & Scenic Street Grid`
+      : `Vibrant Cartographic Destination in ${item.country} & Urban Grid`
+  );
+
+  const description = custom?.description || (
+    `Design museum-quality custom map posters of ${item.city}, ${item.country}. Capture the iconic street grids, coastal contours, and historic districts of this ${item.continent} destination in ultra-high resolution (up to 500 PPI Ultra-HD). Perfect for travel memories, personalized anniversary gifts, and modern minimalist wall decor.`
+  );
+
   output.push({
-    slug,
-    city: cityName,
-    country: data.country,
-    continent: data.continent,
-    lat: data.lat,
-    lon: data.lon,
-    distanceMeters: data.distance || 14000,
-    landmarks: data.landmarks,
-    tagline: data.tagline,
-    description: data.description
+    slug: item.slug,
+    city: item.city,
+    country: item.country,
+    countryCode: item.countryCode,
+    continent: item.continent,
+    lat: item.lat,
+    lon: item.lon,
+    distanceMeters: custom?.distance || 14000,
+    landmarks,
+    tagline,
+    description,
+    rank: i + 1,
+    annualSearches: custom?.annualSearches || `Curated World City • ${item.country}`,
+    metaDescription: custom?.metaDescription || `Create a custom map poster of ${item.city}, ${item.country}, featuring ${landmarks[0]} and ${landmarks[1] || item.city}. Edit for free; pay to download.`
   });
 }
 

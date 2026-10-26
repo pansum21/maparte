@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 function escapeAttr(str) {
-  return String(str)
+  return String(str ?? '')
     .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
@@ -14,11 +14,22 @@ function escapeAttr(str) {
     .replace(/>/g, '&gt;');
 }
 
+function escapeXml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 export function transformHtmlForCity(html, city) {
-  const cityTitle = `${city.city} Custom Map Poster &amp; Wall Art | Ultra-HD Map Art — MAPARTE`;
+  const cityTitle = `${escapeAttr(city.city)} Custom Map Poster &amp; Wall Art | Ultra-HD Map Art — MAPARTE`;
   const cityDesc = escapeAttr(city.description);
   const cityMetaDesc = escapeAttr(city.metaDescription || city.description);
   const cityUrl = `https://maparte.vercel.app/cities/${city.slug}`;
+  const cityPhotoUrl = `https://maparte.vercel.app/assets/city-photos/${city.slug}.webp`;
+  const cityPhotoAlt = `${escapeAttr(city.city)} custom map art poster and wallpaper preview`;
   const keywords = `${city.city} map poster, ${city.city} city map print, ${city.city} custom map art, ${city.city} street map, ${city.city} wall art, buy ${city.city} map, ${city.city} map wallpaper, free map generator, maparte`;
 
   let result = html;
@@ -46,7 +57,7 @@ export function transformHtmlForCity(html, city) {
     `property="og:url" content="${cityUrl}"`,
   );
 
-  // 4. Open Graph & Twitter meta tags
+  // 4. Open Graph & Twitter meta tags (with dynamic city photo)
   result = result.replace(
     /property="og:title"\s+content="[^"]*"/,
     `property="og:title" content="${cityTitle}"`,
@@ -56,12 +67,28 @@ export function transformHtmlForCity(html, city) {
     `property="og:description" content="${cityMetaDesc}"`,
   );
   result = result.replace(
+    /property="og:image"\s+content="[^"]*"/,
+    `property="og:image" content="${cityPhotoUrl}"`,
+  );
+  result = result.replace(
+    /property="og:image:alt"\s+content="[^"]*"/,
+    `property="og:image:alt" content="${cityPhotoAlt}"`,
+  );
+  result = result.replace(
     /name="twitter:title"\s+content="[^"]*"/,
     `name="twitter:title" content="${cityTitle}"`,
   );
   result = result.replace(
     /name="twitter:description"\s+content="[^"]*"/,
     `name="twitter:description" content="${cityMetaDesc}"`,
+  );
+  result = result.replace(
+    /name="twitter:image"\s+content="[^"]*"/,
+    `name="twitter:image" content="${cityPhotoUrl}"`,
+  );
+  result = result.replace(
+    /name="twitter:image:alt"\s+content="[^"]*"/,
+    `name="twitter:image:alt" content="${cityPhotoAlt}"`,
   );
 
   // 5. Schema JSON-LD injection for Breadcrumb and City Product
@@ -97,7 +124,7 @@ export function transformHtmlForCity(html, city) {
           {
             "@type": "Product",
             "name": "${escapeAttr(city.city)} Custom Map Poster",
-            "image": "https://maparte.vercel.app/assets/banner.png",
+            "image": "${cityPhotoUrl}",
             "description": "${cityDesc}",
             "brand": {
               "@type": "Brand",
@@ -215,21 +242,21 @@ export function cityPagesPlugin() {
         count++;
       }
 
-      // Generate comprehensive sitemap.xml with all 81 cities
+      // Generate comprehensive sitemap.xml with all 400 cities + Google Image tags
       const today = new Date().toISOString().split('T')[0];
       const sitemapEntries = [
-        `  <url>\n    <loc>https://maparte.vercel.app</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.vercel.app</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/banner.png</image:loc>\n      <image:title>MAPARTE Free Map Poster &amp; Wallpaper Creator</image:title>\n    </image:image>\n  </url>`,
         `  <url>\n    <loc>https://maparte.vercel.app/privacy</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
         `  <url>\n    <loc>https://maparte.vercel.app/imprint</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
       ];
 
       for (const city of cities) {
         sitemapEntries.push(
-          `  <url>\n    <loc>https://maparte.vercel.app/cities/${city.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`,
+          `  <url>\n    <loc>https://maparte.vercel.app/cities/${city.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/city-photos/${city.slug}.webp</image:loc>\n      <image:title>${escapeXml(city.city)} Custom Map Poster &amp; Wall Art</image:title>\n      <image:caption>Design and download custom map posters of ${escapeXml(city.city)}, ${escapeXml(city.country)} in Ultra-HD</image:caption>\n    </image:image>\n  </url>`,
         );
       }
 
-      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapEntries.join(
+      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${sitemapEntries.join(
         '\n',
       )}\n</urlset>\n`;
 
@@ -241,7 +268,7 @@ export function cityPagesPlugin() {
       );
 
       console.log(
-        `[city-pages] successfully generated ${count} city landing pages and sitemap.xml with ${sitemapEntries.length} URLs`,
+        `[city-pages] successfully generated ${count} city landing pages and sitemap.xml with ${sitemapEntries.length} URLs (with Google Image metadata)`,
       );
     },
   };

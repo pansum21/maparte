@@ -338,6 +338,37 @@ function googleMapsResolverPlugin() {
   };
 }
 
+
+function seoVerificationPlugin() {
+  let resolvedConfig;
+  return {
+    name: "seo-verification",
+    configResolved(config) {
+      resolvedConfig = config;
+    },
+    transformIndexHtml(html) {
+      const bing = String(
+        resolvedConfig.env.VITE_BING_VERIFICATION_ID ?? "",
+      ).trim();
+      const pinterest = String(
+        resolvedConfig.env.VITE_PINTEREST_VERIFICATION_ID ?? "",
+      ).trim();
+
+      let res = html;
+      const bingTag = bing
+        ? `<meta name="msvalidate.01" content="${bing}" />`
+        : `<!-- Bing Webmaster: Set VITE_BING_VERIFICATION_ID in Vercel to activate msvalidate.01 -->`;
+      const pinterestTag = pinterest
+        ? `<meta name="p:domain_verify" content="${pinterest}" />`
+        : `<!-- Pinterest Claim: Set VITE_PINTEREST_VERIFICATION_ID in Vercel to activate p:domain_verify -->`;
+
+      res = res.replace("<!-- bing-site-verification -->", bingTag);
+      res = res.replace("<!-- pinterest-site-verification -->", pinterestTag);
+      return res;
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
     react(),
@@ -346,6 +377,7 @@ export default defineConfig({
     cityPagesPlugin(),
     serviceWorkerBuildIdPlugin(),
     googleMapsResolverPlugin(),
+    seoVerificationPlugin(),
   ],
   define: {
     "import.meta.env.VITE_APP_VERSION": JSON.stringify(appVersion),
