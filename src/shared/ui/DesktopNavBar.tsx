@@ -15,6 +15,7 @@ import {
   WallIcon,
   ScissorsIcon,
   RotateIcon,
+  FullScreenIcon,
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
 
@@ -421,7 +422,7 @@ export default function DesktopNavBar({
           title="Open Full Screen preview"
           aria-label="Full Screen"
         >
-          <span className="desktop-nav-icon" aria-hidden="true">▣</span>
+          <FullScreenIcon className="desktop-nav-icon" />
           <span className="desktop-nav-label">Full Screen</span>
         </button>
       </div>
