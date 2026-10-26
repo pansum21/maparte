@@ -1,33 +1,66 @@
+/* ==========================================================================
+   Maparte Neatline & Border Controls
+   Sleek architectural blueprint styling matching LayoutCard format
+   ========================================================================== */
+
 .neatline-picker {
   margin: 18px 0 10px;
-  padding: 14px;
-  border: 1px solid rgba(156, 195, 218, 0.18);
-  border-radius: 16px;
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(156, 195, 218, 0.16);
+  border-radius: 14px;
   background: rgba(9, 20, 32, 0.55);
   backdrop-filter: blur(20px) saturate(1.8);
   -webkit-backdrop-filter: blur(20px) saturate(1.8);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(156, 195, 218, 0.2);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(156, 195, 218, 0.18);
 }
-.neatline-picker-heading {
-  display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:10px;
-}
-.neatline-picker-heading h3 { margin:0; font-size:14px; font-weight:700; }
-.neatline-picker-heading p { margin:4px 0 0; font-size:11.5px; opacity:.72; }
-.neatline-count { flex:0 0 auto; font-size:10.5px; opacity:.75; padding:3px 8px; border-radius:999px; background:rgba(255,255,255,.08); }
 
-/* --- Glassmorphism & Watermorphism Gradients Section --- */
+.neatline-picker-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.neatline-picker-heading h3 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #e7f2fb;
+}
+
+.neatline-picker-heading p {
+  margin: 3px 0 0;
+  font-size: 0.72rem;
+  color: #9fbcd0;
+  opacity: 0.85;
+}
+
+.neatline-count {
+  flex: 0 0 auto;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.65rem;
+  color: #9fbcd0;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(156, 195, 218, 0.12);
+}
+
+/* --- Clean Minimal Color / Gradient Section --- */
 .neatline-color-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin: 0 0 14px;
-  padding: 12px;
-  border: 1px solid rgba(156, 195, 218, 0.15);
-  border-radius: 14px;
-  background: rgba(7, 16, 26, 0.50);
-  backdrop-filter: blur(16px) saturate(1.5);
-  -webkit-backdrop-filter: blur(16px) saturate(1.5);
-  box-shadow: inset 0 1px 0 rgba(156, 195, 218, 0.15), 0 8px 24px rgba(0, 0, 0, 0.35);
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(156, 195, 218, 0.14);
+  border-radius: 10px;
+  background: rgba(7, 16, 26, 0.5);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .neatline-color-header {
@@ -38,356 +71,207 @@
 }
 
 .neatline-color-title {
-  font-size: 11px;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.05em;
+  color: #9fbcd0;
 }
 
-.neatline-water-tabs {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 4px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-}
-
-.neatline-water-tab {
+.neatline-color-tabs {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  min-height: 25px;
-  padding: 0 11px;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(156, 195, 218, 0.12);
+}
+
+.neatline-color-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  min-height: 22px;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 6px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.68);
-  font: inherit;
-  font-size: 11px;
-  font-weight: 600;
+  color: #8da6b9;
+  font: 600 0.65rem/1 inherit;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.15s ease;
 }
 
-.neatline-water-tab:hover {
+.neatline-color-tab:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.neatline-water-tab.is-active {
+.neatline-color-tab.is-active {
   color: #ffffff;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.35) 0%, rgba(14, 116, 144, 0.25) 50%, rgba(3, 105, 161, 0.45) 100%);
-  border-color: rgba(186, 230, 253, 0.45);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.45), 0 4px 12px rgba(14, 165, 233, 0.3);
+  background: rgba(75, 149, 186, 0.28);
+  border-color: rgba(112, 184, 222, 0.5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
-.neatline-rainbow-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ef4444, #eab308, #22c55e, #3b82f6);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-  flex-shrink: 0;
-}
-
-.neatline-grad-dot {
-  width: 13px;
-  height: 8px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #f43f5e, #fb923c);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-  flex-shrink: 0;
-}
-
-.neatline-boxes-wrap {
+.neatline-palette-wrap {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* ── 3D Watermorphism Rounded Rectangle Box (डब्बे) ── */
-.neatline-water-box {
-  position: relative;
-  width: 100%;
-  height: 32px;
+/* Flat Sleek Single Color Chips */
+.neatline-single-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 5px;
+}
+
+.neatline-single-chip {
+  aspect-ratio: 1 / 1;
+  min-height: 22px;
   padding: 0;
   margin: 0;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.38);
-  cursor: pointer;
-  overflow: hidden;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow:
-    inset 0 2px 3px rgba(255, 255, 255, 0.6),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.4),
-    0 4px 12px rgba(0, 0, 0, 0.32);
-  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Water Meniscus Highlight */
-.neatline-water-box::after {
-  content: '';
-  position: absolute;
-  top: 1px;
-  left: 4%;
-  width: 92%;
-  height: 46%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.72) 0%,
-    rgba(255, 255, 255, 0.22) 40%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  border-radius: 8px 8px 12px 12px;
-  pointer-events: none;
-}
-
-/* Liquid Bottom Caustic Rim */
-.neatline-water-box::before {
-  content: '';
-  position: absolute;
-  bottom: 1px;
-  left: 10%;
-  width: 80%;
-  height: 26%;
-  background: linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 0.25) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
-  pointer-events: none;
-}
-
-.neatline-water-box:hover {
-  transform: scale(1.05) translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.7);
-  box-shadow:
-    inset 0 3px 5px rgba(255, 255, 255, 0.8),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.4),
-    0 8px 20px rgba(56, 189, 248, 0.35);
-}
-
-.neatline-water-box:active {
-  transform: scale(0.96) translateY(1px);
-  box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.35),
-    inset 0 2px 6px rgba(0, 0, 0, 0.5),
-    0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.neatline-water-box.is-active {
-  border-color: #38bdf8;
-  transform: scale(1.04) translateY(-1px);
-  box-shadow:
-    0 0 0 2px #38bdf8,
-    0 6px 18px rgba(56, 189, 248, 0.55),
-    inset 0 2.5px 4px rgba(255, 255, 255, 0.85),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
-}
-
-/* 4x2 Grid for 8 Gradients (4 on top, 4 on bottom) */
-.neatline-water-grid-4x2 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-}
-
-/* Rainbow Batch: 4 on top row, 3 on bottom row */
-.neatline-rainbow-batch {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.neatline-rainbow-row.row-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-}
-
-.neatline-rainbow-row.row-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 7px;
-  width: 75%;
-  margin: 0 auto;
-}
-
-/* Bottom Custom Dual Mix Water Box */
-.neatline-custom-mix-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 4px;
-}
-
-.neatline-water-dual-box {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  max-width: 240px;
-  height: 34px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow:
-    inset 0 2px 4px rgba(255, 255, 255, 0.65),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.45),
-    0 6px 16px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.neatline-water-dual-box::after {
-  content: '';
-  position: absolute;
-  top: 1px;
-  left: 3%;
-  width: 94%;
-  height: 48%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.65) 0%,
-    rgba(255, 255, 255, 0.18) 45%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  border-radius: 10px 10px 14px 14px;
-  pointer-events: none;
-}
-
-.neatline-water-dual-box:hover {
-  transform: scale(1.03) translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.7);
-  box-shadow:
-    inset 0 2.5px 5px rgba(255, 255, 255, 0.8),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.45),
-    0 8px 20px rgba(56, 189, 248, 0.35);
-}
-
-.neatline-water-half {
-  position: relative;
-  flex: 1;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
   overflow: hidden;
 }
 
-.neatline-water-half input[type="color"] {
+.neatline-single-chip:hover {
+  transform: scale(1.1);
+  border-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.neatline-single-chip.is-active {
+  border-color: #ffffff !important;
+  outline: 2px solid #70b8de;
+  outline-offset: 1px;
+  transform: scale(1.05);
+}
+
+.neatline-custom-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px dashed rgba(156, 195, 218, 0.4) !important;
+}
+
+.neatline-custom-chip input[type="color"] {
   position: absolute;
-  inset: -10px;
-  width: calc(100% + 20px);
-  height: calc(100% + 20px);
+  inset: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
   opacity: 0;
   cursor: pointer;
-  padding: 0;
-  border: none;
 }
 
-.neatline-water-pip {
-  position: relative;
-  z-index: 2;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+.neatline-picker-icon {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9fbcd0;
+  line-height: 1;
   pointer-events: none;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.neatline-water-half:hover .neatline-water-pip {
-  transform: scale(1.18);
+/* Flat Linear Gradient Chips */
+.neatline-grad-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
 }
 
-.neatline-water-divider {
-  width: 1px;
-  height: 18px;
-  background: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
-  flex-shrink: 0;
+.neatline-grad-chip {
+  height: 22px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-/* Bottom Custom Single Color Water Box */
-.neatline-water-single-box {
-  position: relative;
+.neatline-grad-chip:hover {
+  transform: translateY(-1px);
+  border-color: #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+.neatline-grad-chip.is-active {
+  border-color: #ffffff !important;
+  outline: 2px solid #70b8de;
+  outline-offset: 1px;
+}
+
+.neatline-custom-grad-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 180px;
-  height: 34px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow:
-    inset 0 2px 4px rgba(255, 255, 255, 0.65),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.45),
-    0 6px 16px rgba(0, 0, 0, 0.4);
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  gap: 8px;
+  padding-top: 2px;
 }
 
-.neatline-water-single-box::after {
-  content: '';
-  position: absolute;
-  top: 1px;
-  left: 3%;
-  width: 94%;
-  height: 48%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.65) 0%,
-    rgba(255, 255, 255, 0.18) 45%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  border-radius: 10px 10px 14px 14px;
+.neatline-custom-label {
+  font-size: 0.65rem;
+  font-family: "Spline Sans Mono", monospace;
+  color: #9fbcd0;
+  text-transform: uppercase;
+}
+
+.neatline-color-input-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 20px;
+  border-radius: 5px;
+  border: 1px solid rgba(156, 195, 218, 0.3);
+  background: rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.neatline-color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
   pointer-events: none;
 }
 
-.neatline-water-single-box:hover {
-  transform: scale(1.03) translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.7);
-  box-shadow:
-    inset 0 2.5px 5px rgba(255, 255, 255, 0.8),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.45),
-    0 8px 20px rgba(56, 189, 248, 0.35);
-}
-
-.neatline-water-single-box input[type="color"] {
+.neatline-color-input-chip input[type="color"] {
   position: absolute;
-  inset: -10px;
-  width: calc(100% + 20px);
-  height: calc(100% + 20px);
+  inset: -6px;
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
   opacity: 0;
   cursor: pointer;
-  padding: 0;
-  border: none;
 }
 
-/* Border Options 2-Column Grid (matches Layout Picker) */
+.neatline-grad-arrow {
+  font-size: 0.72rem;
+  color: #70b8de;
+  line-height: 1;
+}
+
+/* ==========================================================================
+   Border Cards 2-Column Grid (Direct match with .layout-card in Image 1)
+   ========================================================================== */
 .neatline-options {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   gap: 8px !important;
-  max-height: 380px !important;
+  max-height: 420px !important;
   overflow-y: auto !important;
   overscroll-behavior: contain;
-  padding: 2px 2px 6px;
+  padding: 2px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(156, 195, 218, 0.3) transparent;
+  scrollbar-color: rgba(156, 195, 218, 0.25) transparent;
 }
 
 .neatline-card,
@@ -404,29 +288,25 @@
   align-items: flex-start;
   justify-content: flex-start;
   text-align: left;
-  border: 1px solid rgba(156, 195, 218, 0.16);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background: rgba(9, 18, 27, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(9, 18, 27, 0.86);
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .neatline-card:hover,
 .neatline-option:hover {
-  transform: translateY(-1px);
-  border-color: rgba(156, 195, 218, 0.38);
-  background: rgba(13, 26, 38, 0.92);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  border-color: rgba(151, 183, 207, 0.5);
+  background: rgba(13, 25, 36, 0.9);
 }
 
 .neatline-card.is-selected,
 .neatline-option.is-selected {
-  border-color: rgba(112, 184, 222, 0.85) !important;
-  box-shadow: 0 0 0 2px rgba(75, 149, 186, 0.28), 0 6px 18px rgba(0, 0, 0, 0.45) !important;
-  background: rgba(14, 28, 44, 0.94) !important;
+  border-color: rgba(112, 184, 222, 0.8) !important;
+  box-shadow: 0 0 0 2px rgba(75, 149, 186, 0.22) !important;
+  background: var(--item-bg) !important;
 }
 
 .neatline-card-copy {
@@ -441,7 +321,7 @@
 .neatline-card-name,
 .neatline-option-name {
   margin: 0;
-  font-size: 0.70rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -453,10 +333,10 @@
 }
 
 .neatline-card-meta {
-  margin: 2px 0 0;
+  margin: 3px 0 0;
   font-family: "Spline Sans Mono", monospace;
-  font-size: 0.58rem;
-  letter-spacing: 0.02em;
+  font-size: 0.64rem;
+  letter-spacing: 0.03em;
   color: #9fbcd0;
   text-transform: uppercase;
   white-space: nowrap;
@@ -465,44 +345,17 @@
   display: block;
 }
 
-.neatline-card-symbol-wrap {
-  width: 100%;
-  height: 54px;
-  flex: 1 1 auto;
-  margin-top: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background: rgba(5, 14, 24, 0.55);
-  border: 1px solid rgba(156, 195, 218, 0.12);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
-  overflow: hidden;
-  transition: all 0.2s ease;
-}
-
-.neatline-card:hover .neatline-card-symbol-wrap,
-.neatline-option:hover .neatline-card-symbol-wrap {
-  border-color: rgba(156, 195, 218, 0.25);
-  background: rgba(6, 18, 30, 0.65);
-}
-
-.neatline-card.is-selected .neatline-card-symbol-wrap,
-.neatline-option.is-selected .neatline-card-symbol-wrap {
-  border-color: rgba(112, 184, 222, 0.45);
-  background: rgba(8, 22, 38, 0.75);
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5), 0 0 8px rgba(75, 149, 186, 0.2);
-}
-
+/* Direct clean SVG symbol placement (NO sunken background wrapper) */
 .neatline-swatch {
-  position: relative;
+  width: calc(100% - 8px);
+  height: 58px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
+  margin: 6px auto 0;
+  border: none;
   background: transparent;
-  padding: 3px 6px;
+  padding: 0;
 }
 
 .neatline-swatch-artwork {
@@ -512,18 +365,13 @@
   object-fit: contain;
 }
 
-.neatline-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
+/* Edit / Adjustment controls */
+.neatline-edit-wrap {
+  margin-top: 12px;
 }
 
-.neatline-edit-wrap { margin-top: 12px; }
-.neatline-layer-position { display:grid; grid-template-columns:1fr minmax(150px, 240px); gap:10px; align-items:center; margin-top:10px; font-size:12px; }
-.neatline-layer-position select { min-height:36px; padding:0 9px; border:1px solid rgba(112, 184, 222, 0.4); border-radius:8px; background:#101b27; color:inherit; font:inherit; }
-
 .neatline-edit-button {
+  width: 100%;
   min-height: 34px;
   padding: 0 12px;
   border: 1px solid rgba(112, 184, 222, 0.35);
@@ -534,6 +382,7 @@
   cursor: pointer;
   transition: all 0.15s ease;
 }
+
 .neatline-edit-button:hover {
   background: rgba(75, 149, 186, 0.28);
   border-color: rgba(112, 184, 222, 0.7);
@@ -543,20 +392,24 @@
   display: grid;
   gap: 10px;
   min-width: 0;
-  margin: 12px 0 0;
+  margin: 10px 0 0;
   padding: 12px;
-  border: 1px solid rgba(156, 195, 218, 0.18);
-  border-radius: 12px;
-  background: rgba(6, 15, 24, 0.50);
+  border: 1px solid rgba(156, 195, 218, 0.16);
+  border-radius: 10px;
+  background: rgba(6, 15, 24, 0.5);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
+
 .neatline-adjustments legend {
   padding: 0 6px;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   color: #e7f2fb;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
+
 .neatline-adjustment {
   display: grid;
   grid-template-columns: minmax(84px, auto) minmax(80px, 1fr) 42px;
@@ -564,24 +417,52 @@
   gap: 10px;
   margin: 0;
 }
-.neatline-adjustment-label { font-size: 11px; color: #c3d9e8; }
-.neatline-adjustment input[type="range"] { width: 100%; margin: 0; accent-color: #70b8de; }
+
+.neatline-adjustment-label {
+  font-size: 11px;
+  color: #c3d9e8;
+}
+
+.neatline-adjustment input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: #70b8de;
+}
+
 .neatline-adjustment output {
   min-width: 42px;
   padding: 4px 5px;
   border-radius: 6px;
-  background: rgba(255,255,255,.08);
+  background: rgba(255, 255, 255, 0.08);
   font: 600 11px/1.2 "Spline Sans Mono", monospace;
   text-align: center;
   font-variant-numeric: tabular-nums;
   color: #e7f2fb;
 }
-.neatline-adjustments-note { margin:0; font-size:10px; opacity:.64; color: #9fbcd0; }
-.neatline-artwork.preview-neatline { position:absolute; z-index:5; inset:0; width:100%; height:100%; pointer-events:none; }
 
-@media(max-width:420px) {
-  .neatline-picker { padding: 10px; margin-top: 12px; }
-  .neatline-options { gap: 6px !important; }
+.neatline-adjustments-note {
+  margin: 0;
+  font-size: 10px;
+  opacity: 0.64;
+  color: #9fbcd0;
+}
+
+.neatline-artwork.preview-neatline {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+@media (max-width: 420px) {
+  .neatline-picker {
+    padding: 10px;
+  }
+  .neatline-options {
+    gap: 6px !important;
+  }
   .neatline-card,
   .neatline-option {
     height: 96px !important;
@@ -596,11 +477,14 @@
   .neatline-card-meta {
     font-size: 0.50rem;
   }
-  .neatline-card-symbol-wrap {
-    height: 44px;
+  .neatline-swatch {
+    height: 48px;
     margin-top: 4px;
   }
-  .neatline-adjustment { grid-template-columns: 82px minmax(60px,1fr) 40px; gap:7px; }
-  .neatline-edit-button { width: 100%; }
-  .neatline-layer-position { grid-template-columns:1fr; gap:6px; }
+  .neatline-single-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .neatline-grad-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
