@@ -103,15 +103,17 @@ export const lineStyles: LineStyle[] = [
   { id: "neatline-notched-corner", name: "Notched Corner", kind: "line", pattern: "notched-corner" },
   { id: "neatline-surveyor-ticks", name: "Surveyor Ticks", kind: "line", pattern: "surveyor-ticks" },
 
-  // 8 New Ornamental Rectangular Frames (100% Clean Rectangular Inner Border)
+  // 6 Corner Ornamental Frames
   { id: "frame-greek-key", name: "Classic Greek Key", kind: "line", pattern: "greek-key" },
-  { id: "frame-victorian-filigree", name: "Victorian Filigree", kind: "line", pattern: "victorian-filigree" },
-  { id: "frame-art-deco-stepped", name: "Art Deco Stepped", kind: "line", pattern: "art-deco-stepped" },
   { id: "frame-nautical-compass", name: "Nautical Compass", kind: "line", pattern: "nautical-compass" },
   { id: "frame-celtic-braid", name: "Celtic Braid", kind: "line", pattern: "celtic-braid" },
   { id: "frame-diamond-lattice", name: "Diamond Lattice", kind: "line", pattern: "diamond-lattice" },
   { id: "frame-antique-atlas", name: "Antique Atlas", kind: "line", pattern: "antique-atlas" },
   { id: "frame-architectural-grid", name: "Architectural Grid", kind: "line", pattern: "architectural-grid" },
+
+  // 2 Ornate Frames with 25% Quarter View (Placed at the bottom as requested)
+  { id: "frame-victorian-filigree", name: "Victorian Filigree", kind: "line", pattern: "victorian-filigree" },
+  { id: "frame-art-deco-stepped", name: "Art Deco Stepped", kind: "line", pattern: "art-deco-stepped" },
 ];
 export const NEATLINE_STYLES = lineStyles;
 
@@ -1495,24 +1497,37 @@ function NeatlineSwatch({
             case "notched-corner":
               return (
                 <g fill="none" strokeLinejoin="miter">
-                  <path d="M 62 6 H 20 L 6 20 V 38" stroke={p} strokeWidth="2.2" />
-                  <path d="M 62 16 H 24 L 16 24 V 38" stroke={s} strokeWidth="1.4" />
-                  <polygon points="13,11 17,15 13,19 9,15" fill={s} />
+                  <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="2.0" />
+                  <path d="M 62 18 H 18 V 38" stroke={s} strokeWidth="1.5" />
+                  <rect x="6" y="6" width="12" height="12" stroke={s} strokeWidth="1.4" fill="none" />
+                  <circle cx="12" cy="12" r="2.5" fill={s} />
                 </g>
               );
 
             case "surveyor-ticks":
               return (
-                <g fill="none" strokeLinejoin="round">
+                <g fill="none" strokeLinejoin="miter">
                   <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="1.8" />
-                  <path d="M 62 18 H 18 V 38" stroke={s} strokeWidth="1.4" />
-                  <line x1="18" y1="6" x2="18" y2="18" stroke={s} strokeWidth="1.4" />
-                  <line x1="28" y1="6" x2="28" y2="18" stroke={s} strokeWidth="1.4" />
-                  <line x1="38" y1="6" x2="38" y2="18" stroke={s} strokeWidth="1.8" />
-                  <line x1="48" y1="6" x2="48" y2="18" stroke={s} strokeWidth="1.4" />
-                  <line x1="58" y1="6" x2="58" y2="18" stroke={s} strokeWidth="1.4" />
-                  <line x1="6" y1="28" x2="18" y2="28" stroke={s} strokeWidth="1.4" />
-                  <line x1="6" y1="36" x2="18" y2="36" stroke={s} strokeWidth="1.4" />
+                  <path d="M 62 20 H 20 V 38" stroke={p} strokeWidth="1.8" />
+                  <path d="M 62 13 H 13 V 38" stroke={s} strokeWidth="7" strokeDasharray="8 8" />
+                </g>
+              );
+
+            case "greek-key":
+              return (
+                <g fill="none" strokeLinejoin="miter">
+                  <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="2.0" />
+                  <path d="M 62 20 H 20 V 38" stroke={s} strokeWidth="1.5" />
+                  {/* Corner Meander Box */}
+                  <rect x="6" y="6" width="14" height="14" stroke={p} strokeWidth="1.4" />
+                  <rect x="9" y="9" width="8" height="8" stroke={s} strokeWidth="1.2" />
+                  <rect x="11.5" y="11.5" width="3" height="3" fill={s} />
+                  {/* Top Track Repeating Meanders */}
+                  <path d="M 23 10 H 33 V 16 H 26 V 13 H 30" stroke={s} strokeWidth="1.4" strokeLinecap="square" />
+                  <path d="M 36 10 H 46 V 16 H 39 V 13 H 43" stroke={s} strokeWidth="1.4" strokeLinecap="square" />
+                  <path d="M 49 10 H 59 V 16 H 52 V 13 H 56" stroke={s} strokeWidth="1.4" strokeLinecap="square" />
+                  {/* Left Track Meander */}
+                  <path d="M 10 23 V 33 H 16 V 26 H 13 V 30" stroke={s} strokeWidth="1.4" strokeLinecap="square" />
                 </g>
               );
 
@@ -1520,11 +1535,17 @@ function NeatlineSwatch({
               return (
                 <g fill="none" strokeLinejoin="round">
                   <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="2.0" />
-                  <path d="M 62 18 H 18 V 38" stroke={p} strokeWidth="1.5" />
-                  <rect x="7" y="7" width="10" height="10" rx="2" stroke={s} strokeWidth="1.2" />
-                  <circle cx="12" cy="12" r="2.8" fill={s} />
-                  <path d="M 18 12 Q 25 7 32 12 T 46 12 T 60 12" stroke={s} strokeWidth="1.6" />
-                  <path d="M 12 18 Q 7 25 12 32 T 12 38" stroke={s} strokeWidth="1.6" />
+                  <path d="M 62 20 H 20 V 38" stroke={s} strokeWidth="1.5" />
+                  {/* Corner Celtic Knot Ring */}
+                  <rect x="6.5" y="6.5" width="13" height="13" rx="3" stroke={p} strokeWidth="1.2" />
+                  <circle cx="13" cy="13" r="3.2" stroke={s} strokeWidth="1.4" />
+                  <circle cx="13" cy="13" r="1.2" fill={s} />
+                  {/* Top Intertwining Celtic Sine Waves */}
+                  <path d="M 20 13 Q 27 8, 34 13 T 48 13 T 62 13" stroke={s} strokeWidth="1.8" />
+                  <path d="M 20 13 Q 27 18, 34 13 T 48 13 T 62 13" stroke={p} strokeWidth="1.5" />
+                  {/* Left Intertwining Waves */}
+                  <path d="M 13 20 Q 8 26, 13 32 T 13 38" stroke={s} strokeWidth="1.8" />
+                  <path d="M 13 20 Q 18 26, 13 32 T 13 38" stroke={p} strokeWidth="1.5" />
                 </g>
               );
 
@@ -1532,96 +1553,20 @@ function NeatlineSwatch({
               return (
                 <g fill="none" strokeLinejoin="round">
                   <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="2.0" />
-                  <path d="M 62 18 H 18 V 38" stroke={s} strokeWidth="1.5" />
-                  <polygon points="12,8 16,12 12,16 8,12" fill={s} />
-                  <polygon points="26,9 29,12 26,15 23,12" fill={p} />
-                  <polygon points="38,9 41,12 38,15 35,12" fill={s} />
-                  <polygon points="50,9 53,12 50,15 47,12" fill={p} />
-                  <polygon points="60,9 62,12 60,15 58,12" fill={s} />
-                  <polygon points="12,26 15,29 12,32 9,29" fill={p} />
-                  <polygon points="12,36 15,38 12,40 9,38" fill={s} />
-                </g>
-              );
-
-            case "architectural-grid":
-              return (
-                <g fill="none">
-                  <line x1="2" y1="8" x2="62" y2="8" stroke={p} strokeWidth="1.6" />
-                  <line x1="8" y1="2" x2="8" y2="38" stroke={p} strokeWidth="1.6" />
-                  <path d="M 62 18 H 18 V 38" stroke={s} strokeWidth="1.4" />
-                  <circle cx="8" cy="8" r="4.5" stroke={s} strokeWidth="1.2" />
-                  <circle cx="8" cy="8" r="1.5" fill={s} />
-                  <line x1="28" y1="6" x2="28" y2="10" stroke={s} strokeWidth="1.2" />
-                  <line x1="38" y1="5" x2="38" y2="11" stroke={s} strokeWidth="1.6" />
-                  <line x1="48" y1="6" x2="48" y2="10" stroke={s} strokeWidth="1.2" />
-                  <line x1="58" y1="5" x2="58" y2="11" stroke={s} strokeWidth="1.6" />
-                  <line x1="6" y1="26" x2="10" y2="26" stroke={s} strokeWidth="1.2" />
-                  <line x1="5" y1="34" x2="11" y2="34" stroke={s} strokeWidth="1.6" />
-                </g>
-              );
-
-            // --- GROUP B: CORNER TO CENTER MOTIFS (Shows Center Design & Side Design) ---
-            case "greek-key":
-              return (
-                <g fill="none" strokeLinejoin="round">
-                  <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="2.0" />
-                  <path d="M 62 18 H 18 V 38" stroke={s} strokeWidth="1.4" />
-                  {/* Corner Meander Step */}
-                  <path d="M 7 7 H 17 V 17 H 11 V 11 H 14" stroke={s} strokeWidth="1.4" />
-                  <path d="M 22 8 H 27 V 16 H 24 V 11 H 22" stroke={s} strokeWidth="1.2" />
-                  {/* Top Center Meander Crest */}
-                  <polygon points="38,5 43,12 38,19 33,12" fill={s} />
-                  <polygon points="38,8 40.5,12 38,16 35.5,12" fill="#09121b" />
-                  <path d="M 47 8 H 52 V 16 H 49 V 11 H 47" stroke={s} strokeWidth="1.2" />
-                  <path d="M 56 8 H 61 V 16 H 58 V 11 H 56" stroke={s} strokeWidth="1.2" />
-                  {/* Left Side Meander */}
-                  <path d="M 8 22 V 27 H 16 V 24 H 11 V 22" stroke={s} strokeWidth="1.2" />
-                  {/* Side Center Crest */}
-                  <polygon points="5,33 12,38 19,33 12,28" fill={s} />
-                </g>
-              );
-
-            case "victorian-filigree":
-              return (
-                <g fill="none" strokeLinejoin="round">
-                  <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="2.0" />
-                  <path d="M 62 8 H 8 V 38" stroke={s} strokeWidth="0.8" opacity="0.6" />
-                  <path d="M 62 18 H 18 V 38" stroke={p} strokeWidth="1.5" />
-                  {/* Corner Filigree Flourish */}
-                  <polygon points="7,7 16,7 7,16" fill={s} />
-                  <circle cx="12" cy="12" r="2.2" fill={p} />
-                  {/* Wave running to center */}
-                  <path d="M 17 12 Q 23 7 29 12" stroke={s} strokeWidth="1.4" />
-                  {/* Top Center Victorian Diamond Crest */}
-                  <polygon points="38,4 43,10 38,16 33,10" fill={p} />
-                  <circle cx="38" cy="10" r="1.5" fill="#09121b" />
-                  {/* Wave past center */}
-                  <path d="M 47 12 Q 53 7 59 12" stroke={s} strokeWidth="1.4" />
-                  {/* Wave down left */}
-                  <path d="M 12 17 Q 7 23 12 29" stroke={s} strokeWidth="1.4" />
-                  {/* Side Center Diamond Crest */}
-                  <polygon points="4,34 10,38 16,34 10,30" fill={p} />
-                </g>
-              );
-
-            case "art-deco-stepped":
-              return (
-                <g fill="none" strokeLinejoin="round">
-                  <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="2.2" />
-                  <path d="M 62 18 H 18 V 38" stroke={s} strokeWidth="1.5" />
-                  {/* Stepped Art Deco Corner Blocks */}
-                  <polygon points="6,6 18,6 18,9 14,9 14,13 10,13 10,18 6,18" fill={p} />
-                  <polygon points="8,8 15,8 15,10 12,10 12,13 8,13" fill={s} />
-                  {/* Top Edge Chevron */}
-                  <polygon points="23,9 28,13 33,9" fill={s} />
-                  {/* Top Center Chevron Crest */}
-                  <polygon points="36,5 42,12 48,5" fill={p} />
-                  <polygon points="38,6 42,10 46,6" fill="#09121b" />
-                  <polygon points="51,9 56,13 61,9" fill={s} />
-                  {/* Left Edge Chevron */}
-                  <polygon points="9,23 13,28 9,33" fill={s} />
-                  {/* Side Center Chevron */}
-                  <polygon points="5,33 12,38 5,43" fill={p} />
+                  <path d="M 62 20 H 20 V 38" stroke={s} strokeWidth="1.5" />
+                  {/* Corner Box with Diamond inside */}
+                  <rect x="6" y="6" width="14" height="14" stroke={p} strokeWidth="1.4" />
+                  <polygon points="13,8 17.5,13 13,18 8.5,13" fill={s} />
+                  <circle cx="13" cy="13" r="1.2" fill="#fff" />
+                  {/* Repeating Diamonds along Top Track */}
+                  <polygon points="26,9 29.5,13 26,17 22.5,13" fill={s} />
+                  <polygon points="35,9 38.5,13 35,17 31.5,13" fill={s} />
+                  <polygon points="44,9 47.5,13 44,17 40.5,13" fill={s} />
+                  <polygon points="53,9 56.5,13 53,17 49.5,13" fill={s} />
+                  <polygon points="62,9 65.5,13 62,17 58.5,13" fill={s} />
+                  {/* Repeating Diamonds along Left Track */}
+                  <polygon points="13,24 16.5,27.5 13,31 9.5,27.5" fill={s} />
+                  <polygon points="13,33 16.5,36.5 13,40 9.5,36.5" fill={s} />
                 </g>
               );
 
@@ -1629,47 +1574,117 @@ function NeatlineSwatch({
               return (
                 <g fill="none" strokeLinejoin="round">
                   <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="2.0" />
-                  <path d="M 62 18 H 18 V 38" stroke={s} strokeWidth="1.4" />
-                  {/* Corner 4-Point Compass Rose */}
-                  <circle cx="12" cy="12" r="6" stroke={p} strokeWidth="1.0" />
-                  <polygon points="12,6 13.8,12 12,10.5 10.2,12" fill={p} />
-                  <polygon points="12,18 13.8,12 12,13.5 10.2,12" fill={s} />
-                  <polygon points="6,12 12,10.2 10.5,12 12,13.8" fill={p} />
-                  <polygon points="18,12 12,10.2 13.5,12 12,13.8" fill={s} />
-                  {/* Intermediate tick */}
-                  <polygon points="26,10 28,12 26,14 24,12" fill={s} />
-                  {/* Top Center Mariner Star Crest */}
-                  <polygon points="38,3 41,12 38,9.5 35,12" fill={p} />
-                  <polygon points="38,21 41,12 38,14.5 35,12" fill={s} />
-                  <polygon points="29,12 38,9.5 35.5,12 38,14.5" fill={p} />
-                  <polygon points="47,12 38,9.5 40.5,12 38,14.5" fill={s} />
-                  {/* Past center tick */}
-                  <polygon points="54,10 56,12 54,14 52,12" fill={s} />
-                  {/* Down left ticks */}
-                  <polygon points="10,26 12,28 14,26 12,24" fill={s} />
-                  <polygon points="10,34 12,36 14,34 12,32" fill={s} />
+                  <path d="M 62 20 H 20 V 38" stroke={s} strokeWidth="1.5" />
+                  {/* Corner 8-Point Windrose Compass Star */}
+                  <circle cx="13" cy="13" r="6.5" stroke={p} strokeWidth="1.1" />
+                  <polygon points="13,6.5 14.5,13 13,11.5 11.5,13" fill={p} />
+                  <polygon points="13,19.5 14.5,13 13,14.5 11.5,13" fill={s} />
+                  <polygon points="6.5,13 13,11.5 11.5,13 13,14.5" fill={p} />
+                  <polygon points="19.5,13 13,11.5 14.5,13 13,14.5" fill={s} />
+                  <line x1="8.5" y1="8.5" x2="17.5" y2="17.5" stroke={s} strokeWidth="0.9" />
+                  <line x1="8.5" y1="17.5" x2="17.5" y2="8.5" stroke={s} strokeWidth="0.9" />
+                  <circle cx="13" cy="13" r="1.5" fill={p} />
+                  {/* Perimeter Latitude / Longitude Ticks */}
+                  <line x1="26" y1="9" x2="26" y2="17" stroke={s} strokeWidth="1.2" />
+                  <line x1="33" y1="7" x2="33" y2="19" stroke={p} strokeWidth="1.6" />
+                  <line x1="40" y1="9" x2="40" y2="17" stroke={s} strokeWidth="1.2" />
+                  <line x1="47" y1="7" x2="47" y2="19" stroke={p} strokeWidth="1.6" />
+                  <line x1="54" y1="9" x2="54" y2="17" stroke={s} strokeWidth="1.2" />
+                  <line x1="61" y1="7" x2="61" y2="19" stroke={p} strokeWidth="1.6" />
+                  <line x1="9" y1="26" x2="17" y2="26" stroke={s} strokeWidth="1.2" />
+                  <line x1="7" y1="33" x2="19" y2="33" stroke={p} strokeWidth="1.6" />
                 </g>
               );
 
             case "antique-atlas":
               return (
                 <g fill="none" strokeLinejoin="round">
-                  <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="2.0" />
-                  <path d="M 62 18 H 18 V 38" stroke={s} strokeWidth="1.4" />
-                  {/* Corner Flute Rosette Block */}
-                  <rect x="6" y="6" width="12" height="12" stroke={p} strokeWidth="1.2" />
-                  <circle cx="12" cy="12" r="3.5" stroke={s} strokeWidth="1.0" />
-                  <circle cx="12" cy="12" r="1.5" fill={s} />
-                  <circle cx="26" cy="12" r="1.8" fill={s} />
-                  {/* Top Center Atlas Medallion */}
-                  <circle cx="38" cy="12" r="5" stroke={p} strokeWidth="1.4" />
-                  <circle cx="38" cy="12" r="2.2" fill={s} />
-                  <line x1="38" y1="5" x2="38" y2="19" stroke={p} strokeWidth="1.0" />
-                  <line x1="31" y1="12" x2="45" y2="12" stroke={p} strokeWidth="1.0" />
-                  <circle cx="50" cy="12" r="1.8" fill={s} />
-                  {/* Down left rosettes */}
-                  <circle cx="12" cy="26" r="1.8" fill={s} />
-                  <circle cx="12" cy="34" r="1.8" fill={s} />
+                  <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="1.8" />
+                  <path d="M 62 9 H 9 V 38" stroke={s} strokeWidth="1.0" />
+                  <path d="M 62 20 H 20 V 38" stroke={p} strokeWidth="1.5" />
+                  {/* Corner Radiating Fluted Arc Fan */}
+                  <path d="M 6 20 A 14 14 0 0 1 20 6" stroke={s} strokeWidth="1.8" />
+                  <line x1="6" y1="6" x2="19" y2="11" stroke={p} strokeWidth="1.4" />
+                  <line x1="6" y1="6" x2="16" y2="16" stroke={s} strokeWidth="1.6" />
+                  <line x1="6" y1="6" x2="11" y2="19" stroke={p} strokeWidth="1.4" />
+                  <circle cx="8.5" cy="8.5" r="2.2" fill={s} />
+                  {/* Atlas Perimeter Accent Dots */}
+                  <circle cx="28" cy="14.5" r="1.8" fill={s} />
+                  <circle cx="36" cy="14.5" r="1.8" fill={s} />
+                  <circle cx="44" cy="14.5" r="1.8" fill={s} />
+                  <circle cx="52" cy="14.5" r="1.8" fill={s} />
+                  <circle cx="60" cy="14.5" r="1.8" fill={s} />
+                  <circle cx="14.5" cy="28" r="1.8" fill={s} />
+                  <circle cx="14.5" cy="35" r="1.8" fill={s} />
+                </g>
+              );
+
+            case "architectural-grid":
+              return (
+                <g fill="none">
+                  <path d="M 62 6 H 6 V 38" stroke={p} strokeWidth="1.4" />
+                  <path d="M 62 20 H 20 V 38" stroke={p} strokeWidth="1.4" />
+                  {/* Corner Blueprint Crosshairs */}
+                  <circle cx="13" cy="13" r="5.5" stroke={s} strokeWidth="1.2" />
+                  <line x1="5" y1="13" x2="21" y2="13" stroke={p} strokeWidth="1.5" />
+                  <line x1="13" y1="5" x2="13" y2="21" stroke={p} strokeWidth="1.5" />
+                  <circle cx="13" cy="13" r="1.5" fill={s} />
+                  {/* Millimeter Micro-Ruler Ticks with major 10mm ticks */}
+                  <line x1="25" y1="9" x2="25" y2="17" stroke={s} strokeWidth="1.0" />
+                  <line x1="29" y1="10" x2="29" y2="16" stroke={s} strokeWidth="0.8" />
+                  <line x1="33" y1="9" x2="33" y2="17" stroke={s} strokeWidth="1.0" />
+                  <line x1="37" y1="10" x2="37" y2="16" stroke={s} strokeWidth="0.8" />
+                  <line x1="41" y1="7" x2="41" y2="19" stroke={p} strokeWidth="1.5" />
+                  <line x1="45" y1="10" x2="45" y2="16" stroke={s} strokeWidth="0.8" />
+                  <line x1="49" y1="9" x2="49" y2="17" stroke={s} strokeWidth="1.0" />
+                  <line x1="53" y1="10" x2="53" y2="16" stroke={s} strokeWidth="0.8" />
+                  <line x1="57" y1="9" x2="57" y2="17" stroke={s} strokeWidth="1.0" />
+                  <line x1="61" y1="7" x2="61" y2="19" stroke={p} strokeWidth="1.5" />
+                  <line x1="9" y1="25" x2="17" y2="25" stroke={s} strokeWidth="1.0" />
+                  <line x1="10" y1="29" x2="16" y2="29" stroke={s} strokeWidth="0.8" />
+                  <line x1="7" y1="33" x2="19" y2="33" stroke={p} strokeWidth="1.5" />
+                  <line x1="10" y1="37" x2="16" y2="37" stroke={s} strokeWidth="0.8" />
+                </g>
+              );
+
+            // --- 25% QUARTER-FRAME PREVIEWS (Placed at the bottom as requested) ---
+            case "victorian-filigree":
+              return (
+                <g fill="none" strokeLinejoin="round">
+                  <path d="M 64 5 H 5 V 38" stroke={p} strokeWidth="1.8" />
+                  <path d="M 64 8 H 8 V 38" stroke={p} strokeWidth="1.0" />
+                  <path d="M 64 16 H 16 V 38" stroke={s} strokeWidth="1.4" />
+                  {/* Corner Ornate Filigree Flourish */}
+                  <path d="M 8 8 L 16 8 C 13.5 12, 12 13.5, 8 16 Z" fill={s} />
+                  <path d="M 9 9 Q 13.5 11, 15 15" stroke="#fff" strokeWidth="1.0" />
+                  <circle cx="10.5" cy="10.5" r="1.3" fill="#fff" />
+                  {/* Top Center Diamond Medallion */}
+                  <polygon points="40,5.5 44,12 40,18.5 36,12" fill={s} />
+                  {/* Side Center Diamond Medallion */}
+                  <polygon points="5.5,28 12,24 18.5,28 12,32" fill={s} />
+                  {/* Running Filigree Accents */}
+                  <line x1="20" y1="12" x2="33" y2="12" stroke={s} strokeWidth="1.0" strokeDasharray="3 3" />
+                  <line x1="47" y1="12" x2="64" y2="12" stroke={s} strokeWidth="1.0" strokeDasharray="3 3" />
+                  <line x1="12" y1="20" x2="12" y2="22" stroke={s} strokeWidth="1.0" strokeDasharray="3 3" />
+                  <line x1="12" y1="34" x2="12" y2="38" stroke={s} strokeWidth="1.0" strokeDasharray="3 3" />
+                </g>
+              );
+
+            case "art-deco-stepped":
+              return (
+                <g fill="none" strokeLinejoin="round">
+                  <path d="M 64 5 H 5 V 38" stroke={p} strokeWidth="2.0" />
+                  <path d="M 64 8 H 8 V 38" stroke={s} strokeWidth="0.8" />
+                  <path d="M 64 16 H 16 V 38" stroke={p} strokeWidth="1.4" />
+                  {/* Corner Stepped Art Deco 4-tier Ziggurat */}
+                  <polygon points="8,8 16,8 16,10 14,10 14,12 12,12 12,14 10,14 10,16 8,16" fill={p} />
+                  <polygon points="9,9 15,9 15,10.5 13,10.5 13,12.5 11,12.5 11,14.5 9,14.5" fill={s} />
+                  {/* Top Center Chevron Notch */}
+                  <polygon points="32,5 40,14 48,5" fill={p} />
+                  <polygon points="35,5 40,11 45,5" fill={s} />
+                  {/* Side Center Chevron Notch */}
+                  <polygon points="5,20 14,28 5,36" fill={p} />
+                  <polygon points="5,23 11,28 5,33" fill={s} />
                 </g>
               );
 
