@@ -1888,33 +1888,37 @@ export function NeatlinePicker({
               {/* Custom dual gradient inputs */}
               <div className="neatline-custom-grad-row">
                 <span className="neatline-custom-label">Custom:</span>
-                <label className="neatline-color-input-chip" title="Start color">
-                  <span
-                    className="neatline-color-dot"
-                    style={{ background: selection.gradientFrom || "#f43f5e" }}
-                  />
-                  <input
-                    type="color"
-                    value={selection.gradientFrom || "#f43f5e"}
-                    onChange={(e) =>
-                      updateMixGradient(e.target.value, selection.gradientTo || "#fb923c")
-                    }
-                  />
-                </label>
-                <span className="neatline-grad-arrow">→</span>
-                <label className="neatline-color-input-chip" title="End color">
-                  <span
-                    className="neatline-color-dot"
-                    style={{ background: selection.gradientTo || "#fb923c" }}
-                  />
-                  <input
-                    type="color"
-                    value={selection.gradientTo || "#fb923c"}
-                    onChange={(e) =>
-                      updateMixGradient(selection.gradientFrom || "#f43f5e", e.target.value)
-                    }
-                  />
-                </label>
+                <div className="neatline-custom-grad-split">
+                  <label className="neatline-custom-grad-bar-half" title="Click to pick Start Color">
+                    <span
+                      className="neatline-custom-grad-fill"
+                      style={{ background: selection.gradientFrom || "#f43f5e" }}
+                    />
+                    <span className="neatline-custom-grad-text">From</span>
+                    <input
+                      type="color"
+                      value={selection.gradientFrom || "#f43f5e"}
+                      onChange={(e) =>
+                        updateMixGradient(e.target.value, selection.gradientTo || "#fb923c")
+                      }
+                    />
+                  </label>
+                  <span className="neatline-custom-grad-divider" />
+                  <label className="neatline-custom-grad-bar-half" title="Click to pick End Color">
+                    <span
+                      className="neatline-custom-grad-fill"
+                      style={{ background: selection.gradientTo || "#fb923c" }}
+                    />
+                    <span className="neatline-custom-grad-text">To</span>
+                    <input
+                      type="color"
+                      value={selection.gradientTo || "#fb923c"}
+                      onChange={(e) =>
+                        updateMixGradient(selection.gradientFrom || "#f43f5e", e.target.value)
+                      }
+                    />
+                  </label>
+                </div>
               </div>
             </div>
           ) : (
