@@ -173,6 +173,51 @@ export function hasPatternDesign(pattern: LinePattern): boolean {
   ].includes(pattern);
 }
 
+export function getBorderCategoryTag(pattern: LinePattern): string {
+  switch (pattern) {
+    case "single":
+      return "1-Line Minimal";
+    case "double":
+      return "2-Line Classic";
+    case "triple":
+      return "3-Line Stripe";
+    case "thick-thin":
+      return "Gallery Mat";
+    case "thin-thick":
+      return "Inset Frame";
+    case "triple-sandwich":
+      return "3-Tier Frame";
+    case "dashed":
+      return "Dashed Border";
+    case "dotted":
+      return "Pin-Dot Border";
+    case "dash-dot":
+      return "CAD Metric";
+    case "notched-corner":
+      return "Stepped Corners";
+    case "surveyor-ticks":
+      return "Military Grid";
+    case "greek-key":
+      return "Meander Motif";
+    case "victorian-filigree":
+      return "Ornamental Scroll";
+    case "art-deco-stepped":
+      return "Chevron Corners";
+    case "nautical-compass":
+      return "Mariner Rose";
+    case "celtic-braid":
+      return "Interlaced Wave";
+    case "diamond-lattice":
+      return "Lozenge Motif";
+    case "antique-atlas":
+      return "Fluted Corners";
+    case "architectural-grid":
+      return "Blueprint Corners";
+    default:
+      return "Line Border";
+  }
+}
+
 export function getPatternSpanUnits(pattern: LinePattern, designScale = 1.0): number {
   const scale = Math.max(0.4, Math.min(3.0, designScale));
   switch (pattern) {
@@ -343,7 +388,7 @@ function readSelection(): NeatlineSelection {
     cornerVariant: "plain",
     mapGapCm: 0.1,
     colorMode: "single",
-    singleColor: "#354b62",
+    singleColor: "#9CC3DA",
     gradientFrom: "#f43f5e",
     gradientTo: "#fb923c",
     designScale: 1.0,
@@ -372,7 +417,10 @@ function readSelection(): NeatlineSelection {
             ? Math.max(0.05, Math.min(0.60, parsed.mapGapCm))
             : 0.1,
         colorMode,
-        singleColor: parsed.singleColor || "#354b62",
+        singleColor:
+          parsed.singleColor && parsed.singleColor !== "#354b62"
+            ? parsed.singleColor
+            : "#9CC3DA",
         gradientFrom: parsed.gradientFrom || "#f43f5e",
         gradientTo: parsed.gradientTo || "#fb923c",
         designScale:
@@ -494,7 +542,7 @@ export function NeatlineArtwork({
   const gradId = `neatline-grad-${className ? className.trim().replace(/\s+/g, "-") : "main"}`;
   const fromColor = selection.gradientFrom || "#f43f5e";
   const toColor = selection.gradientTo || "#fb923c";
-  const singleColor = selection.singleColor || "#354b62";
+  const singleColor = selection.singleColor || "#9CC3DA";
 
   const strokeColor = isMix ? `url(#${gradId})` : singleColor;
   const primaryColor = strokeColor;
@@ -1328,24 +1376,27 @@ function NeatlineSwatch({
   style: BorderStyle;
   selection: NeatlineSelection;
 }) {
-  if (style.id === "none") {
-    return (
-      <span className="neatline-swatch neatline-empty" aria-hidden="true">
-        <span className="neatline-no-border-map" />
-      </span>
-    );
-  }
-
   const isMix = selection.colorMode === "mix";
   const swatchGradId = `swatch-grad-${style.id}`;
   const fromColor = selection.gradientFrom || "#f43f5e";
   const toColor = selection.gradientTo || "#fb923c";
-  const singleColor = selection.singleColor || "#354b62";
-  const strokeColor = isMix ? `url(#${swatchGradId})` : singleColor;
 
-  const p = strokeColor;
-  const s = strokeColor;
-  const gold = strokeColor;
+  // Blueprint blue lines matching LayoutCard
+  const hasCustomColor = Boolean(
+    selection.singleColor &&
+      selection.singleColor !== "#354b62" &&
+      selection.singleColor !== "#9CC3DA",
+  );
+  const p = isMix
+    ? `url(#${swatchGradId})`
+    : hasCustomColor
+      ? (selection.singleColor as string)
+      : "#9CC3DA";
+  const s = isMix
+    ? `url(#${swatchGradId})`
+    : hasCustomColor
+      ? (selection.singleColor as string)
+      : "#4B91B7";
 
   const swatchGradientDef = isMix ? (
     <defs>
@@ -1353,8 +1404,8 @@ function NeatlineSwatch({
         id={swatchGradId}
         x1="0"
         y1="0"
-        x2="88"
-        y2="66"
+        x2="64"
+        y2="40"
         gradientUnits="userSpaceOnUse"
       >
         <stop offset="0%" stopColor={fromColor} />
@@ -1363,247 +1414,275 @@ function NeatlineSwatch({
     </defs>
   ) : null;
 
-  // 1. FULL FRAME SWATCHES (for designs with prominent center diamond / chevron motifs)
-  if (style.id === "frame-victorian-filigree") {
+  if (style.id === "none") {
     return (
       <span className="neatline-swatch" aria-hidden="true">
-        <svg viewBox="0 0 88 66" preserveAspectRatio="none" className="neatline-swatch-artwork">
-        {swatchGradientDef}
-          <rect x="4" y="3" width="80" height="60" fill="none" stroke={p} strokeWidth="1.8" />
-          <rect x="7" y="6" width="74" height="54" fill="none" stroke={p} strokeWidth="0.8" />
-          <rect x="14" y="12" width="60" height="42" fill="none" stroke={p} strokeWidth="1.5" />
-          {/* Corner Scrolls */}
-          <polygon points="7,6 14,6 7,13" fill={p} />
-          <polygon points="81,6 74,6 81,13" fill={p} />
-          <polygon points="81,60 74,60 81,53" fill={p} />
-          <polygon points="7,60 14,60 7,53" fill={p} />
-          {/* Center Diamonds */}
-          <polygon points="44,3 47,6 44,9 41,6" fill={gold} />
-          <polygon points="44,57 47,60 44,63 41,60" fill={gold} />
-          <polygon points="4,33 7,30 10,33 7,36" fill={gold} />
-          <polygon points="78,33 81,30 84,33 81,36" fill={gold} />
+        <svg viewBox="0 0 64 40" preserveAspectRatio="none" className="neatline-swatch-artwork">
+          <rect
+            x="2"
+            y="2"
+            width="60"
+            height="36"
+            rx="4"
+            fill="none"
+            stroke="#9CC3DA"
+            strokeWidth="1"
+            strokeDasharray="3 3"
+            opacity="0.35"
+          />
+          <rect
+            x="7"
+            y="6"
+            width="50"
+            height="28"
+            rx="2.5"
+            fill="#4B91B7"
+            opacity="0.75"
+          />
         </svg>
       </span>
     );
   }
 
-  if (style.id === "frame-art-deco-stepped") {
-    return (
-      <span className="neatline-swatch" aria-hidden="true">
-        <svg viewBox="0 0 88 66" preserveAspectRatio="none" className="neatline-swatch-artwork">
-        {swatchGradientDef}
-          <rect x="4" y="3" width="80" height="60" fill="none" stroke={p} strokeWidth="2.2" />
-          <rect x="7" y="6" width="74" height="54" fill="none" stroke={gold} strokeWidth="0.9" />
-          <rect x="14" y="12" width="60" height="42" fill="none" stroke={p} strokeWidth="1.6" />
-          {/* Stepped Art Deco Corners */}
-          <polygon points="7,6 14,6 14,9 11,9 11,12 7,12" fill={p} />
-          <polygon points="81,6 74,6 74,9 77,9 77,12 81,12" fill={p} />
-          <polygon points="81,60 74,60 74,57 77,57 77,54 81,54" fill={p} />
-          <polygon points="7,60 14,60 14,57 11,57 11,54 7,54" fill={p} />
-          {/* Center Chevron Notches */}
-          <polygon points="38,3 44,8 50,3" fill={p} />
-          <polygon points="38,63 44,58 50,63" fill={p} />
-          <polygon points="4,28 9,33 4,38" fill={p} />
-          <polygon points="84,28 79,33 84,38" fill={p} />
-        </svg>
-      </span>
-    );
-  }
-
-  // 2. CORNER ZOOM SWATCHES (Bold, distinctive top-left corner close-up)
   return (
     <span className="neatline-swatch" aria-hidden="true">
-      <svg viewBox="0 0 88 66" preserveAspectRatio="none" className="neatline-swatch-artwork">
+      <svg viewBox="0 0 64 40" preserveAspectRatio="none" className="neatline-swatch-artwork">
         {swatchGradientDef}
         {(() => {
           switch (style.pattern) {
             case "single":
-              return <path d="M 88 14 H 14 V 66" fill="none" stroke={p} strokeWidth="3.6" />;
+              return (
+                <g>
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" fill="none" stroke={p} strokeWidth="2.2" />
+                  <rect x="10" y="8" width="44" height="24" rx="2" fill={s} opacity="0.35" />
+                </g>
+              );
+
             case "double":
               return (
-                <g fill="none" strokeWidth="2.4">
-                  <path d="M 88 10 H 10 V 66" stroke={p} />
-                  <path d="M 88 18 H 18 V 66" stroke={s} />
+                <g fill="none">
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.8" />
+                  <rect x="7" y="7" width="50" height="26" rx="2.5" stroke={s} strokeWidth="1.2" />
+                  <rect x="12" y="11" width="40" height="18" rx="1.5" fill={s} opacity="0.28" stroke="none" />
                 </g>
               );
+
             case "triple":
               return (
-                <g fill="none" strokeWidth="1.8">
-                  <path d="M 88 8 H 8 V 66" stroke={p} />
-                  <path d="M 88 14 H 14 V 66" stroke={s} />
-                  <path d="M 88 20 H 20 V 66" stroke={p} />
+                <g fill="none">
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.5" />
+                  <rect x="6.5" y="6.5" width="51" height="27" rx="2.5" stroke={s} strokeWidth="1.0" />
+                  <rect x="10" y="10" width="44" height="20" rx="2" stroke={p} strokeWidth="1.2" />
+                  <rect x="14" y="13" width="36" height="14" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "thick-thin":
               return (
                 <g fill="none">
-                  <path d="M 88 9 H 9 V 66" stroke={p} strokeWidth="4.8" />
-                  <path d="M 88 19 H 19 V 66" stroke={s} strokeWidth="1.8" />
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="2.6" />
+                  <rect x="8" y="8" width="48" height="24" rx="2.5" stroke={s} strokeWidth="1.0" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "thin-thick":
               return (
                 <g fill="none">
-                  <path d="M 88 9 H 9 V 66" stroke={p} strokeWidth="1.8" />
-                  <path d="M 88 19 H 19 V 66" stroke={s} strokeWidth="4.8" />
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.0" />
+                  <rect x="7.5" y="7.5" width="49" height="25" rx="2.5" stroke={s} strokeWidth="2.4" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "triple-sandwich":
               return (
                 <g fill="none">
-                  <path d="M 88 7 H 7 V 66" stroke={p} strokeWidth="1.5" />
-                  <path d="M 88 14 H 14 V 66" stroke={s} strokeWidth="4.2" />
-                  <path d="M 88 21 H 21 V 66" stroke={p} strokeWidth="1.5" />
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.0" />
+                  <rect x="6.5" y="6.5" width="51" height="27" rx="2.5" stroke={s} strokeWidth="2.2" />
+                  <rect x="10.5" y="10.5" width="43" height="19" rx="2" stroke={p} strokeWidth="1.0" />
+                  <rect x="15" y="14" width="34" height="12" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "dashed":
               return (
                 <g fill="none">
-                  <path d="M 88 9 H 9 V 66" stroke={p} strokeWidth="3.2" strokeDasharray="9 5" strokeLinecap="round" />
-                  <path d="M 88 19 H 19 V 66" stroke={s} strokeWidth="1.6" />
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.8" strokeDasharray="5 3" />
+                  <rect x="8" y="8" width="48" height="24" rx="2.5" stroke={s} strokeWidth="1.1" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "dotted":
               return (
                 <g fill="none">
-                  <path d="M 88 9 H 9 V 66" stroke={p} strokeWidth="2.2" />
-                  <path d="M 88 19 H 19 V 66" stroke={s} strokeWidth="3.2" strokeDasharray="1 6" strokeLinecap="round" />
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.5" />
+                  <rect x="7.5" y="7.5" width="49" height="25" rx="2.5" stroke={s} strokeWidth="2" strokeDasharray="1 3.5" strokeLinecap="round" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "dash-dot":
               return (
                 <g fill="none">
-                  <path d="M 88 9 H 9 V 66" stroke={p} strokeWidth="3" strokeDasharray="12 4 2 4" />
-                  <path d="M 88 19 H 19 V 66" stroke={s} strokeWidth="1.6" />
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.8" strokeDasharray="7 2 1.5 2" />
+                  <rect x="8" y="8" width="48" height="24" rx="2.5" stroke={s} strokeWidth="1.0" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "notched-corner":
               return (
                 <g fill="none">
-                  <path d="M 88 8 H 8 V 66" stroke={p} strokeWidth="2" />
-                  <path d="M 88 22 H 22 V 66" stroke={s} strokeWidth="2" />
-                  <rect x="8" y="8" width="14" height="14" fill="none" stroke={p} strokeWidth="1.6" />
-                  <circle cx="15" cy="15" r="2.5" fill={s} />
+                  <path d="M 9 3 H 55 L 61 9 V 31 L 55 37 H 9 L 3 31 V 9 Z" stroke={p} strokeWidth="1.8" />
+                  <rect x="8" y="7.5" width="48" height="25" rx="2" stroke={s} strokeWidth="1.1" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "surveyor-ticks":
               return (
                 <g fill="none">
-                  <path d="M 88 7 H 7 V 66" stroke={p} strokeWidth="1.8" />
-                  <path d="M 88 14 H 14 V 66" stroke={s} strokeWidth="6.5" strokeDasharray="8 8" />
-                  <path d="M 88 21 H 21 V 66" stroke={p} strokeWidth="1.8" />
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.4" />
+                  <rect x="8" y="8" width="48" height="24" rx="2" stroke={s} strokeWidth="1.1" />
+                  <line x1="16" y1="3" x2="16" y2="8" stroke={s} strokeWidth="1" />
+                  <line x1="32" y1="3" x2="32" y2="8" stroke={s} strokeWidth="1.4" />
+                  <line x1="48" y1="3" x2="48" y2="8" stroke={s} strokeWidth="1" />
+                  <line x1="16" y1="32" x2="16" y2="37" stroke={s} strokeWidth="1" />
+                  <line x1="32" y1="32" x2="32" y2="37" stroke={s} strokeWidth="1.4" />
+                  <line x1="48" y1="32" x2="48" y2="37" stroke={s} strokeWidth="1" />
+                  <line x1="3" y1="20" x2="8" y2="20" stroke={s} strokeWidth="1.4" />
+                  <line x1="56" y1="20" x2="61" y2="20" stroke={s} strokeWidth="1.4" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "greek-key":
               return (
-                <g fill="none" stroke={p}>
-                  <path d="M 88 6 H 6 V 66" strokeWidth="2.2" />
-                  <path d="M 88 24 H 24 V 66" strokeWidth="1.8" />
-                  {/* Corner Square Meander */}
-                  <rect x="6" y="6" width="18" height="18" strokeWidth="1.5" />
-                  <rect x="9" y="9" width="12" height="12" strokeWidth="1.2" />
-                  <circle cx="15" cy="15" r="2" fill={p} />
-                  {/* Key loop running right */}
-                  <path d="M 28 10 H 42 V 20 H 32 V 14 H 38" strokeWidth="1.4" />
-                  <path d="M 46 10 H 60 V 20 H 50 V 14 H 56" strokeWidth="1.4" />
-                  {/* Key loop running down */}
-                  <path d="M 10 28 V 42 H 20 V 32 H 14 V 38" strokeWidth="1.4" />
-                  <path d="M 10 46 V 60 H 20 V 50 H 14 V 56" strokeWidth="1.4" />
+                <g fill="none">
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.8" />
+                  <rect x="9" y="8" width="46" height="24" rx="2" stroke={s} strokeWidth="1.2" />
+                  <path d="M 4 8 H 7 V 5 M 60 8 H 57 V 5 M 4 32 H 7 V 35 M 60 32 H 57 V 35" stroke={s} strokeWidth="1.2" />
+                  <polygon points="32,4 34,5.5 32,7 30,5.5" fill={s} stroke="none" />
+                  <polygon points="32,33 34,34.5 32,36 30,34.5" fill={s} stroke="none" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
+            case "victorian-filigree":
+              return (
+                <g fill="none">
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.8" />
+                  <rect x="5.5" y="5.5" width="53" height="29" stroke={s} strokeWidth="0.8" opacity="0.65" />
+                  <rect x="9.5" y="8.5" width="45" height="23" rx="2" stroke={p} strokeWidth="1.3" />
+                  <polygon points="5.5,5.5 9.5,5.5 5.5,9.5" fill={s} stroke="none" />
+                  <polygon points="58.5,5.5 54.5,5.5 58.5,9.5" fill={s} stroke="none" />
+                  <polygon points="58.5,34.5 54.5,34.5 58.5,30.5" fill={s} stroke="none" />
+                  <polygon points="5.5,34.5 9.5,34.5 5.5,30.5" fill={s} stroke="none" />
+                  <polygon points="32,3.5 34,5.5 32,7.5 30,5.5" fill={s} stroke="none" />
+                  <polygon points="32,32.5 34,34.5 32,36.5 30,34.5" fill={s} stroke="none" />
+                  <rect x="13.5" y="12" width="37" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
+                </g>
+              );
+
+            case "art-deco-stepped":
+              return (
+                <g fill="none">
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="2.0" />
+                  <rect x="9.5" y="8.5" width="45" height="23" rx="2" stroke={s} strokeWidth="1.3" />
+                  <path d="M 5 5 H 9 V 6.5 H 7 V 8.5 H 5 Z" fill={s} stroke="none" />
+                  <path d="M 59 5 H 55 V 6.5 H 57 V 8.5 H 59 Z" fill={s} stroke="none" />
+                  <path d="M 59 35 H 55 V 33.5 H 57 V 31.5 H 59 Z" fill={s} stroke="none" />
+                  <path d="M 5 35 H 9 V 33.5 H 7 V 31.5 H 5 Z" fill={s} stroke="none" />
+                  <polygon points="28,3 32,6 36,3" fill={p} stroke="none" />
+                  <polygon points="28,37 32,34 36,37" fill={p} stroke="none" />
+                  <rect x="13.5" y="12" width="37" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
+                </g>
+              );
+
             case "nautical-compass":
               return (
-                <g fill="none" stroke={p}>
-                  <path d="M 88 6 H 6 V 66" strokeWidth="2.2" />
-                  <path d="M 88 26 H 26 V 66" strokeWidth="1.8" />
-                  {/* Graduation ticks */}
-                  <line x1="34" y1="12" x2="34" y2="20" strokeWidth="1.5" />
-                  <line x1="44" y1="13" x2="44" y2="19" strokeWidth="1" />
-                  <line x1="54" y1="12" x2="54" y2="20" strokeWidth="1.5" />
-                  <line x1="64" y1="13" x2="64" y2="19" strokeWidth="1" />
-                  <line x1="74" y1="12" x2="74" y2="20" strokeWidth="1.5" />
-                  <line x1="12" y1="34" x2="20" y2="34" strokeWidth="1.5" />
-                  <line x1="13" y1="44" x2="19" y2="44" strokeWidth="1" />
-                  <line x1="12" y1="54" x2="20" y2="54" strokeWidth="1.5" />
-                  {/* Corner Compass Windrose Star */}
-                  <circle cx="16" cy="16" r="9" fill="#fff" strokeWidth="1.2" />
-                  <polygon points="16,8 18,14 24,16 18,18 16,24 14,18 8,16 14,14" fill={s} />
-                  <circle cx="16" cy="16" r="1.5" fill={p} />
+                <g fill="none">
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.8" />
+                  <rect x="9" y="8" width="46" height="24" rx="2" stroke={s} strokeWidth="1.2" />
+                  <polygon points="6,4.5 7,6 6,7.5 5,6" fill={s} stroke="none" />
+                  <polygon points="58,4.5 59,6 58,7.5 57,6" fill={s} stroke="none" />
+                  <polygon points="6,32.5 7,34 6,35.5 5,34" fill={s} stroke="none" />
+                  <polygon points="58,32.5 59,34 58,35.5 57,34" fill={s} stroke="none" />
+                  <polygon points="32,3 33.5,5.5 32,8 30.5,5.5" fill={s} stroke="none" />
+                  <polygon points="32,32 33.5,34.5 32,37 30.5,34.5" fill={s} stroke="none" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "celtic-braid":
               return (
-                <g fill="none" stroke={p}>
-                  <path d="M 88 6 H 6 V 66" strokeWidth="2.2" />
-                  <path d="M 88 24 H 24 V 66" strokeWidth="1.8" />
-                  {/* Corner Knot Ring */}
-                  <rect x="7" y="7" width="16" height="16" rx="3" fill="#fff" strokeWidth="1.2" />
-                  <circle cx="15" cy="15" r="5" strokeWidth="1.4" stroke={s} />
-                  {/* Wave braid running right */}
-                  <path d="M 24 15 Q 31 9, 38 15 T 52 15 T 66 15 T 80 15" strokeWidth="1.8" stroke={s} />
-                  <path d="M 24 15 Q 31 21, 38 15 T 52 15 T 66 15 T 80 15" strokeWidth="1.2" strokeDasharray="3 2" />
-                  {/* Wave braid running down */}
-                  <path d="M 15 24 Q 9 31, 15 38 T 15 52 T 15 66" strokeWidth="1.8" stroke={s} />
+                <g fill="none">
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.8" />
+                  <rect x="9" y="8" width="46" height="24" rx="2" stroke={s} strokeWidth="1.2" />
+                  <path d="M 22 5.5 Q 27 3.5 32 5.5 Q 37 7.5 42 5.5" stroke={s} strokeWidth="1.1" />
+                  <path d="M 22 34.5 Q 27 32.5 32 34.5 Q 37 36.5 42 34.5" stroke={s} strokeWidth="1.1" />
+                  <circle cx="6" cy="6" r="1.4" fill={s} stroke="none" />
+                  <circle cx="58" cy="6" r="1.4" fill={s} stroke="none" />
+                  <circle cx="58" cy="34" r="1.4" fill={s} stroke="none" />
+                  <circle cx="6" cy="34" r="1.4" fill={s} stroke="none" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "diamond-lattice":
               return (
-                <g fill="none" stroke={p}>
-                  <path d="M 88 6 H 6 V 66" strokeWidth="2.2" />
-                  <path d="M 88 24 H 24 V 66" strokeWidth="1.8" />
-                  {/* Corner Diamond Rosette */}
-                  <rect x="7" y="7" width="16" height="16" fill="#fff" strokeWidth="1.2" />
-                  <polygon points="15,9 21,15 15,21 9,15" fill={s} />
-                  {/* Rhombus diamonds */}
-                  <polygon points="32,11 36,15 32,19 28,15" fill={p} />
-                  <polygon points="44,11 48,15 44,19 40,15" fill={s} />
-                  <polygon points="56,11 60,15 56,19 52,15" fill={p} />
-                  <polygon points="68,11 72,15 68,19 64,15" fill={s} />
-                  <polygon points="80,11 84,15 80,19 76,15" fill={p} />
-                  <polygon points="15,32 19,36 15,40 11,36" fill={p} />
-                  <polygon points="15,44 19,48 15,52 11,48" fill={s} />
-                  <polygon points="15,56 19,60 15,64 11,60" fill={p} />
+                <g fill="none">
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.8" />
+                  <rect x="9" y="8" width="46" height="24" rx="2" stroke={s} strokeWidth="1.2" />
+                  <polygon points="20,4.5 22,5.5 20,6.5 18,5.5" fill={s} stroke="none" />
+                  <polygon points="32,4.5 34,5.5 32,6.5 30,5.5" fill={s} stroke="none" />
+                  <polygon points="44,4.5 46,5.5 44,6.5 42,5.5" fill={s} stroke="none" />
+                  <polygon points="20,33.5 22,34.5 20,35.5 18,34.5" fill={s} stroke="none" />
+                  <polygon points="32,33.5 34,34.5 32,35.5 30,34.5" fill={s} stroke="none" />
+                  <polygon points="44,33.5 46,34.5 44,35.5 42,34.5" fill={s} stroke="none" />
+                  <polygon points="6,19 7,20 6,21 5,20" fill={s} stroke="none" />
+                  <polygon points="58,19 59,20 58,21 57,20" fill={s} stroke="none" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "antique-atlas":
               return (
                 <g fill="none">
-                  <path d="M 88 6 H 6 V 66" stroke={p} strokeWidth="2.2" />
-                  <path d="M 88 9 H 9 V 66" stroke={s} strokeWidth="0.8" />
-                  <path d="M 88 26 H 26 V 66" stroke={p} strokeWidth="1.8" />
-                  {/* Corner Sunburst Arc & Flutes */}
-                  <path d="M 6 26 A 20 20 0 0 1 26 6" stroke={s} strokeWidth="1.5" />
-                  <line x1="6" y1="6" x2="23" y2="11" stroke={p} strokeWidth="1.2" />
-                  <line x1="6" y1="6" x2="19" y2="19" stroke={s} strokeWidth="1.4" />
-                  <line x1="6" y1="6" x2="11" y2="23" stroke={p} strokeWidth="1.2" />
-                  <circle cx="9" cy="9" r="2.5" fill={s} />
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.8" />
+                  <rect x="9" y="8" width="46" height="24" rx="2" stroke={s} strokeWidth="1.2" />
+                  <rect x="4.5" y="4.5" width="3" height="3" stroke={s} strokeWidth="0.9" />
+                  <rect x="56.5" y="4.5" width="3" height="3" stroke={s} strokeWidth="0.9" />
+                  <rect x="4.5" y="32.5" width="3" height="3" stroke={s} strokeWidth="0.9" />
+                  <rect x="56.5" y="32.5" width="3" height="3" stroke={s} strokeWidth="0.9" />
+                  <circle cx="32" cy="5.5" r="1.3" fill={s} stroke="none" />
+                  <circle cx="32" cy="34.5" r="1.3" fill={s} stroke="none" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             case "architectural-grid":
               return (
                 <g fill="none">
-                  <path d="M 88 6 H 6 V 66" stroke={p} strokeWidth="1.2" />
-                  <path d="M 88 24 H 24 V 66" stroke={p} strokeWidth="2.4" />
-                  {/* Micro-ruler ticks */}
-                  <line x1="30" y1="11" x2="30" y2="19" stroke={s} strokeWidth="1.2" />
-                  <line x1="36" y1="13" x2="36" y2="17" stroke={s} strokeWidth="0.8" />
-                  <line x1="42" y1="13" x2="42" y2="17" stroke={s} strokeWidth="0.8" />
-                  <line x1="48" y1="11" x2="48" y2="19" stroke={s} strokeWidth="1.2" />
-                  <line x1="54" y1="13" x2="54" y2="17" stroke={s} strokeWidth="0.8" />
-                  <line x1="60" y1="13" x2="60" y2="17" stroke={s} strokeWidth="0.8" />
-                  <line x1="66" y1="11" x2="66" y2="19" stroke={s} strokeWidth="1.2" />
-                  <line x1="72" y1="13" x2="72" y2="17" stroke={s} strokeWidth="0.8" />
-                  <line x1="78" y1="13" x2="78" y2="17" stroke={s} strokeWidth="0.8" />
-                  <line x1="84" y1="11" x2="84" y2="19" stroke={s} strokeWidth="1.2" />
-                  {/* Corner Crosshair */}
-                  <circle cx="15" cy="15" r="7" fill="#fff" stroke={s} strokeWidth="1" />
-                  <line x1="5" y1="15" x2="25" y2="15" stroke={p} strokeWidth="1.2" />
-                  <line x1="15" y1="5" x2="15" y2="25" stroke={p} strokeWidth="1.2" />
-                  <circle cx="15" cy="15" r="1.5" fill={s} />
+                  <line x1="2" y1="5.5" x2="62" y2="5.5" stroke={p} strokeWidth="1.4" />
+                  <line x1="2" y1="34.5" x2="62" y2="34.5" stroke={p} strokeWidth="1.4" />
+                  <line x1="5.5" y1="2" x2="5.5" y2="38" stroke={p} strokeWidth="1.4" />
+                  <line x1="58.5" y1="2" x2="58.5" y2="38" stroke={p} strokeWidth="1.4" />
+                  <rect x="9" y="9" width="46" height="22" rx="1.5" stroke={s} strokeWidth="1.1" />
+                  <rect x="13" y="12" width="38" height="16" rx="1" fill={s} opacity="0.25" stroke="none" />
                 </g>
               );
+
             default:
-              return <path d="M 88 14 H 14 V 66" fill="none" stroke={p} strokeWidth="3" />;
+              return (
+                <g fill="none">
+                  <rect x="3" y="3" width="58" height="34" rx="3.5" stroke={p} strokeWidth="1.8" />
+                  <rect x="8" y="8" width="48" height="24" rx="2" stroke={s} strokeWidth="1.2" />
+                  <rect x="13" y="12" width="38" height="16" rx="1.5" fill={s} opacity="0.25" stroke="none" />
+                </g>
+              );
           }
         })()}
       </svg>
@@ -1883,14 +1962,14 @@ export function NeatlinePicker({
                 <label
                   className="neatline-water-single-box"
                   title="Click to pick custom color"
-                  style={{ background: selection.singleColor || "#354b62" }}
+                  style={{ background: selection.singleColor || "#9CC3DA" }}
                 >
                   <input
                     type="color"
-                    value={selection.singleColor || "#354b62"}
+                    value={selection.singleColor || "#9CC3DA"}
                     onChange={(e) => updateSingleColor(e.target.value)}
                   />
-                  <span className="neatline-water-pip" style={{ background: selection.singleColor || "#354b62" }} />
+                  <span className="neatline-water-pip" style={{ background: selection.singleColor || "#9CC3DA" }} />
                 </label>
               </div>
             </div>
@@ -1910,11 +1989,18 @@ export function NeatlinePicker({
             data-border-style={style.id}
             title={style.name}
             aria-pressed={isSelected(style)}
-            className={`neatline-option ${isSelected(style) ? "is-selected" : ""}`}
+            className={`neatline-card neatline-option ${isSelected(style) ? "is-selected" : ""}`}
             onClick={() => selectStyle(style)}
           >
-            <NeatlineSwatch style={style} selection={swatchSelection(style)} />
-            <span className="neatline-option-name">{style.name}</span>
+            <div className="neatline-card-copy">
+              <span className="neatline-card-name">{style.name}</span>
+              <span className="neatline-card-meta">
+                {style.id === "none" ? "Full Bleed Map" : getBorderCategoryTag(style.pattern)}
+              </span>
+            </div>
+            <div className="neatline-card-symbol-wrap">
+              <NeatlineSwatch style={style} selection={swatchSelection(style)} />
+            </div>
           </button>
         ))}
       </div>
