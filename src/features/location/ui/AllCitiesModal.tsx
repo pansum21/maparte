@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import "./AllCitiesModal.css";
-import seoCitiesData from "@/data/seoCities.json";
+import cityDirectoryData from "@/data/cityDirectory.json";
+import cityPhotosData from "@/data/cityPhotos.json";
 import { useCurrentLocation } from "@/features/location/application/useCurrentLocation";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
 import { useMapSync } from "@/features/map/application/useMapSync";
@@ -14,41 +15,98 @@ interface AllCitiesModalProps {
   onClose: () => void;
 }
 
-interface SeoCityItem {
+interface CityDirectoryItem {
   slug: string;
   city: string;
   country: string;
+  countryCode?: string;
   continent: string;
   lat: number;
   lon: number;
-  distanceMeters: number;
-  landmarks: string[];
-  tagline: string;
-  description?: string;
-  rank?: number;
-  annualSearches?: string;
+  landmarks?: string[];
+  isCapital?: boolean;
+  capitalOf?: string;
+}
+
+interface CityPhotoCredit {
+  sourcePage?: string;
+  author?: string;
+  license?: string;
 }
 
 const CONTINENTS = ["Americas", "Europe", "Asia", "Africa"] as const;
 
-function CityPhoto({ city, slug, priority }: { city: string; slug: string; priority: boolean }) {
+function CityPhoto({
+  city,
+  slug,
+  priority,
+  credit,
+}: {
+  city: string;
+  slug: string;
+  priority: boolean;
+  credit?: CityPhotoCredit;
+}) {
   const [imageFailed, setImageFailed] = useState(false);
   const imageSrc = `/assets/city-photos/${slug}.webp`;
 
   return (
-    <div className={`city-card-photo${imageFailed ? "" : " has-image"}`} style={{ display: "grid", width: "100%", height: "112px", minHeight: "112px", flex: "0 0 112px", overflow: "hidden" }}>
+    <div
+      className={`city-card-photo${imageFailed ? "" : " has-image"}`}
+      style={{
+        position: "relative",
+        display: "grid",
+        width: "100%",
+        height: "112px",
+        minHeight: "112px",
+        flex: "0 0 112px",
+        overflow: "hidden",
+      }}
+    >
       {imageFailed ? (
         <span className="city-photo-unavailable" aria-hidden="true" />
       ) : (
         <img
           src={imageSrc}
-          style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }}
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
           alt={`${city} city photo`}
           loading={priority ? "eager" : "lazy"}
           decoding="async"
           onError={() => setImageFailed(true)}
         />
       )}
+      {credit?.sourcePage ? (
+        <a
+          href={credit.sourcePage}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`Photo credit: ${credit.author || "Wikimedia contributor"}, ${credit.license || "license details"}`}
+          title={`Photo: ${credit.author || "Wikimedia contributor"} · ${credit.license || "See source"}`}
+          onClick={(event) => event.stopPropagation()}
+          style={{
+            position: "absolute",
+            zIndex: 1,
+            right: "5px",
+            bottom: "5px",
+            display: "grid",
+            placeItems: "center",
+            width: "18px",
+            height: "18px",
+            borderRadius: "50%",
+            background: "rgba(3, 12, 21, .72)",
+            color: "#fff",
+            fontSize: "11px",
+            textDecoration: "none",
+          }}
+        >
+          ©
+        </a>
+      ) : null}
     </div>
   );
 }
@@ -82,18 +140,28 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
   }, [isOpen, onClose]);
 
   const filteredCities = useMemo(() => {
-    const list = seoCitiesData as SeoCityItem[];
+    const list = cityDirectoryData as CityDirectoryItem[];
     return list.filter((item) => {
       if (isSearchingCities) {
-        return item.city.toLowerCase().includes(normalizedQuery) ||
+        return (
+          item.city.toLowerCase().includes(normalizedQuery) ||
           item.country.toLowerCase().includes(normalizedQuery) ||
-          item.landmarks.some((landmark) => landmark.toLowerCase().includes(normalizedQuery));
+          (item.landmarks &&
+            item.landmarks.some((landmark) =>
+              landmark.toLowerCase().includes(normalizedQuery),
+            ))
+        );
       }
-      const matchesContinent = selectedContinent === "Americas"
-        ? item.continent === "North America" || item.continent === "South America"
-        : selectedContinent === "Asia"
-          ? item.continent === "Asia" || item.continent === "Middle East" || item.continent === "Oceania"
-          : item.continent === selectedContinent;
+      const matchesContinent =
+        selectedContinent === "Americas"
+          ? ["North America", "Central America", "South America", "Caribbean"].includes(
+              item.continent,
+            )
+          : selectedContinent === "Asia"
+            ? item.continent === "Asia" ||
+              item.continent === "Middle East" ||
+              item.continent === "Oceania"
+            : item.continent === selectedContinent;
       return matchesContinent;
     });
   }, [isSearchingCities, normalizedQuery, selectedContinent]);
@@ -111,10 +179,10 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
     onClose();
   };
 
-  const handleCityPick = (item: SeoCityItem) => {
+  const handleCityPick = (item: CityDirectoryItem) => {
     const fullLabel = `${item.city}, ${item.country}`;
     const result: SearchResult = {
-      id: `seo:${item.slug}`,
+      id: `dir:${item.slug}`,
       label: fullLabel,
       city: item.city,
       country: item.country,
@@ -155,7 +223,15 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
       <div className="all-cities-search-main">
         <div
           className="all-cities-search-bar"
-          style={{ display: "flex", alignItems: "center", gap: "5px", height: "42px", padding: "4px 6px", boxSizing: "border-box", overflow: "hidden" }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "5px",
+            height: "42px",
+            padding: "4px 6px",
+            boxSizing: "border-box",
+            overflow: "hidden",
+          }}
         >
           <button
             type="button"
@@ -164,8 +240,22 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
             onClick={() => setShowCoords((value) => !value)}
             aria-label="Toggle coordinates"
             title="Show or hide coordinates"
-            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(31, 56, 75, .62)", color: "rgba(210, 231, 245, .9)", cursor: "pointer" }}
-          ><LocationIcon /></button>
+            style={{
+              display: "inline-grid",
+              placeItems: "center",
+              flex: "0 0 30px",
+              width: "30px",
+              height: "30px",
+              padding: 0,
+              border: "1px solid rgba(171, 201, 224, .28)",
+              borderRadius: "7px",
+              background: "rgba(31, 56, 75, .62)",
+              color: "rgba(210, 231, 245, .9)",
+              cursor: "pointer",
+            }}
+          >
+            <LocationIcon />
+          </button>
           <button
             type="button"
             className={`all-cities-location-action${isLocatingUser ? " is-locating" : ""}`}
@@ -174,13 +264,27 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
             disabled={isLocatingUser}
             aria-label="Use current GPS location"
             title="Use current GPS location"
-            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(31, 56, 75, .62)", color: "rgba(210, 231, 245, .9)", cursor: "pointer" }}
-          ><MyLocationIcon /></button>
+            style={{
+              display: "inline-grid",
+              placeItems: "center",
+              flex: "0 0 30px",
+              width: "30px",
+              height: "30px",
+              padding: 0,
+              border: "1px solid rgba(171, 201, 224, .28)",
+              borderRadius: "7px",
+              background: "rgba(31, 56, 75, .62)",
+              color: "rgba(210, 231, 245, .9)",
+              cursor: "pointer",
+            }}
+          >
+            <MyLocationIcon />
+          </button>
           <input
             type="text"
             className="all-cities-search-input"
             name="location"
-            placeholder="City, state, or Google Maps link"
+            placeholder="Search city, country..."
             value={state.form.location}
             onChange={handleInputChange}
             onFocus={() => setLocationFocused(true)}
@@ -189,7 +293,20 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
               if (event.key === "Enter") void searchNow(event.currentTarget.value);
             }}
             autoComplete="off"
-            style={{ flex: "1 1 auto", minWidth: 0, width: 0, height: "30px", boxSizing: "border-box", padding: "0 8px", border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(4, 12, 21, .68)", color: "#fff", fontSize: "14px", outline: "none" }}
+            style={{
+              flex: "1 1 auto",
+              minWidth: 0,
+              width: 0,
+              height: "30px",
+              boxSizing: "border-box",
+              padding: "0 8px",
+              border: "1px solid rgba(171, 201, 224, .28)",
+              borderRadius: "7px",
+              background: "rgba(4, 12, 21, .68)",
+              color: "#fff",
+              fontSize: "14px",
+              outline: "none",
+            }}
           />
           {hasLocationValue ? (
             <button
@@ -205,8 +322,24 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
               }}
               aria-label="Clear location input"
               title="Clear input"
-              style={{ display: "inline-grid", placeItems: "center", flex: "0 0 24px", width: "24px", height: "24px", padding: 0, border: "none", borderRadius: "50%", background: "rgba(255, 255, 255, 0.12)", color: "#d9e8f5", cursor: "pointer", fontSize: "12px", lineHeight: "1" }}
-            >✕</button>
+              style={{
+                display: "inline-grid",
+                placeItems: "center",
+                flex: "0 0 24px",
+                width: "24px",
+                height: "24px",
+                padding: 0,
+                border: "none",
+                borderRadius: "50%",
+                background: "rgba(255, 255, 255, 0.12)",
+                color: "#d9e8f5",
+                cursor: "pointer",
+                fontSize: "12px",
+                lineHeight: "1",
+              }}
+            >
+              ✕
+            </button>
           ) : null}
           <button
             type="button"
@@ -215,16 +348,46 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
             onClick={() => void searchNow(state.form.location)}
             aria-label="Search location"
             title="Search location"
-            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(171, 201, 224, .28)", borderRadius: "7px", background: "rgba(31, 56, 75, .62)", color: "#9fb9cc", cursor: "pointer" }}
-          ><SearchIcon /></button>
+            style={{
+              display: "inline-grid",
+              placeItems: "center",
+              flex: "0 0 30px",
+              width: "30px",
+              height: "30px",
+              padding: 0,
+              border: "1px solid rgba(171, 201, 224, .28)",
+              borderRadius: "7px",
+              background: "rgba(31, 56, 75, .62)",
+              color: "#9fb9cc",
+              cursor: "pointer",
+            }}
+          >
+            <SearchIcon />
+          </button>
           <button
             type="button"
             className="all-cities-close-btn"
             onClick={onClose}
             aria-label="Close location panel"
             title="Close location panel"
-            style={{ display: "inline-grid", placeItems: "center", flex: "0 0 30px", width: "30px", height: "30px", padding: 0, border: "1px solid rgba(255, 255, 255, 0.22)", borderRadius: "7px", background: "rgba(255, 255, 255, 0.08)", color: "#e2e8f0", cursor: "pointer", fontSize: "14px", fontWeight: "bold" }}
-          >✕</button>
+            style={{
+              display: "inline-grid",
+              placeItems: "center",
+              flex: "0 0 30px",
+              width: "30px",
+              height: "30px",
+              padding: 0,
+              border: "1px solid rgba(255, 255, 255, 0.22)",
+              borderRadius: "7px",
+              background: "rgba(255, 255, 255, 0.08)",
+              color: "#e2e8f0",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            ✕
+          </button>
         </div>
 
         {showCoords ? (
@@ -284,8 +447,26 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
                 style={{ display: "flex", flexDirection: "column", minHeight: "148px", overflow: "hidden" }}
                 onClick={() => handleCityPick(item)}
               >
-                <CityPhoto city={item.city} slug={item.slug} priority={index < 8} />
-                <span className="city-card-name" style={{ display: "block", flex: "0 0 auto", minHeight: "36px", boxSizing: "border-box", color: "#fff", visibility: "visible", position: "relative" }}>{item.city}</span>
+                <CityPhoto
+                  city={item.city}
+                  slug={item.slug}
+                  priority={index < 8}
+                  credit={(cityPhotosData as Record<string, CityPhotoCredit>)[item.slug]}
+                />
+                <span
+                  className="city-card-name"
+                  style={{
+                    display: "block",
+                    flex: "0 0 auto",
+                    minHeight: "36px",
+                    boxSizing: "border-box",
+                    color: "#fff",
+                    visibility: "visible",
+                    position: "relative",
+                  }}
+                >
+                  {item.city}, {item.country}
+                </span>
               </button>
             );
           })}

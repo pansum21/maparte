@@ -582,6 +582,15 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                       Our Buy One Get One Free (BOGO) promo code is exclusively included with our $9.99 All-in-One Master Bundle tier. Upon purchase, a unique coupon code is delivered directly to your email, unlocking a 100% free second Ultra-HD download for a matching pair (e.g., His &amp; Hers hometowns, or engagement &amp; wedding venues).
                     </p>
                   </details>
+
+                  <details className="guide-faq-item">
+                    <summary className="guide-faq-question">
+                      Which cities are included in the curated 400 World Cities directory?
+                    </summary>
+                    <p className="guide-faq-answer">
+                      Maparte features a curated directory of 400 world-famous destinations organized into 4 major continental regions with exactly 100 cities each: <strong>Americas</strong> (North America, South America, Central America, and the Caribbean), <strong>Europe</strong> (historic capitals and cultural hubs), <strong>Asia &amp; Oceania</strong> (Asian megacities, Middle Eastern skylines, and Australian coastal hubs), and <strong>Africa</strong> (vibrant capitals and historic trading ports). Each city card includes local photography, authentic country identities, and pre-calibrated coordinates for instant one-click poster styling. In addition to these 400 cities, you can search and render any global village, street, or GPS coordinate on Earth.
+                    </p>
+                  </details>
                 </div>
               </section>
             </article>
