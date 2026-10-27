@@ -20,6 +20,11 @@ interface CinemaWallDockProps {
 
 type ActivePanel = "adjust" | "layout" | null;
 
+function stepRangeValue(value: number, delta: number, min: number, max: number, step: number) {
+  const stepsFromMin = Math.round((value - min) / step) + delta;
+  return Math.min(max, Math.max(min, Number((min + stepsFromMin * step).toFixed(2))));
+}
+
 export default function CinemaWallDock({
   onExit,
   onWallPhotoChange,
@@ -81,6 +86,19 @@ export default function CinemaWallDock({
       fileInputRef.current.value = "";
     }
     setActivePanel(null);
+  };
+
+  const adjustPlacement = (
+    key: keyof Placement,
+    delta: number,
+    min: number,
+    max: number,
+    step: number,
+  ) => {
+    onPlacementChange({
+      ...placement,
+      [key]: stepRangeValue(placement[key], delta, min, max, step),
+    });
   };
 
   const handleToggleFullscreen = () => {
@@ -174,56 +192,107 @@ export default function CinemaWallDock({
             <label>
               <span>Poster Size</span>
               <output>{placement.scale.toFixed(2)}×</output>
-              <input
-                type="range"
-                className="cinema-range-slider"
-                min="0.30"
-                max="10.00"
-                step="0.05"
-                value={placement.scale}
-                onChange={(event) =>
-                  onPlacementChange({
-                    ...placement,
-                    scale: Number(event.currentTarget.value),
-                  })
-                }
-              />
+              <span className="cinema-range-control">
+                <button
+                  type="button"
+                  className="cinema-range-step"
+                  onClick={() => adjustPlacement("scale", -1, 0.3, 10, 0.05)}
+                  disabled={placement.scale <= 0.3}
+                  aria-label="Decrease poster size"
+                >−</button>
+                <input
+                  type="range"
+                  className="cinema-range-slider"
+                  min="0.30"
+                  max="10.00"
+                  step="0.05"
+                  value={placement.scale}
+                  onChange={(event) =>
+                    onPlacementChange({
+                      ...placement,
+                      scale: Number(event.currentTarget.value),
+                    })
+                  }
+                  aria-label="Poster size"
+                />
+                <button
+                  type="button"
+                  className="cinema-range-step"
+                  onClick={() => adjustPlacement("scale", 1, 0.3, 10, 0.05)}
+                  disabled={placement.scale >= 10}
+                  aria-label="Increase poster size"
+                >+</button>
+              </span>
             </label>
             <label>
               <span>Horizontal Position</span>
               <output>{Math.round(placement.x)}%</output>
-              <input
-                type="range"
-                className="cinema-range-slider"
-                min="-50"
-                max="50"
-                step="1"
-                value={placement.x}
-                onChange={(event) =>
-                  onPlacementChange({
-                    ...placement,
-                    x: Number(event.currentTarget.value),
-                  })
-                }
-              />
+              <span className="cinema-range-control">
+                <button
+                  type="button"
+                  className="cinema-range-step"
+                  onClick={() => adjustPlacement("x", -1, -50, 50, 1)}
+                  disabled={placement.x <= -50}
+                  aria-label="Move poster left"
+                >−</button>
+                <input
+                  type="range"
+                  className="cinema-range-slider"
+                  min="-50"
+                  max="50"
+                  step="1"
+                  value={placement.x}
+                  onChange={(event) =>
+                    onPlacementChange({
+                      ...placement,
+                      x: Number(event.currentTarget.value),
+                    })
+                  }
+                  aria-label="Horizontal position"
+                />
+                <button
+                  type="button"
+                  className="cinema-range-step"
+                  onClick={() => adjustPlacement("x", 1, -50, 50, 1)}
+                  disabled={placement.x >= 50}
+                  aria-label="Move poster right"
+                >+</button>
+              </span>
             </label>
             <label>
               <span>Vertical Position</span>
               <output>{Math.round(placement.y)}%</output>
-              <input
-                type="range"
-                className="cinema-range-slider"
-                min="-50"
-                max="50"
-                step="1"
-                value={placement.y}
-                onChange={(event) =>
-                  onPlacementChange({
-                    ...placement,
-                    y: Number(event.currentTarget.value),
-                  })
-                }
-              />
+              <span className="cinema-range-control">
+                <button
+                  type="button"
+                  className="cinema-range-step"
+                  onClick={() => adjustPlacement("y", -1, -50, 50, 1)}
+                  disabled={placement.y <= -50}
+                  aria-label="Move poster up"
+                >−</button>
+                <input
+                  type="range"
+                  className="cinema-range-slider"
+                  min="-50"
+                  max="50"
+                  step="1"
+                  value={placement.y}
+                  onChange={(event) =>
+                    onPlacementChange({
+                      ...placement,
+                      y: Number(event.currentTarget.value),
+                    })
+                  }
+                  aria-label="Vertical position"
+                />
+                <button
+                  type="button"
+                  className="cinema-range-step"
+                  onClick={() => adjustPlacement("y", 1, -50, 50, 1)}
+                  disabled={placement.y >= 50}
+                  aria-label="Move poster down"
+                >+</button>
+              </span>
             </label>
           </div>
 
