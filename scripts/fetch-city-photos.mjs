@@ -9,6 +9,7 @@ const cities = JSON.parse(await readFile(path.join(root, "src/data/cityDirectory
 const existingPhotos = JSON.parse(await readFile(path.join(root, "src/data/cityPhotos.json"), "utf8"));
 const reviewBlanks = JSON.parse(await readFile(path.join(root, "src/data/cityPhotoReviewBlanks.json"), "utf8"));
 const userAgent = "MapArteCityPhotoBuilder/1.0 (https://maparte.vercel.app/)";
+let nextCommonsRequestAt = 0;
 const cleanText = (value = "") => String(value).replace(/<[^>]*>/g, " ").replace(/&nbsp;|&#160;/g, " ").replace(/\s+/g, " ").trim();
 const safeDecode = (value = "") => {
   try { return decodeURIComponent(String(value)); }
@@ -17,6 +18,37 @@ const safeDecode = (value = "") => {
 const badPhotoTitle = (value = "") => /(?:montage|collage|flag(?:ge)?|(?:^|[\s_.-])maps?(?:[\s_.-]|$)|location map|globe|chart|graph|infographic|graphic|diagram|logo|seal|stamp|mailbox|airport|eclipse|coat[ _-]of[ _-]arms|subway|parade|conference|school(?:s|children)?|students?|aircraft|airplane|airline|\bplane\b|trolleybus|\btrain\b|\bcar\b|automobile|vehicle|\btruck\b|taxi|vendor|weaver|bird|prinia|wildlife|refugee|soup|restaurant|\bshop\b|\bstore\b|portrait|\bperson\b|\bpeople\b|\bgroup\b|interview|secretary|minister|president|politician|speaker|\bspeech\b|musician|singer|concert|football|soccer|basketball|cricket|soldier|military|army|firing range|looter|construction|workshop|atelier|wikiquote tour|wikiloves earth|schoolroom|classroom|teacher|ferry|highspeed|shipwreck|\bship\b|\bboat\b|webm|video|\.(?:pdf|djvu|svg|webm|mp4|mov|avi|ogv)(?:$|[\s_.-])|heraldry|arting|graffiti|depression|freddy.?lino|changi.?beach|km-grande.?comore-moroni)/i.test(safeDecode(String(value).replace(/_/g, " ")));
 const badPhotoSource = (source = "") => badPhotoTitle(source.split("/").pop() || source);
 const curatedPhotoFiles = {
+  "khirdalan-az-map-poster": "File:Xırdalan (2).jpg",
+  "ibri-om-map-poster": "File:Roads less travelled at Ibri, Sultanate of Oman.jpg",
+  "nay-pyi-taw-mm-map-poster": "File:NPDAerial22.jpg",
+  "liberia-cr-map-poster": "File:Liberia City - Cathedral.JPG",
+  "orange-walk-bz-map-poster": "File:Main square, Orange Walk Town, Belize.JPG",
+  "puerto-plata-do-map-poster": "File:Puerto Plata Town Dominican Republic.jpg",
+  "san-cristobal-do-map-poster": "File:San Cristobal Dominican Republic.jpg",
+  "daru-pg-map-poster": "File:Daru Waterfront (10691180695).jpg",
+  "ebaye-mh-map-poster": "File:Ebeye Island.jpg",
+  "maitland-au-map-poster": "File:Maitland Town Hall.jpg",
+  "madaba-jo-map-poster": "File:Overhead view of Madaba city.jpg",
+  "wonsan-kp-map-poster": "File:Wonsan, North Korea.jpg",
+  "nizwa-om-map-poster": "File:Downtown Nizwa.jpg",
+  "salalah-om-map-poster": "File:As Sultan Qaboos Street, Salalah - panoramio.jpg",
+  "rabaul-pg-map-poster": "File:Rabaul from Vulcanology Observatory.jpg",
+  "dasoguz-tm-map-poster": "File:Dashoguz (1) (46100624911).jpg",
+  "barinas-ve-map-poster": "File:Barinas, Venezuela.JPG",
+  "machala-ec-map-poster": "File:Aerial image of Machala, Ecuador.jpg",
+  "holguin-cu-map-poster": "File:Holguín-1.jpg",
+  "paraiso-cr-map-poster": "File:Ruinas Iglesia Ujarras 02 2022 5362.jpg",
+  "point-fortin-tt-map-poster": "File:TnT Point Fortin Market 1.jpg",
+  "san-pedro-bz-map-poster": "File:San Pedro, Ambergris Caye, Belize - Main Street.JPG",
+  "siguatepeque-hn-map-poster": "File:Siguatepeque01.JPG",
+  "tunapuna-tt-map-poster": "File:TnT Tunapuna Eastern Main Road.jpg",
+  "wewak-pg-map-poster": "File:Wewak.png",
+  "darhan-mn-map-poster": "File:Darkhan.jpg",
+  "puerto-montt-cl-map-poster": "File:Chile - Puerto Montt - Panorama.jpg",
+  "santo-domingo-oeste-do-map-poster": "File:Elevado de Manoguayabo Autopista Duarte.jpg",
+  "lelydorp-sr-map-poster": "File:Lelydorp, Suriname 2004.jpg",
+  "arraijan-pa-map-poster": "File:Arraijan, Panama - panoramio.jpg",
+  "la-chorrera-pa-map-poster": "File:La Chorrera, Panama.jpg",
   "santorini-map-poster": "File:Panoramic view of Oia, Santorini island (Thira), Greece.jpg",
   "baghdad-map-poster": "File:160731-D-PB383-021 Tigris River flows through Baghdad, July 2016.JPG",
   "goa-map-poster": "File:Basilica of Bom Jesus, Old Goa, India.JPG",
@@ -36,10 +68,14 @@ const curatedPhotoFiles = {
 
 async function fetchJson(url) {
   for (let attempt = 0; attempt < 5; attempt += 1) {
+    const now = Date.now();
+    const wait = Math.max(0, nextCommonsRequestAt - now);
+    nextCommonsRequestAt = Math.max(now, nextCommonsRequestAt) + 350;
+    if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
     const response = await fetch(url, { headers: { "User-Agent": userAgent, Accept: "application/json" }, signal: AbortSignal.timeout(25_000) });
     if (response.ok) return response.json();
     if (![429, 500, 502, 503, 504].includes(response.status) || attempt === 4) throw new Error(`Wikimedia API HTTP ${response.status}`);
-    await new Promise((resolve) => setTimeout(resolve, 700 * (attempt + 1)));
+    await new Promise((resolve) => setTimeout(resolve, 2_000 * (attempt + 1)));
   }
   throw new Error("Wikimedia API retries exhausted");
 }
@@ -121,14 +157,17 @@ async function findCommonsPhoto(city) {
     `"${city.city}" ${city.country} skyline`,
     `"${city.city}" ${city.country} city panorama`,
     `"${city.city}" ${city.country} landmark`,
-    `"${city.city}" ${city.country} government buildings`,
     `"${city.city}" ${city.country}`,
     ...(extraSearch[city.slug] ?? []),
+    ...(city.photoSearchAliases ?? []).map((alias) => `"${alias}" ${city.country} city`),
   ];
   const candidates = new Map();
   const normalize = (value = "") => String(value).normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/gi, " ").trim().toLowerCase();
   const cityName = normalize(city.city);
-  const cityAliases = city.slug === "nukualofa-map-poster" ? ["nuku alofa"] : [];
+  const cityAliases = [
+    ...(city.slug === "nukualofa-map-poster" ? ["nuku alofa"] : []),
+    ...(city.photoSearchAliases ?? []),
+  ];
   const countryName = normalize(city.country);
   const landmarkNames = [...(city.landmarks ?? []), ...(extraSearch[city.slug] ?? [])].map(normalize).filter((name) => name.length >= 4);
   for (const term of terms) {
@@ -177,7 +216,7 @@ async function mapLimit(items, limit, task) {
 }
 
 if (process.env.FETCH_CITY_PHOTOS !== "1") {
-  console.log("City photo refresh skipped; set FETCH_CITY_PHOTOS=1 to build the 400-city photo set.");
+  console.log("City photo refresh skipped; set FETCH_CITY_PHOTOS=1 to build the city photo set.");
   process.exit(0);
 }
 
@@ -186,11 +225,21 @@ const forcedRefresh = new Set([...reviewBlanks, ...(process.env.EXTRA_REFRESH_SL
 const missingCities = cities.filter((city) => !existingPhotos[city.slug] || badPhotoSource(existingPhotos[city.slug]?.sourcePage) || forcedRefresh.has(city.slug));
 const refreshSlugs = new Set(missingCities.map((city) => city.slug));
 console.log(`Refreshing ${missingCities.length} city photos selected by title and visual QA.`);
-await rm(stagingDir, { recursive: true, force: true });
 await mkdir(stagingDir, { recursive: true });
-const results = await mapLimit(cities, 6, async (city) => {
+const results = await mapLimit(cities, 3, async (city) => {
   const current = existingPhotos[city.slug];
   if (current && !refreshSlugs.has(city.slug)) return current;
+  const filename = `${city.slug}.webp`;
+  const destination = path.join(stagingDir, filename);
+  const sidecar = path.join(stagingDir, `${city.slug}.json`);
+  try {
+    const stagedMeta = JSON.parse(await readFile(sidecar, "utf8"));
+    const stagedImage = await readFile(destination);
+    const stagedInfo = await sharp(stagedImage).metadata();
+    if (stagedMeta.slug === city.slug && stagedMeta.sourcePage && stagedMeta.license && stagedInfo.format === "webp" && stagedInfo.width >= 300 && stagedInfo.height >= 180 && stagedImage.length <= 350_000) return stagedMeta;
+  } catch { /* Rebuild missing or invalid checkpoints below. */ }
+  await rm(sidecar, { force: true });
+  await rm(destination, { force: true });
   const existingPath = current?.src?.startsWith("/assets/city-photos/") ? path.join(root, "public", current.src.slice(1)) : "";
   let sourcePhoto = null;
   let sourceBytes = null;
@@ -207,8 +256,6 @@ const results = await mapLimit(cities, 6, async (city) => {
     sourceBytes = await fetchImageBytes(sourcePhoto.url);
   }
 
-  const filename = `${city.slug}.webp`;
-  const destination = path.join(stagingDir, filename);
   const converted = await sharp(sourceBytes, { failOn: "error" })
     .rotate()
     .resize({ width: 900, height: 650, fit: "inside", withoutEnlargement: true })
@@ -219,7 +266,7 @@ const results = await mapLimit(cities, 6, async (city) => {
   if (converted.length > 350_000) throw new Error(`Optimized photo too large: ${converted.length} bytes`);
   await writeFile(destination, converted);
 
-  return {
+  const result = {
     slug: city.slug,
     city: city.city,
     country: city.country,
@@ -229,12 +276,13 @@ const results = await mapLimit(cities, 6, async (city) => {
     license: sourcePhoto.license,
     licenseUrl: sourcePhoto.licenseUrl || "",
   };
+  await writeFile(sidecar, `${JSON.stringify(result)}\n`);
+  return result;
 });
 
 const failures = results.map((result, index) => result?.error ? `${cities[index].city}, ${cities[index].country}: ${result.error}` : null).filter(Boolean);
 if (failures.length) {
-  await rm(stagingDir, { recursive: true, force: true });
-  console.error(JSON.stringify({ processed: cities.length, successful: results.filter((result) => result && !result.error).length, failures }, null, 2));
+  console.error(JSON.stringify({ processed: cities.length, successful: results.filter((result) => result && !result.error).length, failures, checkpointFiles: (await readdir(stagingDir)).filter((file) => file.endsWith(".json")).length }, null, 2));
   process.exitCode = 1;
 } else {
 const manifest = Object.fromEntries(results.filter((result) => result && !result.error).map((result) => [result.slug, result]));

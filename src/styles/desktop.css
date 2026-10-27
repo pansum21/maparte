@@ -2705,17 +2705,10 @@
   display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 32px;
   padding: 5px 7px; border: 1px solid rgba(171, 201, 224, .2); border-radius: 12px;
   background: rgba(255,255,255,.055); color: rgba(210, 226, 240, .84);
-  font: 650 .88rem/1.2 "Instrument Sans", sans-serif; cursor: pointer;
+  font: 650 .72rem/1.1 "Instrument Sans", sans-serif; cursor: pointer;
+  white-space: normal; text-align: center; letter-spacing: -.01em;
 }
 .all-cities-continent-pill.is-active { background: rgba(2, 132, 199, .8); border-color: rgba(56, 189, 248, .9); color: white; }
-.all-cities-continent-pill:nth-child(n + 5) {
-  padding-inline: 3px;
-  font-size: .66rem;
-  line-height: 1.1;
-  letter-spacing: -.025em;
-  white-space: normal;
-  text-align: center;
-}
 .all-cities-grid {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 14px;
   flex: 1 1 auto; min-height: 0; max-height: none; padding: 0 2px 2px 0;
@@ -2769,7 +2762,6 @@
   .all-cities-clear-btn { right: 76px; width: 25px; height: 25px; font-size: 1.05rem; }
   .all-cities-continents { gap: 6px; }
   .all-cities-continent-pill { min-height: 32px; padding: 4px 3px; border-radius: 9px; font-size: .72rem; }
-  .all-cities-continent-pill:nth-child(n + 6) { font-size: .62rem; letter-spacing: -.03em; }
   .all-cities-grid { gap: 8px; padding-right: 1px; }
   .all-cities-card { border-radius: 12px; }
   .city-card-photo { height: 112px; min-height: 112px; flex-basis: 112px; }

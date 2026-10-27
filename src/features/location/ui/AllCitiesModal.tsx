@@ -35,13 +35,14 @@ interface CityPhotoCredit {
 }
 
 const CITY_REGIONS = [
-  "Asia",
+  "North Asia",
+  "South Asia",
+  "North America",
+  "South America",
+  "Central America",
   "Africa",
   "Europe",
   "Oceania",
-  "Central America & Caribbean",
-  "North America",
-  "South America",
 ] as const;
 const cityCollator = new Intl.Collator("en", {
   sensitivity: "base",
@@ -137,7 +138,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
     useCurrentLocation(flyToLocation);
 
   const [typedQuery, setTypedQuery] = useState<string | null>(null);
-  const [selectedRegion, setSelectedRegion] = useState<string>("Asia");
+  const [selectedRegion, setSelectedRegion] = useState<string>("North Asia");
   const [showCoords, setShowCoords] = useState(false);
   const isSearchingCities = typedQuery !== null && typedQuery.trim().length > 0;
   const normalizedQuery = typedQuery?.trim().toLowerCase() ?? "";
@@ -165,13 +166,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
         );
       }
       const matchesRegion =
-        selectedRegion === "North America"
-          ? item.continent === "North America"
-          : selectedRegion === "Central America & Caribbean"
-            ? ["Central America", "Caribbean"].includes(item.continent)
-            : selectedRegion === "Asia"
-            ? item.continent === "Asia" || item.continent === "Middle East"
-            : item.continent === selectedRegion;
+        item.continent === selectedRegion;
       return matchesRegion;
     }).sort(
       (first, second) =>
