@@ -469,7 +469,7 @@ export default function DownloadModal({
 
           <div className="tier-breakdown-box">
             <div className="tier-breakdown-col tier-breakdown-col--included">
-              <span className="tier-breakdown-heading">✓ Included (क्या मिलेगा):</span>
+              <span className="tier-breakdown-heading">✓ Included:</span>
               <ul className="tier-feature-bullets">
                 {activeTier.included.map((item, idx) => (
                   <li key={idx} className="feature-item--included">
@@ -481,7 +481,7 @@ export default function DownloadModal({
             </div>
             {activeTier.notIncluded.length > 0 && (
               <div className="tier-breakdown-col tier-breakdown-col--excluded">
-                <span className="tier-breakdown-heading">✕ Not Included (क्या नहीं मिलेगा):</span>
+                <span className="tier-breakdown-heading">✕ Not Included:</span>
                 <ul className="tier-feature-bullets">
                   {activeTier.notIncluded.map((item, idx) => (
                     <li key={idx} className="feature-item--excluded">

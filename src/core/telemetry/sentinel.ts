@@ -53,11 +53,6 @@ const PRICING_KEYWORDS = [
   "bogo",
   "offer",
   "free",
-  "महंगा",
-  "सस्ता",
-  "रेट",
-  "पैसे",
-  "रुपये",
 ];
 
 const BUG_KEYWORDS = [

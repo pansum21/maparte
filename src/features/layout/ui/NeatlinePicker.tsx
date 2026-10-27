@@ -2045,11 +2045,11 @@ export function NeatlinePicker({
         </span>
       </div>
 
-      {/* 1. Poster Paper Mat (वाइट शीट) Single Action Toggle */}
+      {/* 1. Poster White Paper Mat Single Action Toggle */}
       <div className="neatline-mat-toggle-card">
         <div className="neatline-mat-toggle-header">
           <div>
-            <span className="neatline-mat-toggle-title">Paper Mat (वाइट शीट)</span>
+            <span className="neatline-mat-toggle-title">White Paper Mat</span>
             <p className="neatline-mat-toggle-desc">
               {selection.showWhiteMat
                 ? "White gallery paper mat sheet active behind map & border"
@@ -2069,21 +2069,21 @@ export function NeatlinePicker({
           {selection.showWhiteMat ? (
             <>
               <span className="neatline-mat-btn-icon" aria-hidden="true">✕</span>
-              <span>Remove White Sheet (वाइट शीट हटाएं)</span>
+              <span>Remove White Sheet</span>
             </>
           ) : (
             <>
               <span className="neatline-mat-btn-icon" aria-hidden="true">+</span>
-              <span>Add White Sheet (वाइट शीट जोड़ें)</span>
+              <span>Add White Sheet</span>
             </>
           )}
         </button>
       </div>
 
-      {/* 2. BORDERS BOX (बॉर्डर्स का अलग बॉक्स - अंदर स्क्रॉल, बिना स्क्रोलबार) */}
+      {/* 2. BORDERS BOX (Internal scroll without visible scrollbar) */}
       <div className="neatline-section-box neatline-borders-box">
         <div className="neatline-section-box-header">
-          <span className="neatline-section-box-title">Border Styles (बॉर्डर शैलियाँ)</span>
+          <span className="neatline-section-box-title">Border Styles</span>
           <span className="neatline-section-box-subtitle">
             {selectedLine ? selectedLine.name : "Clean Full Bleed"}
           </span>
@@ -2123,11 +2123,11 @@ export function NeatlinePicker({
         </div>
       </div>
 
-      {/* 3. ADJUSTMENTS BOX (एडजस्ट का अलग बॉक्स - कलर + थिकनेस + स्पेसिंग) */}
+      {/* 3. ADJUSTMENTS BOX (Color, Thickness & Spacing) */}
       {selectedLine ? (
         <div className="neatline-section-box neatline-adjust-box">
           <div className="neatline-section-box-header">
-            <span className="neatline-section-box-title">Adjust &amp; Customize (एडजस्टमेंट)</span>
+            <span className="neatline-section-box-title">Adjust &amp; Customize</span>
             <span className="neatline-section-box-subtitle">{selectedLine.name}</span>
           </div>
 
