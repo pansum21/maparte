@@ -251,9 +251,9 @@ export function PosterProvider({ children }: { children: ReactNode }) {
     }
 
     if (matched) {
-      document.title = `${matched.city} Custom Map Poster & Wall Art | Ultra-HD Map Art — MAPARTE`;
+      document.title = `${matched.city} Map Poster & Wall Art | MAPARTE`;
     } else {
-      document.title = "MAPARTE: Free Map Poster & Wallpaper Creator";
+      document.title = "MAPARTE | Custom Map Poster & Wallpaper Creator";
     }
   }, [
     state.form.displayCity,
