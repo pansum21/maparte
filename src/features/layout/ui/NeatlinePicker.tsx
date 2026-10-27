@@ -282,7 +282,7 @@ export function getPosterBorderMetrics(
   const gapCm =
     typeof customGapCm === "number" && Number.isFinite(customGapCm)
       ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, customGapCm))
-      : 0.0;
+      : 0.10;
 
   if (!showWhiteMat) {
     // When white mat is OFF:
@@ -317,14 +317,14 @@ export function getPosterBorderMetrics(
       };
     }
 
-    // Border selected without white border (outerBorderCm = 0):
-    // The border sits exactly on the outer perimeter/edge of the map poster (0mm margin)!
-    const outerBorderCm = 0;
-    const usableWidthCm = width;
-    const usableHeightCm = height;
+    // Border selected without white border (outerBorderCm = 0.10):
+    // The border sits near the edge of the sheet with approx 0.10 cm (1mm) space from the edge!
+    const outerBorderCm = 0.10;
+    const usableWidthCm = Math.max(0.1, width - outerBorderCm * 2);
+    const usableHeightCm = Math.max(0.1, height - outerBorderCm * 2);
     const innerW = 1000;
-    const innerH = (innerW * height) / width;
-    const unitScale = innerW / width;
+    const innerH = (innerW * usableHeightCm) / usableWidthCm;
+    const unitScale = innerW / usableWidthCm;
 
     let borderBandCm = 0;
     let spanUnits = 0;
@@ -343,12 +343,12 @@ export function getPosterBorderMetrics(
       borderBandCm = innerEdgeUnits / unitScale;
     }
 
-    // Border sits right on the top/edge of the map. Map insets inward from the inner border stroke.
-    const mapInsetCm = borderBandCm + gapCm;
+    // Border sits near the edge of the sheet. Map insets inward: mapInsetCm = outerBorderCm + borderBandCm + gapCm
+    const mapInsetCm = outerBorderCm + borderBandCm + gapCm;
     const mapInsetXRatio = mapInsetCm / width;
     const mapInsetYRatio = mapInsetCm / height;
-    const matInsetXRatio = 0; // Exactly on the edge!
-    const matInsetYRatio = 0; // Exactly on the edge!
+    const matInsetXRatio = outerBorderCm / width;
+    const matInsetYRatio = outerBorderCm / height;
 
     return {
       showWhiteMat: false,
@@ -422,8 +422,8 @@ export function getPosterBorderMetrics(
   }
 
   // White mat ON + Border selected:
-  const outerMatRatio = 0.025;
-  const outerMatCm = shortSide * outerMatRatio;
+  // Border frame line sits on the edge of the white sheet with approx 0.10 cm (1mm) space from the edge!
+  const outerMatCm = 0.10;
   const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
   const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
   const innerW = 1000;
@@ -536,7 +536,7 @@ function readSelection(): NeatlineSelection {
     thicknesses: readThicknesses(),
     lineVariant: "plain",
     cornerVariant: "plain",
-    mapGapCm: 0.0,
+    mapGapCm: 0.10,
     colorMode: "single",
     singleColor: "#9CC3DA",
     gradientFrom: "#f43f5e",
@@ -572,7 +572,7 @@ function readSelection(): NeatlineSelection {
         mapGapCm:
           typeof parsed.mapGapCm === "number" && Number.isFinite(parsed.mapGapCm)
             ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, parsed.mapGapCm))
-            : 0.0,
+            : 0.10,
         colorMode,
         singleColor:
           parsed.singleColor && parsed.singleColor !== "#354b62"
@@ -1961,7 +1961,7 @@ export function NeatlinePicker({
           frameId: "none",
           cornerPosition: "all",
           lineVariant: selection.lineVariant,
-          mapGapCm: selection.mapGapCm ?? 0.0,
+          mapGapCm: selection.mapGapCm ?? 0.10,
           colorMode: selection.colorMode ?? "single",
           singleColor: selection.singleColor ?? "#354b62",
           gradientFrom: selection.gradientFrom ?? "#f43f5e",
@@ -2056,7 +2056,7 @@ export function NeatlinePicker({
   const adjustMapGap = (delta: number) =>
     updateMapGap(
       stepWithinRange(
-        selection.mapGapCm ?? 0.0,
+        selection.mapGapCm ?? 0.10,
         delta,
         MIN_MAP_GAP_CM,
         MAX_MAP_GAP_CM,
@@ -2405,7 +2405,7 @@ export function NeatlinePicker({
                     type="button"
                     className="neatline-adjustment-step"
                     onClick={() => adjustMapGap(-1)}
-                    disabled={(selection.mapGapCm ?? 0.0) <= MIN_MAP_GAP_CM}
+                    disabled={(selection.mapGapCm ?? 0.10) <= MIN_MAP_GAP_CM}
                     aria-label="Decrease map spacing"
                   >−</button>
                   <input
@@ -2413,7 +2413,7 @@ export function NeatlinePicker({
                     min={MIN_MAP_GAP_CM}
                     max={MAX_MAP_GAP_CM}
                     step={BORDER_CONTROL_STEP_CM}
-                    value={selection.mapGapCm ?? 0.0}
+                    value={selection.mapGapCm ?? 0.10}
                     onChange={(event) => updateMapGap(Number(event.target.value))}
                     aria-label="Map spacing gap in centimeters"
                   />
@@ -2421,10 +2421,10 @@ export function NeatlinePicker({
                     type="button"
                     className="neatline-adjustment-step"
                     onClick={() => adjustMapGap(1)}
-                    disabled={(selection.mapGapCm ?? 0.0) >= MAX_MAP_GAP_CM}
+                    disabled={(selection.mapGapCm ?? 0.10) >= MAX_MAP_GAP_CM}
                     aria-label="Increase map spacing"
                   >+</button>
-                  <output>{(selection.mapGapCm ?? 0.0).toFixed(2)} cm</output>
+                  <output>{(selection.mapGapCm ?? 0.10).toFixed(2)} cm</output>
                 </div>
               </div>
               <p className="neatline-adjustments-note">
