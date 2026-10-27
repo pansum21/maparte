@@ -1,9 +1,6 @@
 /**
- * MapArte Autonomous Sentinel & Telemetry Bridge
- * 
- * Intercepts technical runtime bugs, collects customer feedback,
- * categorizes them, enforces strict guardrails on pricing decisions,
- * and notifies the project owner directly via Telegram.
+ * Local diagnostics and feedback classification for MAPARTE.
+ * User messages and runtime details stay in this browser's local storage.
  */
 
 export type FeedbackCategory =
@@ -132,7 +129,7 @@ function getDeviceInfo(): { device: string; screen: string } {
   };
 }
 
-const TELEGRAM_STORAGE_BACKLOG_KEY = "maparte_telemetry_backlog";
+const TELEMETRY_STORAGE_BACKLOG_KEY = "maparte_telemetry_backlog";
 
 export async function dispatchTelemetryAlert(
   message: string,
@@ -158,103 +155,19 @@ export async function dispatchTelemetryAlert(
     autoFixAllowed,
   };
 
-  // 1. Store in local backlog for diagnostic access
+  // Store diagnostics locally; never send them to third-party endpoints.
   try {
-    const stored = window.localStorage.getItem(TELEGRAM_STORAGE_BACKLOG_KEY);
+    const stored = window.localStorage.getItem(TELEMETRY_STORAGE_BACKLOG_KEY);
     const list: TelemetryPayload[] = stored ? JSON.parse(stored) : [];
     list.unshift(payload);
     window.localStorage.setItem(
-      TELEGRAM_STORAGE_BACKLOG_KEY,
+      TELEMETRY_STORAGE_BACKLOG_KEY,
       JSON.stringify(list.slice(0, 30)),
     );
   } catch {
     // ignore
   }
 
-  // 2. Dispatch to Telegram Bot (if token is provided in env)
-  const botToken = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
-  const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID;
-
-  if (botToken && chatId) {
-    const categoryTag =
-      category === "technical_bug"
-        ? "🚨 [TECHNICAL CODING BUG]"
-        : category === "pricing_feedback"
-          ? "💰 [PRICING FEEDBACK - OWNER REVIEW REQUIRED]"
-          : "💡 [CUSTOMER FEEDBACK]";
-
-    const autoFixNotice = autoFixAllowed
-      ? "🤖 Action: Technical bug categorized for AI patch & deployment."
-      : "🔒 Action: Strictly locked. Pricing decisions require Supriya's manual approval.";
-
-    const text = `
-${categoryTag}
-━━━━━━━━━━━━━━━━━━
-📍 Location: ${payload.context?.city || "N/A"}, ${payload.context?.country || "N/A"}
-🎨 Theme: ${payload.context?.theme || "N/A"}
-📱 Device: ${payload.context?.device || "N/A"}
-🖥️ Screen: ${payload.context?.screen || "N/A"}
-
-💬 User Note:
-"${payload.message}"
-
-${payload.stackTrace ? `⚠️ Stack:\n${payload.stackTrace.slice(0, 300)}` : ""}
-
-${autoFixNotice}
-⏰ ${new Date().toLocaleTimeString()}
-`.trim();
-
-    try {
-      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text,
-        }),
-      });
-    } catch {
-      // ignore network errors
-    }
-  }
-
-  // 3. Dispatch to ntfy.sh (Instant, 100% free push notifications to phone with 0 limitations)
-  const ntfyTopic = import.meta.env.VITE_NTFY_TOPIC || "maparte_sumit_alerts";
-  try {
-    const ntfyTitle =
-      category === "technical_bug"
-        ? "MapArte: Technical Bug Detected"
-        : category === "pricing_feedback"
-          ? "MapArte: Pricing Feedback (Review Required)"
-          : "MapArte: Customer Feedback";
-
-    const autoFixNotice = autoFixAllowed
-      ? "🤖 Action: Technical bug categorized for AI patch & deployment."
-      : "🔒 Action: Strictly locked. Pricing decisions require Supriya's manual approval.";
-
-    const text = `
-📍 Location: ${payload.context?.city || "N/A"}, ${payload.context?.country || "N/A"}
-🎨 Theme: ${payload.context?.theme || "N/A"}
-📱 Device: ${payload.context?.device || "N/A"}
-
-💬 User Note:
-"${payload.message}"
-
-${autoFixNotice}
-`.trim();
-
-    await fetch(`https://ntfy.sh/${ntfyTopic}`, {
-      method: "POST",
-      headers: {
-        Title: ntfyTitle,
-        Priority: category === "technical_bug" ? "urgent" : "default",
-        Tags: category === "technical_bug" ? "warning,rotating_light" : category === "pricing_feedback" ? "moneybag" : "bulb",
-      },
-      body: text,
-    });
-  } catch {
-    // ignore
-  }
 
   return payload;
 }
