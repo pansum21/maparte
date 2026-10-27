@@ -268,15 +268,51 @@ export function getPosterBorderMetrics(
   const width = Number(widthValue) > 0 ? Number(widthValue) : 21;
   const height = Number(heightValue) > 0 ? Number(heightValue) : 29.7;
   const shortSide = Math.min(width, height);
+  const hasBorder = Boolean(lineId && lineId !== "none");
+
+  // Default gap is 0.15cm (1.5mm, strictly preserved between 1mm and 2mm as requested).
+  const gapCm =
+    typeof customGapCm === "number" && Number.isFinite(customGapCm)
+      ? Math.max(0.05, Math.min(0.60, customGapCm))
+      : 0.15;
 
   if (!showWhiteMat) {
     // When white mat is OFF:
-    // Map is 100% clean full bleed. If a border line is chosen, it is inset directly over the map art.
-    const hasBorder = Boolean(lineId && lineId !== "none");
-    const borderInsetRatio = hasBorder ? 0.025 : 0;
-    const borderInsetCm = shortSide * borderInsetRatio;
-    const usableWidthCm = Math.max(0.1, width - borderInsetCm * 2);
-    const usableHeightCm = Math.max(0.1, height - borderInsetCm * 2);
+    // If no border: 100% full bleed clean map (0% inset).
+    // If border chosen: Border sits in perimeter band, and the map insets inward preserving the gap!
+    if (!hasBorder) {
+      const innerW = 1000;
+      const innerH = (innerW * height) / width;
+      return {
+        showWhiteMat: false,
+        outerMatCm: 0,
+        frameArtInsetCm: 0,
+        borderBandCm: 0,
+        mapInsetCm: 0,
+        gapCm: 0,
+        spanUnits: 0,
+        edgeInset: 1.5,
+        offInner: 1.5,
+        unitScale: innerW / width,
+        innerW,
+        innerH,
+        mapInsetX: "0%",
+        mapInsetY: "0%",
+        matInsetX: "0%",
+        matInsetY: "0%",
+        mapInsetXRatio: 0,
+        mapInsetYRatio: 0,
+        matInsetXRatio: 0,
+        matInsetYRatio: 0,
+        usableWidthCm: width,
+        usableHeightCm: height,
+      };
+    }
+
+    // Border selected without white mat:
+    const outerBorderCm = Math.max(0.35, shortSide * 0.02);
+    const usableWidthCm = Math.max(0.1, width - outerBorderCm * 2);
+    const usableHeightCm = Math.max(0.1, height - outerBorderCm * 2);
     const innerW = 1000;
     const innerH = (innerW * usableHeightCm) / usableWidthCm;
     const unitScale = innerW / usableWidthCm;
@@ -286,7 +322,7 @@ export function getPosterBorderMetrics(
     let edgeInset = 1.5;
     let offInner = edgeInset;
 
-    const style = hasBorder ? lineStyles.find((s) => s.id === lineId) : null;
+    const style = lineStyles.find((s) => s.id === lineId);
     if (style) {
       const widths = widthsFor(style.id, thicknesses || {});
       const maxStroke = widths.length ? Math.max(...widths) : 2.0;
@@ -298,28 +334,33 @@ export function getPosterBorderMetrics(
       borderBandCm = innerEdgeUnits / unitScale;
     }
 
-    const matInsetXRatio = borderInsetCm / width;
-    const matInsetYRatio = borderInsetCm / height;
+    // Map shrinks inward: mapInsetCm = outerBorderCm + borderBandCm + gapCm
+    // Border NEVER overlaps the map street lines; gapCm (1mm-2mm) is strictly preserved!
+    const mapInsetCm = outerBorderCm + borderBandCm + gapCm;
+    const mapInsetXRatio = mapInsetCm / width;
+    const mapInsetYRatio = mapInsetCm / height;
+    const matInsetXRatio = outerBorderCm / width;
+    const matInsetYRatio = outerBorderCm / height;
 
     return {
       showWhiteMat: false,
-      outerMatCm: 0,
+      outerMatCm: outerBorderCm,
       frameArtInsetCm: 0,
       borderBandCm,
-      mapInsetCm: 0,
-      gapCm: 0,
+      mapInsetCm,
+      gapCm,
       spanUnits,
       edgeInset,
       offInner,
       unitScale,
       innerW,
       innerH,
-      mapInsetX: "0%",
-      mapInsetY: "0%",
+      mapInsetX: `${mapInsetXRatio * 100}%`,
+      mapInsetY: `${mapInsetYRatio * 100}%`,
       matInsetX: `${matInsetXRatio * 100}%`,
       matInsetY: `${matInsetYRatio * 100}%`,
-      mapInsetXRatio: 0,
-      mapInsetYRatio: 0,
+      mapInsetXRatio,
+      mapInsetYRatio,
       matInsetXRatio,
       matInsetYRatio,
       usableWidthCm,
@@ -328,28 +369,60 @@ export function getPosterBorderMetrics(
   }
 
   // When white mat is ON:
-  // An elegant white gallery paper mat frames the map artwork (5.5% margin).
-  const matMarginRatio = 0.055;
-  const outerMatRatio = 0.02;
+  // An elegant white gallery paper sheet frames the map artwork.
+  if (!hasBorder) {
+    const matMarginRatio = 0.055;
+    const mapInsetCm = shortSide * matMarginRatio;
+    const outerMatCm = mapInsetCm;
+    const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
+    const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
+    const innerW = 1000;
+    const innerH = (innerW * usableHeightCm) / usableWidthCm;
+    const unitScale = innerW / usableWidthCm;
+    const mapInsetXRatio = mapInsetCm / width;
+    const mapInsetYRatio = mapInsetCm / height;
+
+    return {
+      showWhiteMat: true,
+      outerMatCm,
+      frameArtInsetCm: 0,
+      borderBandCm: 0,
+      mapInsetCm,
+      gapCm: 0,
+      spanUnits: 0,
+      edgeInset: 1.5,
+      offInner: 1.5,
+      unitScale,
+      innerW,
+      innerH,
+      mapInsetX: `${mapInsetXRatio * 100}%`,
+      mapInsetY: `${mapInsetYRatio * 100}%`,
+      matInsetX: `${mapInsetXRatio * 100}%`,
+      matInsetY: `${mapInsetYRatio * 100}%`,
+      mapInsetXRatio,
+      mapInsetYRatio,
+      matInsetXRatio: mapInsetXRatio,
+      matInsetYRatio: mapInsetYRatio,
+      usableWidthCm,
+      usableHeightCm,
+    };
+  }
+
+  // White mat ON + Border selected:
+  const outerMatRatio = 0.025;
   const outerMatCm = shortSide * outerMatRatio;
-  const mapInsetCm = shortSide * matMarginRatio;
   const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
   const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
   const innerW = 1000;
   const innerH = (innerW * usableHeightCm) / usableWidthCm;
   const unitScale = innerW / usableWidthCm;
 
-  const gapCm =
-    typeof customGapCm === "number" && Number.isFinite(customGapCm)
-      ? Math.max(0.05, Math.min(0.60, customGapCm))
-      : 0.10;
-
   let borderBandCm = 0;
   let spanUnits = 0;
   let edgeInset = 1.5;
   let offInner = edgeInset;
 
-  const style = lineId && lineId !== "none" ? lineStyles.find((s) => s.id === lineId) : null;
+  const style = lineStyles.find((s) => s.id === lineId);
   if (style) {
     const widths = widthsFor(style.id, thicknesses || {});
     const maxStroke = widths.length ? Math.max(...widths) : 2.0;
@@ -361,6 +434,8 @@ export function getPosterBorderMetrics(
     borderBandCm = innerEdgeUnits / unitScale;
   }
 
+  // Map opening insets to maintain the 1mm-2mm gap inside the inner border line:
+  const mapInsetCm = outerMatCm + borderBandCm + gapCm;
   const mapInsetXRatio = mapInsetCm / width;
   const mapInsetYRatio = mapInsetCm / height;
   const matInsetXRatio = outerMatCm / width;
@@ -979,9 +1054,14 @@ export function NeatlineArtwork({
       const step = spanUnits;
       const midYTop = (off0 + offInner) / 2;
       const midYBot = innerH - (off0 + offInner) / 2;
-      const kw = Math.round(36 * dScale);
-      const kh = Math.min(Math.round(16 * dScale), Math.max(8, step - 6));
-      const motifStroke = Math.max(1.4, Math.min(kh / 3, 2.4 * dScale));
+      const midXLeft = (off0 + offInner) / 2;
+      const midXRight = innerW - (off0 + offInner) / 2;
+      const kw = Math.round(32 * dScale);
+      const kh = Math.min(Math.round(14 * dScale), Math.max(8, step - 6));
+      const motifStroke = Math.max(1.4, Math.min(kh / 3, 2.2 * dScale));
+      const sz = Math.max(12, step - 4);
+      const inSz = Math.max(6, sz - 4);
+      const dotSz = Math.max(2, inSz - 4);
 
       return (
         <svg
@@ -1011,36 +1091,42 @@ export function NeatlineArtwork({
             stroke={secondaryColor}
             strokeWidth={widths[1]}
           />
-          {/* Bold, classic Greek Key meander runs along top & bottom */}
+          {/* Classic Greek Key meander runs along all 4 sides */}
           <g fill="none" stroke={secondaryColor} strokeWidth={motifStroke} strokeLinecap="square" strokeLinejoin="miter">
-            {Array.from({ length: Math.floor((innerW - offInner * 2 - 20) / (kw + 6)) }, (_, i) => {
-              const x = offInner + 10 + i * (kw + 6);
+            {/* Top & Bottom horizontal runs */}
+            {Array.from({ length: Math.floor((innerW - offInner * 2 - 24) / (kw + 6)) }, (_, i) => {
+              const x = offInner + 12 + i * (kw + 6);
               return (
                 <g key={`gk-tb-${i}`}>
-                  <path d={`M ${x} ${midYTop - kh / 2} H ${x + kw} V ${midYTop + kh / 2} H ${x + 10} V ${midYTop} H ${x + 24} V ${midYTop - kh / 3}`} />
-                  <path d={`M ${x} ${midYBot + kh / 2} H ${x + kw} V ${midYBot - kh / 2} H ${x + 10} V ${midYBot} H ${x + 24} V ${midYBot + kh / 3}`} />
+                  <path d={`M ${x} ${midYTop - kh / 2} H ${x + kw} V ${midYTop + kh / 2} H ${x + 10} V ${midYTop} H ${x + 22} V ${midYTop - kh / 3}`} />
+                  <path d={`M ${x} ${midYBot + kh / 2} H ${x + kw} V ${midYBot - kh / 2} H ${x + 10} V ${midYBot} H ${x + 22} V ${midYBot + kh / 3}`} />
+                </g>
+              );
+            })}
+            {/* Left & Right vertical runs */}
+            {Array.from({ length: Math.floor((innerH - offInner * 2 - 24) / (kw + 6)) }, (_, i) => {
+              const y = offInner + 12 + i * (kw + 6);
+              return (
+                <g key={`gk-lr-${i}`}>
+                  <path d={`M ${midXLeft - kh / 2} ${y} V ${y + kw} H ${midXLeft + kh / 2} V ${y + 10} H ${midXLeft} V ${y + 22} H ${midXLeft - kh / 3}`} />
+                  <path d={`M ${midXRight + kh / 2} ${y} V ${y + kw} H ${midXRight - kh / 2} V ${y + 10} H ${midXRight} V ${y + 22} H ${midXRight + kh / 3}`} />
                 </g>
               );
             })}
           </g>
-          {/* 4 Corner Square Meander Blocks */}
+          {/* 4 Corner Square Meander Blocks placed with perfect 4-corner symmetry */}
           {[
             [off0 + 2, off0 + 2],
-            [innerW - offInner + 2, off0 + 2],
-            [innerW - offInner + 2, innerH - offInner + 2],
-            [off0 + 2, innerH - offInner + 2],
-          ].map(([cx, cy], idx) => {
-            const sz = Math.max(10, step - 4);
-            const inSz = Math.max(6, sz - 4);
-            const dotSz = Math.max(2, inSz - 4);
-            return (
-              <g key={`gk-c-${idx}`}>
-                <rect x={cx} y={cy} width={sz} height={sz} fill="none" stroke={primaryColor} strokeWidth={widths[0]} />
-                <rect x={cx + (sz - inSz) / 2} y={cy + (sz - inSz) / 2} width={inSz} height={inSz} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
-                <rect x={cx + (sz - dotSz) / 2} y={cy + (sz - dotSz) / 2} width={dotSz} height={dotSz} fill={secondaryColor} />
-              </g>
-            );
-          })}
+            [innerW - off0 - sz - 2, off0 + 2],
+            [innerW - off0 - sz - 2, innerH - off0 - sz - 2],
+            [off0 + 2, innerH - off0 - sz - 2],
+          ].map(([cx, cy], idx) => (
+            <g key={`gk-c-${idx}`}>
+              <rect x={cx} y={cy} width={sz} height={sz} fill="none" stroke={primaryColor} strokeWidth={widths[0]} />
+              <rect x={cx + (sz - inSz) / 2} y={cy + (sz - inSz) / 2} width={inSz} height={inSz} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
+              <rect x={cx + (sz - dotSz) / 2} y={cy + (sz - dotSz) / 2} width={dotSz} height={dotSz} fill={secondaryColor} />
+            </g>
+          ))}
         </svg>
       );
     }
@@ -1082,9 +1168,9 @@ export function NeatlineArtwork({
             </g>
           ))}
 
-          {/* Prominent Card-Suit Center Diamond Medallions (Taash ka Diamond) */}
+          {/* Prominent Card-Suit Center Diamond Medallions (Taash ka Diamond) with fixed bottom Y coordinates */}
           <polygon points={`${midX},${(off0 + offInner) / 2 - dH / 2} ${midX + dW / 2},${(off0 + offInner) / 2} ${midX},${(off0 + offInner) / 2 + dH / 2} ${midX - dW / 2},${(off0 + offInner) / 2}`} fill={secondaryColor} />
-          <polygon points={`${midX},${innerH - (off0 + offInner) / 2 - dH / 2} ${midX + dW / 2},${(off0 + offInner) / 2} ${midX},${innerH - (off0 + offInner) / 2 + dH / 2} ${midX - dW / 2},${innerH - (off0 + offInner) / 2}`} fill={secondaryColor} />
+          <polygon points={`${midX},${innerH - (off0 + offInner) / 2 - dH / 2} ${midX + dW / 2},${innerH - (off0 + offInner) / 2} ${midX},${innerH - (off0 + offInner) / 2 + dH / 2} ${midX - dW / 2},${innerH - (off0 + offInner) / 2}`} fill={secondaryColor} />
           <polygon points={`${(off0 + offInner) / 2 - dW / 2},${midY} ${(off0 + offInner) / 2},${midY - dH / 2} ${(off0 + offInner) / 2 + dW / 2},${midY} ${(off0 + offInner) / 2},${midY + dH / 2}`} fill={secondaryColor} />
           <polygon points={`${innerW - (off0 + offInner) / 2 - dW / 2},${midY} ${innerW - (off0 + offInner) / 2},${midY - dH / 2} ${innerW - (off0 + offInner) / 2 + dW / 2},${midY} ${innerW - (off0 + offInner) / 2},${midY + dH / 2}`} fill={secondaryColor} />
         </svg>
@@ -1214,6 +1300,8 @@ export function NeatlineArtwork({
       const step = spanUnits;
       const topY = (off0 + offInner) / 2;
       const botY = innerH - (off0 + offInner) / 2;
+      const leftX = (off0 + offInner) / 2;
+      const rightX = innerW - (off0 + offInner) / 2;
 
       let pTop1 = `M ${offInner} ${topY}`;
       let pTop2 = `M ${offInner} ${topY}`;
@@ -1231,8 +1319,20 @@ export function NeatlineArtwork({
         pBot2 += ` Q ${x + waveStep / 4} ${botY + amp}, ${x + waveStep / 2} ${botY} T ${x + waveStep} ${botY}`;
       }
 
-      const leftX = (off0 + offInner) / 2;
-      const rightX = innerW - (off0 + offInner) / 2;
+      let pLeft1 = `M ${leftX} ${offInner}`;
+      let pLeft2 = `M ${leftX} ${offInner}`;
+      for (let y = offInner; y <= innerH - offInner - waveStep; y += waveStep) {
+        pLeft1 += ` Q ${leftX - amp} ${y + waveStep / 4}, ${leftX} ${y + waveStep / 2} T ${leftX} ${y + waveStep}`;
+        pLeft2 += ` Q ${leftX + amp} ${y + waveStep / 4}, ${leftX} ${y + waveStep / 2} T ${leftX} ${y + waveStep}`;
+      }
+
+      let pRight1 = `M ${rightX} ${offInner}`;
+      let pRight2 = `M ${rightX} ${offInner}`;
+      for (let y = offInner; y <= innerH - offInner - waveStep; y += waveStep) {
+        pRight1 += ` Q ${rightX - amp} ${y + waveStep / 4}, ${rightX} ${y + waveStep / 2} T ${rightX} ${y + waveStep}`;
+        pRight2 += ` Q ${rightX + amp} ${y + waveStep / 4}, ${rightX} ${y + waveStep / 2} T ${rightX} ${y + waveStep}`;
+      }
+
       const motifStroke = Math.max(1.4, 2.0 * dScale);
 
       return (
@@ -1248,11 +1348,15 @@ export function NeatlineArtwork({
           {/* Inner 100% clean rectangular border */}
           <rect x={offInner} y={offInner} width={innerW - offInner * 2} height={innerH - offInner * 2} fill="none" stroke={secondaryColor} strokeWidth={widths[1]} />
 
-          {/* Intertwining Celtic Sine-wave Braid */}
+          {/* Intertwining Celtic Sine-wave Braid along all 4 perimeter borders */}
           <path d={pTop1} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
           <path d={pTop2} fill="none" stroke={primaryColor} strokeWidth={motifStroke * 0.9} />
           <path d={pBot1} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
           <path d={pBot2} fill="none" stroke={primaryColor} strokeWidth={motifStroke * 0.9} />
+          <path d={pLeft1} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
+          <path d={pLeft2} fill="none" stroke={primaryColor} strokeWidth={motifStroke * 0.9} />
+          <path d={pRight1} fill="none" stroke={secondaryColor} strokeWidth={motifStroke} />
+          <path d={pRight2} fill="none" stroke={primaryColor} strokeWidth={motifStroke * 0.9} />
 
           {/* 4 Corner Celtic Knot Rings */}
           {[
@@ -1396,23 +1500,33 @@ export function NeatlineArtwork({
           {/* Inner 100% clean rectangular border */}
           <rect x={offInner} y={offInner} width={innerW - offInner * 2} height={innerH - offInner * 2} fill="none" stroke={primaryColor} strokeWidth={widths[1]} />
 
-          {/* Drafting Millimeter Micro-Ruler Ticks */}
+          {/* Drafting Millimeter Micro-Ruler Ticks along all 4 perimeter borders */}
           <g stroke={secondaryColor}>
             {Array.from({ length: Math.floor((innerW - offInner * 2) / 14) }, (_, i) => {
               const x = offInner + 7 + i * 14;
               const isMaj = i % 5 === 0;
               const len = isMaj ? 12 : 6;
-              return <line key={`ag-t-${i}`} x1={x} y1={topY - len / 2} x2={x} y2={topY + len / 2} strokeWidth={isMaj ? 1.8 : 1.0} />;
+              return (
+                <g key={`ag-tb-${i}`}>
+                  <line x1={x} y1={topY - len / 2} x2={x} y2={topY + len / 2} strokeWidth={isMaj ? 1.8 : 1.0} />
+                  <line x1={x} y1={botY - len / 2} x2={x} y2={botY + len / 2} strokeWidth={isMaj ? 1.8 : 1.0} />
+                </g>
+              );
             })}
             {Array.from({ length: Math.floor((innerH - offInner * 2) / 14) }, (_, i) => {
               const y = offInner + 7 + i * 14;
               const isMaj = i % 5 === 0;
               const len = isMaj ? 12 : 6;
-              return <line key={`ag-l-${i}`} x1={leftX - len / 2} y1={y} x2={leftX + len / 2} y2={y} strokeWidth={isMaj ? 1.8 : 1.0} />;
+              return (
+                <g key={`ag-lr-${i}`}>
+                  <line x1={leftX - len / 2} y1={y} x2={leftX + len / 2} y2={y} strokeWidth={isMaj ? 1.8 : 1.0} />
+                  <line x1={rightX - len / 2} y1={y} x2={rightX + len / 2} y2={y} strokeWidth={isMaj ? 1.8 : 1.0} />
+                </g>
+              );
             })}
           </g>
 
-          {/* 4 Corner Blueprint Coordinate Crosshairs */}
+          {/* 4 Corner Blueprint Coordinate Crosshairs (Perfect horizontal and vertical alignment) */}
           {[
             [leftX, topY],
             [rightX, topY],
@@ -1426,7 +1540,7 @@ export function NeatlineArtwork({
               <g key={`ag-c-${idx}`}>
                 <circle cx={cx} cy={cy} r={circR} fill="#fff" stroke={secondaryColor} strokeWidth={motifStroke} />
                 <line x1={cx - crossR} y1={cy} x2={cx + crossR} y2={cy} stroke={primaryColor} strokeWidth={Math.max(1.2, 1.6 * dScale)} />
-                <line x1={cx} y1={cy - crossR} x2={cx + crossR} y2={cy + crossR} stroke={primaryColor} strokeWidth={Math.max(1.2, 1.6 * dScale)} />
+                <line x1={cx} y1={cy - crossR} x2={cx} y2={cy + crossR} stroke={primaryColor} strokeWidth={Math.max(1.2, 1.6 * dScale)} />
                 <circle cx={cx} cy={cy} r={Math.max(1.2, 1.8 * dScale)} fill={secondaryColor} />
               </g>
             );
@@ -1481,7 +1595,7 @@ function NeatlineSwatch({
 
   return (
     <span className="neatline-swatch" aria-hidden="true">
-      <svg viewBox="0 0 64 38" preserveAspectRatio="none" className="neatline-swatch-artwork">
+      <svg viewBox="0 0 64 38" preserveAspectRatio="xMidYMid meet" className="neatline-swatch-artwork">
         {(() => {
           switch (style.pattern) {
             // --- GROUP A: NORMAL CORNERS (Clean Top-Left Corner Profile) ---
@@ -1931,34 +2045,39 @@ export function NeatlinePicker({
         </span>
       </div>
 
-      {/* 1. Poster Paper Mat (वाइट शीट) Box */}
+      {/* 1. Poster Paper Mat (वाइट शीट) Single Action Toggle */}
       <div className="neatline-mat-toggle-card">
         <div className="neatline-mat-toggle-header">
-          <span className="neatline-mat-toggle-title">Paper Mat (वाइट शीट)</span>
+          <div>
+            <span className="neatline-mat-toggle-title">Paper Mat (वाइट शीट)</span>
+            <p className="neatline-mat-toggle-desc">
+              {selection.showWhiteMat
+                ? "White gallery paper mat sheet active behind map & border"
+                : "Clean map layout without background paper sheet"}
+            </p>
+          </div>
           <span className="neatline-mat-toggle-badge">
-            {selection.showWhiteMat ? "White Sheet" : "Full Bleed"}
+            {selection.showWhiteMat ? "White Sheet" : "Clean"}
           </span>
         </div>
-        <div className="neatline-mat-toggle-switch-wrap">
-          <button
-            type="button"
-            className={`neatline-mat-segment-btn ${!selection.showWhiteMat ? "is-active" : ""}`}
-            onClick={() => toggleWhiteMat(false)}
-            title="Clean Full Bleed (No White Mat)"
-          >
-            <span className="neatline-mat-icon neatline-mat-icon-clean" aria-hidden="true" />
-            Clean (No Mat)
-          </button>
-          <button
-            type="button"
-            className={`neatline-mat-segment-btn ${selection.showWhiteMat ? "is-active" : ""}`}
-            onClick={() => toggleWhiteMat(true)}
-            title="White Paper Mat Sheet"
-          >
-            <span className="neatline-mat-icon neatline-mat-icon-mat" aria-hidden="true" />
-            White Mat Sheet
-          </button>
-        </div>
+        <button
+          type="button"
+          className={`neatline-mat-single-toggle-btn ${selection.showWhiteMat ? "is-active" : ""}`}
+          onClick={() => toggleWhiteMat(!selection.showWhiteMat)}
+          title={selection.showWhiteMat ? "Remove White Sheet" : "Add White Sheet"}
+        >
+          {selection.showWhiteMat ? (
+            <>
+              <span className="neatline-mat-btn-icon" aria-hidden="true">✕</span>
+              <span>Remove White Sheet (वाइट शीट हटाएं)</span>
+            </>
+          ) : (
+            <>
+              <span className="neatline-mat-btn-icon" aria-hidden="true">+</span>
+              <span>Add White Sheet (वाइट शीट जोड़ें)</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* 2. BORDERS BOX (बॉर्डर्स का अलग बॉक्स - अंदर स्क्रॉल, बिना स्क्रोलबार) */}

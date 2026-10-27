@@ -1063,7 +1063,7 @@
 
 /* Print-style composition: map, breathing gap, neatline and white mat. */
 .poster-frame {
-  background: transparent;
+  background: var(--poster-bg, transparent);
 }
 
 .poster-frame.has-white-mat {

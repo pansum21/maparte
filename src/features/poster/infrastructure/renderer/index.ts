@@ -176,35 +176,59 @@ export async function compositeExport(
     // Draw neatline border on the white paper mat
     await drawNeatlineSvg(ctx, width, height, neatlineSvg, matInsetXRatio, matInsetYRatio);
   } else {
-    // FULL BLEED CLEAN MAP (Clean by default, with or without border line)
-    if (!mapAlreadyInset) {
+    // CLEAN MAP (With or without border line)
+    const hasMapInset = (mapInsetXRatio > 0 || mapInsetYRatio > 0);
+
+    if (hasMapInset && !mapAlreadyInset) {
+      // Background fill matching theme behind inset border
+      ctx.fillStyle = theme.ui.bg;
+      ctx.fillRect(0, 0, width, height);
+
+      const mapX = width * mapInsetXRatio;
+      const mapY = height * mapInsetYRatio;
+      const mapW = width * (1 - mapInsetXRatio * 2);
+      const mapH = height * (1 - mapInsetYRatio * 2);
+
+      ctx.save();
+      ctx.translate(mapX, mapY);
+      ctx.scale(mapW / width, mapH / height);
+
       ctx.drawImage(mapCanvas, 0, 0, width, height);
-    }
 
-    // Gradient fades
-    if (showOverlay) {
-      applyFades(ctx, width, height, theme.ui.bg);
-    }
+      if (showOverlay) {
+        applyFades(ctx, width, height, theme.ui.bg);
+      }
 
-    // Routes (below markers)
-    if (routes.length > 0 && markerProjection) {
-      drawRoutesOnCanvas(
-        ctx,
-        routes,
-        markerProjection,
-        markerScaleX,
-        markerScaleY,
-        markerSizeScale,
-      );
-    }
+      if (routes.length > 0 && markerProjection) {
+        drawRoutesOnCanvas(
+          ctx,
+          routes,
+          markerProjection,
+          markerScaleX,
+          markerScaleY,
+          markerSizeScale,
+        );
+      }
 
-    // Route endpoint markers
-    if (routes.length > 0 && markerIcons.length > 0 && markerProjection) {
-      const endpointItems = routeEndpointMarkerItems(routes);
-      if (endpointItems.length > 0) {
+      if (routes.length > 0 && markerIcons.length > 0 && markerProjection) {
+        const endpointItems = routeEndpointMarkerItems(routes);
+        if (endpointItems.length > 0) {
+          await drawMarkersOnCanvas(
+            ctx,
+            endpointItems,
+            markerIcons,
+            markerProjection,
+            markerScaleX,
+            markerScaleY,
+            markerSizeScale,
+          );
+        }
+      }
+
+      if (markers.length > 0 && markerIcons.length > 0 && markerProjection) {
         await drawMarkersOnCanvas(
           ctx,
-          endpointItems,
+          markers,
           markerIcons,
           markerProjection,
           markerScaleX,
@@ -212,39 +236,89 @@ export async function compositeExport(
           markerSizeScale,
         );
       }
-    }
 
-    // User markers
-    if (markers.length > 0 && markerIcons.length > 0 && markerProjection) {
-      await drawMarkersOnCanvas(
+      drawPosterText(
         ctx,
-        markers,
-        markerIcons,
-        markerProjection,
-        markerScaleX,
-        markerScaleY,
-        markerSizeScale,
+        width,
+        height,
+        theme,
+        center,
+        displayCity,
+        displayCountry,
+        fontFamily,
+        showPosterText,
+        showOverlay,
+        includeCredits,
+        customDate,
+        fontSize,
+      );
+
+      ctx.restore();
+    } else {
+      if (!mapAlreadyInset) {
+        ctx.drawImage(mapCanvas, 0, 0, width, height);
+      }
+
+      if (showOverlay) {
+        applyFades(ctx, width, height, theme.ui.bg);
+      }
+
+      if (routes.length > 0 && markerProjection) {
+        drawRoutesOnCanvas(
+          ctx,
+          routes,
+          markerProjection,
+          markerScaleX,
+          markerScaleY,
+          markerSizeScale,
+        );
+      }
+
+      if (routes.length > 0 && markerIcons.length > 0 && markerProjection) {
+        const endpointItems = routeEndpointMarkerItems(routes);
+        if (endpointItems.length > 0) {
+          await drawMarkersOnCanvas(
+            ctx,
+            endpointItems,
+            markerIcons,
+            markerProjection,
+            markerScaleX,
+            markerScaleY,
+            markerSizeScale,
+          );
+        }
+      }
+
+      if (markers.length > 0 && markerIcons.length > 0 && markerProjection) {
+        await drawMarkersOnCanvas(
+          ctx,
+          markers,
+          markerIcons,
+          markerProjection,
+          markerScaleX,
+          markerScaleY,
+          markerSizeScale,
+        );
+      }
+
+      drawPosterText(
+        ctx,
+        width,
+        height,
+        theme,
+        center,
+        displayCity,
+        displayCountry,
+        fontFamily,
+        showPosterText,
+        showOverlay,
+        includeCredits,
+        customDate,
+        fontSize,
       );
     }
 
-    // Poster text
-    drawPosterText(
-      ctx,
-      width,
-      height,
-      theme,
-      center,
-      displayCity,
-      displayCountry,
-      fontFamily,
-      showPosterText,
-      showOverlay,
-      includeCredits,
-      customDate,
-      fontSize,
-    );
-
-    // Draw neatline border directly over the full-bleed map artwork
+    // Draw neatline border around the map opening (never overlapping map)
     await drawNeatlineSvg(ctx, width, height, neatlineSvg, matInsetXRatio, matInsetYRatio);
   }
 
