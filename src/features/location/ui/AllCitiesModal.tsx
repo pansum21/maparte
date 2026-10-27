@@ -34,12 +34,12 @@ interface CityPhotoCredit {
   license?: string;
 }
 
-const CONTINENTS = [
+const CITY_REGIONS = [
   "Asia",
   "Africa",
   "Europe",
   "Oceania",
-  "Antarctica",
+  "Central America & Caribbean",
   "North America",
   "South America",
 ] as const;
@@ -137,7 +137,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
     useCurrentLocation(flyToLocation);
 
   const [typedQuery, setTypedQuery] = useState<string | null>(null);
-  const [selectedContinent, setSelectedContinent] = useState<string>("Asia");
+  const [selectedRegion, setSelectedRegion] = useState<string>("Asia");
   const [showCoords, setShowCoords] = useState(false);
   const isSearchingCities = typedQuery !== null && typedQuery.trim().length > 0;
   const normalizedQuery = typedQuery?.trim().toLowerCase() ?? "";
@@ -164,19 +164,21 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
             ))
         );
       }
-      const matchesContinent =
-        selectedContinent === "North America"
-          ? ["North America", "Central America", "Caribbean"].includes(item.continent)
-          : selectedContinent === "Asia"
+      const matchesRegion =
+        selectedRegion === "North America"
+          ? item.continent === "North America"
+          : selectedRegion === "Central America & Caribbean"
+            ? ["Central America", "Caribbean"].includes(item.continent)
+            : selectedRegion === "Asia"
             ? item.continent === "Asia" || item.continent === "Middle East"
-            : item.continent === selectedContinent;
-      return matchesContinent;
+            : item.continent === selectedRegion;
+      return matchesRegion;
     }).sort(
       (first, second) =>
         cityCollator.compare(first.city, second.city) ||
         cityCollator.compare(first.country, second.country),
     );
-  }, [isSearchingCities, normalizedQuery, selectedContinent]);
+  }, [isSearchingCities, normalizedQuery, selectedRegion]);
 
   if (!isOpen) return null;
 
@@ -432,18 +434,18 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
       ) : null}
 
       <div className="all-cities-continents" role="tablist" aria-label="City regions">
-        {CONTINENTS.map((continent) => (
+        {CITY_REGIONS.map((region) => (
           <button
-            key={continent}
+            key={region}
             type="button"
             role="tab"
-            aria-selected={selectedContinent === continent}
-            className={`all-cities-continent-pill${selectedContinent === continent ? " is-active" : ""}`}
+            aria-selected={selectedRegion === region}
+            className={`all-cities-continent-pill${selectedRegion === region ? " is-active" : ""}`}
             onClick={() => {
-              setSelectedContinent(continent);
+              setSelectedRegion(region);
               if (isSearchingCities) setTypedQuery("");
             }}
-          >{continent}</button>
+          >{region}</button>
         ))}
       </div>
 

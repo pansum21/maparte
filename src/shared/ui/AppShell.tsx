@@ -17,7 +17,7 @@ import SupportModal from "@/features/export/ui/SupportModal";
 import {
   SUPPORT_PROMPT_EVENT,
   type SupportPromptState,
-} from "@/features/export/application/useExport";
+} from "@/features/export/application/supportPrompt";
 import { useSessionAnalytics } from "@/features/export/application/useSessionAnalytics";
 import {
   LEGAL_DOC_EVENT,

@@ -1,9 +1,14 @@
 import { useCallback, useMemo } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import {
+  SUPPORT_PROMPT_EVENT,
+  type SupportPromptVariant,
+} from "@/features/export/application/supportPrompt";
+import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
+import { createLayeredSvgBlobFromMap } from "@/features/export/infrastructure/layeredSvgExporter";
 import JSZip from "jszip";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
-import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
 import { createTiffBlob } from "@/features/export/infrastructure/tiffExporter";
 import {
   isProUser,
@@ -20,7 +25,6 @@ import {
   createPngBlob,
   createJpgBlob,
   createPdfBlobFromCanvas,
-  createLayeredSvgBlobFromMap,
   createPosterFilename,
   triggerDownloadBlob,
 } from "@/core/services";
@@ -31,6 +35,12 @@ import {
 } from "@/core/config";
 import { trackEvent, setUserProperty } from "@/core/services";
 import { dispatchTelemetryAlert } from "@/core/telemetry/sentinel";
+
+export { SUPPORT_PROMPT_EVENT } from "@/features/export/application/supportPrompt";
+export type {
+  SupportPromptState,
+  SupportPromptVariant,
+} from "@/features/export/application/supportPrompt";
 
 const EXPORT_COUNT_STORAGE_KEY = "maparte.poster.count";
 
@@ -81,15 +91,6 @@ async function getSelectedNeatlineSvg(): Promise<string | undefined> {
   clone.removeAttribute("class");
   return new XMLSerializer().serializeToString(clone);
 }
-
-export type SupportPromptVariant = "follow";
-
-export interface SupportPromptState {
-  posterNumber: number;
-  variant: SupportPromptVariant;
-}
-
-export const SUPPORT_PROMPT_EVENT = "maparte:support-prompt";
 
 // Use a 1-year TTL so the export count persists across sessions.
 const EXPORT_COUNT_TTL_MS = 365 * 24 * 60 * 60 * 1000;

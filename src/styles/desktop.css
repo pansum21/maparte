@@ -2708,10 +2708,13 @@
   font: 650 .88rem/1.2 "Instrument Sans", sans-serif; cursor: pointer;
 }
 .all-cities-continent-pill.is-active { background: rgba(2, 132, 199, .8); border-color: rgba(56, 189, 248, .9); color: white; }
-.all-cities-continent-pill:nth-child(n + 6) {
+.all-cities-continent-pill:nth-child(n + 5) {
   padding-inline: 3px;
-  font-size: .68rem;
+  font-size: .66rem;
+  line-height: 1.1;
   letter-spacing: -.025em;
+  white-space: normal;
+  text-align: center;
 }
 .all-cities-grid {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 14px;

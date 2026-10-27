@@ -551,6 +551,15 @@
   text-align: center;
 }
 
+.map-preview-loading {
+  display: grid;
+  place-items: center;
+  background: rgba(8, 22, 34, 0.76);
+  color: rgba(196, 216, 232, 0.78);
+  font-size: 0.84rem;
+  letter-spacing: 0.02em;
+}
+
 .map-preview-unavailable strong {
   font-size: clamp(1rem, 2vw, 1.25rem);
 }

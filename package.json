@@ -6,7 +6,7 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build": "node scripts/buildSeoCitiesDatabase.mjs && vite build",
     "preview": "vite preview --host",
     "typecheck": "tsc --noEmit",
     "verify:exports": "node scripts/verify-export-resolution.mjs",

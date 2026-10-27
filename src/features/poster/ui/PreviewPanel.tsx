@@ -1,16 +1,18 @@
 import {
   useCallback,
   useEffect,
+  lazy,
   useMemo,
   useRef,
   useState,
+  Suspense,
   type CSSProperties,
 } from "react";
 import { usePosterContext } from "./PosterContext";
 import AdUnit from "@/shared/ui/AdUnit";
 import { AD_SLOT_SIDEBAR, ADS_SIDEBAR_ENABLED } from "@/core/config";
 import { useMapSync } from "@/features/map/application/useMapSync";
-import MapPreview from "@/features/map/ui/MapPreview";
+const MapPreview = lazy(() => import("@/features/map/ui/MapPreview"));
 import MarkerOverlay from "@/features/markers/ui/MarkerOverlay";
 import RouteOverlay from "@/features/routes/ui/RouteOverlay";
 import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
@@ -438,19 +440,27 @@ export default function PreviewPanel({
           }
         >
           <div className="poster-map-window">
-          <MapPreview
-            style={mapStyle}
-            center={mapCenter}
-            zoom={mapZoom}
-            mapRef={mapRef}
-            interactive={isEditing && !isMarkerEditorActive}
-            allowRotation={isEditing}
-            minZoom={mapMinZoom}
-            maxZoom={mapMaxZoom}
-            overzoomScale={overzoomScale}
-            onMove={handleMove}
-            onMoveEnd={handleMoveEnd}
-          />
+          <Suspense
+            fallback={
+              <div className="map-container map-preview-loading" role="status" aria-live="polite">
+                Loading map preview…
+              </div>
+            }
+          >
+            <MapPreview
+              style={mapStyle}
+              center={mapCenter}
+              zoom={mapZoom}
+              mapRef={mapRef}
+              interactive={isEditing && !isMarkerEditorActive}
+              allowRotation={isEditing}
+              minZoom={mapMinZoom}
+              maxZoom={mapMaxZoom}
+              overzoomScale={overzoomScale}
+              onMove={handleMove}
+              onMoveEnd={handleMoveEnd}
+            />
+          </Suspense>
           {form.showMarkers ? (
             <GradientFades color={effectiveTheme.ui.bg} />
           ) : null}

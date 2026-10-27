@@ -38,14 +38,10 @@ export const ensureFont =
 
 export { compositeExport } from "@/features/poster/infrastructure/renderer";
 
-/* ── Export helpers ── */
-
-export { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
+/* ── Raster / document helpers ── */
 
 export { createPngBlob } from "@/features/export/infrastructure/pngExporter";
 export { createJpgBlob } from "@/features/export/infrastructure/jpgExporter";
-export { createLayeredSvgBlobFromMap } from "@/features/export/infrastructure/layeredSvgExporter";
-
 export { createPdfBlobFromCanvas } from "@/features/export/infrastructure/pdfExporter";
 
 export { createPosterFilename } from "@/features/export/infrastructure/filenameGenerator";
