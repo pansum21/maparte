@@ -22,6 +22,12 @@ export interface CanvasSize {
 export interface ExportOptions {
   /** Map pixels were rendered directly into the page canvas' 10% print mat. */
   mapAlreadyInset?: boolean;
+  /** Whether the white paper mat sheet should frame the poster map. */
+  showWhiteMat?: boolean;
+  matInsetXRatio?: number;
+  matInsetYRatio?: number;
+  mapInsetXRatio?: number;
+  mapInsetYRatio?: number;
   theme: ResolvedTheme;
   center: { lat: number; lon: number };
   widthInches: number;

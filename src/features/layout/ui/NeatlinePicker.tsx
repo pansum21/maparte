@@ -85,6 +85,7 @@ export type NeatlineSelection = {
   gradientFrom?: string;
   gradientTo?: string;
   designScale?: number;
+  showWhiteMat?: boolean;
 };
 
 export const lineStyles: LineStyle[] = [
@@ -262,20 +263,82 @@ export function getPosterBorderMetrics(
   lineId?: string,
   thicknesses?: Record<string, number[]>,
   designScale = 1.0,
+  showWhiteMat = false,
 ) {
   const width = Number(widthValue) > 0 ? Number(widthValue) : 21;
   const height = Number(heightValue) > 0 ? Number(heightValue) : 29.7;
   const shortSide = Math.min(width, height);
 
-  // Border sits right near the corners of the white background: 1 mm (0.10 cm)
-  const outerMatCm = Math.min(OUTER_MAT_MAX_CM, Math.max(0.04, shortSide * 0.005));
+  if (!showWhiteMat) {
+    // When white mat is OFF:
+    // Map is 100% clean full bleed. If a border line is chosen, it is inset directly over the map art.
+    const hasBorder = Boolean(lineId && lineId !== "none");
+    const borderInsetRatio = hasBorder ? 0.025 : 0;
+    const borderInsetCm = shortSide * borderInsetRatio;
+    const usableWidthCm = Math.max(0.1, width - borderInsetCm * 2);
+    const usableHeightCm = Math.max(0.1, height - borderInsetCm * 2);
+    const innerW = 1000;
+    const innerH = (innerW * usableHeightCm) / usableWidthCm;
+    const unitScale = innerW / usableWidthCm;
+
+    let borderBandCm = 0;
+    let spanUnits = 0;
+    let edgeInset = 1.5;
+    let offInner = edgeInset;
+
+    const style = hasBorder ? lineStyles.find((s) => s.id === lineId) : null;
+    if (style) {
+      const widths = widthsFor(style.id, thicknesses || {});
+      const maxStroke = widths.length ? Math.max(...widths) : 2.0;
+      edgeInset = maxStroke / 2 + 0.5;
+      spanUnits = getPatternSpanUnits(style.pattern, designScale);
+      offInner = edgeInset + spanUnits;
+      const innerStrokeWidth = widths[widths.length - 1] ?? maxStroke;
+      const innerEdgeUnits = offInner + innerStrokeWidth / 2;
+      borderBandCm = innerEdgeUnits / unitScale;
+    }
+
+    const matInsetXRatio = borderInsetCm / width;
+    const matInsetYRatio = borderInsetCm / height;
+
+    return {
+      showWhiteMat: false,
+      outerMatCm: 0,
+      frameArtInsetCm: 0,
+      borderBandCm,
+      mapInsetCm: 0,
+      gapCm: 0,
+      spanUnits,
+      edgeInset,
+      offInner,
+      unitScale,
+      innerW,
+      innerH,
+      mapInsetX: "0%",
+      mapInsetY: "0%",
+      matInsetX: `${matInsetXRatio * 100}%`,
+      matInsetY: `${matInsetYRatio * 100}%`,
+      mapInsetXRatio: 0,
+      mapInsetYRatio: 0,
+      matInsetXRatio,
+      matInsetYRatio,
+      usableWidthCm,
+      usableHeightCm,
+    };
+  }
+
+  // When white mat is ON:
+  // An elegant white gallery paper mat frames the map artwork (5.5% margin).
+  const matMarginRatio = 0.055;
+  const outerMatRatio = 0.02;
+  const outerMatCm = shortSide * outerMatRatio;
+  const mapInsetCm = shortSide * matMarginRatio;
   const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
   const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
   const innerW = 1000;
   const innerH = (innerW * usableHeightCm) / usableWidthCm;
   const unitScale = innerW / usableWidthCm;
 
-  // Default clearance gap is 1 mm (0.10 cm) as requested: "लगभग 1 mm, 1 mm का गैप होना चाहिए"
   const gapCm =
     typeof customGapCm === "number" && Number.isFinite(customGapCm)
       ? Math.max(0.05, Math.min(0.60, customGapCm))
@@ -296,22 +359,15 @@ export function getPosterBorderMetrics(
     const innerStrokeWidth = widths[widths.length - 1] ?? maxStroke;
     const innerEdgeUnits = offInner + innerStrokeWidth / 2;
     borderBandCm = innerEdgeUnits / unitScale;
-
-    // On ultra-wide banners with very short heights (e.g. Reddit banner 4 cm, Twitter 6 cm),
-    // cap the border band so the map opening never gets squashed to zero.
-    const maxBandCm = Math.max(0.05, shortSide / 2 - outerMatCm - gapCm - 0.20);
-    if (borderBandCm > maxBandCm) {
-      borderBandCm = maxBandCm;
-      const targetEdgeUnits = borderBandCm * unitScale;
-      offInner = Math.max(edgeInset, targetEdgeUnits - innerStrokeWidth / 2);
-      spanUnits = Math.max(0, offInner - edgeInset);
-    }
   }
 
-  // The map frame is placed exactly gapCm (default 1 mm) inside the innermost border stroke edge
-  const mapInsetCm = outerMatCm + borderBandCm + gapCm;
+  const mapInsetXRatio = mapInsetCm / width;
+  const mapInsetYRatio = mapInsetCm / height;
+  const matInsetXRatio = outerMatCm / width;
+  const matInsetYRatio = outerMatCm / height;
 
   return {
+    showWhiteMat: true,
     outerMatCm,
     frameArtInsetCm: 0,
     borderBandCm,
@@ -323,10 +379,14 @@ export function getPosterBorderMetrics(
     unitScale,
     innerW,
     innerH,
-    mapInsetX: `${(mapInsetCm / width) * 100}%`,
-    mapInsetY: `${(mapInsetCm / height) * 100}%`,
-    matInsetX: `${(outerMatCm / width) * 100}%`,
-    matInsetY: `${(outerMatCm / height) * 100}%`,
+    mapInsetX: `${mapInsetXRatio * 100}%`,
+    mapInsetY: `${mapInsetYRatio * 100}%`,
+    matInsetX: `${matInsetXRatio * 100}%`,
+    matInsetY: `${matInsetYRatio * 100}%`,
+    mapInsetXRatio,
+    mapInsetYRatio,
+    matInsetXRatio,
+    matInsetYRatio,
     usableWidthCm,
     usableHeightCm,
   };
@@ -394,6 +454,7 @@ function readSelection(): NeatlineSelection {
     gradientFrom: "#f43f5e",
     gradientTo: "#fb923c",
     designScale: 1.0,
+    showWhiteMat: false,
   };
   if (typeof window === "undefined") return empty;
   try {
@@ -406,6 +467,12 @@ function readSelection(): NeatlineSelection {
           : parsed.lineVariant === "colorful"
             ? "mix"
             : "single";
+
+      const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+      const urlMat = urlParams?.get("mat");
+      const showWhiteMat = urlMat !== null && urlMat !== undefined
+        ? (urlMat === "1" || urlMat === "true")
+        : Boolean(parsed.showWhiteMat);
 
       return {
         ...empty,
@@ -429,6 +496,7 @@ function readSelection(): NeatlineSelection {
           typeof parsed.designScale === "number" && Number.isFinite(parsed.designScale)
             ? Math.max(0.5, Math.min(2.5, parsed.designScale))
             : 1.0,
+        showWhiteMat,
       };
     }
     const legacy = window.localStorage.getItem(LEGACY_STYLE_KEY) || "none";
@@ -534,6 +602,7 @@ export function NeatlineArtwork({
     selection.lineId,
     selection.thicknesses,
     selection.designScale,
+    selection.showWhiteMat,
   );
   const { innerW, innerH, edgeInset, offInner, spanUnits } = metrics;
   const widths = widthsFor(line.id, selection.thicknesses);
@@ -1772,6 +1841,7 @@ export function NeatlinePicker({
           gradientFrom: selection.gradientFrom ?? "#f43f5e",
           gradientTo: selection.gradientTo ?? "#fb923c",
           designScale: selection.designScale ?? 1.0,
+          showWhiteMat: Boolean(selection.showWhiteMat),
         }),
       );
       window.localStorage.setItem(
@@ -1788,6 +1858,13 @@ export function NeatlinePicker({
       }),
     );
   }, [selection]);
+
+  const toggleWhiteMat = (enabled: boolean) => {
+    setSelection((current) => ({
+      ...current,
+      showWhiteMat: enabled,
+    }));
+  };
 
   const selectStyle = (style: BorderStyle) => {
     setSelection((current) => ({
@@ -1853,6 +1930,36 @@ export function NeatlinePicker({
         <span className="neatline-count">
           {layerCount} {layerCount === 1 ? "layer" : "layers"}
         </span>
+      </div>
+
+      {/* Poster Paper Mat (वाइट शीट) Toggle Switch */}
+      <div className="neatline-mat-toggle-card">
+        <div className="neatline-mat-toggle-header">
+          <span className="neatline-mat-toggle-title">Paper Mat (वाइट शीट)</span>
+          <span className="neatline-mat-toggle-badge">
+            {selection.showWhiteMat ? "White Sheet" : "Full Bleed"}
+          </span>
+        </div>
+        <div className="neatline-mat-toggle-switch-wrap">
+          <button
+            type="button"
+            className={`neatline-mat-segment-btn ${!selection.showWhiteMat ? "is-active" : ""}`}
+            onClick={() => toggleWhiteMat(false)}
+            title="Clean Full Bleed (No White Mat)"
+          >
+            <span className="neatline-mat-icon neatline-mat-icon-clean" aria-hidden="true" />
+            Clean (No Mat)
+          </button>
+          <button
+            type="button"
+            className={`neatline-mat-segment-btn ${selection.showWhiteMat ? "is-active" : ""}`}
+            onClick={() => toggleWhiteMat(true)}
+            title="White Paper Mat Sheet"
+          >
+            <span className="neatline-mat-icon neatline-mat-icon-mat" aria-hidden="true" />
+            White Mat Sheet
+          </button>
+        </div>
       </div>
 
       {selectedLine ? (
@@ -2001,9 +2108,17 @@ export function NeatlinePicker({
             onClick={() => selectStyle(style)}
           >
             <div className="neatline-card-copy">
-              <span className="neatline-card-name">{style.name}</span>
+              <span className="neatline-card-name">
+                {style.id === "none"
+                  ? (selection.showWhiteMat ? "No border line" : "Clean Full Bleed")
+                  : style.name}
+              </span>
               <span className="neatline-card-meta">
-                {style.id === "none" ? "Full Bleed Map" : getBorderCategoryTag(style.pattern)}
+                {style.id === "none"
+                  ? (selection.showWhiteMat ? "White Mat Only" : "100% Edge-to-Edge")
+                  : (selection.showWhiteMat
+                      ? `${getBorderCategoryTag(style.pattern)} · White Mat`
+                      : `${getBorderCategoryTag(style.pattern)} · Full Bleed`)}
               </span>
             </div>
             <NeatlineSwatch style={style} selection={swatchSelection(style)} />

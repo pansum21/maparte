@@ -25,6 +25,9 @@ export async function captureMapAsCanvas(
   map: MaplibreMap,
   exportWidth: number,
   exportHeight: number,
+  showWhiteMat = false,
+  mapInsetXRatio = 0.055,
+  mapInsetYRatio = 0.055,
 ): Promise<CapturedMapResult> {
   await waitForMapIdle(map);
 
@@ -68,11 +71,15 @@ export async function captureMapAsCanvas(
     if (!outputContext) {
       throw new Error("This device could not allocate the full-size print canvas.");
     }
-    outputContext.fillStyle = "#fff";
-    outputContext.fillRect(0, 0, exportWidth, exportHeight);
-    outputContext.save();
-    outputContext.translate(exportWidth * 0.085, exportHeight * 0.085);
-    outputContext.scale(0.83, 0.83);
+    if (showWhiteMat) {
+      outputContext.fillStyle = "#fff";
+      outputContext.fillRect(0, 0, exportWidth, exportHeight);
+      outputContext.save();
+      const mapW = exportWidth * (1 - mapInsetXRatio * 2);
+      const mapH = exportHeight * (1 - mapInsetYRatio * 2);
+      outputContext.translate(exportWidth * mapInsetXRatio, exportHeight * mapInsetYRatio);
+      outputContext.scale(mapW / exportWidth, mapH / exportHeight);
+    }
 
     const sourceContainer = map.getContainer();
     const scaleToExport = exportWidth / fullResolutionParams.effectivePreviewWidth;
@@ -138,11 +145,13 @@ export async function captureMapAsCanvas(
         tileContainer.remove();
       }
     }
-    outputContext.restore();
+    if (showWhiteMat) {
+      outputContext.restore();
+    }
 
     return {
       canvas: exportCanvas,
-      mapAlreadyInset: true,
+      mapAlreadyInset: showWhiteMat,
       markerProjection: fullResolutionParams.markerProjection,
       markerScaleX: fullResolutionParams.markerScaleX,
       markerScaleY: fullResolutionParams.markerScaleY,

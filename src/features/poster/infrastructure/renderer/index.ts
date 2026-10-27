@@ -5,12 +5,13 @@ import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
 import type { ExportOptions, CanvasSize } from "../../domain/types";
 
-
 async function drawNeatlineSvg(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
   svgMarkup?: string,
+  insetXRatio = 0.025,
+  insetYRatio = 0.025,
 ) {
   if (!svgMarkup) return;
   const objectUrl = URL.createObjectURL(
@@ -23,7 +24,11 @@ async function drawNeatlineSvg(
       image.onload = () => resolve();
       image.onerror = () => reject(new Error("Could not render the selected border."));
     });
-    ctx.drawImage(image, width * 0.04, height * 0.04, width * 0.92, height * 0.92);
+    const x = width * insetXRatio;
+    const y = height * insetYRatio;
+    const w = width * (1 - insetXRatio * 2);
+    const h = height * (1 - insetYRatio * 2);
+    ctx.drawImage(image, x, y, w, h);
   } finally {
     URL.revokeObjectURL(objectUrl);
   }
@@ -32,9 +37,11 @@ async function drawNeatlineSvg(
 /**
  * Composites a final poster from a MapLibre snapshot canvas.
  *
- * 1. Draws the captured map image.
+ * 1. Draws the captured map image (full-bleed or within white paper mat).
  * 2. Applies gradient fades (top + bottom).
- * 3. Draws poster text (city, country, coords, attribution).
+ * 3. Draws routes and markers.
+ * 4. Draws poster text (city, country, coords, attribution).
+ * 5. Draws selected neatline border (over full-bleed map or over white paper mat).
  *
  * Returns the composited canvas + its size metadata.
  */
@@ -43,7 +50,12 @@ export async function compositeExport(
   options: ExportOptions,
 ): Promise<{ canvas: HTMLCanvasElement; size: CanvasSize }> {
   const {
+    showWhiteMat = false,
     mapAlreadyInset = false,
+    matInsetXRatio = showWhiteMat ? 0.02 : 0.025,
+    matInsetYRatio = showWhiteMat ? 0.02 : 0.025,
+    mapInsetXRatio = showWhiteMat ? 0.055 : 0,
+    mapInsetYRatio = showWhiteMat ? 0.055 : 0,
     theme,
     center,
     widthInches,
@@ -78,42 +90,63 @@ export async function compositeExport(
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas rendering is not available.");
 
-  // Keep a generous white print mat around the artwork.
-  if (!mapAlreadyInset) {
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, width, height);
-  }
-  ctx.save();
-  ctx.translate(width * 0.085, height * 0.085);
-  ctx.scale(0.83, 0.83);
+  if (showWhiteMat) {
+    // 1. Fill crisp white paper mat background
+    if (!mapAlreadyInset) {
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, width, height);
+    }
 
-  // 1. Draw map snapshot inside the print mat.
-  if (!mapAlreadyInset) ctx.drawImage(mapCanvas, 0, 0);
+    const mapX = width * mapInsetXRatio;
+    const mapY = height * mapInsetYRatio;
+    const mapW = width * (1 - mapInsetXRatio * 2);
+    const mapH = height * (1 - mapInsetYRatio * 2);
 
-  // 2. Gradient fades
-  if (showOverlay) {
-    applyFades(ctx, width, height, theme.ui.bg);
-  }
+    ctx.save();
+    ctx.translate(mapX, mapY);
+    ctx.scale(mapW / width, mapH / height);
 
-  // 3. Routes (below markers)
-  if (routes.length > 0 && markerProjection) {
-    drawRoutesOnCanvas(
-      ctx,
-      routes,
-      markerProjection,
-      markerScaleX,
-      markerScaleY,
-      markerSizeScale,
-    );
-  }
+    // Draw map snapshot inside the white paper mat opening
+    if (!mapAlreadyInset) ctx.drawImage(mapCanvas, 0, 0, width, height);
 
-  // 4. Route endpoint markers (between route lines and user markers)
-  if (routes.length > 0 && markerIcons.length > 0 && markerProjection) {
-    const endpointItems = routeEndpointMarkerItems(routes);
-    if (endpointItems.length > 0) {
+    // Gradient fades
+    if (showOverlay) {
+      applyFades(ctx, width, height, theme.ui.bg);
+    }
+
+    // Routes (below markers)
+    if (routes.length > 0 && markerProjection) {
+      drawRoutesOnCanvas(
+        ctx,
+        routes,
+        markerProjection,
+        markerScaleX,
+        markerScaleY,
+        markerSizeScale,
+      );
+    }
+
+    // Route endpoint markers
+    if (routes.length > 0 && markerIcons.length > 0 && markerProjection) {
+      const endpointItems = routeEndpointMarkerItems(routes);
+      if (endpointItems.length > 0) {
+        await drawMarkersOnCanvas(
+          ctx,
+          endpointItems,
+          markerIcons,
+          markerProjection,
+          markerScaleX,
+          markerScaleY,
+          markerSizeScale,
+        );
+      }
+    }
+
+    // User markers
+    if (markers.length > 0 && markerIcons.length > 0 && markerProjection) {
       await drawMarkersOnCanvas(
         ctx,
-        endpointItems,
+        markers,
         markerIcons,
         markerProjection,
         markerScaleX,
@@ -121,41 +154,99 @@ export async function compositeExport(
         markerSizeScale,
       );
     }
-  }
 
-  // 5. User markers
-  if (markers.length > 0 && markerIcons.length > 0 && markerProjection) {
-    await drawMarkersOnCanvas(
+    // Poster text
+    drawPosterText(
       ctx,
-      markers,
-      markerIcons,
-      markerProjection,
-      markerScaleX,
-      markerScaleY,
-      markerSizeScale,
+      width,
+      height,
+      theme,
+      center,
+      displayCity,
+      displayCountry,
+      fontFamily,
+      showPosterText,
+      showOverlay,
+      includeCredits,
+      customDate,
+      fontSize,
     );
+    ctx.restore();
+
+    // Draw neatline border on the white paper mat
+    await drawNeatlineSvg(ctx, width, height, neatlineSvg, matInsetXRatio, matInsetYRatio);
+  } else {
+    // FULL BLEED CLEAN MAP (Clean by default, with or without border line)
+    if (!mapAlreadyInset) {
+      ctx.drawImage(mapCanvas, 0, 0, width, height);
+    }
+
+    // Gradient fades
+    if (showOverlay) {
+      applyFades(ctx, width, height, theme.ui.bg);
+    }
+
+    // Routes (below markers)
+    if (routes.length > 0 && markerProjection) {
+      drawRoutesOnCanvas(
+        ctx,
+        routes,
+        markerProjection,
+        markerScaleX,
+        markerScaleY,
+        markerSizeScale,
+      );
+    }
+
+    // Route endpoint markers
+    if (routes.length > 0 && markerIcons.length > 0 && markerProjection) {
+      const endpointItems = routeEndpointMarkerItems(routes);
+      if (endpointItems.length > 0) {
+        await drawMarkersOnCanvas(
+          ctx,
+          endpointItems,
+          markerIcons,
+          markerProjection,
+          markerScaleX,
+          markerScaleY,
+          markerSizeScale,
+        );
+      }
+    }
+
+    // User markers
+    if (markers.length > 0 && markerIcons.length > 0 && markerProjection) {
+      await drawMarkersOnCanvas(
+        ctx,
+        markers,
+        markerIcons,
+        markerProjection,
+        markerScaleX,
+        markerScaleY,
+        markerSizeScale,
+      );
+    }
+
+    // Poster text
+    drawPosterText(
+      ctx,
+      width,
+      height,
+      theme,
+      center,
+      displayCity,
+      displayCountry,
+      fontFamily,
+      showPosterText,
+      showOverlay,
+      includeCredits,
+      customDate,
+      fontSize,
+    );
+
+    // Draw neatline border directly over the full-bleed map artwork
+    await drawNeatlineSvg(ctx, width, height, neatlineSvg, matInsetXRatio, matInsetYRatio);
   }
-
-  // 7. Poster text
-  drawPosterText(
-    ctx,
-    width,
-    height,
-    theme,
-    center,
-    displayCity,
-    displayCountry,
-    fontFamily,
-    showPosterText,
-    showOverlay,
-    includeCredits,
-    customDate,
-    fontSize,
-  );
-  ctx.restore();
-
-  // The wooden frame stays physical; print the decorative line and white mat.
-  await drawNeatlineSvg(ctx, width, height, neatlineSvg);
 
   const size: CanvasSize = {
     width,

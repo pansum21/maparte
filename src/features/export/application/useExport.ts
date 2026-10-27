@@ -13,6 +13,7 @@ import {
 } from "@/features/export/infrastructure/planTier";
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
+import { readNeatlineSelection, getPosterBorderMetrics } from "@/features/layout/ui/NeatlinePicker";
 import { getAllMarkerIcons } from "@/features/markers/infrastructure/iconRegistry";
 import { ensureFont } from "@/core/services";
 import {
@@ -292,7 +293,14 @@ export function useExport() {
           markerScaleX,
           markerScaleY,
           markerSizeScale,
-        } = await captureMapAsCanvas(map, size.width, size.height);
+        } = await captureMapAsCanvas(
+          map,
+          size.width,
+          size.height,
+          showWhiteMat,
+          borderMetrics.mapInsetXRatio,
+          borderMetrics.mapInsetYRatio,
+        );
         // The WebGL map surface can be smaller than the requested poster on
         // some devices. Export at the actual rendered pixel dimensions instead
         // of interpolating it upward and labeling the result as 500 PPI.

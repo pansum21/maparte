@@ -109,6 +109,7 @@ export default function PreviewPanel({
         neatlineSelection.lineId,
         neatlineSelection.thicknesses,
         neatlineSelection.designScale,
+        neatlineSelection.showWhiteMat,
       ),
     [
       form.width,
@@ -117,6 +118,7 @@ export default function PreviewPanel({
       neatlineSelection.lineId,
       neatlineSelection.thicknesses,
       neatlineSelection.designScale,
+      neatlineSelection.showWhiteMat,
     ],
   );
 
@@ -396,7 +398,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className="poster-frame"
+          className={`poster-frame${neatlineSelection.showWhiteMat ? " has-white-mat" : " is-full-bleed"}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
             posterDragRef.current = {

@@ -1063,20 +1063,28 @@
 
 /* Print-style composition: map, breathing gap, neatline and white mat. */
 .poster-frame {
-  background: #fff;
+  background: transparent;
+}
+
+.poster-frame.has-white-mat {
+  background: #ffffff;
 }
 
 .poster-map-window {
   position: absolute;
-  /* Equal physical white margin on every edge, independent of poster ratio. */
-  top: var(--map-inset-y, 5.56%);
-  bottom: var(--map-inset-y, 5.56%);
-  left: var(--map-inset-x, 7.86%);
-  right: var(--map-inset-x, 7.86%);
-  inset-block: var(--map-inset-y, 5.56%);
-  inset-inline: var(--map-inset-x, 7.86%);
+  /* Equal physical white margin on every edge when white mat is enabled, or 0% for full bleed. */
+  top: var(--map-inset-y, 0%);
+  bottom: var(--map-inset-y, 0%);
+  left: var(--map-inset-x, 0%);
+  right: var(--map-inset-x, 0%);
+  inset-block: var(--map-inset-y, 0%);
+  inset-inline: var(--map-inset-x, 0%);
   overflow: hidden;
-  background: #fff;
+  background: transparent;
+}
+
+.poster-frame.has-white-mat .poster-map-window {
+  background: #ffffff;
 }
 
 .poster-map-window > .map-container,
@@ -1090,16 +1098,20 @@
 .poster-frame .neatline-artwork.preview-neatline {
   position: absolute;
   z-index: 6;
-  top: var(--mat-inset-y, 1.18%);
-  bottom: var(--mat-inset-y, 1.18%);
-  left: var(--mat-inset-x, 1.67%);
-  right: var(--mat-inset-x, 1.67%);
-  inset: var(--mat-inset-y, 1.18%) var(--mat-inset-x, 1.67%);
+  top: var(--mat-inset-y, 0%);
+  bottom: var(--mat-inset-y, 0%);
+  left: var(--mat-inset-x, 0%);
+  right: var(--mat-inset-x, 0%);
+  inset: var(--mat-inset-y, 0%) var(--mat-inset-x, 0%);
   width: auto;
   height: auto;
   pointer-events: none;
 }
 
-.poster-viewport.is-wall-mockup .poster-frame {
-  background: #fff;
+.poster-viewport.is-wall-mockup .poster-frame.has-white-mat {
+  background: #ffffff;
+}
+
+.poster-viewport.is-wall-mockup .poster-frame.is-full-bleed {
+  background: transparent;
 }

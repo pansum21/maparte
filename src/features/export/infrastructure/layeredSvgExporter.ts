@@ -565,13 +565,30 @@ export async function createLayeredSvgBlobFromMap({
 `;
     }
 
+    const showWhiteMat = Boolean(options.showWhiteMat);
+    const matInsetXRatio = options.matInsetXRatio ?? (showWhiteMat ? 0.02 : 0.025);
+    const matInsetYRatio = options.matInsetYRatio ?? (showWhiteMat ? 0.02 : 0.025);
+    const mapInsetXRatio = options.mapInsetXRatio ?? (showWhiteMat ? 0.055 : 0);
+    const mapInsetYRatio = options.mapInsetYRatio ?? (showWhiteMat ? 0.055 : 0);
+
+    const neatlineX = exportWidth * matInsetXRatio;
+    const neatlineY = exportHeight * matInsetYRatio;
+    const neatlineW = exportWidth * (1 - matInsetXRatio * 2);
+    const neatlineH = exportHeight * (1 - matInsetYRatio * 2);
+
     const neatlineLayerSvg = neatlineSvg
-      ? `<svg x="${exportWidth * 0.04}" y="${exportHeight * 0.04}" width="${exportWidth * 0.92}" height="${exportHeight * 0.92}" viewBox="0 0 1000 ${(1000 * exportHeight) / exportWidth}" preserveAspectRatio="none">${neatlineSvg}</svg>`
+      ? `<svg x="${neatlineX}" y="${neatlineY}" width="${neatlineW}" height="${neatlineH}" viewBox="0 0 1000 ${(1000 * exportHeight) / exportWidth}" preserveAspectRatio="none">${neatlineSvg}</svg>`
       : "";
+
+    const matRect = showWhiteMat ? `<rect width="100%" height="100%" fill="#fff"/>` : "";
+    const groupTransform = showWhiteMat
+      ? `transform="translate(${exportWidth * mapInsetXRatio} ${exportHeight * mapInsetYRatio}) scale(${1 - mapInsetXRatio * 2} ${1 - mapInsetYRatio * 2})"`
+      : "";
+
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${exportWidth}" height="${exportHeight}" viewBox="0 0 ${exportWidth} ${exportHeight}">
-<rect width="100%" height="100%" fill="#fff"/>
-<g transform="translate(${exportWidth * 0.085} ${exportHeight * 0.085}) scale(0.83)">
+${matRect}
+<g ${groupTransform}>
 ${vectorLayersSvg}
 ${routesSvg}
 ${fadesSvg}
