@@ -7,7 +7,10 @@ const THICKNESS_STORAGE_KEY = "maparte_neatline_thicknesses";
 export const NEATLINE_CHANGE_EVENT = "maparte:neatline:change";
 const MIN_MAP_GAP_CM = 0.0;
 const MAX_MAP_GAP_CM = 1.00;
-const BORDER_CONTROL_STEP_CM = 0.05;
+const BORDER_CONTROL_STEP_CM = 0.02;
+const GAP_CONTROL_STEP_CM = 0.01;
+const SLIDER_MAX_LINE_WIDTH_CM = 0.40;
+const SLIDER_MAX_GAP_CM = 0.35;
 
 function stepWithinRange(value: number, delta: number, min: number, max: number, step: number) {
   const stepsFromMin = Math.round((value - min) / step) + delta;
@@ -67,15 +70,27 @@ export const RAINBOW_COLORS: ColorCapsuleItem[] = [
   { id: "violet", hex: "#9333ea" },
 ];
 
+export const SINGLE_COLOR_SWATCHES: { id: string; hex: string; name: string }[] = [
+  { id: "black", hex: "#000000", name: "Midnight Black" },
+  { id: "charcoal", hex: "#1e293b", name: "Deep Charcoal" },
+  { id: "dark-slate", hex: "#334155", name: "Dark Slate" },
+  { id: "slate", hex: "#64748b", name: "Slate Gray" },
+  { id: "cool-gray", hex: "#94a3b8", name: "Cool Silver" },
+  { id: "platinum", hex: "#cbd5e1", name: "Platinum" },
+  { id: "white", hex: "#ffffff", name: "Pure White" },
+  { id: "gold", hex: "#d4af37", name: "Imperial Gold" },
+  { id: "blueprint", hex: "#9CC3DA", name: "Blueprint Blue" },
+];
+
 export const MIX_GRADIENT_PRESETS: MixGradientPreset[] = [
+  { id: "noir", from: "#000000", to: "#475569" },
+  { id: "charcoal-silver", from: "#0f172a", to: "#94a3b8" },
+  { id: "onyx-white", from: "#000000", to: "#e2e8f0" },
+  { id: "black-gold", from: "#0a0a0a", to: "#d4af37" },
+  { id: "midnight-cyan", from: "#020617", to: "#38bdf8" },
+  { id: "deep-navy", from: "#0f172a", to: "#3b82f6" },
   { id: "sunset", from: "#f43f5e", to: "#fb923c" },
-  { id: "ocean", from: "#06b6d4", to: "#3b82f6" },
-  { id: "gold-copper", from: "#eab308", to: "#ea580c" },
   { id: "aurora", from: "#a855f7", to: "#06b6d4" },
-  { id: "emerald-lime", from: "#059669", to: "#84cc16" },
-  { id: "berry-velvet", from: "#e11d48", to: "#7c3aed" },
-  { id: "cyber-neon", from: "#ec4899", to: "#06b6d4" },
-  { id: "autumn-flame", from: "#dc2626", to: "#f59e0b" },
 ];
 
 export type NeatlineSelection = {
@@ -277,19 +292,21 @@ export function getPosterBorderMetrics(
   const height = Number(heightValue) > 0 ? Number(heightValue) : 29.7;
   const shortSide = Math.min(width, height);
   const hasBorder = Boolean(lineId && lineId !== "none");
+  const innerW = 1000;
 
   // Default gap is 0.0cm (edge-to-edge flush with map boundary).
   const gapCm =
     typeof customGapCm === "number" && Number.isFinite(customGapCm)
       ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, customGapCm))
-      : 0.10;
+      : 0.0;
+
+  // Sleek, modern white border width (~3.5mm - 5mm on standard posters, not broad 10mm / 1cm)
+  const targetMatRatio = 0.022;
+  const targetMapInset = Math.max(0.40, Math.min(0.85, shortSide * targetMatRatio));
+  const minOuterMargin = 0.06; // 0.6mm minimum white clearance
 
   if (!showWhiteMat) {
-    // When white mat is OFF:
-    // If no border: 100% full bleed clean map (0% inset).
-    // If border chosen: Border sits in perimeter band, and the map insets inward preserving the gap!
     if (!hasBorder) {
-      const innerW = 1000;
       const innerH = (innerW * height) / width;
       return {
         showWhiteMat: false,
@@ -322,7 +339,6 @@ export function getPosterBorderMetrics(
     const outerBorderCm = 0.10;
     const usableWidthCm = Math.max(0.1, width - outerBorderCm * 2);
     const usableHeightCm = Math.max(0.1, height - outerBorderCm * 2);
-    const innerW = 1000;
     const innerH = (innerW * usableHeightCm) / usableWidthCm;
     const unitScale = innerW / usableWidthCm;
 
@@ -377,23 +393,18 @@ export function getPosterBorderMetrics(
   }
 
   // When white mat is ON:
-  // An elegant white gallery paper sheet frames the map artwork.
+  // An elegant, sleek white gallery paper sheet (~4mm) frames the map.
   if (!hasBorder) {
-    const matMarginRatio = 0.055;
-    const rawMapInsetCm = shortSide * matMarginRatio;
-    const maxSafeInsetX = width * 0.45;
-    const maxSafeInsetY = height * 0.45;
-    const mapInsetXCm = Math.min(rawMapInsetCm, maxSafeInsetX);
-    const mapInsetYCm = Math.min(rawMapInsetCm, maxSafeInsetY);
-    const mapInsetCm = Math.min(rawMapInsetCm, Math.min(maxSafeInsetX, maxSafeInsetY));
+    const mapInsetCm = targetMapInset;
     const outerMatCm = mapInsetCm;
     const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
     const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
-    const innerW = 1000;
     const innerH = (innerW * usableHeightCm) / usableWidthCm;
     const unitScale = innerW / usableWidthCm;
-    const mapInsetXRatio = mapInsetXCm / width;
-    const mapInsetYRatio = mapInsetYCm / height;
+    const mapInsetXRatio = mapInsetCm / width;
+    const mapInsetYRatio = mapInsetCm / height;
+    const matInsetXRatio = mapInsetXRatio;
+    const matInsetYRatio = mapInsetYRatio;
 
     return {
       showWhiteMat: true,
@@ -410,30 +421,27 @@ export function getPosterBorderMetrics(
       innerH,
       mapInsetX: `${mapInsetXRatio * 100}%`,
       mapInsetY: `${mapInsetYRatio * 100}%`,
-      matInsetX: `${mapInsetXRatio * 100}%`,
-      matInsetY: `${mapInsetYRatio * 100}%`,
+      matInsetX: `${matInsetXRatio * 100}%`,
+      matInsetY: `${matInsetYRatio * 100}%`,
       mapInsetXRatio,
       mapInsetYRatio,
-      matInsetXRatio: mapInsetXRatio,
-      matInsetYRatio: mapInsetYRatio,
+      matInsetXRatio,
+      matInsetYRatio,
       usableWidthCm,
       usableHeightCm,
     };
   }
 
   // White mat ON + Border selected:
-  // Border frame line sits on the edge of the white sheet with approx 0.10 cm (1mm) space from the edge!
-  const outerMatCm = 0.10;
-  const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
-  const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
-  const innerW = 1000;
-  const innerH = (innerW * usableHeightCm) / usableWidthCm;
-  const unitScale = innerW / usableWidthCm;
-
-  let borderBandCm = 0;
+  // 1. Sleek white border: ~3.5mm - 5mm (not 10mm / 1cm broad)
+  // 2. Outward expansion: As line thickness increases, it grows OUTWARD towards the paper edge,
+  //    keeping the map opening steady so the map does NOT shrink inward!
+  // 3. Inner line touches the map opening flush (+ gapCm).
+  // Estimate borderBandCm
   let spanUnits = 0;
   let edgeInset = 1.5;
   let offInner = edgeInset;
+  let innerStrokeWidth = 2.0;
 
   const style = lineStyles.find((s) => s.id === lineId);
   if (style) {
@@ -442,12 +450,25 @@ export function getPosterBorderMetrics(
     edgeInset = maxStroke / 2 + 0.5;
     spanUnits = getPatternSpanUnits(style.pattern, designScale);
     offInner = edgeInset + spanUnits;
-    const innerStrokeWidth = widths[widths.length - 1] ?? maxStroke;
-    const innerEdgeUnits = offInner + innerStrokeWidth / 2;
-    borderBandCm = innerEdgeUnits / unitScale;
+    innerStrokeWidth = widths[widths.length - 1] ?? maxStroke;
   }
+  const innerEdgeUnits = offInner + innerStrokeWidth / 2;
 
-  // Map opening insets to maintain the 1mm-2mm gap inside the inner border line:
+  // Initial calculation based on targetMapInset
+  let usableWidthCm = Math.max(0.1, width - targetMapInset * 2);
+  let unitScale = innerW / usableWidthCm;
+  let borderBandCm = innerEdgeUnits / unitScale;
+
+  // Outward expansion logic:
+  // The outer white margin shrinks as border thickness grows outward!
+  const outerMatCm = Math.max(minOuterMargin, targetMapInset - borderBandCm);
+  usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
+  const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
+  const innerH = (innerW * usableHeightCm) / usableWidthCm;
+  unitScale = innerW / usableWidthCm;
+  borderBandCm = innerEdgeUnits / unitScale;
+
+  // Map opening insets to meet the inner stroke of the border (+ gapCm)
   const mapInsetCm = outerMatCm + borderBandCm + gapCm;
   const mapInsetXRatio = mapInsetCm / width;
   const mapInsetYRatio = mapInsetCm / height;
@@ -536,11 +557,11 @@ function readSelection(): NeatlineSelection {
     thicknesses: readThicknesses(),
     lineVariant: "plain",
     cornerVariant: "plain",
-    mapGapCm: 0.10,
+    mapGapCm: 0.0,
     colorMode: "single",
-    singleColor: "#9CC3DA",
-    gradientFrom: "#f43f5e",
-    gradientTo: "#fb923c",
+    singleColor: "#000000",
+    gradientFrom: "#000000",
+    gradientTo: "#475569",
     designScale: 1.0,
     showWhiteMat: false,
   };
@@ -572,14 +593,14 @@ function readSelection(): NeatlineSelection {
         mapGapCm:
           typeof parsed.mapGapCm === "number" && Number.isFinite(parsed.mapGapCm)
             ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, parsed.mapGapCm))
-            : 0.10,
+            : 0.0,
         colorMode,
         singleColor:
           parsed.singleColor && parsed.singleColor !== "#354b62"
             ? parsed.singleColor
-            : "#9CC3DA",
-        gradientFrom: parsed.gradientFrom || "#f43f5e",
-        gradientTo: parsed.gradientTo || "#fb923c",
+            : "#000000",
+        gradientFrom: parsed.gradientFrom || "#000000",
+        gradientTo: parsed.gradientTo || "#475569",
         designScale:
           typeof parsed.designScale === "number" && Number.isFinite(parsed.designScale)
             ? Math.max(0.5, Math.min(2.5, parsed.designScale))
@@ -1961,7 +1982,7 @@ export function NeatlinePicker({
           frameId: "none",
           cornerPosition: "all",
           lineVariant: selection.lineVariant,
-          mapGapCm: selection.mapGapCm ?? 0.10,
+          mapGapCm: selection.mapGapCm ?? 0.0,
           colorMode: selection.colorMode ?? "single",
           singleColor: selection.singleColor ?? "#354b62",
           gradientFrom: selection.gradientFrom ?? "#f43f5e",
@@ -1992,20 +2013,14 @@ export function NeatlinePicker({
     }));
   };
 
-  const adjustBoxRef = useRef<HTMLDivElement | null>(null);
-
   const selectStyle = (style: BorderStyle) => {
     setSelection((current) => ({
       ...current,
       lineId: style.id,
       cornerId: "none",
       frameId: "none",
+      showWhiteMat: style.id !== "none" ? true : current.showWhiteMat,
     }));
-    if (style.id !== "none") {
-      requestAnimationFrame(() => {
-        adjustBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      });
-    }
   };
 
   const updateThickness = (lineIndex: number, valCm: number) => {
@@ -2026,7 +2041,7 @@ export function NeatlinePicker({
     const current = thicknessesInCm(selectedLine.id, selection.thicknesses)[lineIndex];
     updateThickness(
       lineIndex,
-      stepWithinRange(current, delta, MIN_LINE_WIDTH_CM, MAX_LINE_WIDTH_CM, BORDER_CONTROL_STEP_CM),
+      stepWithinRange(current, delta, MIN_LINE_WIDTH_CM, SLIDER_MAX_LINE_WIDTH_CM, BORDER_CONTROL_STEP_CM),
     );
   };
 
@@ -2056,11 +2071,11 @@ export function NeatlinePicker({
   const adjustMapGap = (delta: number) =>
     updateMapGap(
       stepWithinRange(
-        selection.mapGapCm ?? 0.10,
+        selection.mapGapCm ?? 0.0,
         delta,
         MIN_MAP_GAP_CM,
-        MAX_MAP_GAP_CM,
-        BORDER_CONTROL_STEP_CM,
+        SLIDER_MAX_GAP_CM,
+        GAP_CONTROL_STEP_CM,
       ),
     );
 
@@ -2079,7 +2094,7 @@ export function NeatlinePicker({
   });
 
   return (
-    <section className="neatline-picker" aria-labelledby="neatline-heading">
+    <section className={`neatline-picker ${selectedLine ? "has-selected-border" : ""}`} aria-labelledby="neatline-heading">
       <div className="neatline-picker-heading">
         <div className="neatline-heading-group">
           <h3 id="neatline-heading" className="neatline-title-prominent">Borders</h3>
@@ -2104,44 +2119,31 @@ export function NeatlinePicker({
         </div>
       </div>
 
-      {/* 1. White Border Single Action Toggle */}
-      <div className="neatline-mat-toggle-card">
-        <div className="neatline-mat-toggle-header">
-          <span className="neatline-mat-toggle-title">White Border</span>
-          <div className="neatline-info-tooltip-wrap">
-            <button
-              type="button"
-              className="neatline-info-btn"
-              aria-label="White Border info"
-              title={selection.showWhiteMat ? "White gallery border active behind map and neatline" : "Clean edge-to-edge map without white border"}
-            >
-              ⓘ
-            </button>
-            <div className="neatline-info-tooltip" role="tooltip">
-              {selection.showWhiteMat
-                ? "White gallery border active behind map and neatline"
-                : "Clean edge-to-edge map without white border"}
-            </div>
-          </div>
-        </div>
+      {/* 1. Compact White Border Row with info button */}
+      <div className="neatline-white-border-row">
         <button
           type="button"
           className={`neatline-mat-single-toggle-btn ${selection.showWhiteMat ? "is-active" : ""}`}
           onClick={() => toggleWhiteMat(!selection.showWhiteMat)}
           title={selection.showWhiteMat ? "Remove White Border" : "Add White Border"}
         >
-          {selection.showWhiteMat ? (
-            <>
-              <span className="neatline-mat-btn-icon" aria-hidden="true">✕</span>
-              <span>Remove White Border</span>
-            </>
-          ) : (
-            <>
-              <span className="neatline-mat-btn-icon" aria-hidden="true">+</span>
-              <span>Add White Border</span>
-            </>
-          )}
+          {selection.showWhiteMat ? "Remove White Border" : "Add White Border"}
         </button>
+        <div className="neatline-info-tooltip-wrap">
+          <button
+            type="button"
+            className="neatline-info-btn"
+            aria-label="White Border info"
+            title={selection.showWhiteMat ? "White gallery border active behind map and neatline" : "Clean edge-to-edge map without white border"}
+          >
+            ⓘ
+          </button>
+          <div className="neatline-info-tooltip" role="tooltip">
+            {selection.showWhiteMat
+              ? "White gallery border active behind map and neatline"
+              : "Clean edge-to-edge map without white border"}
+          </div>
+        </div>
       </div>
 
       {/* 2. BORDERS BOX (Internal scroll without visible scrollbar) */}
@@ -2170,15 +2172,8 @@ export function NeatlinePicker({
               <div className="neatline-card-copy">
                 <span className="neatline-card-name">
                   {style.id === "none"
-                    ? (selection.showWhiteMat ? "No border line" : "Clean Full Bleed")
-                    : style.name}
-                </span>
-                <span className="neatline-card-meta">
-                  {style.id === "none"
-                    ? (selection.showWhiteMat ? "White Border Only" : "100% Edge-to-Edge")
-                    : (selection.showWhiteMat
-                        ? `${getBorderCategoryTag(style.pattern)} · White Border`
-                        : `${getBorderCategoryTag(style.pattern)} · Full Bleed`)}
+                    ? (selection.showWhiteMat ? "No border" : "None")
+                    : style.name.replace(/^(Classic|Vintage|Designer|Ornate)\s+/i, "")}
                 </span>
               </div>
               <NeatlineSwatch style={style} selection={swatchSelection(style)} />
@@ -2189,7 +2184,7 @@ export function NeatlinePicker({
 
       {/* 3. ADJUSTMENTS BOX (Color, Thickness & Spacing) */}
       {selectedLine ? (
-        <div className="neatline-section-box neatline-adjust-box" ref={adjustBoxRef}>
+        <div className="neatline-section-box neatline-adjust-box">
           <div className="neatline-section-box-header">
             <span className="neatline-section-box-title">Adjust &amp; Customize</span>
             <span className="neatline-section-box-subtitle">{selectedLine.name}</span>
@@ -2279,19 +2274,9 @@ export function NeatlinePicker({
             ) : (
               <div className="neatline-palette-wrap">
                 <div className="neatline-single-grid">
-                  {[
-                    { id: "blueprint", hex: "#9CC3DA", name: "Blueprint Blue" },
-                    { id: "dark-slate", hex: "#354b62", name: "Dark Slate" },
-                    { id: "charcoal", hex: "#1e293b", name: "Charcoal" },
-                    { id: "white", hex: "#ffffff", name: "White" },
-                    { id: "gold", hex: "#d4af37", name: "Imperial Gold" },
-                    { id: "red", hex: "#ef4444", name: "Crimson" },
-                    { id: "orange", hex: "#f97316", name: "Amber" },
-                    { id: "emerald", hex: "#10b981", name: "Emerald" },
-                    { id: "indigo", hex: "#4f46e5", name: "Indigo" },
-                  ].map((item) => {
+                  {SINGLE_COLOR_SWATCHES.map((item) => {
                     const isActive =
-                      (selection.singleColor || "#9CC3DA").toLowerCase() ===
+                      (selection.singleColor || "#000000").toLowerCase() ===
                       item.hex.toLowerCase();
                     return (
                       <button
@@ -2309,11 +2294,11 @@ export function NeatlinePicker({
                   <label
                     className="neatline-single-chip neatline-custom-chip"
                     title="Pick custom color"
-                    style={{ background: selection.singleColor || "#9CC3DA" }}
+                    style={{ background: selection.singleColor || "#000000" }}
                   >
                     <input
                       type="color"
-                      value={selection.singleColor || "#9CC3DA"}
+                      value={selection.singleColor || "#000000"}
                       onChange={(e) => updateSingleColor(e.target.value)}
                     />
                     <span className="neatline-picker-icon" aria-hidden="true">+</span>
@@ -2348,7 +2333,7 @@ export function NeatlinePicker({
                     <input
                       type="range"
                       min={MIN_LINE_WIDTH_CM}
-                      max={MAX_LINE_WIDTH_CM}
+                      max={SLIDER_MAX_LINE_WIDTH_CM}
                       step={BORDER_CONTROL_STEP_CM}
                       value={cmVal}
                       onChange={(event) => updateThickness(index, Number(event.target.value))}
@@ -2358,7 +2343,7 @@ export function NeatlinePicker({
                       type="button"
                       className="neatline-adjustment-step"
                       onClick={() => adjustThickness(index, 1)}
-                      disabled={cmVal >= MAX_LINE_WIDTH_CM}
+                      disabled={cmVal >= SLIDER_MAX_LINE_WIDTH_CM}
                       aria-label={`Increase ${lineLabel(selectedLine.pattern, index)} thickness`}
                     >+</button>
                     <output>{cmVal.toFixed(2)} cm</output>
@@ -2405,15 +2390,15 @@ export function NeatlinePicker({
                     type="button"
                     className="neatline-adjustment-step"
                     onClick={() => adjustMapGap(-1)}
-                    disabled={(selection.mapGapCm ?? 0.10) <= MIN_MAP_GAP_CM}
+                    disabled={(selection.mapGapCm ?? 0.0) <= MIN_MAP_GAP_CM}
                     aria-label="Decrease map spacing"
                   >−</button>
                   <input
                     type="range"
                     min={MIN_MAP_GAP_CM}
-                    max={MAX_MAP_GAP_CM}
-                    step={BORDER_CONTROL_STEP_CM}
-                    value={selection.mapGapCm ?? 0.10}
+                    max={SLIDER_MAX_GAP_CM}
+                    step={GAP_CONTROL_STEP_CM}
+                    value={selection.mapGapCm ?? 0.0}
                     onChange={(event) => updateMapGap(Number(event.target.value))}
                     aria-label="Map spacing gap in centimeters"
                   />
@@ -2421,16 +2406,16 @@ export function NeatlinePicker({
                     type="button"
                     className="neatline-adjustment-step"
                     onClick={() => adjustMapGap(1)}
-                    disabled={(selection.mapGapCm ?? 0.10) >= MAX_MAP_GAP_CM}
+                    disabled={(selection.mapGapCm ?? 0.0) >= SLIDER_MAX_GAP_CM}
                     aria-label="Increase map spacing"
                   >+</button>
-                  <output>{(selection.mapGapCm ?? 0.10).toFixed(2)} cm</output>
+                  <output>{(selection.mapGapCm ?? 0.0).toFixed(2)} cm</output>
                 </div>
               </div>
               <p className="neatline-adjustments-note">
                 {hasPatternDesign(selectedLine.pattern)
-                  ? "Adjust line thickness and map spacing (0.00–1.00 cm), or design size (0.5–2.5×)."
-                  : "Adjust line thickness and map spacing in centimeters (0.00–1.00 cm)."}
+                  ? "Adjust line thickness (0.02–0.40 cm), map spacing (0.00–0.35 cm), or design size (0.5–2.5×)."
+                  : "Adjust line thickness (0.02–0.40 cm) and map spacing (0.00–0.35 cm)."}
               </p>
             </fieldset>
           </div>

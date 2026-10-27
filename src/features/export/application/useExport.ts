@@ -330,6 +330,11 @@ export function useExport() {
         // 2. Composite fades + text
         const { canvas: fullCanvas } = await compositeExport(mapCanvas, {
           mapAlreadyInset,
+          showWhiteMat,
+          matInsetXRatio: borderMetrics.matInsetXRatio,
+          matInsetYRatio: borderMetrics.matInsetYRatio,
+          mapInsetXRatio: borderMetrics.mapInsetXRatio,
+          mapInsetYRatio: borderMetrics.mapInsetYRatio,
           theme: effectiveTheme,
           center: { lat, lon },
           widthInches,
@@ -388,6 +393,11 @@ export function useExport() {
               : [],
             routes: visibleRoutes,
             neatlineSvg,
+            showWhiteMat,
+            matInsetXRatio: borderMetrics.matInsetXRatio,
+            matInsetYRatio: borderMetrics.matInsetYRatio,
+            mapInsetXRatio: borderMetrics.mapInsetXRatio,
+            mapInsetYRatio: borderMetrics.mapInsetYRatio,
           });
 
           const pngBlob = await createPngBlob(canvas, density);
