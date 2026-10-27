@@ -28,7 +28,7 @@ export function transformHtmlForCity(html, city) {
   const cityDesc = escapeAttr(city.description);
   const cityMetaDesc = escapeAttr(city.metaDescription || city.description);
   const cityUrl = `https://maparte.vercel.app/cities/${city.slug}`;
-  const cityPhotoUrl = `https://maparte.vercel.app/assets/city-photos/${city.slug}.jpg`;
+  const cityPhotoUrl = `https://maparte.vercel.app/assets/city-photos/${city.slug}.webp`;
   const cityPhotoAlt = `${escapeAttr(city.city)} custom map art poster and wallpaper preview`;
   const keywords = `${city.city} map poster, ${city.city} city map print, ${city.city} custom map art, ${city.city} street map, ${city.city} wall art, buy ${city.city} map, ${city.city} map wallpaper, free map generator, maparte`;
 
@@ -255,7 +255,7 @@ export function cityPagesPlugin() {
 
       for (const city of cities) {
         sitemapEntries.push(
-          `  <url>\n    <loc>https://maparte.vercel.app/cities/${city.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/city-photos/${city.slug}.jpg</image:loc>\n      <image:title>${escapeXml(city.city)} Custom Map Poster &amp; Wall Art</image:title>\n      <image:caption>Design and download custom map posters of ${escapeXml(city.city)}, ${escapeXml(city.country)} in Ultra-HD</image:caption>\n    </image:image>\n  </url>`,
+          `  <url>\n    <loc>https://maparte.vercel.app/cities/${city.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/city-photos/${city.slug}.webp</image:loc>\n      <image:title>${escapeXml(city.city)} Custom Map Poster &amp; Wall Art</image:title>\n      <image:caption>Design and download custom map posters of ${escapeXml(city.city)}, ${escapeXml(city.country)} in Ultra-HD</image:caption>\n    </image:image>\n  </url>`,
         );
       }
 

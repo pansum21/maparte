@@ -34,7 +34,19 @@ interface CityPhotoCredit {
   license?: string;
 }
 
-const CONTINENTS = ["Americas", "Europe", "Asia", "Africa"] as const;
+const CONTINENTS = [
+  "Asia",
+  "Africa",
+  "Europe",
+  "Oceania",
+  "Antarctica",
+  "North America",
+  "South America",
+] as const;
+const cityCollator = new Intl.Collator("en", {
+  sensitivity: "base",
+  numeric: true,
+});
 
 function CityPhoto({
   city,
@@ -125,7 +137,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
     useCurrentLocation(flyToLocation);
 
   const [typedQuery, setTypedQuery] = useState<string | null>(null);
-  const [selectedContinent, setSelectedContinent] = useState<string>("Americas");
+  const [selectedContinent, setSelectedContinent] = useState<string>("Asia");
   const [showCoords, setShowCoords] = useState(false);
   const isSearchingCities = typedQuery !== null && typedQuery.trim().length > 0;
   const normalizedQuery = typedQuery?.trim().toLowerCase() ?? "";
@@ -153,17 +165,17 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
         );
       }
       const matchesContinent =
-        selectedContinent === "Americas"
-          ? ["North America", "Central America", "South America", "Caribbean"].includes(
-              item.continent,
-            )
+        selectedContinent === "North America"
+          ? ["North America", "Central America", "Caribbean"].includes(item.continent)
           : selectedContinent === "Asia"
-            ? item.continent === "Asia" ||
-              item.continent === "Middle East" ||
-              item.continent === "Oceania"
+            ? item.continent === "Asia" || item.continent === "Middle East"
             : item.continent === selectedContinent;
       return matchesContinent;
-    });
+    }).sort(
+      (first, second) =>
+        cityCollator.compare(first.city, second.city) ||
+        cityCollator.compare(first.country, second.country),
+    );
   }, [isSearchingCities, normalizedQuery, selectedContinent]);
 
   if (!isOpen) return null;
