@@ -4169,6 +4169,16 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
+  "codrington-ag-map-poster": {
+    "slug": "codrington-ag-map-poster",
+    "city": "Codrington",
+    "country": "Antigua and Barbuda",
+    "src": "/assets/city-photos/codrington-ag-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Codrington_15,_Barbuda.jpg",
+    "author": "CROIX",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
   "david-pa-map-poster": {
     "slug": "david-pa-map-poster",
     "city": "David",
@@ -4698,16 +4708,6 @@
     "author": "Wikimedia contributor",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
-  },
-  "saint-johns-map-poster": {
-    "slug": "saint-johns-map-poster",
-    "city": "Saint Johns",
-    "country": "Antigua and Barbuda",
-    "src": "/assets/city-photos/saint-johns-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:St_Johns_Antigua_2012.jpg",
-    "author": "This image or media was taken or created by Matt H. Wade . To see his entire portfolio, click here . @ thatmattwade This image is protected by copyright ! If you would like to use it, please read this first.",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "saint-marc-ht-map-poster": {
     "slug": "saint-marc-ht-map-poster",
@@ -5679,6 +5679,16 @@
     "license": "CC BY-SA 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
   },
+  "moundou-td-map-poster": {
+    "slug": "moundou-td-map-poster",
+    "city": "Moundou",
+    "country": "Chad",
+    "src": "/assets/city-photos/moundou-td-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:La_ville_de_Moundou.jpg",
+    "author": "Korom10",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
   "mwanza-map-poster": {
     "slug": "mwanza-map-poster",
     "city": "Mwanza",
@@ -5718,16 +5728,6 @@
     "author": "Adina Sualehe/VOA Português",
     "license": "Public domain",
     "licenseUrl": ""
-  },
-  "ndjamena-map-poster": {
-    "slug": "ndjamena-map-poster",
-    "city": "NDjamena",
-    "country": "Chad",
-    "src": "/assets/city-photos/ndjamena-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Avenue_Alifa_Zezerty.jpg",
-    "author": "Korom10",
-    "license": "CC BY 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
   },
   "niamey-map-poster": {
     "slug": "niamey-map-poster",
@@ -7579,6 +7579,16 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
+  "neiafu-to-map-poster": {
+    "slug": "neiafu-to-map-poster",
+    "city": "Neiafu",
+    "country": "Tonga",
+    "src": "/assets/city-photos/neiafu-to-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Neiafu_Vava%27u.jpg",
+    "author": "Stefan Heinrich ( Msdstefan at de.wikipedia )",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+  },
   "nelson-nz-map-poster": {
     "slug": "nelson-nz-map-poster",
     "city": "Nelson",
@@ -7628,16 +7638,6 @@
     "author": "David Broad",
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
-  },
-  "nukualofa-map-poster": {
-    "slug": "nukualofa-map-poster",
-    "city": "Nukualofa",
-    "country": "Tonga",
-    "src": "/assets/city-photos/nukualofa-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Towerless_royal_palace.jpg",
-    "author": "Tauʻolunga",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
   },
   "pago-pago-map-poster": {
     "slug": "pago-pago-map-poster",

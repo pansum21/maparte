@@ -5357,6 +5357,17 @@
     "geonameId": 3598119
   },
   {
+    "slug": "codrington-ag-map-poster",
+    "city": "Codrington",
+    "country": "Antigua and Barbuda",
+    "countryCode": "AG",
+    "lat": 17.6386,
+    "lon": -61.8175,
+    "isCapital": false,
+    "continent": "Central America",
+    "landmarks": []
+  },
+  {
     "slug": "david-pa-map-poster",
     "city": "David",
     "country": "Panama",
@@ -5982,17 +5993,6 @@
     "continent": "Central America",
     "landmarks": [],
     "slug": "saint-georges-map-poster"
-  },
-  {
-    "city": "Saint Johns",
-    "country": "Antigua and Barbuda",
-    "countryCode": "AG",
-    "lat": 17.12096,
-    "lon": -61.84329,
-    "isCapital": true,
-    "continent": "Central America",
-    "landmarks": [],
-    "slug": "saint-johns-map-poster"
   },
   {
     "slug": "saint-marc-ht-map-poster",
@@ -7153,6 +7153,17 @@
     "slug": "moroni-map-poster"
   },
   {
+    "slug": "moundou-td-map-poster",
+    "city": "Moundou",
+    "country": "Chad",
+    "countryCode": "TD",
+    "lat": 8.5667,
+    "lon": 16.0833,
+    "isCapital": false,
+    "continent": "Africa",
+    "landmarks": []
+  },
+  {
     "slug": "mwanza-map-poster",
     "city": "Mwanza",
     "country": "Tanzania",
@@ -7198,17 +7209,6 @@
     "population": 770379,
     "isCapital": false,
     "landmarks": []
-  },
-  {
-    "city": "NDjamena",
-    "country": "Chad",
-    "countryCode": "TD",
-    "lat": 12.10672,
-    "lon": 15.0444,
-    "isCapital": true,
-    "continent": "Africa",
-    "landmarks": [],
-    "slug": "ndjamena-map-poster"
   },
   {
     "city": "Niamey",
@@ -9598,6 +9598,19 @@
     "slug": "nasinu-map-poster"
   },
   {
+    "slug": "neiafu-to-map-poster",
+    "city": "Neiafu",
+    "country": "Tonga",
+    "countryCode": "TO",
+    "lat": -18.6505,
+    "lon": -173.9836,
+    "isCapital": false,
+    "continent": "Oceania",
+    "landmarks": [
+      "Port of Refuge"
+    ]
+  },
+  {
     "slug": "nelson-nz-map-poster",
     "city": "Nelson",
     "country": "New Zealand",
@@ -9655,17 +9668,6 @@
     "isCapital": false,
     "landmarks": [],
     "slug": "nuku-alofa-map-poster"
-  },
-  {
-    "city": "Nukualofa",
-    "country": "Tonga",
-    "countryCode": "TO",
-    "lat": -21.13683,
-    "lon": -175.20114,
-    "isCapital": true,
-    "continent": "Oceania",
-    "landmarks": [],
-    "slug": "nukualofa-map-poster"
   },
   {
     "city": "Pago Pago",

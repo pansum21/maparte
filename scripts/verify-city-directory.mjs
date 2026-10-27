@@ -7,7 +7,7 @@ const directory = JSON.parse(await readFile(path.join(root, "src/data/cityDirect
 const photos = JSON.parse(await readFile(path.join(root, "src/data/cityPhotos.json"), "utf8"));
 const CITY_REGIONS = ["North Asia", "South Asia", "North America", "South America", "Central America", "Africa", "Europe", "Oceania"];
 const regionFor = (value) => value;
-const normalizeCityName = (value) => String(value ?? "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+const normalizeCityName = (value) => String(value ?? "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "");
 const cityCollator = new Intl.Collator("en", { sensitivity: "base", numeric: true });
 const errors = [];
 const checks = [];

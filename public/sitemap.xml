@@ -4200,6 +4200,16 @@
     </image:image>
   </url>
   <url>
+    <loc>https://maparte.vercel.app/cities/codrington-ag-map-poster</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://maparte.vercel.app/assets/city-photos/codrington-ag-map-poster.webp</image:loc>
+      <image:title>Codrington Custom Map Poster &amp; Wall Art</image:title>
+      <image:caption>Design and download custom map posters of Codrington, Antigua and Barbuda in Ultra-HD</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://maparte.vercel.app/cities/david-pa-map-poster</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -4727,16 +4737,6 @@
       <image:loc>https://maparte.vercel.app/assets/city-photos/saint-georges-map-poster.webp</image:loc>
       <image:title>Saint Georges Custom Map Poster &amp; Wall Art</image:title>
       <image:caption>Design and download custom map posters of Saint Georges, Grenada in Ultra-HD</image:caption>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://maparte.vercel.app/cities/saint-johns-map-poster</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://maparte.vercel.app/assets/city-photos/saint-johns-map-poster.webp</image:loc>
-      <image:title>Saint Johns Custom Map Poster &amp; Wall Art</image:title>
-      <image:caption>Design and download custom map posters of Saint Johns, Antigua and Barbuda in Ultra-HD</image:caption>
     </image:image>
   </url>
   <url>
@@ -5710,6 +5710,16 @@
     </image:image>
   </url>
   <url>
+    <loc>https://maparte.vercel.app/cities/moundou-td-map-poster</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://maparte.vercel.app/assets/city-photos/moundou-td-map-poster.webp</image:loc>
+      <image:title>Moundou Custom Map Poster &amp; Wall Art</image:title>
+      <image:caption>Design and download custom map posters of Moundou, Chad in Ultra-HD</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://maparte.vercel.app/cities/mwanza-map-poster</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -5747,16 +5757,6 @@
       <image:loc>https://maparte.vercel.app/assets/city-photos/nampula-map-poster.webp</image:loc>
       <image:title>Nampula Custom Map Poster &amp; Wall Art</image:title>
       <image:caption>Design and download custom map posters of Nampula, Mozambique in Ultra-HD</image:caption>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://maparte.vercel.app/cities/ndjamena-map-poster</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://maparte.vercel.app/assets/city-photos/ndjamena-map-poster.webp</image:loc>
-      <image:title>NDjamena Custom Map Poster &amp; Wall Art</image:title>
-      <image:caption>Design and download custom map posters of NDjamena, Chad in Ultra-HD</image:caption>
     </image:image>
   </url>
   <url>
@@ -7610,6 +7610,16 @@
     </image:image>
   </url>
   <url>
+    <loc>https://maparte.vercel.app/cities/neiafu-to-map-poster</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://maparte.vercel.app/assets/city-photos/neiafu-to-map-poster.webp</image:loc>
+      <image:title>Neiafu Custom Map Poster &amp; Wall Art</image:title>
+      <image:caption>Design and download custom map posters of Neiafu, Tonga in Ultra-HD</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://maparte.vercel.app/cities/nelson-nz-map-poster</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -7657,16 +7667,6 @@
       <image:loc>https://maparte.vercel.app/assets/city-photos/nuku-alofa-map-poster.webp</image:loc>
       <image:title>Nuku&apos;alofa Custom Map Poster &amp; Wall Art</image:title>
       <image:caption>Design and download custom map posters of Nuku&apos;alofa, Tonga in Ultra-HD</image:caption>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://maparte.vercel.app/cities/nukualofa-map-poster</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://maparte.vercel.app/assets/city-photos/nukualofa-map-poster.webp</image:loc>
-      <image:title>Nukualofa Custom Map Poster &amp; Wall Art</image:title>
-      <image:caption>Design and download custom map posters of Nukualofa, Tonga in Ultra-HD</image:caption>
     </image:image>
   </url>
   <url>
