@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import maplibregl from "maplibre-gl";
 import type { LayerSpecification, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -120,6 +120,7 @@ export default function MapPreview({
   overzoomScale = 1,
 }: MapPreviewProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [mapUnavailable, setMapUnavailable] = useState(false);
   const isSyncing = useRef(false);
   const hasMountedStyleRef = useRef(false);
   const prevStyleRef = useRef<StyleSpecification | null>(null);
@@ -131,18 +132,30 @@ export default function MapPreview({
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style,
-      center,
-      zoom,
-      interactive: false,
-      attributionControl: false,
-      pixelRatio: getMapPixelRatio(),
-      maxCanvasSize: [4096, 8192],
-      cancelPendingTileRequestsWhileZooming: true,
-      canvasContextAttributes: { preserveDrawingBuffer: true },
-    });
+    let map: maplibregl.Map;
+    try {
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style,
+        center,
+        zoom,
+        interactive: false,
+        attributionControl: false,
+        pixelRatio: getMapPixelRatio(),
+        maxCanvasSize: [4096, 8192],
+        cancelPendingTileRequestsWhileZooming: true,
+        canvasContextAttributes: { preserveDrawingBuffer: true },
+      });
+      setMapUnavailable(false);
+    } catch (error) {
+      // MapLibre throws during construction when WebGL is unavailable. Catch it
+      // here so the editor shell and its controls still render instead of
+      // unmounting the entire React tree.
+      console.error("Map preview could not start WebGL:", error);
+      mapRef.current = null;
+      setMapUnavailable(true);
+      return;
+    }
 
     mapRef.current = map;
 
@@ -314,6 +327,12 @@ export default function MapPreview({
   return (
     <div className="map-container" style={{ ...containerStyle, overflow: "hidden" }}>
       <div ref={containerRef} style={innerStyle} />
+      {mapUnavailable ? (
+        <div className="map-preview-unavailable" role="status">
+          <strong>Map preview unavailable</strong>
+          <span>This browser could not start WebGL. Enable hardware acceleration or try another browser.</span>
+        </div>
+      ) : null}
     </div>
   );
 }
