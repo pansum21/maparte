@@ -228,8 +228,8 @@
           "width": 1920,
           "height": 256,
           "unit": "px",
-          "posterWidthCm": 30,
-          "posterHeightCm": 4
+          "posterWidthCm": 60,
+          "posterHeightCm": 8
         },
         {
           "id": "social_twitter_header",

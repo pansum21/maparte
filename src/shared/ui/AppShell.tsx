@@ -40,9 +40,8 @@ const AdminControlModal = lazy(
   () => import("@/features/admin/ui/AdminControlModal"),
 );
 const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
-const AllCitiesModal = lazy(
-  () => import("@/features/location/ui/AllCitiesModal"),
-);
+const loadAllCitiesModal = () => import("@/features/location/ui/AllCitiesModal");
+const AllCitiesModal = lazy(loadAllCitiesModal);
 
 function SettingsDrawer({
   mobileTab,

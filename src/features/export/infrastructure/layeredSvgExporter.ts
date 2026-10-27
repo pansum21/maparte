@@ -53,6 +53,11 @@ interface LayeredSvgOptions {
   markerIcons: MarkerIconDefinition[];
   routes?: Route[];
   neatlineSvg?: string;
+  showWhiteMat?: boolean;
+  matInsetXRatio?: number;
+  matInsetYRatio?: number;
+  mapInsetXRatio?: number;
+  mapInsetYRatio?: number;
 }
 
 function renderMapCanvasToDataUrl(
@@ -231,6 +236,11 @@ export async function createLayeredSvgBlobFromMap({
   markerIcons,
   routes = [],
   neatlineSvg,
+  showWhiteMat = false,
+  matInsetXRatio,
+  matInsetYRatio,
+  mapInsetXRatio,
+  mapInsetYRatio,
 }: LayeredSvgOptions): Promise<Blob> {
   await waitForMapIdle(map);
 
@@ -565,16 +575,15 @@ export async function createLayeredSvgBlobFromMap({
 `;
     }
 
-    const showWhiteMat = Boolean(options.showWhiteMat);
-    const matInsetXRatio = options.matInsetXRatio ?? (showWhiteMat ? 0.02 : 0.025);
-    const matInsetYRatio = options.matInsetYRatio ?? (showWhiteMat ? 0.02 : 0.025);
-    const mapInsetXRatio = options.mapInsetXRatio ?? (showWhiteMat ? 0.055 : 0);
-    const mapInsetYRatio = options.mapInsetYRatio ?? (showWhiteMat ? 0.055 : 0);
+    const finalMatInsetXRatio = matInsetXRatio ?? (showWhiteMat ? 0.02 : 0.025);
+    const finalMatInsetYRatio = matInsetYRatio ?? (showWhiteMat ? 0.02 : 0.025);
+    const finalMapInsetXRatio = mapInsetXRatio ?? (showWhiteMat ? 0.055 : 0);
+    const finalMapInsetYRatio = mapInsetYRatio ?? (showWhiteMat ? 0.055 : 0);
 
-    const neatlineX = exportWidth * matInsetXRatio;
-    const neatlineY = exportHeight * matInsetYRatio;
-    const neatlineW = exportWidth * (1 - matInsetXRatio * 2);
-    const neatlineH = exportHeight * (1 - matInsetYRatio * 2);
+    const neatlineX = exportWidth * finalMatInsetXRatio;
+    const neatlineY = exportHeight * finalMatInsetYRatio;
+    const neatlineW = exportWidth * (1 - finalMatInsetXRatio * 2);
+    const neatlineH = exportHeight * (1 - finalMatInsetYRatio * 2);
 
     const neatlineLayerSvg = neatlineSvg
       ? `<svg x="${neatlineX}" y="${neatlineY}" width="${neatlineW}" height="${neatlineH}" viewBox="0 0 1000 ${(1000 * exportHeight) / exportWidth}" preserveAspectRatio="none">${neatlineSvg}</svg>`
@@ -582,7 +591,7 @@ export async function createLayeredSvgBlobFromMap({
 
     const matRect = showWhiteMat ? `<rect width="100%" height="100%" fill="#fff"/>` : "";
     const groupTransform = showWhiteMat
-      ? `transform="translate(${exportWidth * mapInsetXRatio} ${exportHeight * mapInsetYRatio}) scale(${1 - mapInsetXRatio * 2} ${1 - mapInsetYRatio * 2})"`
+      ? `transform="translate(${exportWidth * finalMapInsetXRatio} ${exportHeight * finalMapInsetYRatio}) scale(${1 - finalMapInsetXRatio * 2} ${1 - finalMapInsetYRatio * 2})"`
       : "";
 
     const svg = `<?xml version="1.0" encoding="UTF-8"?>

@@ -244,6 +244,17 @@ export function useExport() {
 
         const size = resolveCanvasSize(widthInches, heightInches, targetDpi);
         const neatlineSvg = await getSelectedNeatlineSvg();
+        const neatlineSelection = readNeatlineSelection();
+        const borderMetrics = getPosterBorderMetrics(
+          widthCm,
+          heightCm,
+          neatlineSelection.mapGapCm,
+          neatlineSelection.lineId,
+          neatlineSelection.thicknesses,
+          neatlineSelection.designScale,
+          neatlineSelection.showWhiteMat,
+        );
+        const showWhiteMat = Boolean(neatlineSelection.showWhiteMat);
 
         const lat = Number(form.latitude) || 0;
         const lon = Number(form.longitude) || 0;
@@ -269,6 +280,11 @@ export function useExport() {
               : [],
             routes: visibleRoutes,
             neatlineSvg,
+            showWhiteMat,
+            matInsetXRatio: borderMetrics.matInsetXRatio,
+            matInsetYRatio: borderMetrics.matInsetYRatio,
+            mapInsetXRatio: borderMetrics.mapInsetXRatio,
+            mapInsetYRatio: borderMetrics.mapInsetYRatio,
           });
           const svgFilename = createPosterFilename(
             form.displayCity || form.location,

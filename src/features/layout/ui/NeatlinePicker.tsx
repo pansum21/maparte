@@ -372,15 +372,20 @@ export function getPosterBorderMetrics(
   // An elegant white gallery paper sheet frames the map artwork.
   if (!hasBorder) {
     const matMarginRatio = 0.055;
-    const mapInsetCm = shortSide * matMarginRatio;
+    const rawMapInsetCm = shortSide * matMarginRatio;
+    const maxSafeInsetX = width * 0.45;
+    const maxSafeInsetY = height * 0.45;
+    const mapInsetXCm = Math.min(rawMapInsetCm, maxSafeInsetX);
+    const mapInsetYCm = Math.min(rawMapInsetCm, maxSafeInsetY);
+    const mapInsetCm = Math.min(rawMapInsetCm, Math.min(maxSafeInsetX, maxSafeInsetY));
     const outerMatCm = mapInsetCm;
     const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
     const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
     const innerW = 1000;
     const innerH = (innerW * usableHeightCm) / usableWidthCm;
     const unitScale = innerW / usableWidthCm;
-    const mapInsetXRatio = mapInsetCm / width;
-    const mapInsetYRatio = mapInsetCm / height;
+    const mapInsetXRatio = mapInsetXCm / width;
+    const mapInsetYRatio = mapInsetYCm / height;
 
     return {
       showWhiteMat: true,
@@ -1986,7 +1991,6 @@ export function NeatlinePicker({
       cornerId: "none",
       frameId: "none",
     }));
-    setIsEditingThickness(false);
   };
 
   const updateThickness = (lineIndex: number, valCm: number) => {

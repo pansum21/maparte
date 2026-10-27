@@ -154,7 +154,7 @@ try {
           ].map((match) => Number(match[1]));
           if (
             groupWidths.length !== count ||
-            groupWidths.some((value) => value < 0.5 || value > 5)
+            groupWidths.some((value) => value < 2.3 || value > 48.1)
           ) {
             layoutFailures++;
             errors.push(
