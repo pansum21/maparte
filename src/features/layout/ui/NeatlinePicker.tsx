@@ -2085,39 +2085,41 @@ export function NeatlinePicker({
         </span>
       </div>
 
-      {/* 1. Poster White Paper Mat Single Action Toggle */}
+      {/* 1. White Sheet Controls (Both 'Remove White Sheet' and 'Add White Sheet') */}
       <div className="neatline-mat-toggle-card">
         <div className="neatline-mat-toggle-header">
           <div>
-            <span className="neatline-mat-toggle-title">White Paper Mat</span>
+            <span className="neatline-mat-toggle-title">White Sheet</span>
             <p className="neatline-mat-toggle-desc">
               {selection.showWhiteMat
-                ? "White gallery paper mat sheet active behind map & border"
-                : "Clean map layout without background paper sheet"}
+                ? "White sheet active behind map & border"
+                : "Clean map layout without background white sheet"}
             </p>
           </div>
-          <span className="neatline-mat-toggle-badge">
-            {selection.showWhiteMat ? "White Sheet" : "Clean"}
+          <span className={`neatline-mat-toggle-badge ${selection.showWhiteMat ? "is-active" : ""}`}>
+            {selection.showWhiteMat ? "White Sheet ON" : "White Sheet OFF"}
           </span>
         </div>
-        <button
-          type="button"
-          className={`neatline-mat-single-toggle-btn ${selection.showWhiteMat ? "is-active" : ""}`}
-          onClick={() => toggleWhiteMat(!selection.showWhiteMat)}
-          title={selection.showWhiteMat ? "Remove White Sheet" : "Add White Sheet"}
-        >
-          {selection.showWhiteMat ? (
-            <>
-              <span className="neatline-mat-btn-icon" aria-hidden="true">✕</span>
-              <span>Remove White Sheet</span>
-            </>
-          ) : (
-            <>
-              <span className="neatline-mat-btn-icon" aria-hidden="true">+</span>
-              <span>Add White Sheet</span>
-            </>
-          )}
-        </button>
+        <div className="neatline-mat-toggle-switch-wrap">
+          <button
+            type="button"
+            className={`neatline-mat-segment-btn ${!selection.showWhiteMat ? "is-active is-active-clean" : ""}`}
+            onClick={() => toggleWhiteMat(false)}
+            title="Clean map without white sheet (Remove White Sheet)"
+          >
+            <span className="neatline-mat-btn-icon" aria-hidden="true">✕</span>
+            <span>Remove White Sheet</span>
+          </button>
+          <button
+            type="button"
+            className={`neatline-mat-segment-btn ${selection.showWhiteMat ? "is-active is-active-mat" : ""}`}
+            onClick={() => toggleWhiteMat(true)}
+            title="Add white sheet behind map (Add White Sheet)"
+          >
+            <span className="neatline-mat-btn-icon" aria-hidden="true">+</span>
+            <span>Add White Sheet</span>
+          </button>
+        </div>
       </div>
 
       {/* 2. BORDERS BOX (Internal scroll without visible scrollbar) */}
@@ -2373,6 +2375,30 @@ export function NeatlinePicker({
                   </div>
                 </div>
               ) : null}
+
+              <div className="neatline-adjustment" key="white-sheet-adjustment">
+                <span className="neatline-adjustment-label">White Sheet (Background)</span>
+                <div className="neatline-mat-toggle-switch-wrap" style={{ marginTop: "4px" }}>
+                  <button
+                    type="button"
+                    className={`neatline-mat-segment-btn ${!selection.showWhiteMat ? "is-active is-active-clean" : ""}`}
+                    onClick={() => toggleWhiteMat(false)}
+                    title="Remove White Sheet"
+                  >
+                    <span className="neatline-mat-btn-icon" aria-hidden="true">✕</span>
+                    <span>Remove White Sheet</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`neatline-mat-segment-btn ${selection.showWhiteMat ? "is-active is-active-mat" : ""}`}
+                    onClick={() => toggleWhiteMat(true)}
+                    title="Add White Sheet"
+                  >
+                    <span className="neatline-mat-btn-icon" aria-hidden="true">+</span>
+                    <span>Add White Sheet</span>
+                  </button>
+                </div>
+              </div>
 
               <div className="neatline-adjustment" key="map-gap-slider">
                 <span className="neatline-adjustment-label">Map spacing (gap)</span>
