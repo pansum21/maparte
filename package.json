@@ -12,6 +12,7 @@
     "verify:exports": "node scripts/verify-export-resolution.mjs",
     "verify:border-matrix": "node scripts/verify-border-matrix.mjs",
     "verify:ai-frame-matrix": "node scripts/verify-ai-frame-matrix.mjs",
+    "screenshot:poster": "node lib/playwright-engine.js",
     "showcase:grid": "node scripts/combine-showcase-grid.mjs"
   },
   "dependencies": {
@@ -60,6 +61,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.4.1",
+    "playwright": "^1.64.1",
     "rehype-stringify": "^10.0.1",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
