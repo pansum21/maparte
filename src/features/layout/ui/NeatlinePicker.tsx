@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./neatline.css";
 
 const CONFIG_STORAGE_KEY = "maparte_neatline_layers";
@@ -317,13 +317,14 @@ export function getPosterBorderMetrics(
       };
     }
 
-    // Border selected without white mat:
-    const outerBorderCm = Math.max(0.35, shortSide * 0.02);
-    const usableWidthCm = Math.max(0.1, width - outerBorderCm * 2);
-    const usableHeightCm = Math.max(0.1, height - outerBorderCm * 2);
+    // Border selected without white border (outerBorderCm = 0):
+    // The border sits exactly on the outer perimeter/edge of the map poster (0mm margin)!
+    const outerBorderCm = 0;
+    const usableWidthCm = width;
+    const usableHeightCm = height;
     const innerW = 1000;
-    const innerH = (innerW * usableHeightCm) / usableWidthCm;
-    const unitScale = innerW / usableWidthCm;
+    const innerH = (innerW * height) / width;
+    const unitScale = innerW / width;
 
     let borderBandCm = 0;
     let spanUnits = 0;
@@ -342,13 +343,12 @@ export function getPosterBorderMetrics(
       borderBandCm = innerEdgeUnits / unitScale;
     }
 
-    // Map shrinks inward: mapInsetCm = outerBorderCm + borderBandCm + gapCm
-    // Border NEVER overlaps the map street lines; gapCm (1mm-2mm) is strictly preserved!
-    const mapInsetCm = outerBorderCm + borderBandCm + gapCm;
+    // Border sits right on the top/edge of the map. Map insets inward from the inner border stroke.
+    const mapInsetCm = borderBandCm + gapCm;
     const mapInsetXRatio = mapInsetCm / width;
     const mapInsetYRatio = mapInsetCm / height;
-    const matInsetXRatio = outerBorderCm / width;
-    const matInsetYRatio = outerBorderCm / height;
+    const matInsetXRatio = 0; // Exactly on the edge!
+    const matInsetYRatio = 0; // Exactly on the edge!
 
     return {
       showWhiteMat: false,
@@ -1992,6 +1992,8 @@ export function NeatlinePicker({
     }));
   };
 
+  const adjustBoxRef = useRef<HTMLDivElement | null>(null);
+
   const selectStyle = (style: BorderStyle) => {
     setSelection((current) => ({
       ...current,
@@ -1999,6 +2001,11 @@ export function NeatlinePicker({
       cornerId: "none",
       frameId: "none",
     }));
+    if (style.id !== "none") {
+      requestAnimationFrame(() => {
+        adjustBoxRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    }
   };
 
   const updateThickness = (lineIndex: number, valCm: number) => {
@@ -2074,52 +2081,67 @@ export function NeatlinePicker({
   return (
     <section className="neatline-picker" aria-labelledby="neatline-heading">
       <div className="neatline-picker-heading">
-        <div>
-          <h3 id="neatline-heading">Borders</h3>
-          <p>
-            Choose no border or a designer line border · {width} × {height} cm
-          </p>
+        <div className="neatline-heading-group">
+          <h3 id="neatline-heading" className="neatline-title-prominent">Borders</h3>
         </div>
-        <span className="neatline-count">
-          {layerCount} {layerCount === 1 ? "layer" : "layers"}
-        </span>
+        <div className="neatline-heading-actions">
+          <span className="neatline-count">
+            {layerCount} {layerCount === 1 ? "layer" : "layers"}
+          </span>
+          <div className="neatline-info-tooltip-wrap">
+            <button
+              type="button"
+              className="neatline-info-btn"
+              aria-label="Borders information"
+              title={`Choose no border or a designer line border · ${width} × ${height} cm`}
+            >
+              ⓘ
+            </button>
+            <div className="neatline-info-tooltip" role="tooltip">
+              Choose no border or a designer line border · {width} × {height} cm
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* 1. White Sheet Controls (Both 'Remove White Sheet' and 'Add White Sheet') */}
+      {/* 1. White Border Single Action Toggle */}
       <div className="neatline-mat-toggle-card">
         <div className="neatline-mat-toggle-header">
-          <div>
-            <span className="neatline-mat-toggle-title">White Sheet</span>
-            <p className="neatline-mat-toggle-desc">
+          <span className="neatline-mat-toggle-title">White Border</span>
+          <div className="neatline-info-tooltip-wrap">
+            <button
+              type="button"
+              className="neatline-info-btn"
+              aria-label="White Border info"
+              title={selection.showWhiteMat ? "White gallery border active behind map and neatline" : "Clean edge-to-edge map without white border"}
+            >
+              ⓘ
+            </button>
+            <div className="neatline-info-tooltip" role="tooltip">
               {selection.showWhiteMat
-                ? "White sheet active behind map & border"
-                : "Clean map layout without background white sheet"}
-            </p>
+                ? "White gallery border active behind map and neatline"
+                : "Clean edge-to-edge map without white border"}
+            </div>
           </div>
-          <span className={`neatline-mat-toggle-badge ${selection.showWhiteMat ? "is-active" : ""}`}>
-            {selection.showWhiteMat ? "White Sheet ON" : "White Sheet OFF"}
-          </span>
         </div>
-        <div className="neatline-mat-toggle-switch-wrap">
-          <button
-            type="button"
-            className={`neatline-mat-segment-btn ${!selection.showWhiteMat ? "is-active is-active-clean" : ""}`}
-            onClick={() => toggleWhiteMat(false)}
-            title="Clean map without white sheet (Remove White Sheet)"
-          >
-            <span className="neatline-mat-btn-icon" aria-hidden="true">✕</span>
-            <span>Remove White Sheet</span>
-          </button>
-          <button
-            type="button"
-            className={`neatline-mat-segment-btn ${selection.showWhiteMat ? "is-active is-active-mat" : ""}`}
-            onClick={() => toggleWhiteMat(true)}
-            title="Add white sheet behind map (Add White Sheet)"
-          >
-            <span className="neatline-mat-btn-icon" aria-hidden="true">+</span>
-            <span>Add White Sheet</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          className={`neatline-mat-single-toggle-btn ${selection.showWhiteMat ? "is-active" : ""}`}
+          onClick={() => toggleWhiteMat(!selection.showWhiteMat)}
+          title={selection.showWhiteMat ? "Remove White Border" : "Add White Border"}
+        >
+          {selection.showWhiteMat ? (
+            <>
+              <span className="neatline-mat-btn-icon" aria-hidden="true">✕</span>
+              <span>Remove White Border</span>
+            </>
+          ) : (
+            <>
+              <span className="neatline-mat-btn-icon" aria-hidden="true">+</span>
+              <span>Add White Border</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* 2. BORDERS BOX (Internal scroll without visible scrollbar) */}
@@ -2153,9 +2175,9 @@ export function NeatlinePicker({
                 </span>
                 <span className="neatline-card-meta">
                   {style.id === "none"
-                    ? (selection.showWhiteMat ? "White Mat Only" : "100% Edge-to-Edge")
+                    ? (selection.showWhiteMat ? "White Border Only" : "100% Edge-to-Edge")
                     : (selection.showWhiteMat
-                        ? `${getBorderCategoryTag(style.pattern)} · White Mat`
+                        ? `${getBorderCategoryTag(style.pattern)} · White Border`
                         : `${getBorderCategoryTag(style.pattern)} · Full Bleed`)}
                 </span>
               </div>
@@ -2167,7 +2189,7 @@ export function NeatlinePicker({
 
       {/* 3. ADJUSTMENTS BOX (Color, Thickness & Spacing) */}
       {selectedLine ? (
-        <div className="neatline-section-box neatline-adjust-box">
+        <div className="neatline-section-box neatline-adjust-box" ref={adjustBoxRef}>
           <div className="neatline-section-box-header">
             <span className="neatline-section-box-title">Adjust &amp; Customize</span>
             <span className="neatline-section-box-subtitle">{selectedLine.name}</span>
@@ -2375,30 +2397,6 @@ export function NeatlinePicker({
                   </div>
                 </div>
               ) : null}
-
-              <div className="neatline-adjustment" key="white-sheet-adjustment">
-                <span className="neatline-adjustment-label">White Sheet (Background)</span>
-                <div className="neatline-mat-toggle-switch-wrap" style={{ marginTop: "4px" }}>
-                  <button
-                    type="button"
-                    className={`neatline-mat-segment-btn ${!selection.showWhiteMat ? "is-active is-active-clean" : ""}`}
-                    onClick={() => toggleWhiteMat(false)}
-                    title="Remove White Sheet"
-                  >
-                    <span className="neatline-mat-btn-icon" aria-hidden="true">✕</span>
-                    <span>Remove White Sheet</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`neatline-mat-segment-btn ${selection.showWhiteMat ? "is-active is-active-mat" : ""}`}
-                    onClick={() => toggleWhiteMat(true)}
-                    title="Add White Sheet"
-                  >
-                    <span className="neatline-mat-btn-icon" aria-hidden="true">+</span>
-                    <span>Add White Sheet</span>
-                  </button>
-                </div>
-              </div>
 
               <div className="neatline-adjustment" key="map-gap-slider">
                 <span className="neatline-adjustment-label">Map spacing (gap)</span>
