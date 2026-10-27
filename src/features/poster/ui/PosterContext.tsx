@@ -44,6 +44,7 @@ import {
 } from "@/core/config";
 
 import { resolveCityFromUrl, findCityMatch } from "@/features/location/domain/cityRouteResolver";
+import { parsePosterStateFromUrl, serializePosterStateToUrl } from "@/features/poster/application/posterUrlSync";
 
 const defaultLayoutOption = getLayoutOption(defaultLayoutId);
 const defaultLayoutWidthCm = Number(
@@ -110,6 +111,13 @@ function getInitialState(): PosterState {
         city: matched.city,
         country: matched.country,
         continent: matched.continent,
+      };
+    }
+    const urlOverrides = parsePosterStateFromUrl(window.location.search);
+    if (Object.keys(urlOverrides).length > 0) {
+      form = {
+        ...form,
+        ...urlOverrides,
       };
     }
   }
@@ -212,30 +220,52 @@ export function PosterProvider({ children }: { children: ReactNode }) {
           });
         }
       }
+      const overrides = parsePosterStateFromUrl(window.location.search);
+      if (Object.keys(overrides).length > 0) {
+        if (overrides.theme) {
+          dispatch({ type: "SET_THEME", themeId: overrides.theme });
+        }
+        dispatch({
+          type: "SET_FORM_FIELDS",
+          fields: overrides as Partial<PosterForm>,
+        });
+      }
     };
 
     window.addEventListener("popstate", handleUrlChange);
     return () => window.removeEventListener("popstate", handleUrlChange);
   }, [dispatch]);
 
-  // Synchronize browser address bar URL and title when a curated city is selected
+  // Synchronize browser address bar URL and title when city or customization changes
   useEffect(() => {
     if (typeof window === "undefined") return;
     const city = state.form.displayCity || state.form.location;
     const country = state.form.displayCountry;
     const matched = findCityMatch(city, country);
 
+    const { fullUrl } = serializePosterStateToUrl(state.form, matched);
+    const currentFullUrl = `${window.location.pathname}${window.location.search}`;
+
+    if (currentFullUrl !== fullUrl) {
+      window.history.replaceState({ citySlug: matched?.slug }, "", fullUrl);
+    }
+
     if (matched) {
-      const targetPath = `/cities/${matched.slug}`;
-      if (window.location.pathname !== targetPath) {
-        window.history.replaceState({ citySlug: matched.slug }, "", targetPath);
-        document.title = `${matched.city} Custom Map Poster & Wall Art | Ultra-HD Map Art — MAPARTE`;
-      }
-    } else if (window.location.pathname.startsWith("/cities/")) {
-      window.history.replaceState({}, "", "/");
+      document.title = `${matched.city} Custom Map Poster & Wall Art | Ultra-HD Map Art — MAPARTE`;
+    } else {
       document.title = "MAPARTE: Free Map Poster & Wallpaper Creator";
     }
-  }, [state.form.displayCity, state.form.displayCountry, state.form.location]);
+  }, [
+    state.form.displayCity,
+    state.form.displayCountry,
+    state.form.location,
+    state.form.theme,
+    state.form.layout,
+    state.form.fontFamily,
+    state.form.customDate,
+    state.form.distance,
+    state.form.showPosterText,
+  ]);
 
   useEffect(() => {
     const markerThemeColor = effectiveTheme.ui.text;
