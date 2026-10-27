@@ -1,0 +1,52 @@
+/* Shared glass treatment for the app's attached tool panels. */
+.desktop-settings-slide.is-open,
+.mobile-drawer-sheet,
+.export-modal.backdrop-theme-modal,
+.app-shell .all-cities-modal {
+  background: linear-gradient(
+    155deg,
+    rgba(17, 35, 52, 0.58) 0%,
+    rgba(8, 18, 30, 0.64) 100%
+  ) !important;
+  backdrop-filter: blur(16px) saturate(155%);
+  -webkit-backdrop-filter: blur(16px) saturate(155%);
+}
+
+/* Let custom wall colors remain visible through the mobile drawer overlay. */
+.mobile-drawer-backdrop {
+  background: rgba(4, 10, 18, 0.22);
+  backdrop-filter: blur(8px) saturate(130%);
+  -webkit-backdrop-filter: blur(8px) saturate(130%);
+}
+
+:root[data-backdrop-mode="light"] .export-modal.backdrop-theme-modal {
+  background: linear-gradient(
+    155deg,
+    rgba(248, 250, 252, 0.68) 0%,
+    rgba(241, 245, 249, 0.72) 100%
+  ) !important;
+}
+
+/* Keep all continent choices the same size; long labels wrap inside their cell. */
+.all-cities-continent-pill,
+.all-cities-continent-pill:nth-child(n + 6) {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 38px;
+  padding: 5px 3px;
+  font-size: 0.75rem;
+  line-height: 1.1;
+  letter-spacing: normal;
+  white-space: normal;
+  text-align: center;
+  text-wrap: balance;
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .all-cities-continent-pill,
+  .all-cities-continent-pill:nth-child(n + 6) {
+    min-height: 36px;
+    padding: 4px 3px;
+    font-size: 0.7rem;
+  }
+}
