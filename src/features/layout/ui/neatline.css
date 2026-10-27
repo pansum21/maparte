@@ -496,9 +496,9 @@
 
 .neatline-adjustment {
   display: grid;
-  grid-template-columns: minmax(84px, auto) minmax(80px, 1fr) 42px;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  gap: 10px;
+  gap: 5px;
   margin: 0;
 }
 
@@ -507,14 +507,47 @@
   color: #c3d9e8;
 }
 
-.neatline-adjustment input[type="range"] {
+.neatline-adjustment-control {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) 26px auto;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.neatline-adjustment-control input[type="range"] {
   width: 100%;
+  min-width: 0;
   margin: 0;
   accent-color: #70b8de;
 }
 
+.neatline-adjustment-step {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid rgba(171, 201, 224, 0.24);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.07);
+  color: #e7f2fb;
+  font: 600 15px/1 "Instrument Sans", sans-serif;
+  cursor: pointer;
+}
+
+.neatline-adjustment-step:hover:not(:disabled) {
+  border-color: rgba(112, 184, 222, 0.7);
+  background: rgba(112, 184, 222, 0.16);
+}
+
+.neatline-adjustment-step:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
 .neatline-adjustment output {
-  min-width: 42px;
+  min-width: 54px;
   padding: 4px 5px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.08);

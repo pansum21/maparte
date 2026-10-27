@@ -2519,13 +2519,48 @@ body.has-custom-backdrop .poster-ghost-layer {
 }
 
 .cinema-placement-controls label {
-  display: flex !important;
-  flex-wrap: wrap !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
   justify-content: space-between !important;
   align-items: center !important;
+  gap: 6px 8px !important;
   font-size: 13.5px !important;
   font-weight: 600 !important;
   color: #e2e8f0 !important;
+}
+
+.cinema-range-control {
+  display: grid !important;
+  grid-template-columns: 28px minmax(0, 1fr) 28px !important;
+  align-items: center !important;
+  gap: 6px !important;
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.cinema-range-step {
+  display: grid !important;
+  place-items: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(171, 201, 224, .28) !important;
+  border-radius: 8px !important;
+  background: rgba(31, 56, 75, .62) !important;
+  color: #e2e8f0 !important;
+  font: 600 16px/1 "Instrument Sans", sans-serif !important;
+  cursor: pointer !important;
+}
+
+.cinema-range-step:hover:not(:disabled) {
+  border-color: rgba(56, 189, 248, .72) !important;
+  background: rgba(56, 189, 248, .18) !important;
+}
+
+.cinema-range-step:disabled {
+  opacity: .38 !important;
+  cursor: not-allowed !important;
 }
 
 .cinema-placement-controls output {
@@ -2541,13 +2576,17 @@ body.has-custom-backdrop .poster-ghost-layer {
 
 .cinema-range-slider {
   width: 100% !important;
+  min-width: 0 !important;
   height: 8px !important;
   border-radius: 4px !important;
   background: rgba(255, 255, 255, 0.14) !important;
   accent-color: #38bdf8 !important;
   cursor: pointer !important;
-  margin-top: 8px !important;
+  margin: 0 !important;
+  grid-column: auto !important;
 }
+
+.cinema-range-control input { grid-column: auto !important; }
 
 .cinema-panel-popover__tip {
   font-size: 12.5px !important;

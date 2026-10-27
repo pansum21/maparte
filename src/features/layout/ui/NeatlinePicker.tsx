@@ -5,6 +5,14 @@ const CONFIG_STORAGE_KEY = "maparte_neatline_layers";
 const LEGACY_STYLE_KEY = "maparte_neatline_style";
 const THICKNESS_STORAGE_KEY = "maparte_neatline_thicknesses";
 export const NEATLINE_CHANGE_EVENT = "maparte:neatline:change";
+const MIN_MAP_GAP_CM = 0.05;
+const MAX_MAP_GAP_CM = 1.00;
+const BORDER_CONTROL_STEP_CM = 0.05;
+
+function stepWithinRange(value: number, delta: number, min: number, max: number, step: number) {
+  const stepsFromMin = Math.round((value - min) / step) + delta;
+  return Math.min(max, Math.max(min, Number((min + stepsFromMin * step).toFixed(2))));
+}
 
 export type LinePattern =
   | "single"
@@ -273,7 +281,7 @@ export function getPosterBorderMetrics(
   // Default gap is 0.15cm (1.5mm, strictly preserved between 1mm and 2mm as requested).
   const gapCm =
     typeof customGapCm === "number" && Number.isFinite(customGapCm)
-      ? Math.max(0.05, Math.min(0.60, customGapCm))
+      ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, customGapCm))
       : 0.15;
 
   if (!showWhiteMat) {
@@ -563,7 +571,7 @@ function readSelection(): NeatlineSelection {
         thicknesses: readThicknesses(),
         mapGapCm:
           typeof parsed.mapGapCm === "number" && Number.isFinite(parsed.mapGapCm)
-            ? Math.max(0.05, Math.min(0.60, parsed.mapGapCm))
+            ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, parsed.mapGapCm))
             : 0.1,
         colorMode,
         singleColor:
@@ -2006,6 +2014,15 @@ export function NeatlinePicker({
     });
   };
 
+  const adjustThickness = (lineIndex: number, delta: number) => {
+    if (!selectedLine) return;
+    const current = thicknessesInCm(selectedLine.id, selection.thicknesses)[lineIndex];
+    updateThickness(
+      lineIndex,
+      stepWithinRange(current, delta, MIN_LINE_WIDTH_CM, MAX_LINE_WIDTH_CM, BORDER_CONTROL_STEP_CM),
+    );
+  };
+
   const updateDesignScale = (scale: number) => {
     const clampedScale = Math.min(2.5, Math.max(0.5, Math.round(scale * 10) / 10));
     setSelection((current) => ({
@@ -2014,12 +2031,31 @@ export function NeatlinePicker({
     }));
   };
 
+  const adjustDesignScale = (delta: number) =>
+    updateDesignScale(
+      stepWithinRange(selection.designScale ?? 1, delta, 0.5, 2.5, 0.1),
+    );
+
   const updateMapGap = (value: number) => {
     setSelection((current) => ({
       ...current,
-      mapGapCm: value,
+      mapGapCm: Math.min(
+        MAX_MAP_GAP_CM,
+        Math.max(MIN_MAP_GAP_CM, Number(value.toFixed(2))),
+      ),
     }));
   };
+
+  const adjustMapGap = (delta: number) =>
+    updateMapGap(
+      stepWithinRange(
+        selection.mapGapCm ?? 0.1,
+        delta,
+        MIN_MAP_GAP_CM,
+        MAX_MAP_GAP_CM,
+        BORDER_CONTROL_STEP_CM,
+      ),
+    );
 
   const isSelected = (style: BorderStyle) => {
     if (style.id === "none") {
@@ -2270,69 +2306,108 @@ export function NeatlinePicker({
             </div>
 
             <fieldset className="neatline-adjustments">
-              {/* Line thickness sliders */}
-              {thicknessesInCm(selectedLine.id, selection.thicknesses).map((cmVal, index) => {
-                return (
-                  <label
-                    className="neatline-adjustment"
-                    key={`${selectedLine.id}-${index}`}
-                  >
-                    <span className="neatline-adjustment-label">
-                      {lineLabel(selectedLine.pattern, index)}
-                    </span>
+              <legend>Border thickness &amp; spacing</legend>
+              {/* All physical spacing values are displayed in centimeters. */}
+              {thicknessesInCm(selectedLine.id, selection.thicknesses).map((cmVal, index) => (
+                <div className="neatline-adjustment" key={`${selectedLine.id}-${index}`}>
+                  <span className="neatline-adjustment-label">
+                    {lineLabel(selectedLine.pattern, index)}
+                  </span>
+                  <div className="neatline-adjustment-control">
+                    <button
+                      type="button"
+                      className="neatline-adjustment-step"
+                      onClick={() => adjustThickness(index, -1)}
+                      disabled={cmVal <= MIN_LINE_WIDTH_CM}
+                      aria-label={`Decrease ${lineLabel(selectedLine.pattern, index)} thickness`}
+                    >−</button>
                     <input
                       type="range"
                       min={MIN_LINE_WIDTH_CM}
                       max={MAX_LINE_WIDTH_CM}
-                      step="0.05"
+                      step={BORDER_CONTROL_STEP_CM}
                       value={cmVal}
-                      onChange={(event) =>
-                        updateThickness(index, Number(event.target.value))
-                      }
+                      onChange={(event) => updateThickness(index, Number(event.target.value))}
                       aria-label={`${lineLabel(selectedLine.pattern, index)} thickness in cm`}
                     />
-                    <output>{cmVal.toFixed(2)} cm ({(cmVal * 10).toFixed(1)} mm)</output>
-                  </label>
-                );
-              })}
+                    <button
+                      type="button"
+                      className="neatline-adjustment-step"
+                      onClick={() => adjustThickness(index, 1)}
+                      disabled={cmVal >= MAX_LINE_WIDTH_CM}
+                      aria-label={`Increase ${lineLabel(selectedLine.pattern, index)} thickness`}
+                    >+</button>
+                    <output>{cmVal.toFixed(2)} cm</output>
+                  </div>
+                </div>
+              ))}
 
-              {/* Design size & thickness slider for ornamental patterns */}
               {hasPatternDesign(selectedLine.pattern) ? (
-                <label className="neatline-adjustment" key="design-scale-slider">
-                  <span className="neatline-adjustment-label">
-                    Design size &amp; pattern
-                  </span>
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="2.5"
-                    step="0.1"
-                    value={selection.designScale ?? 1.0}
-                    onChange={(event) =>
-                      updateDesignScale(Number(event.target.value))
-                    }
-                    aria-label="Design pattern size and thickness scale"
-                  />
-                  <output>
-                    {((selection.designScale ?? 1.0) * 100).toFixed(0)}% ({(selection.designScale ?? 1.0).toFixed(1)}x)
-                  </output>
-                </label>
+                <div className="neatline-adjustment" key="design-scale-slider">
+                  <span className="neatline-adjustment-label">Design size &amp; pattern</span>
+                  <div className="neatline-adjustment-control">
+                    <button
+                      type="button"
+                      className="neatline-adjustment-step"
+                      onClick={() => adjustDesignScale(-1)}
+                      disabled={(selection.designScale ?? 1) <= 0.5}
+                      aria-label="Decrease design size"
+                    >−</button>
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="2.5"
+                      step="0.1"
+                      value={selection.designScale ?? 1.0}
+                      onChange={(event) => updateDesignScale(Number(event.target.value))}
+                      aria-label="Design pattern size and thickness scale"
+                    />
+                    <button
+                      type="button"
+                      className="neatline-adjustment-step"
+                      onClick={() => adjustDesignScale(1)}
+                      disabled={(selection.designScale ?? 1) >= 2.5}
+                      aria-label="Increase design size"
+                    >+</button>
+                    <output>{(selection.designScale ?? 1.0).toFixed(1)}×</output>
+                  </div>
+                </div>
               ) : null}
 
-              {/* Map spacing gap slider */}
-              <label className="neatline-adjustment" key="map-gap-slider">
+              <div className="neatline-adjustment" key="map-gap-slider">
                 <span className="neatline-adjustment-label">Map spacing (gap)</span>
-                <input
-                  type="range"
-                  min="0.05"
-                  max="0.50"
-                  step="0.05"
-                  value={selection.mapGapCm ?? 0.1}
-                  onChange={(event) => updateMapGap(Number(event.target.value))}
-                  aria-label="Map spacing gap in mm"
-                />
-                <output>{((selection.mapGapCm ?? 0.1) * 10).toFixed(1)} mm</output>
-              </label>
+                <div className="neatline-adjustment-control">
+                  <button
+                    type="button"
+                    className="neatline-adjustment-step"
+                    onClick={() => adjustMapGap(-1)}
+                    disabled={(selection.mapGapCm ?? 0.1) <= MIN_MAP_GAP_CM}
+                    aria-label="Decrease map spacing"
+                  >−</button>
+                  <input
+                    type="range"
+                    min={MIN_MAP_GAP_CM}
+                    max={MAX_MAP_GAP_CM}
+                    step={BORDER_CONTROL_STEP_CM}
+                    value={selection.mapGapCm ?? 0.1}
+                    onChange={(event) => updateMapGap(Number(event.target.value))}
+                    aria-label="Map spacing gap in centimeters"
+                  />
+                  <button
+                    type="button"
+                    className="neatline-adjustment-step"
+                    onClick={() => adjustMapGap(1)}
+                    disabled={(selection.mapGapCm ?? 0.1) >= MAX_MAP_GAP_CM}
+                    aria-label="Increase map spacing"
+                  >+</button>
+                  <output>{(selection.mapGapCm ?? 0.1).toFixed(2)} cm</output>
+                </div>
+              </div>
+              <p className="neatline-adjustments-note">
+                {hasPatternDesign(selectedLine.pattern)
+                  ? "Adjust line thickness and map spacing (0.05–1.00 cm), or design size (0.5–2.5×)."
+                  : "Adjust line thickness and map spacing in centimeters (0.05–1.00 cm)."}
+              </p>
             </fieldset>
           </div>
         </div>
