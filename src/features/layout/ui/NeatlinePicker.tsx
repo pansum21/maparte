@@ -1783,7 +1783,6 @@ export function NeatlinePicker({
   height: string;
 }) {
   const [selection, setSelection] = useState<NeatlineSelection>(readSelection);
-  const [isEditingThickness, setIsEditingThickness] = useState(false);
 
   const updateColorMode = (mode: BorderColorMode) => {
     setSelection((current) => ({
@@ -1932,7 +1931,7 @@ export function NeatlinePicker({
         </span>
       </div>
 
-      {/* Poster Paper Mat (वाइट शीट) Toggle Switch */}
+      {/* 1. Poster Paper Mat (वाइट शीट) Box */}
       <div className="neatline-mat-toggle-card">
         <div className="neatline-mat-toggle-header">
           <span className="neatline-mat-toggle-title">Paper Mat (वाइट शीट)</span>
@@ -1962,188 +1961,193 @@ export function NeatlinePicker({
         </div>
       </div>
 
+      {/* 2. BORDERS BOX (बॉर्डर्स का अलग बॉक्स - अंदर स्क्रॉल, बिना स्क्रोलबार) */}
+      <div className="neatline-section-box neatline-borders-box">
+        <div className="neatline-section-box-header">
+          <span className="neatline-section-box-title">Border Styles (बॉर्डर शैलियाँ)</span>
+          <span className="neatline-section-box-subtitle">
+            {selectedLine ? selectedLine.name : "Clean Full Bleed"}
+          </span>
+        </div>
+        <div
+          className="neatline-options"
+          role="group"
+          aria-label="Choose a border"
+        >
+          {displayedStyles.map((style) => (
+            <button
+              key={style.id}
+              type="button"
+              data-border-style={style.id}
+              title={style.name}
+              aria-pressed={isSelected(style)}
+              className={`neatline-card neatline-option ${isSelected(style) ? "is-selected" : ""}`}
+              onClick={() => selectStyle(style)}
+            >
+              <div className="neatline-card-copy">
+                <span className="neatline-card-name">
+                  {style.id === "none"
+                    ? (selection.showWhiteMat ? "No border line" : "Clean Full Bleed")
+                    : style.name}
+                </span>
+                <span className="neatline-card-meta">
+                  {style.id === "none"
+                    ? (selection.showWhiteMat ? "White Mat Only" : "100% Edge-to-Edge")
+                    : (selection.showWhiteMat
+                        ? `${getBorderCategoryTag(style.pattern)} · White Mat`
+                        : `${getBorderCategoryTag(style.pattern)} · Full Bleed`)}
+                </span>
+              </div>
+              <NeatlineSwatch style={style} selection={swatchSelection(style)} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 3. ADJUSTMENTS BOX (एडजस्ट का अलग बॉक्स - कलर + थिकनेस + स्पेसिंग) */}
       {selectedLine ? (
-        <div className="neatline-color-section">
-          <div className="neatline-color-header">
-            <span className="neatline-color-title">Border Color</span>
-            <div className="neatline-color-tabs" role="tablist">
-              <button
-                type="button"
-                className={`neatline-color-tab ${selection.colorMode !== "mix" ? "is-active" : ""}`}
-                onClick={() => updateColorMode("single")}
-              >
-                Single
-              </button>
-              <button
-                type="button"
-                className={`neatline-color-tab ${selection.colorMode === "mix" ? "is-active" : ""}`}
-                onClick={() => updateColorMode("mix")}
-              >
-                Gradient
-              </button>
-            </div>
+        <div className="neatline-section-box neatline-adjust-box">
+          <div className="neatline-section-box-header">
+            <span className="neatline-section-box-title">Adjust &amp; Customize (एडजस्टमेंट)</span>
+            <span className="neatline-section-box-subtitle">{selectedLine.name}</span>
           </div>
 
-          {selection.colorMode === "mix" ? (
-            <div className="neatline-palette-wrap">
-              <div className="neatline-grad-grid">
-                {MIX_GRADIENT_PRESETS.map((preset) => {
-                  const isActive =
-                    selection.gradientFrom === preset.from &&
-                    selection.gradientTo === preset.to;
-                  return (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      className={`neatline-grad-chip ${isActive ? "is-active" : ""}`}
-                      style={{
-                        background: `linear-gradient(90deg, ${preset.from}, ${preset.to})`,
-                      }}
-                      onClick={() => updateMixGradient(preset.from, preset.to)}
-                      title={preset.id}
-                      aria-label={preset.id}
-                    />
-                  );
-                })}
+          {/* Sub-block A: Border Color */}
+          <div className="neatline-color-subblock">
+            <div className="neatline-color-header">
+              <span className="neatline-color-title">Border Color</span>
+              <div className="neatline-color-tabs" role="tablist">
+                <button
+                  type="button"
+                  className={`neatline-color-tab ${selection.colorMode !== "mix" ? "is-active" : ""}`}
+                  onClick={() => updateColorMode("single")}
+                >
+                  Single
+                </button>
+                <button
+                  type="button"
+                  className={`neatline-color-tab ${selection.colorMode === "mix" ? "is-active" : ""}`}
+                  onClick={() => updateColorMode("mix")}
+                >
+                  Gradient
+                </button>
               </div>
+            </div>
 
-              {/* Custom dual gradient inputs */}
-              <div className="neatline-custom-grad-row">
-                <span className="neatline-custom-label">Custom:</span>
-                <div className="neatline-custom-grad-split">
-                  <label className="neatline-custom-grad-bar-half" title="Click to pick Start Color">
-                    <span
-                      className="neatline-custom-grad-fill"
-                      style={{ background: selection.gradientFrom || "#f43f5e" }}
-                    />
-                    <span className="neatline-custom-grad-text">From</span>
+            {selection.colorMode === "mix" ? (
+              <div className="neatline-palette-wrap">
+                <div className="neatline-grad-grid">
+                  {MIX_GRADIENT_PRESETS.map((preset) => {
+                    const isActive =
+                      selection.gradientFrom === preset.from &&
+                      selection.gradientTo === preset.to;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        className={`neatline-grad-chip ${isActive ? "is-active" : ""}`}
+                        style={{
+                          background: `linear-gradient(90deg, ${preset.from}, ${preset.to})`,
+                        }}
+                        onClick={() => updateMixGradient(preset.from, preset.to)}
+                        title={preset.id}
+                        aria-label={preset.id}
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Custom dual gradient inputs */}
+                <div className="neatline-custom-grad-row">
+                  <span className="neatline-custom-label">Custom:</span>
+                  <div className="neatline-custom-grad-split">
+                    <label className="neatline-custom-grad-bar-half" title="Click to pick Start Color">
+                      <span
+                        className="neatline-custom-grad-fill"
+                        style={{ background: selection.gradientFrom || "#f43f5e" }}
+                      />
+                      <span className="neatline-custom-grad-text">From</span>
+                      <input
+                        type="color"
+                        value={selection.gradientFrom || "#f43f5e"}
+                        onChange={(e) =>
+                          updateMixGradient(e.target.value, selection.gradientTo || "#fb923c")
+                        }
+                      />
+                    </label>
+                    <span className="neatline-custom-grad-divider" />
+                    <label className="neatline-custom-grad-bar-half" title="Click to pick End Color">
+                      <span
+                        className="neatline-custom-grad-fill"
+                        style={{ background: selection.gradientTo || "#fb923c" }}
+                      />
+                      <span className="neatline-custom-grad-text">To</span>
+                      <input
+                        type="color"
+                        value={selection.gradientTo || "#fb923c"}
+                        onChange={(e) =>
+                          updateMixGradient(selection.gradientFrom || "#f43f5e", e.target.value)
+                        }
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="neatline-palette-wrap">
+                <div className="neatline-single-grid">
+                  {[
+                    { id: "blueprint", hex: "#9CC3DA", name: "Blueprint Blue" },
+                    { id: "dark-slate", hex: "#354b62", name: "Dark Slate" },
+                    { id: "charcoal", hex: "#1e293b", name: "Charcoal" },
+                    { id: "white", hex: "#ffffff", name: "White" },
+                    { id: "gold", hex: "#d4af37", name: "Imperial Gold" },
+                    { id: "red", hex: "#ef4444", name: "Crimson" },
+                    { id: "orange", hex: "#f97316", name: "Amber" },
+                    { id: "emerald", hex: "#10b981", name: "Emerald" },
+                    { id: "indigo", hex: "#4f46e5", name: "Indigo" },
+                  ].map((item) => {
+                    const isActive =
+                      (selection.singleColor || "#9CC3DA").toLowerCase() ===
+                      item.hex.toLowerCase();
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={`neatline-single-chip ${isActive ? "is-active" : ""}`}
+                        style={{ background: item.hex }}
+                        onClick={() => updateSingleColor(item.hex)}
+                        title={item.name}
+                        aria-label={item.name}
+                      />
+                    );
+                  })}
+
+                  <label
+                    className="neatline-single-chip neatline-custom-chip"
+                    title="Pick custom color"
+                    style={{ background: selection.singleColor || "#9CC3DA" }}
+                  >
                     <input
                       type="color"
-                      value={selection.gradientFrom || "#f43f5e"}
-                      onChange={(e) =>
-                        updateMixGradient(e.target.value, selection.gradientTo || "#fb923c")
-                      }
+                      value={selection.singleColor || "#9CC3DA"}
+                      onChange={(e) => updateSingleColor(e.target.value)}
                     />
-                  </label>
-                  <span className="neatline-custom-grad-divider" />
-                  <label className="neatline-custom-grad-bar-half" title="Click to pick End Color">
-                    <span
-                      className="neatline-custom-grad-fill"
-                      style={{ background: selection.gradientTo || "#fb923c" }}
-                    />
-                    <span className="neatline-custom-grad-text">To</span>
-                    <input
-                      type="color"
-                      value={selection.gradientTo || "#fb923c"}
-                      onChange={(e) =>
-                        updateMixGradient(selection.gradientFrom || "#f43f5e", e.target.value)
-                      }
-                    />
+                    <span className="neatline-picker-icon" aria-hidden="true">+</span>
                   </label>
                 </div>
               </div>
+            )}
+          </div>
+
+          {/* Sub-block B: Thickness & Spacing Sliders */}
+          <div className="neatline-sliders-subblock">
+            <div className="neatline-sliders-header">
+              <span className="neatline-sliders-title">Thickness &amp; Spacing</span>
             </div>
-          ) : (
-            <div className="neatline-palette-wrap">
-              <div className="neatline-single-grid">
-                {[
-                  { id: "blueprint", hex: "#9CC3DA", name: "Blueprint Blue" },
-                  { id: "dark-slate", hex: "#354b62", name: "Dark Slate" },
-                  { id: "charcoal", hex: "#1e293b", name: "Charcoal" },
-                  { id: "white", hex: "#ffffff", name: "White" },
-                  { id: "gold", hex: "#d4af37", name: "Imperial Gold" },
-                  { id: "red", hex: "#ef4444", name: "Crimson" },
-                  { id: "orange", hex: "#f97316", name: "Amber" },
-                  { id: "emerald", hex: "#10b981", name: "Emerald" },
-                  { id: "indigo", hex: "#4f46e5", name: "Indigo" },
-                ].map((item) => {
-                  const isActive =
-                    (selection.singleColor || "#9CC3DA").toLowerCase() ===
-                    item.hex.toLowerCase();
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className={`neatline-single-chip ${isActive ? "is-active" : ""}`}
-                      style={{ background: item.hex }}
-                      onClick={() => updateSingleColor(item.hex)}
-                      title={item.name}
-                      aria-label={item.name}
-                    />
-                  );
-                })}
 
-                {/* Custom Color Input Chip */}
-                <label
-                  className="neatline-single-chip neatline-custom-chip"
-                  title="Pick custom color"
-                  style={{ background: selection.singleColor || "#9CC3DA" }}
-                >
-                  <input
-                    type="color"
-                    value={selection.singleColor || "#9CC3DA"}
-                    onChange={(e) => updateSingleColor(e.target.value)}
-                  />
-                  <span className="neatline-picker-icon" aria-hidden="true">+</span>
-                </label>
-              </div>
-            </div>
-          )}
-        </div>
-      ) : null}
-
-      <div
-        className="neatline-options"
-        role="group"
-        aria-label="Choose a border"
-      >
-        {displayedStyles.map((style) => (
-          <button
-            key={style.id}
-            type="button"
-            data-border-style={style.id}
-            title={style.name}
-            aria-pressed={isSelected(style)}
-            className={`neatline-card neatline-option ${isSelected(style) ? "is-selected" : ""}`}
-            onClick={() => selectStyle(style)}
-          >
-            <div className="neatline-card-copy">
-              <span className="neatline-card-name">
-                {style.id === "none"
-                  ? (selection.showWhiteMat ? "No border line" : "Clean Full Bleed")
-                  : style.name}
-              </span>
-              <span className="neatline-card-meta">
-                {style.id === "none"
-                  ? (selection.showWhiteMat ? "White Mat Only" : "100% Edge-to-Edge")
-                  : (selection.showWhiteMat
-                      ? `${getBorderCategoryTag(style.pattern)} · White Mat`
-                      : `${getBorderCategoryTag(style.pattern)} · Full Bleed`)}
-              </span>
-            </div>
-            <NeatlineSwatch style={style} selection={swatchSelection(style)} />
-          </button>
-        ))}
-      </div>
-
-      {selectedLine ? (
-        <div className="neatline-edit-wrap">
-          <button
-            type="button"
-            className="neatline-edit-button"
-            aria-expanded={isEditingThickness}
-            onClick={() => setIsEditingThickness((open) => !open)}
-          >
-            {isEditingThickness
-              ? "Close border settings"
-              : "Adjust thickness & map spacing"}
-          </button>
-
-          {isEditingThickness ? (
             <fieldset className="neatline-adjustments">
-              <legend>Border thickness &amp; spacing</legend>
-
-              {/* Line thickness sliders: 0.05 cm to 1.00 cm (0.5 mm to 10.0 mm) */}
+              {/* Line thickness sliders */}
               {thicknessesInCm(selectedLine.id, selection.thicknesses).map((cmVal, index) => {
                 return (
                   <label
@@ -2173,7 +2177,7 @@ export function NeatlinePicker({
               {hasPatternDesign(selectedLine.pattern) ? (
                 <label className="neatline-adjustment" key="design-scale-slider">
                   <span className="neatline-adjustment-label">
-                    Design size &amp; thickness
+                    Design size &amp; pattern
                   </span>
                   <input
                     type="range"
@@ -2192,7 +2196,7 @@ export function NeatlinePicker({
                 </label>
               ) : null}
 
-              {/* Map spacing gap slider (0.1 to 0.5 cm) requested by user */}
+              {/* Map spacing gap slider */}
               <label className="neatline-adjustment" key="map-gap-slider">
                 <span className="neatline-adjustment-label">Map spacing (gap)</span>
                 <input
@@ -2206,13 +2210,8 @@ export function NeatlinePicker({
                 />
                 <output>{((selection.mapGapCm ?? 0.1) * 10).toFixed(1)} mm</output>
               </label>
-              <p className="neatline-adjustments-note">
-                {hasPatternDesign(selectedLine.pattern)
-                  ? "Adjust line thickness (0.05–1.0 cm), design pattern size & stroke, or map spacing."
-                  : "Adjust line thickness (0.05–1.0 cm) and map spacing (Default: 1.0 mm)."}
-              </p>
             </fieldset>
-          ) : null}
+          </div>
         </div>
       ) : null}
     </section>

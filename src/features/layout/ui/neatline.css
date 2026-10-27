@@ -49,18 +49,60 @@
   border: 1px solid rgba(156, 195, 218, 0.12);
 }
 
-/* --- Clean Minimal Color / Gradient Section --- */
+/* ==========================================================================
+   Separated Section Boxes (Borders Box & Adjustments Box)
+   ========================================================================== */
+.neatline-section-box {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(156, 195, 218, 0.16);
+  background: rgba(7, 16, 26, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+}
+
+.neatline-section-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(156, 195, 218, 0.1);
+}
+
+.neatline-section-box-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #e2e8f0;
+}
+
+.neatline-section-box-subtitle {
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.62rem;
+  color: #70b8de;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+/* --- Clean Minimal Color / Gradient Section & Sub-block --- */
+.neatline-color-subblock,
 .neatline-color-section {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin: 0 0 12px;
-  padding: 10px 12px;
-  border: 1px solid rgba(156, 195, 218, 0.14);
-  border-radius: 10px;
-  background: rgba(7, 16, 26, 0.5);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  margin: 0 0 10px;
 }
 
 .neatline-color-header {
@@ -292,19 +334,21 @@
 /* ==========================================================================
    Border Cards 2-Column Grid (Direct match with .layout-card in Image 1)
    ========================================================================== */
+.neatline-borders-box .neatline-options,
 .neatline-options {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   gap: 8px !important;
-  max-height: calc(100vh - 280px) !important;
-  min-height: 440px !important;
+  max-height: 180px !important;
+  min-height: 116px !important;
   overflow-y: auto !important;
   overscroll-behavior: contain;
-  padding: 2px;
+  padding: 2px 2px 4px;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
 
+.neatline-borders-box .neatline-options::-webkit-scrollbar,
 .neatline-options::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
@@ -402,48 +446,43 @@
   object-fit: contain;
 }
 
-/* Edit / Adjustment controls (Sticky anchored at bottom of border container) */
-.neatline-edit-wrap {
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-  margin-top: 10px;
-  padding-top: 8px;
-  background: rgba(9, 20, 32, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(156, 195, 218, 0.12);
+/* ==========================================================================
+   Adjustments Section Box & Sliders
+   ========================================================================== */
+.neatline-adjust-box {
+  margin-bottom: 6px;
 }
 
-.neatline-edit-button {
-  width: 100%;
-  min-height: 34px;
-  padding: 0 12px;
-  border: 1px solid rgba(112, 184, 222, 0.35);
-  border-radius: 8px;
-  background: rgba(75, 149, 186, 0.15);
-  color: #e7f2fb;
-  font: 600 11px/1 "Spline Sans Mono", monospace;
-  cursor: pointer;
-  transition: all 0.15s ease;
+.neatline-sliders-subblock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.neatline-edit-button:hover {
-  background: rgba(75, 149, 186, 0.28);
-  border-color: rgba(112, 184, 222, 0.7);
+.neatline-sliders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
+.neatline-sliders-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9fbcd0;
+}
+
+.neatline-adjust-box .neatline-adjustments,
 .neatline-adjustments {
   display: grid;
   gap: 10px;
   min-width: 0;
-  margin: 10px 0 0;
-  padding: 12px;
-  border: 1px solid rgba(156, 195, 218, 0.16);
-  border-radius: 10px;
-  background: rgba(6, 15, 24, 0.5);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(156, 195, 218, 0.14);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.32);
 }
 
 .neatline-adjustments legend {
