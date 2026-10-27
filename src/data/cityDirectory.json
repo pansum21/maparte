@@ -243,6 +243,18 @@
     "landmarks": []
   },
   {
+    "city": "Choibalsan",
+    "country": "Mongolia",
+    "countryCode": "MN",
+    "continent": "North Asia",
+    "lat": 48.06667,
+    "lon": 114.5,
+    "population": 41358,
+    "isCapital": false,
+    "landmarks": [],
+    "slug": "choibalsan-map-poster"
+  },
+  {
     "slug": "daegu-kr-map-poster",
     "city": "Daegu",
     "country": "South Korea",
@@ -1133,18 +1145,6 @@
     "continent": "North Asia",
     "landmarks": [],
     "slug": "ulaanbaatar-map-poster"
-  },
-  {
-    "city": "Ulan Bator",
-    "country": "Mongolia",
-    "countryCode": "MN",
-    "continent": "North Asia",
-    "lat": 47.90771,
-    "lon": 106.88324,
-    "population": 844818,
-    "isCapital": false,
-    "landmarks": [],
-    "slug": "ulan-bator-map-poster"
   },
   {
     "slug": "vanadzor-am-map-poster",
@@ -2675,6 +2675,18 @@
     "landmarks": []
   },
   {
+    "slug": "buffalo-map-poster",
+    "city": "Buffalo",
+    "country": "United States",
+    "countryCode": "US",
+    "continent": "North America",
+    "lat": 42.88645,
+    "lon": -78.87837,
+    "population": 278349,
+    "isCapital": false,
+    "landmarks": []
+  },
+  {
     "slug": "calgary-map-poster",
     "city": "Calgary",
     "country": "Canada",
@@ -3368,18 +3380,6 @@
       "Times Square",
       "SoHo"
     ]
-  },
-  {
-    "slug": "new-york-city-map-poster",
-    "city": "New York City",
-    "country": "United States",
-    "countryCode": "US",
-    "continent": "North America",
-    "lat": 40.71427,
-    "lon": -74.00597,
-    "population": 8804190,
-    "isCapital": false,
-    "landmarks": []
   },
   {
     "city": "Noord",
@@ -7712,18 +7712,6 @@
     "slug": "bucharest-map-poster"
   },
   {
-    "slug": "buda-map-poster",
-    "city": "Buda",
-    "country": "Hungary",
-    "countryCode": "HU",
-    "continent": "Europe",
-    "lat": 47.5,
-    "lon": 19.03333,
-    "population": 510108,
-    "isCapital": false,
-    "landmarks": []
-  },
-  {
     "slug": "budapest-map-poster",
     "city": "Budapest",
     "country": "Hungary",
@@ -7772,6 +7760,18 @@
       "Christianshavn",
       "Amager"
     ]
+  },
+  {
+    "slug": "debrecen-map-poster",
+    "city": "Debrecen",
+    "country": "Hungary",
+    "countryCode": "HU",
+    "continent": "Europe",
+    "lat": 47.5316,
+    "lon": 21.6273,
+    "population": 201432,
+    "isCapital": false,
+    "landmarks": []
   },
   {
     "slug": "dnipro-map-poster",
@@ -7870,6 +7870,30 @@
     "population": 650000,
     "isCapital": false,
     "landmarks": []
+  },
+  {
+    "city": "Gdańsk",
+    "country": "Poland",
+    "countryCode": "PL",
+    "continent": "Europe",
+    "lat": 54.352,
+    "lon": 18.6466,
+    "population": 486271,
+    "isCapital": false,
+    "landmarks": [],
+    "slug": "gdansk-map-poster"
+  },
+  {
+    "city": "Geneva",
+    "country": "Switzerland",
+    "countryCode": "CH",
+    "continent": "Europe",
+    "lat": 46.2044,
+    "lon": 6.1432,
+    "population": 203856,
+    "isCapital": false,
+    "landmarks": [],
+    "slug": "geneva-map-poster"
   },
   {
     "city": "Genoa",
@@ -7994,18 +8018,6 @@
     "landmarks": []
   },
   {
-    "city": "Koeln",
-    "country": "Germany",
-    "countryCode": "DE",
-    "continent": "Europe",
-    "lat": 50.93333,
-    "lon": 6.95,
-    "population": 1024621,
-    "isCapital": false,
-    "landmarks": [],
-    "slug": "koeln-map-poster"
-  },
-  {
     "slug": "koln-map-poster",
     "city": "Köln",
     "country": "Germany",
@@ -8106,18 +8118,6 @@
     "population": 639890,
     "isCapital": false,
     "landmarks": []
-  },
-  {
-    "city": "Lodz",
-    "country": "Poland",
-    "countryCode": "PL",
-    "continent": "Europe",
-    "lat": 51.77058,
-    "lon": 19.47395,
-    "population": 639890,
-    "isCapital": false,
-    "landmarks": [],
-    "slug": "lodz-map-poster"
   },
   {
     "slug": "london-map-poster",
@@ -8428,18 +8428,6 @@
     ]
   },
   {
-    "slug": "pest-map-poster",
-    "city": "Pest",
-    "country": "Hungary",
-    "countryCode": "HU",
-    "continent": "Europe",
-    "lat": 47.5,
-    "lon": 19.08333,
-    "population": 1001748,
-    "isCapital": false,
-    "landmarks": []
-  },
-  {
     "city": "Podgorica",
     "country": "Montenegro",
     "countryCode": "ME",
@@ -8449,6 +8437,18 @@
     "continent": "Europe",
     "landmarks": [],
     "slug": "podgorica-map-poster"
+  },
+  {
+    "city": "Poznań",
+    "country": "Poland",
+    "countryCode": "PL",
+    "continent": "Europe",
+    "lat": 52.4064,
+    "lon": 16.9252,
+    "population": 540146,
+    "isCapital": false,
+    "landmarks": [],
+    "slug": "poznan-map-poster"
   },
   {
     "slug": "prague-map-poster",
@@ -8644,6 +8644,30 @@
     ]
   },
   {
+    "city": "Stuttgart",
+    "country": "Germany",
+    "countryCode": "DE",
+    "continent": "Europe",
+    "lat": 48.77585,
+    "lon": 9.18293,
+    "population": 626275,
+    "isCapital": false,
+    "landmarks": [],
+    "slug": "stuttgart-map-poster"
+  },
+  {
+    "slug": "szeged-map-poster",
+    "city": "Szeged",
+    "country": "Hungary",
+    "countryCode": "HU",
+    "continent": "Europe",
+    "lat": 46.253,
+    "lon": 20.1414,
+    "population": 158359,
+    "isCapital": false,
+    "landmarks": []
+  },
+  {
     "city": "Tallinn",
     "country": "Estonia",
     "countryCode": "EE",
@@ -8808,18 +8832,6 @@
     "landmarks": []
   },
   {
-    "city": "Wroclaw",
-    "country": "Poland",
-    "countryCode": "PL",
-    "continent": "Europe",
-    "lat": 51.10286,
-    "lon": 17.03006,
-    "population": 672545,
-    "isCapital": false,
-    "landmarks": [],
-    "slug": "wroclaw-map-poster"
-  },
-  {
     "slug": "yekaterinburg-map-poster",
     "city": "Yekaterinburg",
     "country": "Russia",
@@ -8853,18 +8865,6 @@
     "population": 686986,
     "isCapital": false,
     "landmarks": []
-  },
-  {
-    "city": "Zuerich",
-    "country": "Switzerland",
-    "countryCode": "CH",
-    "continent": "Europe",
-    "lat": 47.36667,
-    "lon": 8.55,
-    "population": 415367,
-    "isCapital": false,
-    "landmarks": [],
-    "slug": "zuerich-map-poster"
   },
   {
     "slug": "zurich-map-poster",
@@ -9062,18 +9062,6 @@
     "isCapital": false,
     "landmarks": [],
     "slug": "christchurch-map-poster"
-  },
-  {
-    "city": "Dalap-Uliga-Dorrit",
-    "country": "Marshall Islands",
-    "countryCode": "MH",
-    "continent": "Oceania",
-    "lat": 7.087,
-    "lon": 171.377,
-    "population": 20301,
-    "isCapital": false,
-    "landmarks": [],
-    "slug": "dalap-uliga-dorrit-map-poster"
   },
   {
     "slug": "daru-pg-map-poster",
@@ -9291,6 +9279,18 @@
     "isCapital": false,
     "landmarks": [],
     "slug": "invercargill-map-poster"
+  },
+  {
+    "city": "Jaluit",
+    "country": "Marshall Islands",
+    "countryCode": "MH",
+    "continent": "Oceania",
+    "lat": 5.91667,
+    "lon": 169.63333,
+    "population": 1700,
+    "isCapital": false,
+    "landmarks": [],
+    "slug": "jaluit-map-poster"
   },
   {
     "slug": "kimbe-pg-map-poster",

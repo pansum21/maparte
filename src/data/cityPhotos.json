@@ -209,6 +209,16 @@
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
   },
+  "choibalsan-map-poster": {
+    "slug": "choibalsan-map-poster",
+    "city": "Choibalsan",
+    "country": "Mongolia",
+    "src": "/assets/city-photos/choibalsan-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Choibalsan_statue_and_National_University_of_Mongolia.jpg",
+    "author": "Chinneeb",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+  },
   "daegu-kr-map-poster": {
     "slug": "daegu-kr-map-poster",
     "city": "Daegu",
@@ -928,16 +938,6 @@
     "author": "Zazaa Mongolia",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-  },
-  "ulan-bator-map-poster": {
-    "slug": "ulan-bator-map-poster",
-    "city": "Ulan Bator",
-    "country": "Mongolia",
-    "src": "/assets/city-photos/ulan-bator-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Downtown_Ulan_Bator_(6216622435).jpg",
-    "author": "Francisco Anzola",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
   },
   "vanadzor-am-map-poster": {
     "slug": "vanadzor-am-map-poster",
@@ -2089,6 +2089,16 @@
     "license": "Public domain",
     "licenseUrl": ""
   },
+  "buffalo-map-poster": {
+    "slug": "buffalo-map-poster",
+    "city": "Buffalo",
+    "country": "United States",
+    "src": "/assets/city-photos/buffalo-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Part_of_skyline_of_Buffalo,_New_York_as_seen_from_Fort_Erie,_Ontario_(29985436335).jpg",
+    "author": "Ken Lund from Reno, Nevada, USA",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+  },
   "calgary-map-poster": {
     "slug": "calgary-map-poster",
     "city": "Calgary",
@@ -2598,16 +2608,6 @@
     "author": "Photo: Andreas Praefcke",
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
-  },
-  "new-york-city-map-poster": {
-    "slug": "new-york-city-map-poster",
-    "city": "New York City",
-    "country": "United States",
-    "src": "/assets/city-photos/new-york-city-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:September_14_2001.jpg",
-    "author": "Journalist 1st Class Preston Keres",
-    "license": "Public domain",
-    "licenseUrl": ""
   },
   "noord-map-poster": {
     "slug": "noord-map-poster",
@@ -6129,16 +6129,6 @@
     "license": "CC BY-SA 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
   },
-  "buda-map-poster": {
-    "slug": "buda-map-poster",
-    "city": "Buda",
-    "country": "Hungary",
-    "src": "/assets/city-photos/buda-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Nuremberg_chronicles_-_BVJA.png",
-    "author": "Michel Wolgemut, Wilhelm Pleydenwurff (Text: Hartmann Schedel )",
-    "license": "Public domain",
-    "licenseUrl": ""
-  },
   "budapest-map-poster": {
     "slug": "budapest-map-poster",
     "city": "Budapest",
@@ -6168,6 +6158,16 @@
     "author": "Moahim",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "debrecen-map-poster": {
+    "slug": "debrecen-map-poster",
+    "city": "Debrecen",
+    "country": "Hungary",
+    "src": "/assets/city-photos/debrecen-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Kossuthplatz,_Magda_Szab%C3%B3_Denkmal,_2022_Debrecen.jpg",
+    "author": "Globetrotter19",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "dnipro-map-poster": {
     "slug": "dnipro-map-poster",
@@ -6238,6 +6238,26 @@
     "author": "Nicolas Scheuer",
     "license": "CC BY-SA 2.5",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5"
+  },
+  "gdansk-map-poster": {
+    "slug": "gdansk-map-poster",
+    "city": "Gdańsk",
+    "country": "Poland",
+    "src": "/assets/city-photos/gdansk-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:View_of_Gda%C5%84sk,_towards_Old_Town.jpg",
+    "author": "Gerda Arendt",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "geneva-map-poster": {
+    "slug": "geneva-map-poster",
+    "city": "Geneva",
+    "country": "Switzerland",
+    "src": "/assets/city-photos/geneva-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Geneva,_Switzerland,_2026.jpg",
+    "author": "Karlheinz Klingbeil",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
   },
   "genoa-map-poster": {
     "slug": "genoa-map-poster",
@@ -6329,16 +6349,6 @@
     "license": "CC BY 2.5",
     "licenseUrl": "https://creativecommons.org/licenses/by/2.5"
   },
-  "koeln-map-poster": {
-    "slug": "koeln-map-poster",
-    "city": "Koeln",
-    "country": "Germany",
-    "src": "/assets/city-photos/koeln-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Lindenthal-Koeln-by-wh.jpg",
-    "author": "Willy Horsch",
-    "license": "CC BY 2.5",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.5"
-  },
   "koln-map-poster": {
     "slug": "koln-map-poster",
     "city": "Köln",
@@ -6418,16 +6428,6 @@
     "author": "Lestat (Jan Mehlich)",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
-  },
-  "lodz-map-poster": {
-    "slug": "lodz-map-poster",
-    "city": "Lodz",
-    "country": "Poland",
-    "src": "/assets/city-photos/lodz-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Panorama-Lodz-Rydzowa.jpg",
-    "author": "Akapit",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "london-map-poster": {
     "slug": "london-map-poster",
@@ -6649,16 +6649,6 @@
     "license": "CC BY-SA 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
   },
-  "pest-map-poster": {
-    "slug": "pest-map-poster",
-    "city": "Pest",
-    "country": "Hungary",
-    "src": "/assets/city-photos/pest-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Freiheitsstatue.jpg",
-    "author": "Wiki05",
-    "license": "Public domain",
-    "licenseUrl": ""
-  },
   "podgorica-map-poster": {
     "slug": "podgorica-map-poster",
     "city": "Podgorica",
@@ -6666,6 +6656,16 @@
     "src": "/assets/city-photos/podgorica-map-poster.webp",
     "sourcePage": "https://commons.wikimedia.org/wiki/File:PodgoricaOverview.jpg",
     "author": "Nije bitno...",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+  },
+  "poznan-map-poster": {
+    "slug": "poznan-map-poster",
+    "city": "Poznań",
+    "country": "Poland",
+    "src": "/assets/city-photos/poznan-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Stare_Miasto_w_Poznaniu.jpg",
+    "author": "Stanisław Szewczyk",
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
   },
@@ -6809,6 +6809,26 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
+  "stuttgart-map-poster": {
+    "slug": "stuttgart-map-poster",
+    "city": "Stuttgart",
+    "country": "Germany",
+    "src": "/assets/city-photos/stuttgart-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Stuttgart_City_from_TV_Tower.JPG",
+    "author": "Zonk43",
+    "license": "Public domain",
+    "licenseUrl": ""
+  },
+  "szeged-map-poster": {
+    "slug": "szeged-map-poster",
+    "city": "Szeged",
+    "country": "Hungary",
+    "src": "/assets/city-photos/szeged-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Architecture_szeged_oazis_Bakonyi_Viktor_Geza_MD_P2098110.jpg",
+    "author": "Mike Duchstein",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
   "tallinn-map-poster": {
     "slug": "tallinn-map-poster",
     "city": "Tallinn",
@@ -6939,16 +6959,6 @@
     "license": "CC BY 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
   },
-  "wroclaw-map-poster": {
-    "slug": "wroclaw-map-poster",
-    "city": "Wroclaw",
-    "country": "Poland",
-    "src": "/assets/city-photos/wroclaw-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Panorama_poludniowa_Wroclawia_v1.0.1.jpg",
-    "author": "Wikimedia contributor",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
-  },
   "yekaterinburg-map-poster": {
     "slug": "yekaterinburg-map-poster",
     "city": "Yekaterinburg",
@@ -6978,16 +6988,6 @@
     "author": "Juanedc from Zaragoza, España",
     "license": "CC BY 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
-  },
-  "zuerich-map-poster": {
-    "slug": "zuerich-map-poster",
-    "city": "Zuerich",
-    "country": "Switzerland",
-    "src": "/assets/city-photos/zuerich-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Grossmuenster-zuerich-schweiz.jpg",
-    "author": "Jack-72",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "zurich-map-poster": {
     "slug": "zurich-map-poster",
@@ -7136,16 +7136,6 @@
     "src": "/assets/city-photos/christchurch-map-poster.webp",
     "sourcePage": "https://commons.wikimedia.org/wiki/File:Christchurch_Skyline_2015.jpg",
     "author": "Francis Vallance (Heritage Warrior)",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
-  },
-  "dalap-uliga-dorrit-map-poster": {
-    "slug": "dalap-uliga-dorrit-map-poster",
-    "city": "Dalap-Uliga-Dorrit",
-    "country": "Marshall Islands",
-    "src": "/assets/city-photos/dalap-uliga-dorrit-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:The_Marshall_Islands_-_Majuro_-_Surroundings.jpg",
-    "author": "Stefan Lins from Tokyo, Japan",
     "license": "CC BY 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
   },
@@ -7328,6 +7318,16 @@
     "author": "Phillip Capper from Wellington, New Zealand",
     "license": "CC BY 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+  },
+  "jaluit-map-poster": {
+    "slug": "jaluit-map-poster",
+    "city": "Jaluit",
+    "country": "Marshall Islands",
+    "src": "/assets/city-photos/jaluit-map-poster.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Jaluit.jpg",
+    "author": "NASA Johnson Space Center - Earth Sciences and Image Analysis",
+    "license": "Public domain",
+    "licenseUrl": ""
   },
   "kimbe-pg-map-poster": {
     "slug": "kimbe-pg-map-poster",

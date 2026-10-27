@@ -67,6 +67,11 @@ const curatedPhotoFiles = {
   "addis-ababa-map-poster": "File:Addis Ababa skyline.jpg",
   "bouake-map-poster": "File:La tour des télécoms de Bouaké.jpg",
   "niamey-map-poster": "File:Niamey from the sky.jpg",
+  "stuttgart-map-poster": "File:Stuttgart City from TV Tower.JPG",
+  "poznan-map-poster": "File:Stare Miasto w Poznaniu.jpg",
+  "gdansk-map-poster": "File:View of Gdańsk, towards Old Town.jpg",
+  "jaluit-map-poster": "File:Jaluit.jpg",
+  "choibalsan-map-poster": "File:Choibalsan statue and National University of Mongolia.jpg",
 };
 
 async function fetchJson(url) {
