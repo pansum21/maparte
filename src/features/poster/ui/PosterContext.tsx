@@ -43,7 +43,7 @@ import {
   DEFAULT_COUNTRY,
 } from "@/core/config";
 
-import { resolveCityFromUrl } from "@/features/location/domain/cityRouteResolver";
+import { resolveCityFromUrl, findCityMatch } from "@/features/location/domain/cityRouteResolver";
 
 const defaultLayoutOption = getLayoutOption(defaultLayoutId);
 const defaultLayoutWidthCm = Number(
@@ -217,6 +217,25 @@ export function PosterProvider({ children }: { children: ReactNode }) {
     window.addEventListener("popstate", handleUrlChange);
     return () => window.removeEventListener("popstate", handleUrlChange);
   }, [dispatch]);
+
+  // Synchronize browser address bar URL and title when a curated city is selected
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const city = state.form.displayCity || state.form.location;
+    const country = state.form.displayCountry;
+    const matched = findCityMatch(city, country);
+
+    if (matched) {
+      const targetPath = `/cities/${matched.slug}`;
+      if (window.location.pathname !== targetPath) {
+        window.history.replaceState({ citySlug: matched.slug }, "", targetPath);
+        document.title = `${matched.city} Custom Map Poster & Wall Art | Ultra-HD Map Art — MAPARTE`;
+      }
+    } else if (window.location.pathname.startsWith("/cities/")) {
+      window.history.replaceState({}, "", "/");
+      document.title = "MAPARTE: Free Map Poster & Wallpaper Creator";
+    }
+  }, [state.form.displayCity, state.form.displayCountry, state.form.location]);
 
   useEffect(() => {
     const markerThemeColor = effectiveTheme.ui.text;

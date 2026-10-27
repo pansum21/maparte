@@ -69,3 +69,52 @@ export function resolveCityFromUrl(
 
   return null;
 }
+
+/**
+ * Finds a matching SEO city by name and optional country.
+ */
+export function findCityMatch(
+  cityName: string = "",
+  countryName?: string,
+): MatchedCity | null {
+  if (!cityName || typeof cityName !== "string") return null;
+  const cleanCity = cityName.trim();
+  if (!cleanCity) return null;
+  const normCity = normalizeCityName(cleanCity);
+
+  // 1. Exact city + country match
+  if (countryName) {
+    const normCountry = normalizeCityName(countryName);
+    const exactBoth = SEO_CITIES.find(
+      (c) =>
+        normalizeCityName(c.city) === normCity &&
+        (normalizeCityName(c.country) === normCountry ||
+          c.country.toLowerCase().includes(countryName.toLowerCase())),
+    );
+    if (exactBoth) return exactBoth;
+  }
+
+  // 2. Exact city match
+  const exactCity = SEO_CITIES.find(
+    (c) =>
+      normalizeCityName(c.city) === normCity ||
+      c.slug === `${normCity}-map-poster` ||
+      c.slug === normCity,
+  );
+  if (exactCity) return exactCity;
+
+  // 3. Prefix match if city label has comma (e.g. "Paris, France")
+  const firstSegment = cleanCity.split(",")[0]?.trim();
+  if (firstSegment && firstSegment !== cleanCity) {
+    const normFirst = normalizeCityName(firstSegment);
+    const prefixMatch = SEO_CITIES.find(
+      (c) =>
+        normalizeCityName(c.city) === normFirst ||
+        c.slug === `${normFirst}-map-poster` ||
+        c.slug === normFirst,
+    );
+    if (prefixMatch) return prefixMatch;
+  }
+
+  return null;
+}
