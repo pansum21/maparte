@@ -8,6 +8,8 @@ import type { LegalDocType } from "@/features/legal/application/legalDoc";
 
 const TITLES: Record<LegalDocType, string> = {
   privacy: "Privacy Policy",
+  terms: "Terms of Service",
+  refund: "Refund Policy",
   imprint: "Imprint",
 };
 
@@ -40,7 +42,7 @@ export default function LegalModal({ doc, onClose }: LegalModalProps) {
           {loading && <p className="legal-modal__status">Loading…</p>}
           {error && (
             <p className="legal-modal__status">
-              Couldn't load this document — please try again later.
+              Failed to load document. Please try again later.
             </p>
           )}
           {text && (

@@ -64,7 +64,31 @@ export default function FooterNote() {
               {contactEmail}
             </a>
           )}
-          {contactEmail && (imprintAvailable || privacyAvailable) && " | "}
+          {contactEmail && " | "}
+          <a
+            className="source-link"
+            href={LEGAL_DOC_PAGES.privacy}
+            onClick={(event) => handleLegalClick(event, "privacy")}
+          >
+            Privacy Policy
+          </a>
+          {" | "}
+          <a
+            className="source-link"
+            href={LEGAL_DOC_PAGES.terms}
+            onClick={(event) => handleLegalClick(event, "terms")}
+          >
+            Terms of Service
+          </a>
+          {" | "}
+          <a
+            className="source-link"
+            href={LEGAL_DOC_PAGES.refund}
+            onClick={(event) => handleLegalClick(event, "refund")}
+          >
+            Refund Policy
+          </a>
+          {imprintAvailable && " | "}
           {imprintAvailable && (
             <a
               className="source-link"
@@ -72,16 +96,6 @@ export default function FooterNote() {
               onClick={(event) => handleLegalClick(event, "imprint")}
             >
               Imprint
-            </a>
-          )}
-          {imprintAvailable && privacyAvailable && " | "}
-          {privacyAvailable && (
-            <a
-              className="source-link"
-              href={LEGAL_DOC_PAGES.privacy}
-              onClick={(event) => handleLegalClick(event, "privacy")}
-            >
-              Data Privacy
             </a>
           )}
           {hasLegalLinks && " | "}

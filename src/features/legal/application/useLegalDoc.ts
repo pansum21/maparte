@@ -5,6 +5,8 @@ import type { LegalDocType } from "@/features/legal/application/legalDoc";
 
 const DOC_URLS: Record<LegalDocType, string> = {
   privacy: PRIVACY_URL || "/docs/privacy.md",
+  terms: "/docs/terms.md",
+  refund: "/docs/refund.md",
   imprint: LEGAL_NOTICE_URL || "/docs/imprint.md",
 };
 

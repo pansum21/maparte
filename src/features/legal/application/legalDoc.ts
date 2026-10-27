@@ -1,4 +1,4 @@
-export type LegalDocType = "privacy" | "imprint";
+export type LegalDocType = "privacy" | "terms" | "refund" | "imprint";
 
 export const LEGAL_DOC_EVENT = "maparte:legal-doc";
 
@@ -9,6 +9,8 @@ export const LEGAL_DOC_EVENT = "maparte:legal-doc";
  */
 export const LEGAL_DOC_PAGES: Record<LegalDocType, string> = {
   privacy: "/privacy",
+  terms: "/terms",
+  refund: "/refund",
   imprint: "/imprint",
 };
 

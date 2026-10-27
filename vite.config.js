@@ -94,6 +94,8 @@ function adsensePlugin() {
 function legalPagesPlugin() {
   const DOCS = [
     { slug: "privacy", envVar: "VITE_PRIVACY_URL", title: "Privacy Policy" },
+    { slug: "terms", envVar: "VITE_TERMS_URL", title: "Terms of Service" },
+    { slug: "refund", envVar: "VITE_REFUND_URL", title: "Refund Policy" },
     { slug: "imprint", envVar: "VITE_LEGAL_NOTICE_URL", title: "Imprint" },
     {
       slug: "privacy-app",

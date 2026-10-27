@@ -248,6 +248,8 @@ export function cityPagesPlugin() {
       const sitemapEntries = [
         `  <url>\n    <loc>https://maparte.vercel.app</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Free Map Poster &amp; Wallpaper Creator</image:title>\n    </image:image>\n  </url>`,
         `  <url>\n    <loc>https://maparte.vercel.app/privacy</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.vercel.app/terms</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.vercel.app/refund</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
         `  <url>\n    <loc>https://maparte.vercel.app/imprint</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
       ];
 
