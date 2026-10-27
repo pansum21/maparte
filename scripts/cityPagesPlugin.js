@@ -24,7 +24,7 @@ function escapeXml(str) {
 }
 
 export function transformHtmlForCity(html, city) {
-  const cityTitle = `${escapeAttr(city.city)} Custom Map Poster &amp; Wall Art | Ultra-HD Map Art — MAPARTE`;
+  const cityTitle = `${escapeAttr(city.city)} Map Poster &amp; Wall Art | MAPARTE`;
   const cityDesc = escapeAttr(city.description);
   const cityMetaDesc = escapeAttr(city.metaDescription || city.description);
   const cityUrl = `https://maparte.vercel.app/cities/${city.slug}`;
@@ -131,12 +131,10 @@ export function transformHtmlForCity(html, city) {
               "@type": "Brand",
               "name": "MAPARTE"
             },
-            "offers": {
-              "@type": "Offer",
-              "price": "0",
-              "priceCurrency": "USD",
-              "availability": "https://schema.org/InStock",
-              "url": "${cityUrl}"
+            "additionalProperty": {
+              "@type": "PropertyValue",
+              "name": "Download pricing",
+              "value": "One-time payment is required to download the finished high-resolution file."
             }
           }
         ]
@@ -244,18 +242,17 @@ export function cityPagesPlugin() {
       }
 
       // Generate comprehensive sitemap.xml with all 400 cities + Google Image tags
-      const today = new Date().toISOString().split('T')[0];
       const sitemapEntries = [
-        `  <url>\n    <loc>https://maparte.vercel.app</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Free Map Poster &amp; Wallpaper Creator</image:title>\n    </image:image>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.vercel.app/privacy</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.vercel.app/terms</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.vercel.app/refund</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.vercel.app/imprint</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.vercel.app</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Free Map Poster &amp; Wallpaper Creator</image:title>\n    </image:image>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.vercel.app/privacy</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.vercel.app/terms</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.vercel.app/refund</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.vercel.app/imprint</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
       ];
 
       for (const city of cities) {
         sitemapEntries.push(
-          `  <url>\n    <loc>https://maparte.vercel.app/cities/${city.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/city-photos/${city.slug}.webp</image:loc>\n      <image:title>${escapeXml(city.city)} Custom Map Poster &amp; Wall Art</image:title>\n      <image:caption>Design and download custom map posters of ${escapeXml(city.city)}, ${escapeXml(city.country)} in Ultra-HD</image:caption>\n    </image:image>\n  </url>`,
+          `  <url>\n    <loc>https://maparte.vercel.app/cities/${city.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/city-photos/${city.slug}.webp</image:loc>\n      <image:title>${escapeXml(city.city)} Custom Map Poster &amp; Wall Art</image:title>\n      <image:caption>Design and download custom map posters of ${escapeXml(city.city)}, ${escapeXml(city.country)} in Ultra-HD</image:caption>\n    </image:image>\n  </url>`,
         );
       }
 
