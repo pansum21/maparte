@@ -241,7 +241,6 @@ const manifest = Object.fromEntries(results.filter((result) => result && !result
 for (const slug of refreshSlugs) await rename(path.join(stagingDir, `${slug}.webp`), path.join(outputDir, `${slug}.webp`));
 await rm(stagingDir, { recursive: true, force: true });
 await writeFile(path.join(root, "src/data/cityPhotos.json"), `${JSON.stringify(manifest, null, 2)}\n`);
-await writeFile(path.join(outputDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 await writeFile(path.join(root, "src/data/cityPhotoReviewBlanks.json"), "[]\n");
 const usedAssets = new Set(Object.values(manifest).map((photo) => path.basename(photo.src)));
 for (const file of await readdir(outputDir)) {
