@@ -213,7 +213,7 @@ try {
 
     // 2. Thoroughly verify the 8 Designer Patterns across gap values & thicknesses
     for (const [lineId, count] of designerPatterns) {
-      for (const mapGapCm of [0.1, 0.2, 0.35, 0.5]) {
+      for (const mapGapCm of [0.0, 0.1, 0.2, 0.35, 0.5]) {
         for (const thicknessValue of [null, 1.5, 4.0]) {
           totalCases++;
           const selection = {

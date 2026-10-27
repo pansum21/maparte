@@ -42,7 +42,7 @@ const allPatternIds = [
   "frame-architectural-grid",
 ];
 
-const gapTestValues = [0.05, 0.10, 0.15, 0.20, 0.35, 0.50, 0.60];
+const gapTestValues = [0.00, 0.05, 0.10, 0.15, 0.20, 0.35, 0.50, 0.60];
 const thicknessTestValues = [null, 0.6, 2.0, 4.5, 8.0, 14.0];
 
 const vite = await createServer({
@@ -117,7 +117,7 @@ try {
             continue;
           }
 
-          if (clearanceCm <= 0) {
+          if (clearanceCm < 0) {
             failures.push(
               `NEGATIVE CLEARANCE (OVERLAP) on ${layout.id}/${patternId}/gap-${gapCm}: clearance=${clearanceCm}`,
             );

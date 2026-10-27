@@ -5,7 +5,7 @@ const CONFIG_STORAGE_KEY = "maparte_neatline_layers";
 const LEGACY_STYLE_KEY = "maparte_neatline_style";
 const THICKNESS_STORAGE_KEY = "maparte_neatline_thicknesses";
 export const NEATLINE_CHANGE_EVENT = "maparte:neatline:change";
-const MIN_MAP_GAP_CM = 0.05;
+const MIN_MAP_GAP_CM = 0.0;
 const MAX_MAP_GAP_CM = 1.00;
 const BORDER_CONTROL_STEP_CM = 0.05;
 
@@ -278,11 +278,11 @@ export function getPosterBorderMetrics(
   const shortSide = Math.min(width, height);
   const hasBorder = Boolean(lineId && lineId !== "none");
 
-  // Default gap is 0.15cm (1.5mm, strictly preserved between 1mm and 2mm as requested).
+  // Default gap is 0.0cm (edge-to-edge flush with map boundary).
   const gapCm =
     typeof customGapCm === "number" && Number.isFinite(customGapCm)
       ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, customGapCm))
-      : 0.15;
+      : 0.0;
 
   if (!showWhiteMat) {
     // When white mat is OFF:
@@ -536,7 +536,7 @@ function readSelection(): NeatlineSelection {
     thicknesses: readThicknesses(),
     lineVariant: "plain",
     cornerVariant: "plain",
-    mapGapCm: 0.1,
+    mapGapCm: 0.0,
     colorMode: "single",
     singleColor: "#9CC3DA",
     gradientFrom: "#f43f5e",
@@ -572,7 +572,7 @@ function readSelection(): NeatlineSelection {
         mapGapCm:
           typeof parsed.mapGapCm === "number" && Number.isFinite(parsed.mapGapCm)
             ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, parsed.mapGapCm))
-            : 0.1,
+            : 0.0,
         colorMode,
         singleColor:
           parsed.singleColor && parsed.singleColor !== "#354b62"
@@ -1961,7 +1961,7 @@ export function NeatlinePicker({
           frameId: "none",
           cornerPosition: "all",
           lineVariant: selection.lineVariant,
-          mapGapCm: selection.mapGapCm ?? 0.1,
+          mapGapCm: selection.mapGapCm ?? 0.0,
           colorMode: selection.colorMode ?? "single",
           singleColor: selection.singleColor ?? "#354b62",
           gradientFrom: selection.gradientFrom ?? "#f43f5e",
@@ -2049,7 +2049,7 @@ export function NeatlinePicker({
   const adjustMapGap = (delta: number) =>
     updateMapGap(
       stepWithinRange(
-        selection.mapGapCm ?? 0.1,
+        selection.mapGapCm ?? 0.0,
         delta,
         MIN_MAP_GAP_CM,
         MAX_MAP_GAP_CM,
@@ -2381,7 +2381,7 @@ export function NeatlinePicker({
                     type="button"
                     className="neatline-adjustment-step"
                     onClick={() => adjustMapGap(-1)}
-                    disabled={(selection.mapGapCm ?? 0.1) <= MIN_MAP_GAP_CM}
+                    disabled={(selection.mapGapCm ?? 0.0) <= MIN_MAP_GAP_CM}
                     aria-label="Decrease map spacing"
                   >−</button>
                   <input
@@ -2389,7 +2389,7 @@ export function NeatlinePicker({
                     min={MIN_MAP_GAP_CM}
                     max={MAX_MAP_GAP_CM}
                     step={BORDER_CONTROL_STEP_CM}
-                    value={selection.mapGapCm ?? 0.1}
+                    value={selection.mapGapCm ?? 0.0}
                     onChange={(event) => updateMapGap(Number(event.target.value))}
                     aria-label="Map spacing gap in centimeters"
                   />
@@ -2397,16 +2397,16 @@ export function NeatlinePicker({
                     type="button"
                     className="neatline-adjustment-step"
                     onClick={() => adjustMapGap(1)}
-                    disabled={(selection.mapGapCm ?? 0.1) >= MAX_MAP_GAP_CM}
+                    disabled={(selection.mapGapCm ?? 0.0) >= MAX_MAP_GAP_CM}
                     aria-label="Increase map spacing"
                   >+</button>
-                  <output>{(selection.mapGapCm ?? 0.1).toFixed(2)} cm</output>
+                  <output>{(selection.mapGapCm ?? 0.0).toFixed(2)} cm</output>
                 </div>
               </div>
               <p className="neatline-adjustments-note">
                 {hasPatternDesign(selectedLine.pattern)
-                  ? "Adjust line thickness and map spacing (0.05–1.00 cm), or design size (0.5–2.5×)."
-                  : "Adjust line thickness and map spacing in centimeters (0.05–1.00 cm)."}
+                  ? "Adjust line thickness and map spacing (0.00–1.00 cm), or design size (0.5–2.5×)."
+                  : "Adjust line thickness and map spacing in centimeters (0.00–1.00 cm)."}
               </p>
             </fieldset>
           </div>
