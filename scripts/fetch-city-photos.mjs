@@ -15,9 +15,26 @@ const safeDecode = (value = "") => {
   try { return decodeURIComponent(String(value)); }
   catch { return String(value).replace(/%([0-9a-f]{2})/gi, " "); }
 };
-const badPhotoTitle = (value = "") => /(?:montage|collage|flag(?:ge)?|(?:^|[\s_.-])maps?(?:[\s_.-]|$)|location map|globe|chart|graph|infographic|graphic|diagram|logo|seal|stamp|mailbox|airport|eclipse|coat[ _-]of[ _-]arms|subway|parade|conference|school(?:s|children)?|students?|aircraft|airplane|airline|\bplane\b|trolleybus|\btrain\b|\bcar\b|automobile|vehicle|\btruck\b|taxi|vendor|weaver|bird|prinia|wildlife|refugee|soup|restaurant|\bshop\b|\bstore\b|portrait|\bperson\b|\bpeople\b|\bgroup\b|interview|secretary|minister|president|politician|speaker|\bspeech\b|musician|singer|concert|football|soccer|basketball|cricket|soldier|military|army|firing range|looter|construction|workshop|atelier|wikiquote tour|wikiloves earth|schoolroom|classroom|teacher|ferry|highspeed|shipwreck|\bship\b|\bboat\b|webm|video|\.(?:pdf|djvu|svg|webm|mp4|mov|avi|ogv)(?:$|[\s_.-])|heraldry|arting|graffiti|depression|freddy.?lino|changi.?beach|km-grande.?comore-moroni)/i.test(safeDecode(String(value).replace(/_/g, " ")));
+const badPhotoTitle = (value = "") => /(?:montage|collage|flag(?:ge)?|(?:^|[\s_.-])maps?(?:[\s_.-]|$)|location map|map tile|map image|satellite|topographic|globe|chart|graph|infographic|graphic|diagram|logo|seal|stamp|mailbox|airport|eclipse|coat[ _-]of[ _-]arms|subway|parade|conference|demonstration|protest|school(?:s|children)?|students?|aircraft|airplane|airline|\bplane\b|trolleybus|\btrain\b|\bbus\b|\bcar\b|automobile|vehicle|\btruck\b|taxi|vendor|seller|weaver|bird|prinia|wildlife|animal|\bcat\b|\bdog\b|insect|moth|fungus|skink|farm|agricultural|terrace|wheat|refugee|relief supplies|soup|restaurant|cafe|coffeehouse|coffee shop|\bshop\b|\bstore\b|plate|dinner|food|carpet|portrait|\bperson\b|\bpeople\b|\bgroup\b|\bboys\b|\bgirls\b|interview|secretary|minister|president|politician|speaker|\bspeech\b|musician|singer|concert|football|soccer|basketball|cricket|\bmatch\b|\bversus\b|\bvs\b|\bteam\b|\bplayer\b|\bclub\b|\bleague\b|\btank\b|soldier|military|army|firing range|looter|damage from|attack on|\bwar\b|construction|workshop|atelier|wikiquote tour|wikiloves earth|schoolroom|classroom|teacher|ferry|highspeed|shipwreck|\bship\b|\bboat\b|railway station|train station|platform|museum interior|\b18\d{2}\b|\b19\d{2}\b|historic photograph|old photograph|webm|video|\.(?:pdf|djvu|svg|webm|mp4|mov|avi|ogv)(?:$|[\s_.-])|heraldry|arting|graffiti|depression|freddy.?lino|changi.?beach|km-grande.?comore-moroni|manas[ _-]raion|^le moule\.png$|^mashhad iran\.jpg$)/i.test(safeDecode(String(value).replace(/_/g, " ")));
 const badPhotoSource = (source = "") => badPhotoTitle(source.split("/").pop() || source);
 const curatedPhotoFiles = {
+  "basrah-iq-map-poster": "File:Basra Corniche.jpg",
+  "ar-rayyan-map-poster": "File:A roundabout in Old Al Rayyan.jpg",
+  "pucallpa-pe-map-poster": "File:Pucallpa Plaza San Martín Fountain by Night.jpg",
+  "madinah-sa-map-poster": "File:As Suqya, Medina Saudi Arabia - panoramio.jpg",
+  "beijing-map-poster": "File:Beijing China Forbidden-City-01.jpg",
+  "new-territories-map-poster": "File:Above Tseung Kwan O.jpg",
+  "bamako-map-poster": "File:Hilltop view over Bamako.jpg",
+  "agana-map-poster": "File:Hagatna from Fort Santa Agueda.JPG",
+  "noumea-map-poster": "File:NouméaCentre.jpg",
+  "logan-city-map-poster": "File:AKIPS Headquarters Logan City.jpg",
+  "tocumen-pa-map-poster": "File:Aeropuerto-Panama-Tocumen.jpg",
+  "madang-map-poster": "File:Madang (5501557827).jpg",
+  "bekasi-id-map-poster": "File:Bekasi Mall Night.jpg",
+  "escuintla-gt-map-poster": "File:Escuintla, Guatemala - panoramio (11).jpg",
+  "manas-kg-map-poster": "File:Jalalabad sity.jpg",
+  "dodoma-map-poster": "File:Scene at Nyerere Square, Dodoma City.jpg",
+  "port-de-paix-ht-map-poster": "File:US Navy 080908-N-9774H-147 An aerial view of the devastation in Port de Paix after four storms in one month have devastated the island and killed more than 800 people.jpg",
   "khirdalan-az-map-poster": "File:Xırdalan (2).jpg",
   "ibri-om-map-poster": "File:Roads less travelled at Ibri, Sultanate of Oman.jpg",
   "nay-pyi-taw-mm-map-poster": "File:NPDAerial22.jpg",
@@ -105,12 +122,15 @@ async function fetchImageBytes(url) {
   throw new Error("Image retries exhausted");
 }
 
-function licensedPhoto(info, page) {
+function licensedPhoto(info, page, { allowAirport = false, allowContextualPeople = false } = {}) {
   const metadata = info?.extmetadata ?? {};
   const license = cleanText(metadata.LicenseShortName?.value ?? "");
   const licenseUrl = metadata.LicenseUrl?.value ?? "";
   const description = cleanText(metadata.ImageDescription?.value ?? "");
-  if (!info?.thumburl || !info?.descriptionurl || !license || badPhotoTitle(page?.title ?? "") || badPhotoTitle(description)) return null;
+  const portCityAerial = allowContextualPeople && /^File:US Navy 080908-N-9774H-147 An aerial view of the devastation in Port de Paix/i.test(page?.title ?? "");
+  const titleBlocked = badPhotoTitle(page?.title ?? "") && !(allowAirport && /airport/i.test(page?.title ?? "")) && !portCityAerial;
+  const descriptionBlocked = badPhotoTitle(description) && !(allowAirport && /airport/i.test(description)) && !portCityAerial;
+  if (!info?.thumburl || !info?.descriptionurl || !license || titleBlocked || descriptionBlocked) return null;
   if (!/CC0|CC BY|Public domain|PD-|CC BY-SA/i.test(license)) return null;
   return {
     url: info.thumburl,
@@ -132,7 +152,10 @@ async function findCommonsPhoto(city) {
     const data = await fetchJson(`https://commons.wikimedia.org/w/api.php?${params}`);
     const page = Object.values(data?.query?.pages ?? {})[0];
     const info = page?.imageinfo?.[0];
-    const curated = licensedPhoto(info, page);
+    const curated = licensedPhoto(info, page, {
+      allowAirport: city.slug === "tocumen-pa-map-poster",
+      allowContextualPeople: city.slug === "port-de-paix-ht-map-poster",
+    });
     if (!curated || Math.max(info.width, info.height) < 500 || Math.min(info.width, info.height) < 200) {
       throw new Error(`Curated Commons image failed license/relevance checks: ${curatedTitle}`);
     }
@@ -140,6 +163,34 @@ async function findCommonsPhoto(city) {
   }
 
   const extraSearch = {
+    "basrah-iq-map-poster": ["Basra Iraq city skyline", "Basra Iraq waterfront", "Basra Iraq old town"],
+    "beijing-map-poster": ["Beijing city street skyline", "Beijing hutong city view", "Forbidden City Beijing skyline"],
+    "mashhad-map-poster": ["Mashhad city skyline Iran", "Mashhad Imam Reza shrine city", "Mashhad downtown Iran"],
+    "al-muharraq-map-poster": ["Muharraq Bahrain old town", "Muharraq Bahrain street", "Muharraq Bahrain waterfront"],
+    "ar-rayyan-map-poster": ["Al Rayyan Qatar city view", "Al Rayyan Qatar town center", "Al Rayyan skyline Qatar"],
+    "bekasi-id-map-poster": ["Bekasi Indonesia city skyline", "Bekasi city center buildings", "Bekasi street view Indonesia"],
+    "hyderabad-pk-map-poster": ["Hyderabad Sindh cityscape", "Hyderabad Pakistan old city", "Hyderabad Sindh street"],
+    "madinah-sa-map-poster": ["Medina Saudi Arabia skyline", "Madinah city panorama Saudi Arabia", "Medina city center Saudi Arabia"],
+    "new-territories-map-poster": ["New Territories Hong Kong town skyline", "Tai Po Hong Kong skyline", "Sha Tin Hong Kong town view"],
+    "pucallpa-pe-map-poster": ["Pucallpa Peru city skyline", "Pucallpa town center", "Pucallpa city street Peru"],
+    "apopa-sv-map-poster": ["Apopa El Salvador town center", "Apopa city street El Salvador", "Apopa downtown"],
+    "escuintla-gt-map-poster": ["Escuintla Guatemala city center", "Escuintla Guatemala street view", "Escuintla city skyline Guatemala"],
+    "port-de-paix-ht-map-poster": ["Port de Paix Haiti city waterfront", "Port-de-Paix Haiti town center", "Port de Paix city street"],
+    "tocumen-pa-map-poster": ["Tocumen Panama town center", "Tocumen Panama city street", "Tocumen city buildings"],
+    "bamako-map-poster": ["Bamako city skyline Mali", "Bamako Niger River bridge skyline", "Bamako downtown buildings"],
+    "dodoma-map-poster": ["Dodoma Tanzania city center", "Dodoma city skyline Tanzania", "Dodoma town street"],
+    "mombasa-map-poster": ["Mombasa Kenya city skyline", "Mombasa old town Kenya", "Mombasa waterfront buildings"],
+    "odesa-map-poster": ["Odesa Ukraine city skyline", "Odesa city center architecture", "Odesa waterfront Ukraine"],
+    "faaa-map-poster": ["Faa'a Tahiti town center", "Faaa French Polynesia street", "Faa'a urban view Tahiti"],
+    "lae-map-poster": ["Lae Papua New Guinea town center", "Lae city street PNG", "Lae skyline Papua New Guinea"],
+    "logan-city-map-poster": ["Logan City Queensland skyline", "Logan Central Australia town center", "Logan City Australia buildings"],
+    "maliana-map-poster": ["Maliana Timor-Leste town center", "Maliana Timor Leste street", "Maliana city view Timor-Leste"],
+    "noumea-map-poster": ["Noumea city skyline New Caledonia", "Noumea harbour waterfront", "Noumea town center"],
+    "mackay-au-map-poster": ["Mackay CBD skyline Queensland", "Mackay city center Australia", "Mackay waterfront city"],
+    "madang-map-poster": ["Madang Papua New Guinea town center", "Madang harbour town skyline", "Madang city street PNG"],
+    "homyel-map-poster": ["Gomel Belarus city center", "Homyel Belarus city view", "Gomel Belarus street"],
+    "faaa-map-poster": ["Faa'a Tahiti town", "Faa'a French Polynesia city", "Faaa Tahiti waterfront"],
+    "yaren-district-map-poster": ["Yaren Nauru government buildings", "Yaren Nauru town center", "Nauru parliament Yaren"],
     "montevideo-map-poster": ["Palacio Salvo", "Montevideo Rambla"],
     "phoenix-map-poster": ["Phoenix Arizona downtown skyline", "Camelback Mountain Phoenix"],
     "sheffield-map-poster": ["Sheffield city centre skyline", "Sheffield Town Hall"],
@@ -162,18 +213,27 @@ async function findCommonsPhoto(city) {
     "camayenne-map-poster": ["Camayenne Conakry Guinea city view", "Conakry Camayenne waterfront Guinea"],
   };
   const terms = [
-    `"${city.city}" ${city.country} skyline`,
-    `"${city.city}" ${city.country} city panorama`,
-    `"${city.city}" ${city.country} landmark`,
-    `"${city.city}" ${city.country}`,
+    `${city.city} ${city.country} skyline`,
+    `${city.city} ${city.country} city panorama`,
+    `${city.city} ${city.country} landmark`,
+    `${city.city} ${city.country}`,
     ...(extraSearch[city.slug] ?? []),
-    ...(city.photoSearchAliases ?? []).map((alias) => `"${alias}" ${city.country} city`),
+    ...(city.photoSearchAliases ?? []).map((alias) => `${alias} ${city.country} city`),
   ];
   const candidates = new Map();
   const normalize = (value = "") => String(value).normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/gi, " ").trim().toLowerCase();
   const cityName = normalize(city.city);
   const cityAliases = [
     ...(city.slug === "nukualofa-map-poster" ? ["nuku alofa"] : []),
+    ...(city.slug === "basrah-iq-map-poster" ? ["basra"] : []),
+    ...(city.slug === "odesa-map-poster" ? ["odessa"] : []),
+    ...(city.slug === "al-muharraq-map-poster" ? ["muharraq"] : []),
+    ...(city.slug === "ar-rayyan-map-poster" ? ["al rayyan", "rayyan"] : []),
+    ...(city.slug === "madinah-sa-map-poster" ? ["medina"] : []),
+    ...(city.slug === "new-territories-map-poster" ? ["tai po", "sha tin"] : []),
+    ...(city.slug === "faaa-map-poster" ? ["faa'a"] : []),
+    ...(city.slug === "homyel-map-poster" ? ["gomel"] : []),
+    ...(city.slug === "yaren-district-map-poster" ? ["yaren"] : []),
     ...(city.photoSearchAliases ?? []),
   ];
   const countryName = normalize(city.country);
@@ -194,8 +254,9 @@ async function findCommonsPhoto(city) {
       const cityInTitle = title.includes(cityName) || cityAliases.some((alias) => title.includes(normalize(alias)));
       const cityInDescription = description.includes(cityName);
       const includesLandmark = landmarkNames.some((name) => title.includes(name));
-      const clearlyUrban = /skyline|cityscape|panorama|aerial|city center|city centre|downtown|harbou?r|waterfront|bay view|old town|historic center|historic centre|architecture|street scene|city view|city panorama/.test(`${title} ${description}`);
+      const clearlyUrban = /skyline|cityscape|panorama|aerial|city center|city centre|downtown|harbou?r|waterfront|bay view|old town|historic center|historic centre|architecture|street|city view|city panorama|town|village|market|square|building|urban|\bcbd\b|corniche|riverfront|promenade|boulevard|plaza|fountain|monument|cathedral|mosque|church|temple|landmark|roundabout/.test(`${title} ${description}`);
       if (!cityInTitle && !includesLandmark) continue;
+      if (!clearlyUrban && !includesLandmark) continue;
       let score = cityInTitle ? 20 : cityInDescription && clearlyUrban ? 8 : 0;
       if (includesLandmark) score += 24;
       if (title.includes(countryName) || description.includes(countryName)) score += 3;
@@ -203,6 +264,25 @@ async function findCommonsPhoto(city) {
       if (info.width >= info.height) score += 2;
       const current = candidates.get(candidate.sourcePage);
       if (!current || current.score < score) candidates.set(candidate.sourcePage, { ...candidate, score });
+    }
+    if ([...candidates.values()].some((candidate) => candidate.score >= 24)) break;
+  }
+  if (!candidates.size && city.lat != null && city.lon != null) {
+    const params = new URLSearchParams({
+      action: "query", format: "json", origin: "*", generator: "geosearch",
+      ggscoord: `${city.lat}|${city.lon}`, ggsradius: "10000", ggslimit: "30", ggsnamespace: "6",
+      prop: "imageinfo", iiprop: "url|extmetadata|size", iiurlwidth: "900",
+    });
+    const data = await fetchJson(`https://commons.wikimedia.org/w/api.php?${params}`);
+    for (const page of Object.values(data?.query?.pages ?? {})) {
+      const info = page.imageinfo?.[0];
+      const candidate = licensedPhoto(info, page);
+      if (!candidate || Math.max(info.width, info.height) < 500 || Math.min(info.width, info.height) < 200 || Math.min(info.width, info.height) / Math.max(info.width, info.height) < 0.2) continue;
+      const title = normalize(page.title.replace(/^File:/i, ""));
+      const description = normalize(cleanText(info.extmetadata?.ImageDescription?.value ?? ""));
+      if (!/skyline|cityscape|panorama|aerial|city center|city centre|downtown|harbou?r|waterfront|old town|architecture|street|town|village|market|square|building|urban|corniche|riverfront|promenade|boulevard|plaza|fountain|monument|cathedral|mosque|church|temple|landmark|roundabout/.test(`${title} ${description}`)) continue;
+      const score = 16 + (title.includes(cityName) ? 8 : 0) + (description.includes(countryName) ? 3 : 0);
+      candidates.set(candidate.sourcePage, { ...candidate, score });
     }
   }
   const best = [...candidates.values()].sort((a, b) => b.score - a.score)[0];
@@ -289,12 +369,17 @@ const results = await mapLimit(cities, 3, async (city) => {
 });
 
 const failures = results.map((result, index) => result?.error ? `${cities[index].city}, ${cities[index].country}: ${result.error}` : null).filter(Boolean);
-if (failures.length) {
-  console.error(JSON.stringify({ processed: cities.length, successful: results.filter((result) => result && !result.error).length, failures, checkpointFiles: (await readdir(stagingDir)).filter((file) => file.endsWith(".json")).length }, null, 2));
-  process.exitCode = 1;
-} else {
-const manifest = Object.fromEntries(results.filter((result) => result && !result.error).map((result) => [result.slug, result]));
-for (const slug of refreshSlugs) await rename(path.join(stagingDir, `${slug}.webp`), path.join(outputDir, `${slug}.webp`));
+const manifest = Object.fromEntries(cities.flatMap((city, index) => {
+  const result = results[index];
+  const photo = result?.error ? existingPhotos[city.slug] : result;
+  return photo ? [[city.slug, photo]] : [];
+}));
+for (const slug of refreshSlugs) {
+  try {
+    await rename(path.join(stagingDir, `${slug}.webp`), path.join(outputDir, `${slug}.webp`));
+    await rm(path.join(stagingDir, `${slug}.json`), { force: true });
+  } catch { /* Keep the existing asset when no replacement passed validation. */ }
+}
 await rm(stagingDir, { recursive: true, force: true });
 await writeFile(path.join(root, "src/data/cityPhotos.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 await writeFile(path.join(root, "src/data/cityPhotoReviewBlanks.json"), "[]\n");
@@ -302,5 +387,4 @@ const usedAssets = new Set(Object.values(manifest).map((photo) => path.basename(
 for (const file of await readdir(outputDir)) {
   if (file.endsWith(".webp") && !usedAssets.has(file)) await rm(path.join(outputDir, file));
 }
-console.log(JSON.stringify({ processed: cities.length, successful: Object.keys(manifest).length, failures: [], replacedReviewBlanks: reviewBlanks.length }, null, 2));
-}
+console.log(JSON.stringify({ processed: cities.length, successful: Object.keys(manifest).length, replacements: refreshSlugs.size - failures.length, failures, replacedReviewBlanks: reviewBlanks.length }, null, 2));
