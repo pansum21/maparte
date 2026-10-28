@@ -1402,18 +1402,23 @@
     overflow-y: auto;
     overflow-x: hidden;
     pointer-events: auto;
-    background: linear-gradient(170deg, var(--overlay-bg) 0%, var(--sheet-bg) 100%);
-    backdrop-filter: blur(24px) saturate(190%);
-    -webkit-backdrop-filter: blur(24px) saturate(190%);
-    border: 1px solid var(--line);
+    background: linear-gradient(
+      155deg,
+      rgba(17, 35, 52, 0.58) 0%,
+      rgba(8, 18, 30, 0.64) 100%
+    ) !important;
+    backdrop-filter: blur(20px) saturate(155%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(155%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
     border-radius: 18px;
     box-shadow:
       inset 0 1.5px 1px rgba(255, 255, 255, 0.22),
       inset 0 -1px 2px rgba(0, 0, 0, 0.25),
       0 16px 48px rgba(0, 0, 0, 0.55),
-      0 0 24px rgba(56, 189, 248, 0.12);
+      0 0 24px rgba(56, 189, 248, 0.12) !important;
     overscroll-behavior: contain;
-    scrollbar-width: none;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
   }
 
   .desktop-settings-slide::-webkit-scrollbar {
@@ -1613,14 +1618,101 @@
     border: 1px solid rgba(255, 255, 255, 0.16) !important;
   }
 
-  .app-shell[data-desktop-tab="theme"] .desktop-settings-slide .settings-panel,
-  .app-shell[data-desktop-tab="theme"] .desktop-settings-slide .accordion-item,
-  .app-shell[data-desktop-tab="theme"] .desktop-settings-slide .accordion-body,
-  .app-shell[data-desktop-tab="theme"] .desktop-settings-slide .accordion-body-inner,
-  .app-shell[data-desktop-tab="theme"] .desktop-settings-slide .mobile-section--theme-settings,
-  .app-shell[data-desktop-tab="theme"] .desktop-settings-slide .map-settings-theme-part,
-  .app-shell[data-desktop-tab="theme"] .desktop-settings-slide .theme-summary-view {
+  /* Universal Glass Drawer: all panels (Theme, Presets, Style, Borders, Layers, Markers, Routes) share glassy treatment */
+  .desktop-settings-slide .settings-panel,
+  .desktop-settings-slide .accordion-item,
+  .desktop-settings-slide .accordion-item.accordion-item--open,
+  .desktop-settings-slide .accordion-body,
+  .desktop-settings-slide .accordion-body-inner,
+  .desktop-settings-slide .mobile-section,
+  .desktop-settings-slide .panel-block,
+  .desktop-settings-slide .map-settings-theme-part,
+  .desktop-settings-slide .theme-summary-view {
     background: transparent !important;
+  }
+
+  /* Hide scrollbars across all slide drawer tabs */
+  .desktop-settings-slide,
+  .desktop-settings-slide * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  .desktop-settings-slide::-webkit-scrollbar,
+  .desktop-settings-slide *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  /* Style / Typography: High-contrast white labels & inputs */
+  .app-shell[data-desktop-tab="style"] .panel-block,
+  .app-shell[data-desktop-tab="style"] .typography-panel-block {
+    background: transparent !important;
+  }
+  .app-shell[data-desktop-tab="style"] label,
+  .app-shell[data-desktop-tab="style"] .section-summary-label,
+  .app-shell[data-desktop-tab="style"] .toggle-field > span:first-child,
+  .app-shell[data-desktop-tab="style"] #font-picker-label,
+  .app-shell[data-desktop-tab="style"] .font-size-field span {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+  .app-shell[data-desktop-tab="style"] .font-picker-trigger {
+    background: rgba(12, 26, 40, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
+  }
+  .app-shell[data-desktop-tab="style"] input.form-control-tall,
+  .app-shell[data-desktop-tab="style"] input.font-size-input {
+    background: rgba(12, 26, 40, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
+  }
+
+  /* Layers: High-contrast white layer names */
+  .app-shell[data-desktop-tab="layers"] .panel-block {
+    background: transparent !important;
+  }
+  .app-shell[data-desktop-tab="layers"] .section-summary-label {
+    color: #38bdf8 !important;
+    font-weight: 700 !important;
+  }
+  .app-shell[data-desktop-tab="layers"] .toggle-field > span:first-child {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.88rem !important;
+  }
+
+  /* Markers: High-contrast white marker names and highlighted cards */
+  .app-shell[data-desktop-tab="markers"] .panel-block,
+  .app-shell[data-desktop-tab="markers"] .marker-editor-card {
+    background: rgba(12, 26, 40, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  }
+  .app-shell[data-desktop-tab="markers"] h3,
+  .app-shell[data-desktop-tab="markers"] .marker-item__name,
+  .app-shell[data-desktop-tab="markers"] .marker-settings-card__theme-label,
+  .app-shell[data-desktop-tab="markers"] label {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+  .app-shell[data-desktop-tab="markers"] .marker-item {
+    background: rgba(12, 26, 40, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  }
+  .app-shell[data-desktop-tab="markers"] .marker-item.is-active {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25) !important;
+  }
+
+  /* Routes: High-contrast white labels */
+  .app-shell[data-desktop-tab="routes"] .panel-block {
+    background: transparent !important;
+  }
+  .app-shell[data-desktop-tab="routes"] label,
+  .app-shell[data-desktop-tab="routes"] .section-summary-label {
+    color: #ffffff !important;
+    font-weight: 700 !important;
   }
 
   [data-desktop-tab="layout"]
@@ -2451,8 +2543,8 @@
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(15, 28, 44, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 999px;
   color: #e2f0fa;
   font-size: 0.78rem;
@@ -2463,7 +2555,7 @@
 }
 
 .all-cities-continent-pill:hover {
-  background: rgba(56, 189, 248, 0.12);
+  background: rgba(56, 189, 248, 0.15);
   border-color: rgba(56, 189, 248, 0.6);
   color: #ffffff;
 }

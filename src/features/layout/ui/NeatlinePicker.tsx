@@ -1206,32 +1206,8 @@ export function NeatlinePicker({
   });
 
   return (
-    <section className={`neatline-picker ${selectedLine ? "has-selected-border" : ""}`} aria-labelledby="neatline-heading">
-      <div className="neatline-picker-heading">
-        <div className="neatline-heading-group">
-          <h3 id="neatline-heading" className="neatline-title-prominent">Borders</h3>
-        </div>
-        <div className="neatline-heading-actions">
-          <span className="neatline-count">
-            {layerCount} {layerCount === 1 ? "layer" : "layers"}
-          </span>
-          <div className="neatline-info-tooltip-wrap">
-            <button
-              type="button"
-              className="neatline-info-btn"
-              aria-label="Borders information"
-              title={`Choose no border or a designer line border · ${width} × ${height} cm`}
-            >
-              ⓘ
-            </button>
-            <div className="neatline-info-tooltip" role="tooltip">
-              Choose no border or a designer line border · {width} × {height} cm
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* BORDERS BOX (Internal scroll without visible scrollbar) */}
+    <section className={`neatline-picker ${selectedLine ? "has-selected-border" : ""}`} aria-label="Borders">
+      {/* BORDERS BOX */}
       <div className="neatline-section-box neatline-borders-box">
         <div className="neatline-section-box-header">
           <span className="neatline-section-box-title">Border Styles</span>
