@@ -19,6 +19,26 @@ const safeDecode = (value = "") => {
 const badPhotoTitle = (value = "") => /(?:montage|collage|flag(?:ge)?|(?:^|[\s_.-])maps?(?:[\s_.-]|$)|shakemap|locator map|location map|location of|map tile|map image|satellite|topographic|globe|chart|\bgraph\b|infographic|graphic|diagram|logo|seal|stamp|mailbox|airport|eclipse|coat[ _-]of[ _-]arms|subway|parade|conference|demonstration|protest|school(?:s|children)?|students?|aircraft|airplane|airline|\bplane\b|airshow|trolleybus|\btrain\b|\bbus\b|\bcar\b|automobile|vehicle|\btruck\b|taxi|vendor|seller|weaver|bird|prinia|wildlife|animal|\bcat\b|\bdog\b|insect|moth|butterfly|fungus|skink|farm|agricultural|terrace|wheat|refugee|relief supplies|soup|restaurant|cafe|coffeehouse|coffee shop|\bshop\b|\bstore\b|plate|dinner|food|carpet|portrait|\bperson\b|\bpeople\b|\bgroup\b|\bboys\b|\bgirls\b|interview|secretary|minister|president|politician|speaker|\bspeech\b|musician|singer|concert|football|soccer|basketball|cricket|\bmatch\b|\bversus\b|\bvs\b|\bteam\b|\bplayer\b|\bclub\b|\bleague\b|\btank\b|soldier|military|army|firing range|looter|damage from|attack on|\bwar\b|construction|workshop|atelier|wikiquote tour|wikiloves earth|schoolroom|classroom|teacher|ferry|highspeed|shipwreck|\bship\b|\bboat\b|railway station|train station|platform|museum interior|\b18\d{2}\b|\b19\d{2}\b|historic photograph|old photograph|webm|video|\.(?:pdf|djvu|svg|webm|mp4|mov|avi|ogv)(?:$|[\s_.-])|heraldry|arting|graffiti|depression|freddy.?lino|changi.?beach|km-grande.?comore-moroni|manas[ _-]raion|^le moule\.png$|^mashhad iran\.jpg$)/i.test(safeDecode(String(value).replace(/_/g, " ")));
 const badPhotoSource = (source = "") => badPhotoTitle(source.split("/").pop() || source);
 const curatedPhotoFiles = {
+  "tuerkmenabat-map-poster": "File:Центр Туркменабада.jpg",
+  "srinagar-in-map-poster": "File:Dal lake city.jpg",
+  "nay-pyi-taw-mm-map-poster": "File:Pyithu Hluttaw Building Naypyidaw March 2026.jpg",
+  "soyapango-map-poster": "File:Soyapango 2012.jpg",
+  "santiago-de-los-caballeros-map-poster": "File:SantiagoCitySkyline2.jpg",
+  "point-fortin-tt-map-poster": "File:STAPP 116 Point Fortin Salazar Village.jpg",
+  "callao-map-poster": "File:Puerto-del-callao.jpg",
+  "paramaribo-map-poster": "File:Paramaribo street, Suriname.jpg",
+  "portoviejo-map-poster": "File:PortoviejoCathedral.jpg",
+  "salvador-map-poster": "File:Skyline of Salvador, Brazil.jpg",
+  "pikine-map-poster": "File:Forêt de Pikine.jpg",
+  "lome-map-poster": "File:Street scene, Lomé, Togo.JPG",
+  "sao-tome-map-poster": "File:Sao Tome City centre.jpg",
+  "faaa-map-poster": "File:Marae Taumata1.jpg",
+  "goroka-pg-map-poster": "File:Goroka.JPG",
+  "jaluit-map-poster": "File:Jaluit Atoll 1978.jpg",
+  "lautoka-map-poster": "File:Lautoka Streets 20.jpg",
+  "mount-hagen-map-poster": "File:Gardens (6348365309).jpg",
+  "szeged-map-poster": "File:University of Szeged - square.JPG",
+  "shubra-al-khaymah-map-poster": "File:شارع عبد الرؤوف من شرفة 01.jpg",
   "phuntsholing-map-poster": "File:Phuentsholing street views during LGFC - Bhutan 2019 (34).jpg",
   "tsirang-bt-map-poster": "File:Dzong at Damphu Tsirang Bhutan.jpg",
   "basrah-iq-map-poster": "File:Basra city.jpg",
@@ -73,7 +93,6 @@ const curatedPhotoFiles = {
   "port-de-paix-ht-map-poster": "File:Vue de la ville du Port de Paix (Nicolas Ozanne et Nicolas Ponce).jpg",
   "khirdalan-az-map-poster": "File:Xırdalan (2).jpg",
   "ibri-om-map-poster": "File:Roads less travelled at Ibri, Sultanate of Oman.jpg",
-  "nay-pyi-taw-mm-map-poster": "File:NPDAerial22.jpg",
   "liberia-cr-map-poster": "File:Liberia City - Cathedral.JPG",
   "orange-walk-bz-map-poster": "File:Main square, Orange Walk Town, Belize.JPG",
   "puerto-plata-do-map-poster": "File:Puerto Plata Town Dominican Republic.jpg",
@@ -91,7 +110,6 @@ const curatedPhotoFiles = {
   "machala-ec-map-poster": "File:Aerial image of Machala, Ecuador.jpg",
   "holguin-cu-map-poster": "File:Holguín-1.jpg",
   "paraiso-cr-map-poster": "File:Ruinas Iglesia Ujarras 02 2022 5362.jpg",
-  "point-fortin-tt-map-poster": "File:TnT Point Fortin Market 1.jpg",
   "san-pedro-bz-map-poster": "File:San Pedro, Ambergris Caye, Belize - Main Street.JPG",
   "siguatepeque-hn-map-poster": "File:Siguatepeque01.JPG",
   "tunapuna-tt-map-poster": "File:TnT Tunapuna Eastern Main Road.jpg",
@@ -123,7 +141,6 @@ const curatedPhotoFiles = {
   "stuttgart-map-poster": "File:Stuttgart City from TV Tower.JPG",
   "poznan-map-poster": "File:Stare Miasto w Poznaniu.jpg",
   "gdansk-map-poster": "File:View of Gdańsk, towards Old Town.jpg",
-  "jaluit-map-poster": "File:Jaluit.jpg",
   "choibalsan-map-poster": "File:Choibalsan statue and National University of Mongolia.jpg",
 };
 
@@ -158,14 +175,14 @@ async function fetchImageBytes(url) {
   throw new Error("Image retries exhausted");
 }
 
-function licensedPhoto(info, page, { allowAirport = false, allowLocalTransit = false } = {}) {
+function licensedPhoto(info, page, { allowAirport = false, allowLocalTransit = false, allowJaluitAerial = false, allowPointFortinAerial = false } = {}) {
   const metadata = info?.extmetadata ?? {};
   const license = cleanText(metadata.LicenseShortName?.value ?? "");
   const licenseUrl = metadata.LicenseUrl?.value ?? "";
   const description = cleanText(metadata.ImageDescription?.value ?? "");
   const localTransit = allowLocalTransit && /Viana.*Transporte.*rodoviario/i.test(page?.title ?? "");
-  const titleBlocked = badPhotoTitle(page?.title ?? "") && !(allowAirport && /airport/i.test(page?.title ?? "")) && !localTransit;
-  const descriptionBlocked = badPhotoTitle(description) && !(allowAirport && /airport/i.test(description)) && !localTransit;
+  const titleBlocked = badPhotoTitle(page?.title ?? "") && !(allowAirport && /airport/i.test(page?.title ?? "")) && !localTransit && !(allowJaluitAerial && page?.title === "File:Jaluit Atoll 1978.jpg") && !(allowPointFortinAerial && page?.title === "File:STAPP 116 Point Fortin Salazar Village.jpg");
+  const descriptionBlocked = badPhotoTitle(description) && !(allowAirport && /airport/i.test(description)) && !localTransit && !(allowJaluitAerial && /Aerial view of Jaluit Atoll in 1978/i.test(description)) && !(allowPointFortinAerial && /aerial photo project/i.test(description));
   if (!info?.thumburl || !info?.descriptionurl || !license || titleBlocked || descriptionBlocked) return null;
   if (!/CC0|CC BY|Public domain|PD-|CC BY-SA/i.test(license)) return null;
   return {
@@ -191,6 +208,8 @@ async function findCommonsPhoto(city) {
     const curated = licensedPhoto(info, page, {
       allowAirport: city.slug === "tocumen-pa-map-poster",
       allowLocalTransit: city.slug === "viana-map-poster",
+      allowJaluitAerial: city.slug === "jaluit-map-poster",
+      allowPointFortinAerial: city.slug === "point-fortin-tt-map-poster",
     });
     if (!curated || Math.max(info.width, info.height) < 500 || Math.min(info.width, info.height) < 200) {
       throw new Error(`Curated Commons image failed license/relevance checks: ${curatedTitle}`);

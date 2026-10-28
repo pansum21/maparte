@@ -834,10 +834,10 @@
     "city": "Srinagar",
     "country": "India",
     "src": "/assets/city-photos/srinagar-in-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Panorama_of_Bazaar_Scene_-_Old_City_-_Srinagar_-_Jammu_%26_Kashmir_-_India_(26743918472).jpg",
-    "author": "Adam Jones from Kelowna, BC, Canada",
-    "license": "CC BY-SA 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Dal_lake_city.jpg",
+    "author": "Suhail yousuff",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "sumgayit-map-poster": {
     "slug": "sumgayit-map-poster",
@@ -924,10 +924,10 @@
     "city": "Tuerkmenabat",
     "country": "Turkmenistan",
     "src": "/assets/city-photos/tuerkmenabat-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Turkmen-Rail-employees-new-Turkmenabat-Amu-Darya-railroad-bridge.jpg",
-    "author": "Allan Mustard",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%D0%A6%D0%B5%D0%BD%D1%82%D1%80_%D0%A2%D1%83%D1%80%D0%BA%D0%BC%D0%B5%D0%BD%D0%B0%D0%B1%D0%B0%D0%B4%D0%B0.jpg",
+    "author": "Eldar Yagmurov",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
   },
   "ulaanbaatar-map-poster": {
     "slug": "ulaanbaatar-map-poster",
@@ -1644,10 +1644,10 @@
     "city": "Nay Pyi Taw",
     "country": "Myanmar",
     "src": "/assets/city-photos/nay-pyi-taw-mm-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:NPDAerial22.jpg",
-    "author": "AthosworldLi",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Pyithu_Hluttaw_Building_Naypyidaw_March_2026.jpg",
+    "author": "Zawzawaungthwin",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
   },
   "new-delhi-map-poster": {
     "slug": "new-delhi-map-poster",
@@ -2874,10 +2874,10 @@
     "city": "Soyapango",
     "country": "El Salvador",
     "src": "/assets/city-photos/soyapango-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Soyapango.jpg",
-    "author": "Linkmaster88 at English Wikipedia",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Soyapango_2012.jpg",
+    "author": "Ll1324",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
   },
   "spanish-town-map-poster": {
     "slug": "spanish-town-map-poster",
@@ -3154,10 +3154,10 @@
     "city": "Callao",
     "country": "Peru",
     "src": "/assets/city-photos/callao-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Aviso_sobre_la_producci%C3%B3n_de_ivermectina_en_el_Callao.jpg",
-    "author": "Txolo",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Puerto-del-callao.jpg",
+    "author": "Alex E. Proimos",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
   },
   "capiata-map-poster": {
     "slug": "capiata-map-poster",
@@ -3644,10 +3644,10 @@
     "city": "Paramaribo",
     "country": "Suriname",
     "src": "/assets/city-photos/paramaribo-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Toneel,_waarschijnlijk_bij_de_dodenherdenking,_in_Paramaribo,_Bestanddeelnr_252-6938.jpg",
-    "author": "Willem van de Poll",
-    "license": "CC0",
-    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Paramaribo_street,_Suriname.jpg",
+    "author": "Ian Mackenzie",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
   },
   "paysandu-map-poster": {
     "slug": "paysandu-map-poster",
@@ -3684,10 +3684,10 @@
     "city": "Portoviejo",
     "country": "Ecuador",
     "src": "/assets/city-photos/portoviejo-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Iguana_iguana_Portoviejo_01.jpg",
-    "author": "Cayambe",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:PortoviejoCathedral.jpg",
+    "author": "Ministerio Cultura y Patrimonio from Quito, Ecuador",
+    "license": "Public domain",
+    "licenseUrl": ""
   },
   "posadas-ar-map-poster": {
     "slug": "posadas-ar-map-poster",
@@ -3844,10 +3844,10 @@
     "city": "Salvador",
     "country": "Brazil",
     "src": "/assets/city-photos/salvador-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Tomada_da_cidade_de_S%C3%A3o_Salvador_s%C3%A9culo_XVIII_(panor%C3%A2mico).jpg",
-    "author": "Unknown author Unknown author",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Skyline_of_Salvador,_Brazil.jpg",
+    "author": "Hentzer",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "san-bernardo-cl-map-poster": {
     "slug": "san-bernardo-cl-map-poster",
@@ -4584,7 +4584,7 @@
     "city": "Point Fortin",
     "country": "Trinidad and Tobago",
     "src": "/assets/city-photos/point-fortin-tt-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:TnT_Point_Fortin_Market_1.jpg",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:STAPP_116_Point_Fortin_Salazar_Village.jpg",
     "author": "Grueslayer",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
@@ -4874,10 +4874,10 @@
     "city": "Santiago de los Caballeros",
     "country": "Dominican Republic",
     "src": "/assets/city-photos/santiago-de-los-caballeros-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Palaciojusticiastg.jpg",
-    "author": "Siso84",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:SantiagoCitySkyline2.jpg",
+    "author": "derivative work: Fogster ( talk ) [2] : ChezSant",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
   },
   "santiago-de-veraguas-pa-map-poster": {
     "slug": "santiago-de-veraguas-pa-map-poster",
@@ -5524,10 +5524,10 @@
     "city": "Lome",
     "country": "Togo",
     "src": "/assets/city-photos/lome-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:2008-Lom%C3%A9-Togo-IBIS-Hotel-Panorama.jpg",
-    "author": "Sharkie",
-    "license": "CC BY 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Street_scene,_Lom%C3%A9,_Togo.JPG",
+    "author": "Denis Vermeirre",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "luanda-map-poster": {
     "slug": "luanda-map-poster",
@@ -5784,10 +5784,10 @@
     "city": "Pikine",
     "country": "Senegal",
     "src": "/assets/city-photos/pikine-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Pikine.gif",
-    "author": "USGS",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:For%C3%AAt_de_Pikine.jpg",
+    "author": "Malado87",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "pointe-noire-map-poster": {
     "slug": "pointe-noire-map-poster",
@@ -5874,20 +5874,20 @@
     "city": "Sao Tome",
     "country": "Sao Tome and Principe",
     "src": "/assets/city-photos/sao-tome-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:S%C3%A3o_Tome_DSC_8056_(32838027326).jpg",
-    "author": "Ben Sutherland from Crystal Palace, London, UK",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Sao_Tome_City_centre.jpg",
+    "author": "ArunasG",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "shubra-al-khaymah-map-poster": {
     "slug": "shubra-al-khaymah-map-poster",
     "city": "Shubrā al Khaymah",
     "country": "Egypt",
     "src": "/assets/city-photos/shubra-al-khaymah-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Pressing_the_flesh_-_Flickr_-_Al_Jazeera_English.jpg",
-    "author": "Evan Hill of Al Jazeera English",
-    "license": "CC BY-SA 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%D8%B4%D8%A7%D8%B1%D8%B9_%D8%B9%D8%A8%D8%AF_%D8%A7%D9%84%D8%B1%D8%A4%D9%88%D9%81_%D9%85%D9%86_%D8%B4%D8%B1%D9%81%D8%A9_01.jpg",
+    "author": "ديفيد عادل وهبة خليل 2",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
   },
   "soweto-map-poster": {
     "slug": "soweto-map-poster",
@@ -6824,10 +6824,10 @@
     "city": "Szeged",
     "country": "Hungary",
     "src": "/assets/city-photos/szeged-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:K%C3%A1r%C3%A1sz_Street,_Szeged_(March_2023).jpg",
-    "author": "Mudroslov",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:University_of_Szeged_-_square.JPG",
+    "author": "Chmee2 / Valtameri",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
   },
   "tallinn-map-poster": {
     "slug": "tallinn-map-poster",
@@ -7204,10 +7204,10 @@
     "city": "Faaa",
     "country": "French Polynesia",
     "src": "/assets/city-photos/faaa-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:AirTahiti.Aerogare.Faaa.JPG",
-    "author": "Original uploader was FRED at fr.wikipedia",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Marae_Taumata1.jpg",
+    "author": "Saga70",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "funafuti-map-poster": {
     "slug": "funafuti-map-poster",
@@ -7254,10 +7254,10 @@
     "city": "Goroka",
     "country": "Papua New Guinea",
     "src": "/assets/city-photos/goroka-pg-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Goroka_(5502136702).jpg",
-    "author": "eGuide Travel",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Goroka.JPG",
+    "author": "Manuel Hetzel",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
   },
   "hagatna-map-poster": {
     "slug": "hagatna-map-poster",
@@ -7324,8 +7324,8 @@
     "city": "Jaluit",
     "country": "Marshall Islands",
     "src": "/assets/city-photos/jaluit-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Jaluit.jpg",
-    "author": "NASA Johnson Space Center - Earth Sciences and Image Analysis",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Jaluit_Atoll_1978.jpg",
+    "author": "Unknown author Unknown author",
     "license": "Public domain",
     "licenseUrl": ""
   },
@@ -7404,7 +7404,7 @@
     "city": "Lautoka",
     "country": "Fiji",
     "src": "/assets/city-photos/lautoka-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Saris_on_sale_in_Lautoka,_Fiji.jpg",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Lautoka_Streets_20.jpg",
     "author": "Maksym Kozlenko",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
@@ -7544,10 +7544,10 @@
     "city": "Mount Hagen",
     "country": "Papua New Guinea",
     "src": "/assets/city-photos/mount-hagen-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Mount_Hagen_Cultural_Show,_Papua_New_Guinea,_2009.jpg",
-    "author": "Yves Picq",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Gardens_(6348365309).jpg",
+    "author": "eGuide Travel",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
   },
   "nadi-map-poster": {
     "slug": "nadi-map-poster",
