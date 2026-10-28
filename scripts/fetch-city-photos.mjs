@@ -21,7 +21,7 @@ const curatedPhotoFiles = {
   "tsirang-bt-map-poster": "File:Dzong at Damphu Tsirang Bhutan.jpg",
   "basrah-iq-map-poster": "File:Basra city.jpg",
   "kulob-tj-map-poster": "File:Kulob,ul-Somoni.jpg",
-  "al-ahmadi-map-poster": "File:Road side Ahamadhi.jpg",
+  "al-ahmadi-map-poster": "File:Knpc headoffice kwt.JPG",
   "mueang-nonthaburi-th-map-poster": "File:Nonthaburi1.jpg",
   "les-abymes-map-poster": "File:Mairie des Abymes 3.jpg",
   "providenciales-map-poster": "File:Providenciales Town Centre Mall.jpg",
