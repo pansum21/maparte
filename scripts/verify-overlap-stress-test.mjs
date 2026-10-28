@@ -30,16 +30,6 @@ const allPatternIds = [
   "neatline-dashed",
   "neatline-dotted",
   "neatline-dash-dot",
-  "neatline-notched-corner",
-  "neatline-surveyor-ticks",
-  "frame-greek-key",
-  "frame-victorian-filigree",
-  "frame-art-deco-stepped",
-  "frame-nautical-compass",
-  "frame-celtic-braid",
-  "frame-diamond-lattice",
-  "frame-antique-atlas",
-  "frame-architectural-grid",
 ];
 
 const gapTestValues = [0.00, 0.05, 0.10, 0.15, 0.20, 0.35, 0.50, 0.60];

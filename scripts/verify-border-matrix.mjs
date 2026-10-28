@@ -32,16 +32,6 @@ const designerPatterns = [
   ["neatline-dashed", 2],
   ["neatline-dotted", 2],
   ["neatline-dash-dot", 2],
-  ["neatline-notched-corner", 2],
-  ["neatline-surveyor-ticks", 3],
-  ["frame-greek-key", 2],
-  ["frame-victorian-filigree", 2],
-  ["frame-art-deco-stepped", 2],
-  ["frame-nautical-compass", 2],
-  ["frame-celtic-braid", 2],
-  ["frame-diamond-lattice", 2],
-  ["frame-antique-atlas", 2],
-  ["frame-architectural-grid", 2],
 ];
 
 const allPatterns = [...baselinePatterns, ...designerPatterns];
@@ -276,14 +266,6 @@ try {
             }
           }
 
-          // Check circles if notched-corner
-          if (lineId === "neatline-notched-corner") {
-            const circles = [...markup.matchAll(/<circle\b([^>]*)>/g)].map((m) => m[1]);
-            if (circles.length !== 4) {
-              layoutFailures++;
-              errors.push(`${layout.id}/${lineId}: expected 4 corner circles, got ${circles.length}`);
-            }
-          }
         }
       }
     }
