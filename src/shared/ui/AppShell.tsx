@@ -56,10 +56,9 @@ function SettingsDrawer({
   onToggleEditing: () => void;
   onAdminOpen: () => void;
 }) {
-  // Settings sections (especially Layout) contain long tool lists; open the
-  // sheet expanded so phone users can reach the same controls without guessing
-  // that the handle must be swiped first.
-  const [isExpanded, setIsExpanded] = useState(true);
+  // Start as a content-sized sheet; long sections remain reachable by scrolling
+  // and users can still expand the sheet from its handle when they need more room.
+  const [isExpanded, setIsExpanded] = useState(false);
   const { sheetRef, handleRef, handleProps } = useSwipeDown(onClose, 80, {
     onExpand: () => setIsExpanded(true),
   });
@@ -457,6 +456,7 @@ export default function AppShell() {
     <div
       className="app-shell"
       data-mobile-tab={mobileTab}
+      data-mobile-drawer-open={mobileDrawerOpen ? "true" : undefined}
       data-desktop-tab={desktopTab}
       data-device-view={deviceView}
     >

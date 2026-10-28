@@ -2151,12 +2151,13 @@ body.has-custom-backdrop .poster-ghost-layer {
 
 @media (max-width: 768px) {
   .export-modal-backdrop.backdrop-theme-modal-backdrop {
+    align-items: flex-start;
     padding: calc(54px + env(safe-area-inset-top, 0px)) 0 2px calc(58px + env(safe-area-inset-left, 0px));
   }
   .export-modal.backdrop-theme-modal {
     width: min(420px, calc(100vw - 70px - env(safe-area-inset-left, 0px)));
-    height: 100%;
-    max-height: 100%;
+    height: auto;
+    max-height: min(38vh, 360px);
     min-height: 0;
     padding: 4px 12px calc(14px + env(safe-area-inset-bottom, 0px));
     border-radius: 18px;

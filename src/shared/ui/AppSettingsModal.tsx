@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useRecentLocations } from "@/features/location/application/useRecentLocations";
 import { isAdminUser } from "@/features/export/infrastructure/planTier";
+import { openLegalDoc } from "@/features/legal/application/legalDoc";
 import {
   CloseIcon,
   SettingsIcon,
@@ -27,6 +28,8 @@ export default function AppSettingsModal({
   const { clearRecent, recent } = useRecentLocations();
   const [clearedRecent, setClearedRecent] = useState(false);
   const [resetDone, setResetDone] = useState(false);
+  const [cookieSettingsUnavailable, setCookieSettingsUnavailable] =
+    useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -59,6 +62,25 @@ export default function AppSettingsModal({
     });
     setResetDone(true);
     setTimeout(() => setResetDone(false), 2500);
+  };
+
+  const handleOpenCookieSettings = () => {
+    const googlefc = (window as Window & {
+      googlefc?: {
+        callbackQueue?: Array<{ CONSENT_DATA_READY: () => void }>;
+        showRevocationMessage?: () => void;
+      };
+    }).googlefc;
+
+    if (!googlefc?.callbackQueue) {
+      setCookieSettingsUnavailable(true);
+      return;
+    }
+
+    setCookieSettingsUnavailable(false);
+    googlefc.callbackQueue.push({
+      CONSENT_DATA_READY: () => googlefc.showRevocationMessage?.(),
+    });
   };
 
   const handleClearHistory = () => {
@@ -155,7 +177,6 @@ export default function AppSettingsModal({
               <div className="quality-badge-row">
                 <span className="quality-pill">✨ Ultra-HD Engine</span>
                 <span className="quality-pill">📐 Vector SVG Engine</span>
-                <span className="quality-pill">🎁 Master Bundle BOGO</span>
               </div>
               <p className="quality-desc">
                 Your posters download with scalable vector clarity or high-density raster calibrated up to 48 Megapixels.
@@ -222,6 +243,58 @@ export default function AppSettingsModal({
                 )}
               </button>
             </div>
+          </div>
+
+          {/* Legal, consent and project links, grouped with the app settings. */}
+          <div className="app-settings-card app-settings-links-card">
+            <h3 className="app-settings-card-title">Policies & Site Links</h3>
+            <p className="settings-links-description">
+              Policies explain privacy, terms and refunds. Cookie settings manage
+              consent choices. Source code opens the project on GitHub.
+            </p>
+            <div className="settings-actions-grid">
+              <button
+                type="button"
+                className="settings-action-btn"
+                onClick={() => openLegalDoc("privacy")}
+              >
+                Privacy Policy
+              </button>
+              <button
+                type="button"
+                className="settings-action-btn"
+                onClick={() => openLegalDoc("terms")}
+              >
+                Terms of Service
+              </button>
+              <button
+                type="button"
+                className="settings-action-btn"
+                onClick={() => openLegalDoc("refund")}
+              >
+                Refund Policy
+              </button>
+              <button
+                type="button"
+                className="settings-action-btn"
+                onClick={handleOpenCookieSettings}
+              >
+                Manage Cookie Choices
+              </button>
+              <a
+                className="settings-action-btn"
+                href="https://github.com/pansum21/maparte"
+                target="_blank"
+                rel="noreferrer"
+              >
+                View Source on GitHub
+              </a>
+            </div>
+            {cookieSettingsUnavailable ? (
+              <p className="settings-links-note" role="status">
+                Cookie controls are not available in this browser session.
+              </p>
+            ) : null}
           </div>
         </div>
       </div>

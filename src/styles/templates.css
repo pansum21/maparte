@@ -424,6 +424,19 @@
   color: #7dd3fc;
 }
 
+.settings-links-description,
+.settings-links-note {
+  margin: 0 0 10px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(203, 213, 225, 0.76);
+}
+
+.settings-links-note {
+  margin: 10px 0 0;
+  color: #fbbf24;
+}
+
 .app-settings-toggles {
   display: flex;
   flex-direction: column;
