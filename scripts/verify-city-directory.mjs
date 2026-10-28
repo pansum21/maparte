@@ -84,6 +84,7 @@ const appShell = await readFile(path.join(root, "src/shared/ui/AppShell.tsx"), "
 const modalSource = await readFile(path.join(root, "src/features/location/ui/AllCitiesModal.tsx"), "utf8");
 const sharedPanelFlow = appShell.includes("const AllCitiesModal = lazy(loadAllCitiesModal)") && appShell.includes("requestIdleCallback") && (appShell.match(/<AllCitiesModal\s/g) ?? []).length === 1 && modalSource.includes('role="dialog"') && modalSource.includes('event.key === "Escape"') && modalSource.includes('loading={priority ? "eager" : "lazy"}');
 if (!sharedPanelFlow) errors.push("Location picker shared desktop/mobile, prefetch, close, or lazy image wiring check failed");
+if (!modalSource.includes("credit?.src || `/assets/city-photos/${slug}.webp`")) errors.push("City photo cards must use the manifest asset path so cache-busted replacements render");
 const regionMatch = modalSource.match(/const CITY_REGIONS = \[([\s\S]*?)\] as const/);
 const actualRegions = [...(regionMatch?.[1].matchAll(/"([^"]+)"/g) ?? [])].map((match) => match[1]);
 if (JSON.stringify(actualRegions) !== JSON.stringify(CITY_REGIONS)) errors.push("City region tabs do not match the configured eight-region order");
@@ -111,6 +112,7 @@ checks.push("All images copied into production build output");
 checks.push("Shared desktop/mobile picker, prefetch, and close behavior wiring");
 checks.push("Compact wrapping for all eight equally sized region labels");
 checks.push("No city photo tiles left blank for review");
+checks.push("Gallery cards use the exact local photo asset path in the manifest");
 
 if (errors.length) {
   console.error(JSON.stringify({ ok: false, checksDefined: checks.length, errors: errors.slice(0, 80), totalErrors: errors.length, counts, distPhotoCount }, null, 2));

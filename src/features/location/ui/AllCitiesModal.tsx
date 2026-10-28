@@ -29,6 +29,7 @@ interface CityDirectoryItem {
 }
 
 interface CityPhotoCredit {
+  src?: string;
   sourcePage?: string;
   author?: string;
   license?: string;
@@ -61,7 +62,7 @@ function CityPhoto({
   credit?: CityPhotoCredit;
 }) {
   const [imageFailed, setImageFailed] = useState(false);
-  const imageSrc = `/assets/city-photos/${slug}.webp`;
+  const imageSrc = credit?.src || `/assets/city-photos/${slug}.webp`;
 
   return (
     <div
