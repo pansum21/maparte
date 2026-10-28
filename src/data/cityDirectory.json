@@ -255,6 +255,18 @@
     "slug": "choibalsan-map-poster"
   },
   {
+    "slug": "chongqing-map-poster",
+    "city": "Chongqing",
+    "country": "China",
+    "countryCode": "CN",
+    "continent": "North Asia",
+    "lat": 29.56026,
+    "lon": 106.55771,
+    "population": 22000000,
+    "isCapital": false,
+    "landmarks": []
+  },
+  {
     "slug": "daegu-kr-map-poster",
     "city": "Daegu",
     "country": "South Korea",
@@ -544,17 +556,6 @@
     "slug": "isfara-map-poster"
   },
   {
-    "city": "Islamabad",
-    "country": "Pakistan",
-    "countryCode": "PK",
-    "lat": 33.72148,
-    "lon": 73.04329,
-    "isCapital": true,
-    "continent": "North Asia",
-    "landmarks": [],
-    "slug": "islamabad-map-poster"
-  },
-  {
     "slug": "istaravshan-tj-map-poster",
     "city": "Istaravshan",
     "country": "Tajikistan",
@@ -830,6 +831,18 @@
     "slug": "nagoya-map-poster"
   },
   {
+    "slug": "naha-jp-map-poster",
+    "city": "Naha",
+    "country": "Japan",
+    "countryCode": "JP",
+    "continent": "North Asia",
+    "lat": 26.213,
+    "lon": 127.67851,
+    "population": 317625,
+    "isCapital": false,
+    "geonameId": 1856035
+  },
+  {
     "slug": "namangan-uz-map-poster",
     "city": "Namangan",
     "country": "Uzbekistan",
@@ -918,18 +931,6 @@
     "continent": "North Asia",
     "landmarks": [],
     "slug": "pyongyang-map-poster"
-  },
-  {
-    "slug": "rawalpindi-pk-map-poster",
-    "city": "Rawalpindi",
-    "country": "Pakistan",
-    "countryCode": "PK",
-    "continent": "North Asia",
-    "lat": 33.59733,
-    "lon": 73.0479,
-    "population": 3357612,
-    "isCapital": false,
-    "geonameId": 1166993
   },
   {
     "slug": "samarkand-uz-map-poster",
@@ -1476,18 +1477,6 @@
     "landmarks": []
   },
   {
-    "slug": "chongqing-map-poster",
-    "city": "Chongqing",
-    "country": "China",
-    "countryCode": "CN",
-    "continent": "South Asia",
-    "lat": 29.56026,
-    "lon": 106.55771,
-    "population": 22000000,
-    "isCapital": false,
-    "landmarks": []
-  },
-  {
     "city": "Colombo",
     "country": "Sri Lanka",
     "countryCode": "LK",
@@ -1732,6 +1721,17 @@
     "population": 1921275,
     "isCapital": false,
     "geonameId": 1176734
+  },
+  {
+    "city": "Islamabad",
+    "country": "Pakistan",
+    "countryCode": "PK",
+    "lat": 33.72148,
+    "lon": 73.04329,
+    "isCapital": true,
+    "continent": "South Asia",
+    "landmarks": [],
+    "slug": "islamabad-map-poster"
   },
   {
     "slug": "jaffna-lk-map-poster",
@@ -2088,18 +2088,6 @@
     "slug": "muscat-map-poster"
   },
   {
-    "slug": "naha-jp-map-poster",
-    "city": "Naha",
-    "country": "Japan",
-    "countryCode": "JP",
-    "continent": "South Asia",
-    "lat": 26.213,
-    "lon": 127.67851,
-    "population": 317625,
-    "isCapital": false,
-    "geonameId": 1856035
-  },
-  {
     "slug": "nay-pyi-taw-mm-map-poster",
     "city": "Nay Pyi Taw",
     "country": "Myanmar",
@@ -2235,6 +2223,18 @@
     "isCapital": false,
     "landmarks": [],
     "slug": "quezon-city-map-poster"
+  },
+  {
+    "slug": "rawalpindi-pk-map-poster",
+    "city": "Rawalpindi",
+    "country": "Pakistan",
+    "countryCode": "PK",
+    "continent": "South Asia",
+    "lat": 33.59733,
+    "lon": 73.0479,
+    "population": 3357612,
+    "isCapital": false,
+    "geonameId": 1166993
   },
   {
     "city": "Riyadh",

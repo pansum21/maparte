@@ -61,7 +61,6 @@ const curatedPhotoFiles = {
   "thimphu-map-poster": "File:Thimphu main street - Bhutan - panoramio.jpg",
   "baghdad-map-poster": "File:Baghdad Street View.jpg",
   "amman-map-poster": "File:Amman cityscape and skyline from Citadel Hill.jpg",
-  "andijon-map-poster": "File:Street in Andijan.jpg",
   "santiago-de-veraguas-pa-map-poster": "File:Iglesia Santiago de Apostol.jpg",
   "leon-map-poster": "File:Street in León, Nicaragua.jpg",
   "holguin-cu-map-poster": "File:Holguín Street.jpg",
@@ -98,7 +97,6 @@ const curatedPhotoFiles = {
   "madang-map-poster": "File:Madang (5501557827).jpg",
   "bekasi-id-map-poster": "File:Bekasi Mall Night.jpg",
   "escuintla-gt-map-poster": "File:Escuintla, Guatemala - panoramio (11).jpg",
-  "manas-kg-map-poster": "File:Uprava Chyngyz Aytmatov.jpg",
   "khulna-bd-map-poster": "File:Khulna Skyline.jpg",
   "casablanca-map-poster": "File:Casablanca city.jpg",
   "viana-map-poster": "File:Acail Angola - Viana - panoramio.jpg",
@@ -106,6 +104,12 @@ const curatedPhotoFiles = {
   "port-de-paix-ht-map-poster": "File:Vue de la ville du Port de Paix (Nicolas Ozanne et Nicolas Ponce).jpg",
   "khirdalan-az-map-poster": "File:Xırdalan (2).jpg",
   "ibri-om-map-poster": "File:Roads less travelled at Ibri, Sultanate of Oman.jpg",
+  "almaty-map-poster": "File:Almaty city skyline.jpg",
+  "andijon-map-poster": "File:Andijon shahar.jpg",
+  "manas-kg-map-poster": "File:Въезд в Джалал-Абад (Киргизия).JPG",
+  "rawalpindi-pk-map-poster": "File:SaddarInRawalpindi.jpg",
+  "wonsan-kp-map-poster": "File:Wonsan City - 01 - Panorama.jpg",
+  "zarqa-map-poster": "File:Arab Army Square.jpg",
   "liberia-cr-map-poster": "File:Liberia City - Cathedral.JPG",
   "orange-walk-bz-map-poster": "File:Main square, Orange Walk Town, Belize.JPG",
   "puerto-plata-do-map-poster": "File:Puerto Plata Town Dominican Republic.jpg",
@@ -114,7 +118,6 @@ const curatedPhotoFiles = {
   "ebaye-mh-map-poster": "File:Ebeye Island.jpg",
   "maitland-au-map-poster": "File:Maitland Town Hall.jpg",
   "madaba-jo-map-poster": "File:Overhead view of Madaba city.jpg",
-  "wonsan-kp-map-poster": "File:Wonsan, North Korea.jpg",
   "nizwa-om-map-poster": "File:Downtown Nizwa.jpg",
   "salalah-om-map-poster": "File:As Sultan Qaboos Street, Salalah - panoramio.jpg",
   "rabaul-pg-map-poster": "File:Rabaul from Vulcanology Observatory.jpg",
@@ -186,14 +189,15 @@ async function fetchImageBytes(url) {
   throw new Error("Image retries exhausted");
 }
 
-function licensedPhoto(info, page, { allowAirport = false, allowLocalTransit = false, allowJaluitAerial = false, allowPointFortinAerial = false } = {}) {
+function licensedPhoto(info, page, { allowAirport = false, allowLocalTransit = false, allowJaluitAerial = false, allowPointFortinAerial = false, allowZarqaSquare = false } = {}) {
   const metadata = info?.extmetadata ?? {};
   const license = cleanText(metadata.LicenseShortName?.value ?? "");
   const licenseUrl = metadata.LicenseUrl?.value ?? "";
   const description = cleanText(metadata.ImageDescription?.value ?? "");
   const localTransit = allowLocalTransit && /Viana.*Transporte.*rodoviario/i.test(page?.title ?? "");
-  const titleBlocked = badPhotoTitle(page?.title ?? "") && !(allowAirport && /airport/i.test(page?.title ?? "")) && !localTransit && !(allowJaluitAerial && page?.title === "File:Jaluit Atoll 1978.jpg") && !(allowPointFortinAerial && page?.title === "File:STAPP 116 Point Fortin Salazar Village.jpg");
-  const descriptionBlocked = badPhotoTitle(description) && !(allowAirport && /airport/i.test(description)) && !localTransit && !(allowJaluitAerial && /Aerial view of Jaluit Atoll in 1978/i.test(description)) && !(allowPointFortinAerial && /aerial photo project/i.test(description));
+  const zarqaSquare = allowZarqaSquare && page?.title === "File:Arab Army Square.jpg";
+  const titleBlocked = badPhotoTitle(page?.title ?? "") && !(allowAirport && /airport/i.test(page?.title ?? "")) && !localTransit && !zarqaSquare && !(allowJaluitAerial && page?.title === "File:Jaluit Atoll 1978.jpg") && !(allowPointFortinAerial && page?.title === "File:STAPP 116 Point Fortin Salazar Village.jpg");
+  const descriptionBlocked = badPhotoTitle(description) && !(allowAirport && /airport/i.test(description)) && !localTransit && !zarqaSquare && !(allowJaluitAerial && /Aerial view of Jaluit Atoll in 1978/i.test(description)) && !(allowPointFortinAerial && /aerial photo project/i.test(description));
   if (!info?.thumburl || !info?.descriptionurl || !license || titleBlocked || descriptionBlocked) return null;
   if (!/CC0|CC BY|Public domain|PD-|CC BY-SA/i.test(license)) return null;
   return {
@@ -221,10 +225,12 @@ async function findCommonsPhoto(city) {
       allowLocalTransit: city.slug === "viana-map-poster",
       allowJaluitAerial: city.slug === "jaluit-map-poster",
       allowPointFortinAerial: city.slug === "point-fortin-tt-map-poster",
+      allowZarqaSquare: city.slug === "zarqa-map-poster",
     });
     if (!curated || Math.max(info.width, info.height) < 500 || Math.min(info.width, info.height) < 200) {
       throw new Error(`Curated Commons image failed license/relevance checks: ${curatedTitle}`);
     }
+    if (city.slug === "wonsan-kp-map-poster") curated.url = info.url;
     return curated;
   }
 
@@ -410,8 +416,19 @@ const results = await mapLimit(cities, 3, async (city) => {
     sourceBytes = await fetchImageBytes(sourcePhoto.url);
   }
 
-  const converted = await sharp(sourceBytes, { failOn: "error" })
-    .rotate()
+  let image = sharp(sourceBytes, { failOn: "error" }).rotate();
+  if (city.slug === "wonsan-kp-map-poster") {
+    const dimensions = await image.metadata();
+    const cropHeight = Math.round(dimensions.height * 0.82);
+    const cropWidth = Math.round(cropHeight * 1.5);
+    image = image.extract({
+      left: Math.min(dimensions.width - cropWidth, Math.round(dimensions.width * 0.474)),
+      top: Math.round(dimensions.height * 0.079),
+      width: cropWidth,
+      height: cropHeight,
+    });
+  }
+  const converted = await image
     .resize({ width: 900, height: 650, fit: "inside", withoutEnlargement: true })
     .webp({ quality: 79, effort: 4, smartSubsample: true })
     .toBuffer();

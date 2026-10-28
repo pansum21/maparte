@@ -34,10 +34,10 @@
     "city": "Almaty",
     "country": "Kazakhstan",
     "src": "/assets/city-photos/almaty-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Alley,_Almaly,_Almaty_(P1180141).jpg",
-    "author": "Matti Blume",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.en"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Almaty_city_skyline.jpg",
+    "author": "Dauren Nabijan",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
   },
   "amman-map-poster": {
     "slug": "amman-map-poster",
@@ -54,8 +54,8 @@
     "city": "Andijon",
     "country": "Uzbekistan",
     "src": "/assets/city-photos/andijon-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Street_in_Andijan.jpg",
-    "author": "Umarxon III",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Andijon_shahar.jpg",
+    "author": "Abdurahmon Egamberdiyev",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
@@ -634,10 +634,10 @@
     "city": "Manas",
     "country": "Kyrgyzstan",
     "src": "/assets/city-photos/manas-kg-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Uprava_Chyngyz_Aytmatov.jpg",
-    "author": "Mirzoulugʻbek",
-    "license": "CC0",
-    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%D0%92%D1%8A%D0%B5%D0%B7%D0%B4_%D0%B2_%D0%94%D0%B6%D0%B0%D0%BB%D0%B0%D0%BB-%D0%90%D0%B1%D0%B0%D0%B4_(%D0%9A%D0%B8%D1%80%D0%B3%D0%B8%D0%B7%D0%B8%D1%8F).JPG",
+    "author": "Wikimedia contributor",
+    "license": "Public domain",
+    "licenseUrl": ""
   },
   "mary-tm-map-poster": {
     "slug": "mary-tm-map-poster",
@@ -764,10 +764,10 @@
     "city": "Rawalpindi",
     "country": "Pakistan",
     "src": "/assets/city-photos/rawalpindi-pk-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Ordnance_QF-25_Pounder,_Rawalpindi,_Pakistan.jpg",
-    "author": "Pr0pulsion 123",
-    "license": "CC BY 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:SaddarInRawalpindi.jpg",
+    "author": "Idontknow1213",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "samarkand-uz-map-poster": {
     "slug": "samarkand-uz-map-poster",
@@ -954,10 +954,10 @@
     "city": "Wŏnsan",
     "country": "North Korea",
     "src": "/assets/city-photos/wonsan-kp-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Wonsan,_North_Korea.jpg",
-    "author": "yeowatzup",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Wonsan_City_-_01_-_Panorama.jpg",
+    "author": "Jan Engelhardt",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "wuhan-cn-map-poster": {
     "slug": "wuhan-cn-map-poster",
@@ -994,8 +994,8 @@
     "city": "Zarqa",
     "country": "Jordan",
     "src": "/assets/city-photos/zarqa-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Ma%27soum_Circle_-_Zarqa_(2).jpg",
-    "author": "Taha Al-Hayali",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Arab_Army_Square.jpg",
+    "author": "Mohammad hajeer",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
