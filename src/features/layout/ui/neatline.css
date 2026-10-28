@@ -20,14 +20,35 @@
 .neatline-section-box {
   display: flex;
   flex-direction: column;
-  margin: 10px 0 12px;
-  padding: 12px 14px;
-  border-radius: 14px;
+  margin: 0 0 2mm 0;
+  padding: 10px 12px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(12, 26, 40, 0.65);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+}
+
+.neatline-borders-box {
+  margin: 0 0 2mm 0 !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.neatline-adjust-box {
+  margin: 0 0 2mm 0 !important;
+  animation: neatlineAdjustSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes neatlineAdjustSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .neatline-section-box-header {
@@ -295,18 +316,24 @@
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   gap: 8px !important;
-  max-height: 195px !important;
-  min-height: 84px !important;
   overflow-y: auto !important;
   overscroll-behavior: contain;
   padding: 2px;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
+  transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* When a border is selected, style box remains spacious showing 4 cards (2 rows) */
+/* Initially when no border is selected: all borders open and visible */
+.neatline-picker:not(.has-selected-border) .neatline-borders-box .neatline-options {
+  max-height: 520px !important;
+  min-height: 84px !important;
+}
+
+/* When a border is clicked/selected: options shrink back to show 4 cards smoothly */
 .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {
-  max-height: 185px !important;
+  max-height: 176px !important;
+  min-height: 84px !important;
 }
 
 .neatline-borders-box .neatline-options::-webkit-scrollbar,

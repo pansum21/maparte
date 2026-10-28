@@ -1727,6 +1727,15 @@
     display: none;
   }
 
+  /* Frames drawer: exactly 2mm padding on left, right, top and bottom */
+  .app-shell[data-desktop-tab="frames"] .desktop-settings-slide .accordion-body-inner {
+    padding: 2mm !important;
+  }
+
+  .app-shell[data-desktop-tab="frames"] .desktop-settings-slide .settings-panel {
+    padding-bottom: 0 !important;
+  }
+
   [data-desktop-tab="layers"]
     .desktop-settings-slide
     .mobile-section:not(.mobile-section--layers) {
