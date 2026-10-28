@@ -44,20 +44,20 @@
     "city": "Amman",
     "country": "Jordan",
     "src": "/assets/city-photos/amman-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Amman_BW_34.JPG",
-    "author": "Berthold Werner",
-    "license": "CC BY 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Amman_cityscape_and_skyline_from_Citadel_Hill.jpg",
+    "author": "Daniel Case",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "andijon-map-poster": {
     "slug": "andijon-map-poster",
     "city": "Andijon",
     "country": "Uzbekistan",
     "src": "/assets/city-photos/andijon-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Street_Scene_with_Trio_-_Andijon_-_Uzbekistan_(7543574054).jpg",
-    "author": "Adam Jones from Kelowna, BC, Canada",
-    "license": "CC BY-SA 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Street_in_Andijan.jpg",
+    "author": "Umarxon III",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "ankara-map-poster": {
     "slug": "ankara-map-poster",
@@ -74,7 +74,7 @@
     "city": "Arar",
     "country": "Saudi Arabia",
     "src": "/assets/city-photos/arar-sa-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Pipeline_Arar.jpg",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:20210128_153213Arar_Tower.jpg",
     "author": "Niboj74",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
@@ -104,10 +104,10 @@
     "city": "Baghdad",
     "country": "Iraq",
     "src": "/assets/city-photos/baghdad-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:160731-D-PB383-021_Tigris_River_flows_through_Baghdad,_July_2016.JPG",
-    "author": "DoD photo by Navy Petty Officer 2nd Class Dominique A. Pineiro",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Baghdad_Street_View.jpg",
+    "author": "ainudil",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
   },
   "baku-map-poster": {
     "slug": "baku-map-poster",
@@ -704,10 +704,10 @@
     "city": "Namp’o",
     "country": "North Korea",
     "src": "/assets/city-photos/namp-o-kp-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Namp%27o_125.39169E_38.73185N.jpg",
-    "author": "NASA",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Nampocity.jpg",
+    "author": "Raymond K. Cunningham, Jr.",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "omsk-ru-map-poster": {
     "slug": "omsk-ru-map-poster",
@@ -844,10 +844,10 @@
     "city": "Sumgayit",
     "country": "Azerbaijan",
     "src": "/assets/city-photos/sumgayit-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:ASAN_Sumgayit.jpg",
-    "author": "Sortilegus",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Goyerchin_Parki,symbol_of_Sumgayit_an_amazing_place_to_walk_by_and_enjoy.jpg",
+    "author": "Fidan's amazing world",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "tashkent-map-poster": {
     "slug": "tashkent-map-poster",
@@ -1944,10 +1944,10 @@
     "city": "Thimphu",
     "country": "Bhutan",
     "src": "/assets/city-photos/thimphu-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Memorial_Chorten,_Thimphu,_Bhutan.jpg",
-    "author": "Supreet02",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Thimphu_main_street_-_Bhutan_-_panoramio.jpg",
+    "author": "David Broad",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
   },
   "tsirang-bt-map-poster": {
     "slug": "tsirang-bt-map-poster",
@@ -2434,8 +2434,8 @@
     "city": "Leon",
     "country": "Nicaragua",
     "src": "/assets/city-photos/leon-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Street_Scene_with_Christmas_Ornaments_-_Leon_-_Nicaragua_(31525363646).jpg",
-    "author": "Adam Jones from Kelowna, BC, Canada",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Street_in_Le%C3%B3n,_Nicaragua.jpg",
+    "author": "Micah MacAllen",
     "license": "CC BY-SA 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
   },
@@ -3544,10 +3544,10 @@
     "city": "Mar del Plata",
     "country": "Argentina",
     "src": "/assets/city-photos/mar-del-plata-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Capilla_insitituto_Unzu%C3%A9_Mar_del_Plata-_Argentina_L%C3%A1mpara.JPG",
-    "author": "Biruma",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:MDQ_skyline.jpg",
+    "author": "Gonza77 talk",
+    "license": "Public domain",
+    "licenseUrl": ""
   },
   "maracaibo-map-poster": {
     "slug": "maracaibo-map-poster",
@@ -4304,8 +4304,8 @@
     "city": "Holguín",
     "country": "Cuba",
     "src": "/assets/city-photos/holguin-cu-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Holgu%C3%ADn-1.jpg",
-    "author": "Marcel601",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Holgu%C3%ADn_Street.jpg",
+    "author": "This photo was taken by Anton Zelenov . Please credit this with : Photo : Anton Zelenov in the immediate vicinity of the image. If you use one of my photos, please email me (account needed) or leave me a short message on my discussion page . It would be greatly appreciated. Do not copy this image illegally by ignoring the terms of the license below, as it is not in the public domain. If you would like special permission to use, license, or purchase the image please contact me to negotiate terms.",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
@@ -4884,10 +4884,10 @@
     "city": "Santiago de Veraguas",
     "country": "Panama",
     "src": "/assets/city-photos/santiago-de-veraguas-pa-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Panama_-_Diocesi_di_Santiago_de_Veraguas.png",
-    "author": "Croberto68",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Iglesia_Santiago_de_Apostol.jpg",
+    "author": "IsabellaKadoch",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "santo-domingo-map-poster": {
     "slug": "santo-domingo-map-poster",
@@ -6014,10 +6014,10 @@
     "city": "Andorra la Vella",
     "country": "Andorra",
     "src": "/assets/city-photos/andorra-la-vella-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Andorra_la_Vella,_museo_de_Arquitectura_Rom%C3%A1nica_02.jpg",
-    "author": "María Sacristán",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Andorra_la_Vella_-_view.jpg",
+    "author": "Tiia Monto",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "antalya-map-poster": {
     "slug": "antalya-map-poster",
@@ -7174,10 +7174,10 @@
     "city": "Dumbéa",
     "country": "New Caledonia",
     "src": "/assets/city-photos/dumbea-nc-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Columba_vitiensis_hypoenochroa,_Dumb%C3%A9a,_New_Caledonia_1.jpg",
-    "author": "benkeen",
-    "license": "CC0",
-    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Barrage_de_la_dumbea_nouvelle_Cal%C3%A9donie.jpg",
+    "author": "Laigle karl",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "dunedin-map-poster": {
     "slug": "dunedin-map-poster",
