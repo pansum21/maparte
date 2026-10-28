@@ -11,6 +11,7 @@ const reviewBlanks = JSON.parse(await readFile(path.join(root, "src/data/cityPho
 const userAgent = "MapArteCityPhotoBuilder/1.0 (https://maparte.vercel.app/)";
 let nextCommonsRequestAt = 0;
 const cleanText = (value = "") => String(value).replace(/<[^>]*>/g, " ").replace(/&nbsp;|&#160;/g, " ").replace(/\s+/g, " ").trim();
+const assetFilenameFor = (slug) => slug === "al-ahmadi-map-poster" ? "al-ahmadi-city-poster.webp" : `${slug}.webp`;
 const safeDecode = (value = "") => {
   try { return decodeURIComponent(String(value)); }
   catch { return String(value).replace(/%([0-9a-f]{2})/gi, " "); }
@@ -353,8 +354,8 @@ await mkdir(stagingDir, { recursive: true });
 const results = await mapLimit(cities, 3, async (city) => {
   const current = existingPhotos[city.slug];
   if (current && !refreshSlugs.has(city.slug)) return current;
-  const filename = `${city.slug}.webp`;
-  const destination = path.join(stagingDir, filename);
+  const filename = assetFilenameFor(city.slug);
+  const destination = path.join(stagingDir, `${city.slug}.webp`);
   const sidecar = path.join(stagingDir, `${city.slug}.json`);
   try {
     const stagedMeta = JSON.parse(await readFile(sidecar, "utf8"));
@@ -412,7 +413,7 @@ const manifest = Object.fromEntries(cities.flatMap((city, index) => {
 }));
 for (const slug of refreshSlugs) {
   try {
-    await rename(path.join(stagingDir, `${slug}.webp`), path.join(outputDir, `${slug}.webp`));
+    await rename(path.join(stagingDir, `${slug}.webp`), path.join(outputDir, assetFilenameFor(slug)));
     await rm(path.join(stagingDir, `${slug}.json`), { force: true });
   } catch { /* Keep the existing asset when no replacement passed validation. */ }
 }

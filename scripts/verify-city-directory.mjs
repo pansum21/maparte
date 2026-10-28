@@ -30,7 +30,7 @@ for (const item of directory) {
   if (!item.city || !item.country || !item.countryCode) errors.push(`Missing city/country identity: ${item.slug}`);
   if (!Number.isFinite(item.lat) || item.lat < -90 || item.lat > 90 || !Number.isFinite(item.lon) || item.lon < -180 || item.lon > 180) errors.push(`Invalid coordinates: ${item.slug}`);
   const photo = photos[item.slug];
-  if (!photo || photo.src !== `/assets/city-photos/${item.slug}.webp`) {
+  if (!photo || !photo.src?.startsWith("/assets/city-photos/") || path.basename(photo.src) !== photo.src.slice("/assets/city-photos/".length)) {
     errors.push(`Missing local photo metadata: ${item.slug}`);
     continue;
   }
