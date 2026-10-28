@@ -78,8 +78,6 @@ export const SINGLE_COLOR_SWATCHES: { id: string; hex: string; name: string }[] 
   { id: "cool-gray", hex: "#94a3b8", name: "Cool Silver" },
   { id: "platinum", hex: "#cbd5e1", name: "Platinum" },
   { id: "white", hex: "#ffffff", name: "Pure White" },
-  { id: "gold", hex: "#d4af37", name: "Imperial Gold" },
-  { id: "blueprint", hex: "#9CC3DA", name: "Blueprint Blue" },
 ];
 
 export const MIX_GRADIENT_PRESETS: MixGradientPreset[] = [
@@ -2239,12 +2237,11 @@ export function NeatlinePicker({
                 <div className="neatline-custom-grad-row">
                   <span className="neatline-custom-label">Custom:</span>
                   <div className="neatline-custom-grad-split">
-                    <label className="neatline-custom-grad-bar-half" title="Click to pick Start Color">
+                    <label className="neatline-custom-grad-bar-half" title="Choose first gradient color">
                       <span
                         className="neatline-custom-grad-fill"
                         style={{ background: selection.gradientFrom || "#f43f5e" }}
                       />
-                      <span className="neatline-custom-grad-text">From</span>
                       <input
                         type="color"
                         value={selection.gradientFrom || "#f43f5e"}
@@ -2253,13 +2250,11 @@ export function NeatlinePicker({
                         }
                       />
                     </label>
-                    <span className="neatline-custom-grad-divider" />
-                    <label className="neatline-custom-grad-bar-half" title="Click to pick End Color">
+                    <label className="neatline-custom-grad-bar-half" title="Choose second gradient color">
                       <span
                         className="neatline-custom-grad-fill"
                         style={{ background: selection.gradientTo || "#fb923c" }}
                       />
-                      <span className="neatline-custom-grad-text">To</span>
                       <input
                         type="color"
                         value={selection.gradientTo || "#fb923c"}
