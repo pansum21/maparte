@@ -189,6 +189,28 @@ body.has-custom-backdrop .poster-ghost-layer {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.backdrop-nav-tabs--full {
+  display: flex !important;
+  width: 100% !important;
+  margin-top: 10px;
+  background: rgba(10, 20, 32, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 4px;
+  box-sizing: border-box;
+  gap: 6px;
+}
+
+.backdrop-nav-tabs--full .backdrop-nav-tab {
+  flex: 1 1 50%;
+  text-align: center;
+  justify-content: center;
+  padding: 9px 14px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border-radius: 9px;
+}
+
 :root[data-backdrop-mode="light"] .backdrop-nav-tabs {
   background: rgba(15, 23, 42, 0.06);
   border-color: rgba(15, 23, 42, 0.12);
@@ -269,16 +291,16 @@ body.has-custom-backdrop .poster-ghost-layer {
 .backdrop-selected-wall-name {
   display: block;
   margin-top: 3px;
-  color: var(--ink);
-  font-size: 0.88rem;
-  font-weight: 700;
-  line-height: 1.2;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 750;
+  line-height: 1.25;
 }
 
 .backdrop-selected-wall-desc {
   margin: 4px 0 0;
-  color: rgba(160, 185, 205, 0.85);
-  font-size: 0.75rem;
+  color: rgba(226, 240, 253, 0.92);
+  font-size: 0.78rem;
   line-height: 1.35;
 }
 
@@ -928,14 +950,8 @@ body.has-custom-backdrop .poster-ghost-layer {
 
 .mixer-swatches-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
-}
-
-@media (max-width: 600px) {
-  .mixer-swatches-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 .mixer-swatch-chip {
@@ -971,21 +987,23 @@ body.has-custom-backdrop .poster-ghost-layer {
 }
 
 .swatch-name {
-  font-size: 0.74rem;
-  font-weight: 500;
-  color: var(--ink);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .mixer-controls-solid {
-  grid-template-columns: 1fr;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
 }
 
 .mixer-input-hint {
   font-size: 0.74rem;
-  color: rgba(160, 185, 205, 0.75);
+  color: rgba(210, 230, 248, 0.9);
   line-height: 1.35;
 }
 
@@ -1038,19 +1056,104 @@ body.has-custom-backdrop .poster-ghost-layer {
 }
 
 .mixer-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: rgba(195, 220, 240, 0.85);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 :root[data-backdrop-mode="light"] .mixer-label {
   color: #334155;
 }
 
+.mixer-preview-label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
 .mixer-color-input-wrap {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.mixer-color-input-wrap--50 {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.mixer-color-picker--50 {
+  flex: 1 1 50%;
+  width: 50%;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.mixer-color-picker--50::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.mixer-color-picker--50::-webkit-color-swatch {
+  border: none;
+  border-radius: 9px;
+}
+
+.mixer-hex-input--50 {
+  flex: 1 1 50%;
+  width: 50%;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(10, 22, 36, 0.75);
+  color: #ffffff;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+:root[data-backdrop-mode="light"] .mixer-hex-input--50 {
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f172a;
+  border-color: rgba(15, 23, 42, 0.18);
+}
+
+/* Gradient Dual Layout: side-by-side 50/50 rows */
+.mixer-dual-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.mixer-dual-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+}
+
+.mixer-dual-col {
+  flex: 1 1 50%;
+  width: 50%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.mixer-dual-col .mixer-color-picker--50,
+.mixer-dual-col .mixer-hex-input--50 {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  display: block;
 }
 
 .mixer-color-picker {

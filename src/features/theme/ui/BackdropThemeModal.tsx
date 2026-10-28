@@ -180,29 +180,7 @@ export default function BackdropThemeModal({
         <div className="backdrop-modal-header">
           <div className="backdrop-modal-heading-row">
             <div className="backdrop-modal-heading-copy">
-              <div className="backdrop-modal-title-wrap">
-                <h2 className="backdrop-modal-title">Wall Mockup</h2>
-                <div className="backdrop-nav-tabs" role="tablist" aria-label="Wall options">
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={activeTab === "solid"}
-                    className={`backdrop-nav-tab ${activeTab === "solid" ? "is-active" : ""}`}
-                    onClick={() => setActiveTab("solid")}
-                  >
-                    🎨 Wall Color
-                  </button>
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={activeTab === "gradient"}
-                    className={`backdrop-nav-tab ${activeTab === "gradient" ? "is-active" : ""}`}
-                    onClick={() => setActiveTab("gradient")}
-                  >
-                    🌈 Gradient Wall
-                  </button>
-                </div>
-              </div>
+              <h2 className="backdrop-modal-title">Wall Mockup</h2>
               <span className="backdrop-selected-wall-name">
                 {activeTab === "solid"
                   ? "Solid Wall Paint & Designer Swatches"
@@ -227,6 +205,29 @@ export default function BackdropThemeModal({
               </button>
             </div>
           </div>
+
+          {/* Full Width Navigation Tabs */}
+          <div className="backdrop-nav-tabs backdrop-nav-tabs--full" role="tablist" aria-label="Wall options">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === "solid"}
+              className={`backdrop-nav-tab ${activeTab === "solid" ? "is-active" : ""}`}
+              onClick={() => setActiveTab("solid")}
+            >
+              🎨 Wall Color
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === "gradient"}
+              className={`backdrop-nav-tab ${activeTab === "gradient" ? "is-active" : ""}`}
+              onClick={() => setActiveTab("gradient")}
+            >
+              🌈 Gradient Wall
+            </button>
+          </div>
+
           <p className="backdrop-seo-description" id="wall-color-seo-description" hidden={!showWallInfo}>
             {WALL_SEO_DESCRIPTION}
           </p>
@@ -273,24 +274,28 @@ export default function BackdropThemeModal({
               </div>
             </div>
 
-            {/* Pick Solid Color */}
+            {/* Pick Solid Color - 50% / 50% split */}
             <div className="mixer-controls-grid mixer-controls-solid">
               <div className="mixer-control-group">
                 <label className="mixer-label">Pick Wall Paint Color</label>
-                <div className="mixer-color-input-wrap">
-                  <input
-                    type="color"
-                    className="mixer-color-picker"
-                    value={sanitizeHex(customDraft.color1)}
-                    onChange={(e) => handleSolidColorChange(e.target.value)}
-                  />
-                  <input
-                    type="text"
-                    className="mixer-hex-input"
-                    value={customDraft.color1}
-                    onChange={(e) => handleSolidColorChange(e.target.value)}
-                    placeholder="#1e293b"
-                  />
+                <div className="mixer-dual-row">
+                  <div className="mixer-dual-col">
+                    <input
+                      type="color"
+                      className="mixer-color-picker mixer-color-picker--50"
+                      value={sanitizeHex(customDraft.color1)}
+                      onChange={(e) => handleSolidColorChange(e.target.value)}
+                    />
+                  </div>
+                  <div className="mixer-dual-col">
+                    <input
+                      type="text"
+                      className="mixer-hex-input mixer-hex-input--50"
+                      value={customDraft.color1}
+                      onChange={(e) => handleSolidColorChange(e.target.value)}
+                      placeholder="#1e293b"
+                    />
+                  </div>
                 </div>
                 <span className="mixer-input-hint">
                   Choose any wall tone. Changes apply to the background instantly and stay saved permanently.
@@ -332,22 +337,44 @@ export default function BackdropThemeModal({
               />
             </div>
 
-            {/* Mixer Controls for 2-color lighting */}
-            <div className="mixer-controls-grid">
-              <div className="mixer-control-group">
-                <label className="mixer-label">Top / Primary Color</label>
-                <div className="mixer-color-input-wrap">
+            {/* Mixer Controls for 2-color lighting: 50/50 dual swatches, then 50/50 dual hex numbers */}
+            <div className="mixer-dual-layout">
+              {/* Row 1: Labels */}
+              <div className="mixer-dual-row mixer-dual-row--labels">
+                <label className="mixer-label mixer-dual-col">Top / Primary Color</label>
+                <label className="mixer-label mixer-dual-col">Bottom / Accent Color</label>
+              </div>
+
+              {/* Row 2: Color Pickers side-by-side (50% - 50%) */}
+              <div className="mixer-dual-row mixer-dual-row--pickers">
+                <div className="mixer-dual-col">
                   <input
                     type="color"
-                    className="mixer-color-picker"
+                    className="mixer-color-picker mixer-color-picker--50"
                     value={sanitizeHex(customDraft.color1)}
                     onChange={(e) =>
                       handleUpdateField("color1", e.target.value)
                     }
                   />
+                </div>
+                <div className="mixer-dual-col">
+                  <input
+                    type="color"
+                    className="mixer-color-picker mixer-color-picker--50"
+                    value={sanitizeHex(customDraft.color2)}
+                    onChange={(e) =>
+                      handleUpdateField("color2", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Hex Numbers side-by-side (50% - 50%) */}
+              <div className="mixer-dual-row mixer-dual-row--hexes">
+                <div className="mixer-dual-col">
                   <input
                     type="text"
-                    className="mixer-hex-input"
+                    className="mixer-hex-input mixer-hex-input--50"
                     value={customDraft.color1}
                     onChange={(e) =>
                       handleUpdateField("color1", e.target.value)
@@ -355,22 +382,10 @@ export default function BackdropThemeModal({
                     placeholder="#1e293b"
                   />
                 </div>
-              </div>
-
-              <div className="mixer-control-group">
-                <label className="mixer-label">Bottom / Accent Color</label>
-                <div className="mixer-color-input-wrap">
-                  <input
-                    type="color"
-                    className="mixer-color-picker"
-                    value={sanitizeHex(customDraft.color2)}
-                    onChange={(e) =>
-                      handleUpdateField("color2", e.target.value)
-                    }
-                  />
+                <div className="mixer-dual-col">
                   <input
                     type="text"
-                    className="mixer-hex-input"
+                    className="mixer-hex-input mixer-hex-input--50"
                     value={customDraft.color2}
                     onChange={(e) =>
                       handleUpdateField("color2", e.target.value)
@@ -380,7 +395,8 @@ export default function BackdropThemeModal({
                 </div>
               </div>
 
-              <div className="mixer-control-group mixer-angle-group">
+              {/* Row 4: Light Source Angle */}
+              <div className="mixer-control-group mixer-angle-group" style={{ marginTop: "12px" }}>
                 <div className="mixer-angle-header">
                   <label className="mixer-label">Light Source Angle</label>
                   <span className="mixer-angle-val">{customDraft.angle}°</span>
