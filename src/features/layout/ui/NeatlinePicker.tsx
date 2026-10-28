@@ -177,7 +177,12 @@ export function getBorderCategoryTag(pattern: LinePattern): string {
   }
 }
 
-export function getPatternSpanUnits(pattern: LinePattern, _designScale = 1.0): number {
+export function getPatternSpanUnits(
+  pattern: LinePattern,
+  widths: number[] = [],
+  designScale = 1.0,
+): number {
+  const clearGap = 6.0 * designScale;
   switch (pattern) {
     case "single":
       return 0;
@@ -186,13 +191,23 @@ export function getPatternSpanUnits(pattern: LinePattern, _designScale = 1.0): n
     case "thin-thick":
     case "dashed":
     case "dotted":
-    case "dash-dot":
-      return 10;
+    case "dash-dot": {
+      const w0 = widths[0] ?? 4.8;
+      const w1 = widths[1] ?? 4.8;
+      return (w0 + w1) / 2 + clearGap;
+    }
     case "triple":
-    case "triple-sandwich":
-      return 14;
-    default:
-      return 10;
+    case "triple-sandwich": {
+      const w0 = widths[0] ?? 4.8;
+      const w1 = widths[1] ?? 4.8;
+      const w2 = widths[2] ?? 4.8;
+      return (w0 + 2 * w1 + w2) / 2 + 2 * clearGap;
+    }
+    default: {
+      const w0 = widths[0] ?? 4.8;
+      const w1 = widths[1] ?? 4.8;
+      return (w0 + w1) / 2 + clearGap;
+    }
   }
 }
 
@@ -204,13 +219,20 @@ export function getPosterBorderMetrics(
   lineId?: string,
   thicknesses?: Record<string, number[]>,
   designScale = 1.0,
-  showWhiteMat = false,
+  showWhiteMatParam?: boolean,
 ) {
   const width = Number(widthValue) > 0 ? Number(widthValue) : 21;
   const height = Number(heightValue) > 0 ? Number(heightValue) : 29.7;
   const shortSide = Math.min(width, height);
   const hasBorder = Boolean(lineId && lineId !== "none");
   const innerW = 1000;
+
+  // Automatically activate white mat behind border when any border is selected.
+  // When no border ("none"), full bleed without white mat.
+  const showWhiteMat =
+    typeof showWhiteMatParam === "boolean"
+      ? showWhiteMatParam
+      : hasBorder;
 
   // Default gap is 0.0cm (edge-to-edge flush with map boundary).
   const gapCm =
@@ -270,7 +292,9 @@ export function getPosterBorderMetrics(
       const widths = widthsFor(style.id, thicknesses || {});
       const maxStroke = widths.length ? Math.max(...widths) : 2.0;
       edgeInset = maxStroke / 2 + 0.5;
-      spanUnits = getPatternSpanUnits(style.pattern, designScale);
+      const rawSpan = getPatternSpanUnits(style.pattern, widths, designScale);
+      const maxSafeSpan = innerH > 0 ? Math.max(6, innerH * 0.14) : rawSpan;
+      spanUnits = Math.min(rawSpan, maxSafeSpan);
       offInner = edgeInset + spanUnits;
       const innerStrokeWidth = widths[widths.length - 1] ?? maxStroke;
       const innerEdgeUnits = offInner + innerStrokeWidth / 2;
@@ -355,7 +379,12 @@ export function getPosterBorderMetrics(
   // 2. Outward expansion: As line thickness increases, it grows OUTWARD towards the paper edge,
   //    keeping the map opening steady so the map does NOT shrink inward!
   // 3. Inner line touches the map opening flush (+ gapCm).
-  // Estimate borderBandCm
+  // Initial calculation based on targetMapInset
+  let usableWidthCm = Math.max(0.1, width - targetMapInset * 2);
+  let usableHeightCm = Math.max(0.1, height - targetMapInset * 2);
+  let innerH = (innerW * usableHeightCm) / usableWidthCm;
+  let unitScale = innerW / usableWidthCm;
+
   let spanUnits = 0;
   let edgeInset = 1.5;
   let offInner = edgeInset;
@@ -366,23 +395,21 @@ export function getPosterBorderMetrics(
     const widths = widthsFor(style.id, thicknesses || {});
     const maxStroke = widths.length ? Math.max(...widths) : 2.0;
     edgeInset = maxStroke / 2 + 0.5;
-    spanUnits = getPatternSpanUnits(style.pattern, designScale);
+    const rawSpan = getPatternSpanUnits(style.pattern, widths, designScale);
+    const maxSafeSpan = innerH > 0 ? Math.max(6, innerH * 0.14) : rawSpan;
+    spanUnits = Math.min(rawSpan, maxSafeSpan);
     offInner = edgeInset + spanUnits;
     innerStrokeWidth = widths[widths.length - 1] ?? maxStroke;
   }
   const innerEdgeUnits = offInner + innerStrokeWidth / 2;
-
-  // Initial calculation based on targetMapInset
-  let usableWidthCm = Math.max(0.1, width - targetMapInset * 2);
-  let unitScale = innerW / usableWidthCm;
   let borderBandCm = innerEdgeUnits / unitScale;
 
   // Outward expansion logic:
   // The outer white margin shrinks as border thickness grows outward!
   const outerMatCm = Math.max(minOuterMargin, targetMapInset - borderBandCm);
   usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
-  const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
-  const innerH = (innerW * usableHeightCm) / usableWidthCm;
+  const actualUsableHeightCm = Math.max(0.1, height - outerMatCm * 2);
+  innerH = (innerW * actualUsableHeightCm) / usableWidthCm;
   unitScale = innerW / usableWidthCm;
   borderBandCm = innerEdgeUnits / unitScale;
 
@@ -485,15 +512,12 @@ function readSelection(): NeatlineSelection {
             ? "mix"
             : "single";
 
-      const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-      const urlMat = urlParams?.get("mat");
-      const showWhiteMat = urlMat !== null && urlMat !== undefined
-        ? (urlMat === "1" || urlMat === "true")
-        : Boolean(parsed.showWhiteMat);
+      const lineId = parsed.lineId && isLineId(parsed.lineId) ? parsed.lineId : "none";
+      const showWhiteMat = lineId !== "none";
 
       return {
         ...empty,
-        lineId: parsed.lineId && isLineId(parsed.lineId) ? parsed.lineId : "none",
+        lineId,
         cornerId: "none",
         frameId: "none",
         lineVariant: colorMode === "mix" ? "colorful" : "plain",
@@ -1101,20 +1125,13 @@ export function NeatlinePicker({
     );
   }, [selection]);
 
-  const toggleWhiteMat = (enabled: boolean) => {
-    setSelection((current) => ({
-      ...current,
-      showWhiteMat: enabled,
-    }));
-  };
-
   const selectStyle = (style: BorderStyle) => {
     setSelection((current) => ({
       ...current,
       lineId: style.id,
       cornerId: "none",
       frameId: "none",
-      showWhiteMat: style.id !== "none" ? true : current.showWhiteMat,
+      showWhiteMat: style.id !== "none",
     }));
   };
 
@@ -1214,34 +1231,7 @@ export function NeatlinePicker({
         </div>
       </div>
 
-      {/* 1. Compact White Border Row with info button */}
-      <div className="neatline-white-border-row">
-        <button
-          type="button"
-          className={`neatline-mat-single-toggle-btn ${selection.showWhiteMat ? "is-active" : ""}`}
-          onClick={() => toggleWhiteMat(!selection.showWhiteMat)}
-          title={selection.showWhiteMat ? "Remove White Border" : "Add White Border"}
-        >
-          {selection.showWhiteMat ? "Remove White Border" : "Add White Border"}
-        </button>
-        <div className="neatline-info-tooltip-wrap">
-          <button
-            type="button"
-            className="neatline-info-btn"
-            aria-label="White Border info"
-            title={selection.showWhiteMat ? "White gallery border active behind map and neatline" : "Clean edge-to-edge map without white border"}
-          >
-            ⓘ
-          </button>
-          <div className="neatline-info-tooltip" role="tooltip">
-            {selection.showWhiteMat
-              ? "White gallery border active behind map and neatline"
-              : "Clean edge-to-edge map without white border"}
-          </div>
-        </div>
-      </div>
-
-      {/* 2. BORDERS BOX (Internal scroll without visible scrollbar) */}
+      {/* BORDERS BOX (Internal scroll without visible scrollbar) */}
       <div className="neatline-section-box neatline-borders-box">
         <div className="neatline-section-box-header">
           <span className="neatline-section-box-title">Border Styles</span>
@@ -1267,7 +1257,7 @@ export function NeatlinePicker({
               <div className="neatline-card-copy">
                 <span className="neatline-card-name">
                   {style.id === "none"
-                    ? (selection.showWhiteMat ? "No border" : "None")
+                    ? "No border"
                     : style.name.replace(/^(Classic|Vintage|Designer|Ornate)\s+/i, "")}
                 </span>
               </div>
