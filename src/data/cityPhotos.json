@@ -124,10 +124,10 @@
     "city": "Basrah",
     "country": "Iraq",
     "src": "/assets/city-photos/basrah-iq-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Basra_Corniche.jpg",
-    "author": "Abdulsalam Al Dabbagh",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Basra_city.jpg",
+    "author": "File:Basra city.jpg",
+    "license": "Public domain",
+    "licenseUrl": ""
   },
   "batumi-map-poster": {
     "slug": "batumi-map-poster",
@@ -314,8 +314,8 @@
     "city": "Faisalabad",
     "country": "Pakistan",
     "src": "/assets/city-photos/faisalabad-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Clocktower_Faisalabad,_Panorama.jpg",
-    "author": "Minhajian",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Clock_Tower_Faisalabad_by_Usman_Nadeem.jpg",
+    "author": "Usman Nadeem",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
@@ -344,10 +344,10 @@
     "city": "Gaza",
     "country": "Palestinian Territory",
     "src": "/assets/city-photos/gaza-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Water_supply_in_West_Bank_and_Gaza_February_2014_1water_photoblog.jpg",
-    "author": "Photo by Muhammad Sabah, B’Tselem",
-    "license": "CC BY 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Gaza_City.JPG",
+    "author": "OneArmedMan",
+    "license": "Public domain",
+    "licenseUrl": ""
   },
   "gaziantep-tr-map-poster": {
     "slug": "gaziantep-tr-map-poster",
@@ -454,10 +454,10 @@
     "city": "Isfara",
     "country": "Tajikistan",
     "src": "/assets/city-photos/isfara-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Isfara,market.jpg",
-    "author": "Bertramz",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Isfara_Park.jpg",
+    "author": "Metr250",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "islamabad-map-poster": {
     "slug": "islamabad-map-poster",
@@ -514,10 +514,10 @@
     "city": "Kandahār",
     "country": "Afghanistan",
     "src": "/assets/city-photos/kandahar-af-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:T-54-55s_outside_Kandahar_Airfield_in_Afghanistan.jpg",
-    "author": "Gregology",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Street_in_Kandahar_City2.jpg",
+    "author": "Ghamai from United States",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
   },
   "karaj-ir-map-poster": {
     "slug": "karaj-ir-map-poster",
@@ -564,8 +564,8 @@
     "city": "Kŭlob",
     "country": "Tajikistan",
     "src": "/assets/city-photos/kulob-tj-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Location_of_Kulob_District_in_Tajikistan.png",
-    "author": "Ahonc",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Kulob,ul-Somoni.jpg",
+    "author": "Bertramz",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
@@ -634,7 +634,7 @@
     "city": "Manas",
     "country": "Kyrgyzstan",
     "src": "/assets/city-photos/manas-kg-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Jalalabad_sity.jpg",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Uprava_Chyngyz_Aytmatov.jpg",
     "author": "Mirzoulugʻbek",
     "license": "CC0",
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
@@ -1044,10 +1044,10 @@
     "city": "Al Ahmadi",
     "country": "Kuwait",
     "src": "/assets/city-photos/al-ahmadi-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Al_Ahmadi_(Kuwait).png",
-    "author": "arz",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Road_side_Ahamadhi.jpg",
+    "author": "Serahpt",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "al-ain-city-ae-map-poster": {
     "slug": "al-ain-city-ae-map-poster",
@@ -1464,10 +1464,10 @@
     "city": "Khulna",
     "country": "Bangladesh",
     "src": "/assets/city-photos/khulna-bd-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Village_Super_Market_at_Dumuria,_Khulna,_Bangladesh.jpg",
-    "author": "Smnazimuddin",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Khulna_Skyline.jpg",
+    "author": "Sahil Hasnain",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
   },
   "kolkata-map-poster": {
     "slug": "kolkata-map-poster",
@@ -1604,10 +1604,10 @@
     "city": "Mueang Nonthaburi",
     "country": "Thailand",
     "src": "/assets/city-photos/mueang-nonthaburi-th-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Amphoe_Mueang_Nonthaburi.png",
-    "author": "Suppseak Tonyang",
-    "license": "CC0",
-    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Nonthaburi1.jpg",
+    "author": "Daduschu at German Wikipedia ( Original text: Daduschu )",
+    "license": "Public domain",
+    "licenseUrl": ""
   },
   "mumbai-map-poster": {
     "slug": "mumbai-map-poster",
@@ -1954,20 +1954,20 @@
     "city": "Tsirang",
     "country": "Bhutan",
     "src": "/assets/city-photos/tsirang-bt-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:BhutanTsirang.png",
-    "author": "User:Nichalp",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Dzong_at_Damphu_Tsirang_Bhutan.jpg",
+    "author": "Christopher J. Fynn",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "tuen-mun-hk-map-poster": {
     "slug": "tuen-mun-hk-map-poster",
     "city": "Tuen Mun",
     "country": "Hong Kong",
     "src": "/assets/city-photos/tuen-mun-hk-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E5%85%9C%E8%98%AD_Paphiopedilum_cultivars_1_-%E9%A6%99%E6%B8%AF%E9%9D%92%E6%9D%BE%E8%A7%80%E8%98%AD%E8%8A%B1%E5%B1%95_Tuen_Mun,_Hong_Kong-_(26163443564).jpg",
-    "author": "阿橋 HQ",
-    "license": "CC BY-SA 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Tuen_Mun_Town_Centre.jpg",
+    "author": "kristianecyrus",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "victoria-hong-kong-map-poster": {
     "slug": "victoria-hong-kong-map-poster",
@@ -2454,8 +2454,8 @@
     "city": "Les Abymes",
     "country": "Guadeloupe",
     "src": "/assets/city-photos/les-abymes-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Les_Abymes_(Guadeloupe)_dans_son_Arrondissement.png",
-    "author": "FCK-Iceman",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Mairie_des_Abymes_3.jpg",
+    "author": "Enrevseluj",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
@@ -2674,20 +2674,20 @@
     "city": "Portmore",
     "country": "Jamaica",
     "src": "/assets/city-photos/portmore-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Portmore,_Saint_Catherine,_Middlesex_County,_Jamaica_(2025-10-30-16-25-10_UMBRA-10).tiff",
-    "author": "Umbra Lab, Inc.",
-    "license": "CC BY 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Hellshire-beach.jpg",
+    "author": "Op. Deo at English Wikipedia",
+    "license": "Public domain",
+    "licenseUrl": ""
   },
   "providenciales-map-poster": {
     "slug": "providenciales-map-poster",
     "city": "Providenciales",
     "country": "Turks and Caicos Islands",
     "src": "/assets/city-photos/providenciales-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Turks_and_Caicos_Islands_-_Providenciales.PNG",
-    "author": "edited by M.Minderhoud",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Providenciales_Town_Centre_Mall.jpg",
+    "author": "Rian Castillo",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
   },
   "puebla-map-poster": {
     "slug": "puebla-map-poster",
@@ -2804,10 +2804,10 @@
     "city": "San Miguel",
     "country": "El Salvador",
     "src": "/assets/city-photos/san-miguel-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:El_Salvador_-_Diocesi_di_San_Miguel.jpg",
-    "author": "Croberto68 at Italian Wikipedia",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Catedral_Nuestra_Se%C3%B1ora_de_La_Paz,_Ciudad_de_San_Miguel,_El_Salvador..JPG",
+    "author": "Krissiadamarisvj",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "san-miguelito-map-poster": {
     "slug": "san-miguelito-map-poster",
@@ -3204,10 +3204,10 @@
     "city": "Chiclayo",
     "country": "Peru",
     "src": "/assets/city-photos/chiclayo-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Chiclayo_Airshow_2024_showcases_Peruvian,_US_partnership_(8480995).jpg",
-    "author": "U.S. Air Force photo by Tech. Sgt. Devin Boyer",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Chiclayo,_Plaza_de_Armas.jpg",
+    "author": "Burkhard Mücke",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "chimbote-pe-map-poster": {
     "slug": "chimbote-pe-map-poster",
@@ -3334,10 +3334,10 @@
     "city": "Eloy Alfaro",
     "country": "Ecuador",
     "src": "/assets/city-photos/eloy-alfaro-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Calle_Eloy_Alfaro,_Alaus%C3%AD.jpg",
-    "author": "Bernard Gagnon",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Centro_de_Dur%C3%A1n.jpg",
+    "author": "Montielec98",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "fortaleza-map-poster": {
     "slug": "fortaleza-map-poster",
@@ -3394,8 +3394,8 @@
     "city": "Ibague",
     "country": "Colombia",
     "src": "/assets/city-photos/ibague-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Ibague_plaza_murillo_toro.jpg",
-    "author": "Puertagustavo99",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Plaza_de_Bolivar_Ibague.JPG",
+    "author": "Ibajaime",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
@@ -3444,8 +3444,8 @@
     "city": "Las Piedras",
     "country": "Uruguay",
     "src": "/assets/city-photos/las-piedras-uy-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Estaci%C3%B3n_de_Trenes_Las_Piedras._Ubicada_en_el_departamento_de_Canelones._Vista_general.JPG",
-    "author": "Alefer1970",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:LasPiedras_central_avenue.jpg",
+    "author": "Hoverfish",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
@@ -3664,8 +3664,8 @@
     "city": "Piura",
     "country": "Peru",
     "src": "/assets/city-photos/piura-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Monumento_a_Francisco_Pizarro,_plaza_Tres_Culturas,_Piura,_Per%C3%BA.jpg",
-    "author": "Wcruzy",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Piura_desde_el_aire.jpg",
+    "author": "Lunaprin 12",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
@@ -3704,10 +3704,10 @@
     "city": "Potosí",
     "country": "Bolivia",
     "src": "/assets/city-photos/potosi-bo-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Panorama_Villa_Imperial_de_Potos%C3%AD_en_1758_por_Gaspar_de_Berrio.jpg",
-    "author": "Giadrico7",
-    "license": "CC0",
-    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Panorama_de_la_Ciudad_de_Potos%C3%AD_Bolivia.jpg",
+    "author": "Joachim Pietsch",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
   },
   "pucallpa-pe-map-poster": {
     "slug": "pucallpa-pe-map-poster",
@@ -4084,10 +4084,10 @@
     "city": "Caguas",
     "country": "Puerto Rico",
     "src": "/assets/city-photos/caguas-pr-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Xylophanes_chiron_cubanus_MHNT_CUT_2010_0_76_Puerto_Rico_Caguas_male_dorsal.jpg",
-    "author": "Didier Descouens",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Carousel_and_church_at_main_plaza_in_Caguas,_Puerto_Rico.jpg",
+    "author": "Winifredo Torres",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
   },
   "cap-haitien-ht-map-poster": {
     "slug": "cap-haitien-ht-map-poster",
@@ -4104,10 +4104,10 @@
     "city": "Capesterre-Belle-Eau",
     "country": "Guadeloupe",
     "src": "/assets/city-photos/capesterre-belle-eau-gp-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Capesterre-Belle-Eau_(Guadeloupe)_dans_son_Arrondissement.png",
-    "author": "FCK-Iceman",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:All%C3%A9e_Dumanoir,_Capesterre-Belle-Eau.JPG",
+    "author": "Filbar29",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "castries-map-poster": {
     "slug": "castries-map-poster",
@@ -4334,10 +4334,10 @@
     "city": "Jutiapa",
     "country": "Guatemala",
     "src": "/assets/city-photos/jutiapa-gt-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Municipio_de_Jutiapa,_Guatemala.png",
-    "author": "Carmurob",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Parque_y_kiosko_de_Jutiapa.JPG",
+    "author": "BenjaTaker",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "kingston-map-poster": {
     "slug": "kingston-map-poster",
@@ -4384,10 +4384,10 @@
     "city": "Las Tunas",
     "country": "Cuba",
     "src": "/assets/city-photos/las-tunas-cu-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Victoria_de_Las_Tunas,_Cuba_Location.png",
-    "author": "No machine-readable author provided. Qyd assumed (based on copyright claims).",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Las_Tunas_Plaza_Martiana_CF9A0928.jpg",
+    "author": "Christian Pirkl",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "le-francois-mq-map-poster": {
     "slug": "le-francois-mq-map-poster",
@@ -4844,10 +4844,10 @@
     "city": "Santa Ana",
     "country": "El Salvador",
     "src": "/assets/city-photos/santa-ana-sv-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Municipio_de_Santa_Ana_(en_El_Salvador).PNG",
-    "author": "No machine-readable author provided. Juan Miguel assumed (based on copyright claims).",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Parque_Libertad_en_Santa_Ana,_El_Salvador_-_2013.jpg",
+    "author": "Erickssonr",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "santa-clara-cu-map-poster": {
     "slug": "santa-clara-cu-map-poster",
@@ -5224,10 +5224,10 @@
     "city": "Casablanca",
     "country": "Morocco",
     "src": "/assets/city-photos/casablanca-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Casablanca_(203660919).jpeg",
-    "author": "Vincent If Huang",
-    "license": "CC BY 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Casablanca_city.jpg",
+    "author": "Farid mernissi",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "conakry-map-poster": {
     "slug": "conakry-map-poster",
@@ -5944,10 +5944,10 @@
     "city": "Viana",
     "country": "Angola",
     "src": "/assets/city-photos/viana-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Old_town_hall_of_Viana_do_Castelo_03.jpg",
-    "author": "Krzysztof Golik",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Acail_Angola_-_Viana_-_panoramio.jpg",
+    "author": "Simão Duarte",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
   "victoria-sc-map-poster": {
     "slug": "victoria-sc-map-poster",
@@ -7034,10 +7034,10 @@
     "city": "Arawa",
     "country": "Papua New Guinea",
     "src": "/assets/city-photos/arawa-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Buin_and_Siwai_villagers_delivering_cocoa_to_Arawa_port.jpg",
-    "author": "Masalai",
-    "license": "CC BY 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Bagana.jpg",
+    "author": "Biogeograph",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "auckland-map-poster": {
     "slug": "auckland-map-poster",
@@ -7084,10 +7084,10 @@
     "city": "Bulolo",
     "country": "Papua New Guinea",
     "src": "/assets/city-photos/bulolo-pg-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:2019-05-06_Bulolo,_Papua_New_Guinea_M7.2_earthquake_shakemap_(USGS).jpg",
-    "author": "United States Geological Survey",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:(Aerial_view_of_the_topography_of_Papua_New_Guinea)_-_DPLA_-_3fe0ce3b61f68844e51c98c13175d71f.jpg",
+    "author": "Carlquist, Sherwin John, 1930-2021",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
   },
   "cairns-map-poster": {
     "slug": "cairns-map-poster",
@@ -7344,10 +7344,10 @@
     "city": "Kokopo",
     "country": "Papua New Guinea",
     "src": "/assets/city-photos/kokopo-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:2018-10-11_Kokopo,_Papua_New_Guinea_M6.2_earthquake_shakemap.jpg",
-    "author": "United States Geological Survey",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Rabaul_-_Kokopo_(30).jpg",
+    "author": "Clément Piment",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
   },
   "koror-map-poster": {
     "slug": "koror-map-poster",
@@ -7474,10 +7474,10 @@
     "city": "Malango",
     "country": "Solomon Islands",
     "src": "/assets/city-photos/malango-sb-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:2022-11-22_Malango,_Solomon_Islands_M7_earthquake_shakemap_(USGS).jpg",
-    "author": "United States Geological Survey",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Guadalcanal_Field.jpg",
+    "author": "Torbenbrinker",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "maliana-map-poster": {
     "slug": "maliana-map-poster",
@@ -7714,10 +7714,10 @@
     "city": "Popondetta",
     "country": "Papua New Guinea",
     "src": "/assets/city-photos/popondetta-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:2020-07-17_Popondetta,_Papua_New_Guinea_M7_earthquake_shakemap_(USGS).jpg",
-    "author": "United States Geological Survey",
-    "license": "Public domain",
-    "licenseUrl": ""
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Port_Moresby-Popondetta_001.jpg",
+    "author": "Christopher John SSF",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
   },
   "porirua-map-poster": {
     "slug": "porirua-map-poster",
@@ -7824,10 +7824,10 @@
     "city": "Suai",
     "country": "Timor Leste",
     "src": "/assets/city-photos/suai-map-poster.webp",
-    "sourcePage": "https://commons.wikimedia.org/wiki/File:Psilogramma_sundana,_female,_underside._Timor-Leste,_Portuguese_Timor,_Suai.jpg",
-    "author": "The Trustees of the Natural History Museum, London",
-    "license": "CC BY 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:New_Ave_Maria_Church_Suai.jpg",
+    "author": "Jose Fernando Real",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
   "sunshine-coast-map-poster": {
     "slug": "sunshine-coast-map-poster",

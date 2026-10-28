@@ -15,10 +15,41 @@ const safeDecode = (value = "") => {
   try { return decodeURIComponent(String(value)); }
   catch { return String(value).replace(/%([0-9a-f]{2})/gi, " "); }
 };
-const badPhotoTitle = (value = "") => /(?:montage|collage|flag(?:ge)?|(?:^|[\s_.-])maps?(?:[\s_.-]|$)|location map|map tile|map image|satellite|topographic|globe|chart|graph|infographic|graphic|diagram|logo|seal|stamp|mailbox|airport|eclipse|coat[ _-]of[ _-]arms|subway|parade|conference|demonstration|protest|school(?:s|children)?|students?|aircraft|airplane|airline|\bplane\b|trolleybus|\btrain\b|\bbus\b|\bcar\b|automobile|vehicle|\btruck\b|taxi|vendor|seller|weaver|bird|prinia|wildlife|animal|\bcat\b|\bdog\b|insect|moth|fungus|skink|farm|agricultural|terrace|wheat|refugee|relief supplies|soup|restaurant|cafe|coffeehouse|coffee shop|\bshop\b|\bstore\b|plate|dinner|food|carpet|portrait|\bperson\b|\bpeople\b|\bgroup\b|\bboys\b|\bgirls\b|interview|secretary|minister|president|politician|speaker|\bspeech\b|musician|singer|concert|football|soccer|basketball|cricket|\bmatch\b|\bversus\b|\bvs\b|\bteam\b|\bplayer\b|\bclub\b|\bleague\b|\btank\b|soldier|military|army|firing range|looter|damage from|attack on|\bwar\b|construction|workshop|atelier|wikiquote tour|wikiloves earth|schoolroom|classroom|teacher|ferry|highspeed|shipwreck|\bship\b|\bboat\b|railway station|train station|platform|museum interior|\b18\d{2}\b|\b19\d{2}\b|historic photograph|old photograph|webm|video|\.(?:pdf|djvu|svg|webm|mp4|mov|avi|ogv)(?:$|[\s_.-])|heraldry|arting|graffiti|depression|freddy.?lino|changi.?beach|km-grande.?comore-moroni|manas[ _-]raion|^le moule\.png$|^mashhad iran\.jpg$)/i.test(safeDecode(String(value).replace(/_/g, " ")));
+const badPhotoTitle = (value = "") => /(?:montage|collage|flag(?:ge)?|(?:^|[\s_.-])maps?(?:[\s_.-]|$)|shakemap|locator map|location map|location of|map tile|map image|satellite|topographic|globe|chart|\bgraph\b|infographic|graphic|diagram|logo|seal|stamp|mailbox|airport|eclipse|coat[ _-]of[ _-]arms|subway|parade|conference|demonstration|protest|school(?:s|children)?|students?|aircraft|airplane|airline|\bplane\b|airshow|trolleybus|\btrain\b|\bbus\b|\bcar\b|automobile|vehicle|\btruck\b|taxi|vendor|seller|weaver|bird|prinia|wildlife|animal|\bcat\b|\bdog\b|insect|moth|butterfly|fungus|skink|farm|agricultural|terrace|wheat|refugee|relief supplies|soup|restaurant|cafe|coffeehouse|coffee shop|\bshop\b|\bstore\b|plate|dinner|food|carpet|portrait|\bperson\b|\bpeople\b|\bgroup\b|\bboys\b|\bgirls\b|interview|secretary|minister|president|politician|speaker|\bspeech\b|musician|singer|concert|football|soccer|basketball|cricket|\bmatch\b|\bversus\b|\bvs\b|\bteam\b|\bplayer\b|\bclub\b|\bleague\b|\btank\b|soldier|military|army|firing range|looter|damage from|attack on|\bwar\b|construction|workshop|atelier|wikiquote tour|wikiloves earth|schoolroom|classroom|teacher|ferry|highspeed|shipwreck|\bship\b|\bboat\b|railway station|train station|platform|museum interior|\b18\d{2}\b|\b19\d{2}\b|historic photograph|old photograph|webm|video|\.(?:pdf|djvu|svg|webm|mp4|mov|avi|ogv)(?:$|[\s_.-])|heraldry|arting|graffiti|depression|freddy.?lino|changi.?beach|km-grande.?comore-moroni|manas[ _-]raion|^le moule\.png$|^mashhad iran\.jpg$)/i.test(safeDecode(String(value).replace(/_/g, " ")));
 const badPhotoSource = (source = "") => badPhotoTitle(source.split("/").pop() || source);
 const curatedPhotoFiles = {
-  "basrah-iq-map-poster": "File:Basra Corniche.jpg",
+  "tsirang-bt-map-poster": "File:Dzong at Damphu Tsirang Bhutan.jpg",
+  "basrah-iq-map-poster": "File:Basra city.jpg",
+  "kulob-tj-map-poster": "File:Kulob,ul-Somoni.jpg",
+  "al-ahmadi-map-poster": "File:Road side Ahamadhi.jpg",
+  "mueang-nonthaburi-th-map-poster": "File:Nonthaburi1.jpg",
+  "les-abymes-map-poster": "File:Mairie des Abymes 3.jpg",
+  "providenciales-map-poster": "File:Providenciales Town Centre Mall.jpg",
+  "san-miguel-map-poster": "File:Catedral Nuestra Señora de La Paz, Ciudad de San Miguel, El Salvador..JPG",
+  "santa-ana-sv-map-poster": "File:Parque Libertad en Santa Ana, El Salvador - 2013.jpg",
+  "capesterre-belle-eau-gp-map-poster": "File:Allée Dumanoir, Capesterre-Belle-Eau.JPG",
+  "jutiapa-gt-map-poster": "File:Parque y kiosko de Jutiapa.JPG",
+  "las-tunas-cu-map-poster": "File:Las Tunas Plaza Martiana CF9A0928.jpg",
+  "potosi-bo-map-poster": "File:Panorama de la Ciudad de Potosí Bolivia.jpg",
+  "suai-map-poster": "File:New Ave Maria Church Suai.jpg",
+  "caguas-pr-map-poster": "File:Carousel and church at main plaza in Caguas, Puerto Rico.jpg",
+  "chiclayo-map-poster": "File:Chiclayo, Plaza de Armas.jpg",
+  "kandahar-af-map-poster": "File:Street in Kandahar City2.jpg",
+  "gaza-map-poster": "File:Gaza City.JPG",
+  "isfara-map-poster": "File:Isfara Park.jpg",
+  "faisalabad-map-poster": "File:Clock Tower Faisalabad by Usman Nadeem.jpg",
+  "tuen-mun-hk-map-poster": "File:Tuen Mun Town Centre.jpg",
+  "bulolo-pg-map-poster": "File:(Aerial view of the topography of Papua New Guinea) - DPLA - 3fe0ce3b61f68844e51c98c13175d71f.jpg",
+  "kokopo-map-poster": "File:Rabaul - Kokopo (30).jpg",
+  "portmore-map-poster": "File:Hellshire-beach.jpg",
+  "arawa-map-poster": "File:Bagana.jpg",
+  "popondetta-map-poster": "File:Port Moresby-Popondetta 001.jpg",
+  "malango-sb-map-poster": "File:Guadalcanal Field.jpg",
+  "eloy-alfaro-map-poster": "File:Centro de Durán.jpg",
+  "ibague-map-poster": "File:Plaza de Bolivar Ibague.JPG",
+  "lambare-map-poster": "File:Plaza Central de Lambaré, Paraguay.jpg",
+  "las-piedras-uy-map-poster": "File:LasPiedras central avenue.jpg",
+  "piura-map-poster": "File:Piura desde el aire.jpg",
   "ar-rayyan-map-poster": "File:A roundabout in Old Al Rayyan.jpg",
   "pucallpa-pe-map-poster": "File:Pucallpa Plaza San Martín Fountain by Night.jpg",
   "madinah-sa-map-poster": "File:As Suqya, Medina Saudi Arabia - panoramio.jpg",
@@ -32,7 +63,10 @@ const curatedPhotoFiles = {
   "madang-map-poster": "File:Madang (5501557827).jpg",
   "bekasi-id-map-poster": "File:Bekasi Mall Night.jpg",
   "escuintla-gt-map-poster": "File:Escuintla, Guatemala - panoramio (11).jpg",
-  "manas-kg-map-poster": "File:Jalalabad sity.jpg",
+  "manas-kg-map-poster": "File:Uprava Chyngyz Aytmatov.jpg",
+  "khulna-bd-map-poster": "File:Khulna Skyline.jpg",
+  "casablanca-map-poster": "File:Casablanca city.jpg",
+  "viana-map-poster": "File:Acail Angola - Viana - panoramio.jpg",
   "dodoma-map-poster": "File:Scene at Nyerere Square, Dodoma City.jpg",
   "port-de-paix-ht-map-poster": "File:US Navy 080908-N-9774H-147 An aerial view of the devastation in Port de Paix after four storms in one month have devastated the island and killed more than 800 people.jpg",
   "khirdalan-az-map-poster": "File:Xırdalan (2).jpg",
@@ -122,14 +156,15 @@ async function fetchImageBytes(url) {
   throw new Error("Image retries exhausted");
 }
 
-function licensedPhoto(info, page, { allowAirport = false, allowContextualPeople = false } = {}) {
+function licensedPhoto(info, page, { allowAirport = false, allowContextualPeople = false, allowLocalTransit = false } = {}) {
   const metadata = info?.extmetadata ?? {};
   const license = cleanText(metadata.LicenseShortName?.value ?? "");
   const licenseUrl = metadata.LicenseUrl?.value ?? "";
   const description = cleanText(metadata.ImageDescription?.value ?? "");
   const portCityAerial = allowContextualPeople && /^File:US Navy 080908-N-9774H-147 An aerial view of the devastation in Port de Paix/i.test(page?.title ?? "");
-  const titleBlocked = badPhotoTitle(page?.title ?? "") && !(allowAirport && /airport/i.test(page?.title ?? "")) && !portCityAerial;
-  const descriptionBlocked = badPhotoTitle(description) && !(allowAirport && /airport/i.test(description)) && !portCityAerial;
+  const localTransit = allowLocalTransit && /Viana.*Transporte.*rodoviario/i.test(page?.title ?? "");
+  const titleBlocked = badPhotoTitle(page?.title ?? "") && !(allowAirport && /airport/i.test(page?.title ?? "")) && !portCityAerial && !localTransit;
+  const descriptionBlocked = badPhotoTitle(description) && !(allowAirport && /airport/i.test(description)) && !portCityAerial && !localTransit;
   if (!info?.thumburl || !info?.descriptionurl || !license || titleBlocked || descriptionBlocked) return null;
   if (!/CC0|CC BY|Public domain|PD-|CC BY-SA/i.test(license)) return null;
   return {
@@ -155,6 +190,7 @@ async function findCommonsPhoto(city) {
     const curated = licensedPhoto(info, page, {
       allowAirport: city.slug === "tocumen-pa-map-poster",
       allowContextualPeople: city.slug === "port-de-paix-ht-map-poster",
+      allowLocalTransit: city.slug === "viana-map-poster",
     });
     if (!curated || Math.max(info.width, info.height) < 500 || Math.min(info.width, info.height) < 200) {
       throw new Error(`Curated Commons image failed license/relevance checks: ${curatedTitle}`);
