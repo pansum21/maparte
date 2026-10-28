@@ -67,7 +67,7 @@ try {
   console.log(`- Patterns: ${allPatternIds.length}`);
   console.log(`- Gap values: ${gapTestValues.length}`);
   console.log(`- Thickness variants: ${thicknessTestValues.length}`);
-  console.log(`Total planned tests: ${layouts.length * allPatternIds.length * gapTestValues.length * thicknessTestValues.length}`);
+  console.log(`Total planned tests: ${layouts.length * allPatternIds.length * gapTestValues.length * thicknessTestValues.length * 2} (with and without white mat)`);
 
   for (const layout of layouts) {
     const widthCm = Number(layout.widthCm);
@@ -80,6 +80,7 @@ try {
         continue;
       }
 
+      for (const showWhiteMat of [false, true]) {
       for (const gapCm of gapTestValues) {
         for (const thicknessVal of thicknessTestValues) {
           totalTests++;
@@ -98,6 +99,7 @@ try {
             lineVariant: "plain",
             cornerVariant: "plain",
             mapGapCm: gapCm,
+            showWhiteMat,
           };
 
           const metrics = getPosterBorderMetrics(
@@ -106,20 +108,22 @@ try {
             gapCm,
             patternId,
             thicknesses,
+            1.0,
+            showWhiteMat,
           );
 
           // 1. Check physical clearances
           const clearanceCm = metrics.mapInsetCm - (metrics.outerMatCm + metrics.borderBandCm);
           if (Math.abs(clearanceCm - gapCm) > 0.0001) {
             failures.push(
-              `Clearance mismatch on ${layout.id}/${patternId}/gap-${gapCm}: clearance=${clearanceCm}, expected=${gapCm}`,
+              `Clearance mismatch on ${layout.id}/${patternId}/mat-${showWhiteMat}/gap-${gapCm}: clearance=${clearanceCm}, expected=${gapCm}`,
             );
             continue;
           }
 
           if (clearanceCm < 0) {
             failures.push(
-              `NEGATIVE CLEARANCE (OVERLAP) on ${layout.id}/${patternId}/gap-${gapCm}: clearance=${clearanceCm}`,
+              `NEGATIVE CLEARANCE (OVERLAP) on ${layout.id}/${patternId}/mat-${showWhiteMat}/gap-${gapCm}: clearance=${clearanceCm}`,
             );
             continue;
           }
@@ -129,7 +133,7 @@ try {
           const mapOpeningHeightCm = heightCm - metrics.mapInsetCm * 2;
           if (mapOpeningWidthCm <= 0 || mapOpeningHeightCm <= 0) {
             failures.push(
-              `Map window squashed to zero on ${layout.id}/${patternId}: w=${mapOpeningWidthCm}, h=${mapOpeningHeightCm}`,
+              `Map window squashed to zero on ${layout.id}/${patternId}/mat-${showWhiteMat}: w=${mapOpeningWidthCm}, h=${mapOpeningHeightCm}`,
             );
             continue;
           }
@@ -148,10 +152,8 @@ try {
             continue;
           }
 
-          // In SVG coordinates:
-          // The map window boundary is at:
-          // X in [mapInsetUnits, innerW - mapInsetUnits]
-          // Y in [mapInsetUnits, innerH - mapInsetUnits]
+          // In SVG coordinates relative to the artwork viewport, the map
+          // window starts after the border band; the white mat is outside it.
           const mapInsetUnits = (metrics.borderBandCm + metrics.gapCm) * metrics.unitScale;
           const innerStrokeWidth =
             metrics.offInner - metrics.edgeInset >= 0
@@ -162,7 +164,7 @@ try {
           // The inner border line stroke MUST finish before mapInsetUnits
           if (innerBorderStrokeEdgeUnits > mapInsetUnits - (gapCm * metrics.unitScale) + 0.001) {
             failures.push(
-              `Inner border stroke encroaches into gap on ${layout.id}/${patternId}: edge=${innerBorderStrokeEdgeUnits}, mapStart=${mapInsetUnits}`,
+              `Inner border stroke encroaches into gap on ${layout.id}/${patternId}/mat-${showWhiteMat}: edge=${innerBorderStrokeEdgeUnits}, mapStart=${mapInsetUnits}`,
             );
             continue;
           }
@@ -193,7 +195,7 @@ try {
             ) {
               rectEncroachment = true;
               failures.push(
-                `Rect encroached inside map window on ${layout.id}/${patternId}: rect=[${x},${y},${w},${h}] inside map opening [${mapInsetUnits.toFixed(1)}, ${(metrics.innerW - mapInsetUnits).toFixed(1)}]`,
+                `Rect encroached inside map window on ${layout.id}/${patternId}/mat-${showWhiteMat}: rect=[${x},${y},${w},${h}] inside map opening [${mapInsetUnits.toFixed(1)}, ${(metrics.innerW - mapInsetUnits).toFixed(1)}]`,
               );
               break;
             }
@@ -203,6 +205,7 @@ try {
 
           passedTests++;
         }
+      }
       }
     }
   }

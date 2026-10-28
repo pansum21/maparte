@@ -95,6 +95,7 @@ export default function PreviewPanel({
   } = useMapSync(state, dispatch, mapRef);
 
   const frameRef = useRef<HTMLDivElement | null>(null);
+  const mapWindowRef = useRef<HTMLDivElement | null>(null);
   const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
@@ -155,13 +156,15 @@ export default function PreviewPanel({
   }, []);
 
   useEffect(() => {
-    const element = frameRef.current;
+    const element = mapWindowRef.current;
     if (!element) return;
 
     const observer = new ResizeObserver(([entry]) => {
       setContainerWidth(entry.contentRect.width);
     });
 
+    // Border/mat insets change the drawable map area without changing the
+    // poster frame. Calibrate zoom against the visible map window itself.
     observer.observe(element);
     return () => observer.disconnect();
   }, [setContainerWidth]);
@@ -439,7 +442,7 @@ export default function PreviewPanel({
             } as CSSProperties
           }
         >
-          <div className="poster-map-window">
+          <div ref={mapWindowRef} className="poster-map-window">
           <Suspense
             fallback={
               <div className="map-container map-preview-loading" role="status" aria-live="polite">

@@ -32,6 +32,7 @@
 .poster-frame {
   position: relative;
   z-index: 1;
+  isolation: isolate;
   aspect-ratio: var(--poster-aspect, 2 / 3);
   width: min(100%, calc(82vh * var(--poster-aspect, 0.6666667)));
   max-width: 100%;
@@ -1107,6 +1108,7 @@
 
 .poster-map-window {
   position: absolute;
+  z-index: 1;
   /* Equal physical white margin on every edge when white mat is enabled, or 0% for full bleed. */
   top: var(--map-inset-y, 0%);
   bottom: var(--map-inset-y, 0%);
@@ -1132,7 +1134,8 @@
 
 .poster-frame .neatline-artwork.preview-neatline {
   position: absolute;
-  z-index: 6;
+  /* Keep the border above the map canvas and white mat on every viewport. */
+  z-index: 2;
   top: var(--mat-inset-y, 0%);
   bottom: var(--mat-inset-y, 0%);
   left: var(--mat-inset-x, 0%);
