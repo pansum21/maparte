@@ -545,5 +545,5 @@ for (let i = 0; i < cityDirectory.length; i++) {
 }
 
 const targetPath = path.resolve(__dirname, '../src/data/seoCities.json');
-fs.writeFileSync(targetPath, JSON.stringify(output, null, 2), 'utf8');
+fs.writeFileSync(targetPath, JSON.stringify(output), 'utf8');
 console.log(`Generated complete SEO cities database with ${output.length} cities at: ${targetPath}`);
