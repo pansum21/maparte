@@ -12,7 +12,7 @@ const cityCollator = new Intl.Collator("en", { sensitivity: "base", numeric: tru
 const errors = [];
 const checks = [];
 const counts = Object.fromEntries(CITY_REGIONS.map((name) => [name, { cities: 0, photos: 0 }]));
-const disallowedImageTitle = /(?:montage|flag(?:ge)?|(?:^|[\s_.-])maps?(?:[\s_.-]|$)|location map|globe|airport|eclipse|coat[ _-]of[ _-]arms|logo|seal|subway|parade|conference|school(?:s|children)?|students?|aircraft|airplane|airline|\bplane\b|trolleybus|\btrain\b|\bcar\b|automobile|vehicle|\btruck\b|food|breakfast|lunch|restaurant|\bshop\b|\bstore\b|portrait|\bperson\b|\bpeople\b|\bgroup\b|interview|secretary|minister|president|politician|speaker|\bspeech\b|musician|singer|concert|football|soccer|basketball|cricket|\.svg|heraldry|arting|graffiti|depression|freddy.?lino|changi.?beach|km-grande.?comore-moroni)/i;
+const disallowedImageTitle = /(?:montage|flag(?:ge)?|(?:^|[\s_.-])maps?(?:[\s_.-]|$)|location map|globe|airport|eclipse|coat[ _-]of[ _-]arms|logo|seal|subway|parade|conference|school(?:s|children)?|students?|aircraft|airplane|airline|\bplane\b|trolleybus|\btrain\b|\bcar\b|automobile|vehicle|\btruck\b|food|breakfast|lunch|restaurant|\bshop\b|\bstore\b|portrait|\bperson\b|\bpeople\b|\bgroup\b|interview|secretary|minister|president|politician|speaker|\bspeech\b|musician|singer|concert|football|soccer|basketball|cricket|devastation|\.svg|heraldry|arting|graffiti|depression|freddy.?lino|changi.?beach|km-grande.?comore-moroni)/i;
 
 if (directory.length !== 800) errors.push(`Expected 800 city entries; found ${directory.length}`);
 if (Object.keys(photos).length !== 800) errors.push(`Expected 800 photo metadata records; found ${Object.keys(photos).length}`);
@@ -36,8 +36,7 @@ for (const item of directory) {
   }
   if (!photo.sourcePage || !photo.author || !photo.license) errors.push(`Missing photo attribution/license: ${item.slug}`);
   const sourceTitle = decodeURIComponent((photo.sourcePage ?? "").split("/").pop() ?? "").replace(/^File:/, "").replace(/_/g, " ");
-  const reviewedPortCityAerial = item.slug === "port-de-paix-ht-map-poster" && /^US Navy 080908-N-9774H-147 An aerial view of the devastation in Port de Paix/i.test(sourceTitle);
-  if (disallowedImageTitle.test(sourceTitle) && !reviewedPortCityAerial) errors.push(`Image source title looks unsuitable for a city photo: ${item.slug}`);
+  if (disallowedImageTitle.test(sourceTitle)) errors.push(`Image source title looks unsuitable for a city photo: ${item.slug}`);
   const sameSource = photoSources.get(photo.sourcePage) ?? [];
   sameSource.push(item.slug);
   photoSources.set(photo.sourcePage, sameSource);

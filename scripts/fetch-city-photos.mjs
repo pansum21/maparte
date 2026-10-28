@@ -70,7 +70,7 @@ const curatedPhotoFiles = {
   "casablanca-map-poster": "File:Casablanca city.jpg",
   "viana-map-poster": "File:Acail Angola - Viana - panoramio.jpg",
   "dodoma-map-poster": "File:Scene at Nyerere Square, Dodoma City.jpg",
-  "port-de-paix-ht-map-poster": "File:US Navy 080908-N-9774H-147 An aerial view of the devastation in Port de Paix after four storms in one month have devastated the island and killed more than 800 people.jpg",
+  "port-de-paix-ht-map-poster": "File:Vue de la ville du Port de Paix (Nicolas Ozanne et Nicolas Ponce).jpg",
   "khirdalan-az-map-poster": "File:Xırdalan (2).jpg",
   "ibri-om-map-poster": "File:Roads less travelled at Ibri, Sultanate of Oman.jpg",
   "nay-pyi-taw-mm-map-poster": "File:NPDAerial22.jpg",
@@ -158,15 +158,14 @@ async function fetchImageBytes(url) {
   throw new Error("Image retries exhausted");
 }
 
-function licensedPhoto(info, page, { allowAirport = false, allowContextualPeople = false, allowLocalTransit = false } = {}) {
+function licensedPhoto(info, page, { allowAirport = false, allowLocalTransit = false } = {}) {
   const metadata = info?.extmetadata ?? {};
   const license = cleanText(metadata.LicenseShortName?.value ?? "");
   const licenseUrl = metadata.LicenseUrl?.value ?? "";
   const description = cleanText(metadata.ImageDescription?.value ?? "");
-  const portCityAerial = allowContextualPeople && /^File:US Navy 080908-N-9774H-147 An aerial view of the devastation in Port de Paix/i.test(page?.title ?? "");
   const localTransit = allowLocalTransit && /Viana.*Transporte.*rodoviario/i.test(page?.title ?? "");
-  const titleBlocked = badPhotoTitle(page?.title ?? "") && !(allowAirport && /airport/i.test(page?.title ?? "")) && !portCityAerial && !localTransit;
-  const descriptionBlocked = badPhotoTitle(description) && !(allowAirport && /airport/i.test(description)) && !portCityAerial && !localTransit;
+  const titleBlocked = badPhotoTitle(page?.title ?? "") && !(allowAirport && /airport/i.test(page?.title ?? "")) && !localTransit;
+  const descriptionBlocked = badPhotoTitle(description) && !(allowAirport && /airport/i.test(description)) && !localTransit;
   if (!info?.thumburl || !info?.descriptionurl || !license || titleBlocked || descriptionBlocked) return null;
   if (!/CC0|CC BY|Public domain|PD-|CC BY-SA/i.test(license)) return null;
   return {
@@ -191,7 +190,6 @@ async function findCommonsPhoto(city) {
     const info = page?.imageinfo?.[0];
     const curated = licensedPhoto(info, page, {
       allowAirport: city.slug === "tocumen-pa-map-poster",
-      allowContextualPeople: city.slug === "port-de-paix-ht-map-poster",
       allowLocalTransit: city.slug === "viana-map-poster",
     });
     if (!curated || Math.max(info.width, info.height) < 500 || Math.min(info.width, info.height) < 200) {
