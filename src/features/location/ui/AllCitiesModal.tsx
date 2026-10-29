@@ -454,6 +454,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
                 key={item.slug}
                 type="button"
                 className={`all-cities-card${isCurrent ? " is-active" : ""}`}
+                data-city-slug={item.slug}
                 style={{ display: "flex", flexDirection: "column", minHeight: "148px", overflow: "hidden" }}
                 onClick={() => handleCityPick(item)}
               >

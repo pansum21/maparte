@@ -1834,6 +1834,195 @@
   }
 }
 
+/* Phone drawers sit flush against the top edge of the bottom tool bar. Keep
+   enough room for the bar itself so it never covers a panel's last controls. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .mobile-drawer:not(.mobile-drawer--edit-map) {
+    inset: 0 0 calc(74px + env(safe-area-inset-bottom, 0px));
+  }
+
+  html[data-display-mode="standalone"] .mobile-drawer:not(.mobile-drawer--edit-map) {
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-drawer-sheet {
+    max-height: min(38vh, 360px);
+    background: linear-gradient(
+      180deg,
+      rgba(14, 28, 44, 0.66) 0%,
+      rgba(8, 18, 30, 0.76) 100%
+    );
+    backdrop-filter: blur(4px) saturate(145%);
+    -webkit-backdrop-filter: blur(4px) saturate(145%);
+  }
+
+  .mobile-drawer-sheet.is-expanded {
+    height: min(84vh, calc(100dvh - 74px - env(safe-area-inset-bottom, 0px)));
+    max-height: min(84vh, calc(100dvh - 74px - env(safe-area-inset-bottom, 0px)));
+  }
+
+  html[data-display-mode="standalone"] .mobile-drawer-sheet.is-expanded {
+    height: min(84vh, calc(100dvh - 64px - env(safe-area-inset-bottom, 0px)));
+    max-height: min(84vh, calc(100dvh - 64px - env(safe-area-inset-bottom, 0px)));
+  }
+
+  /* Theme cards use a vertical list on phones so the full names stay readable. */
+  [data-mobile-tab="theme"] .theme-card-list {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: min(42vh, 340px);
+    white-space: normal;
+    touch-action: pan-y;
+    scroll-snap-type: none;
+    padding-right: 2px;
+  }
+
+  [data-mobile-tab="theme"] .theme-card-list .theme-card {
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: 106px;
+  }
+
+  /* Let the marker picker use a larger sheet and keep its own contents scrollable. */
+  .mobile-drawer-sheet[data-mobile-tab="markers"] {
+    height: min(72vh, calc(100dvh - 74px - env(safe-area-inset-bottom, 0px)));
+    max-height: min(72vh, calc(100dvh - 74px - env(safe-area-inset-bottom, 0px)));
+  }
+
+  [data-mobile-tab="markers"] .mobile-drawer-content,
+  [data-mobile-tab="markers"] .mobile-section--markers,
+  [data-mobile-tab="markers"] .mobile-section--markers > .accordion-body,
+  [data-mobile-tab="markers"] .mobile-section--markers > .accordion-body > .accordion-body-inner {
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  [data-mobile-tab="markers"] .mobile-drawer-content::-webkit-scrollbar,
+  [data-mobile-tab="markers"] .mobile-section--markers::-webkit-scrollbar,
+  [data-mobile-tab="markers"] .mobile-section--markers > .accordion-body::-webkit-scrollbar,
+  [data-mobile-tab="markers"] .mobile-section--markers > .accordion-body > .accordion-body-inner::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Tokyo and Rome stay available on desktop; omit just these two mobile cards. */
+}
+
+@media (max-width: 768px) {
+  .all-cities-card[data-city-slug="tokyo-map-poster"],
+  .all-cities-card[data-city-slug="rome-map-poster"] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) and (pointer: coarse) {
+  .mobile-drawer:not(.mobile-drawer--edit-map) {
+    bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-drawer-sheet.is-expanded {
+    height: min(84vh, calc(100dvh - 86px - env(safe-area-inset-bottom, 0px)));
+    max-height: min(84vh, calc(100dvh - 86px - env(safe-area-inset-bottom, 0px)));
+  }
+}
+
+@media (max-width: 600px) {
+  /* Keep fullscreen exit controls above the editing dock and easy to reach. */
+  .app-shell.is-cinema-mode .cinema-top-bar-right {
+    top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+    right: 8px !important;
+    bottom: auto !important;
+    left: auto !important;
+    justify-content: flex-end !important;
+    flex-wrap: nowrap !important;
+    gap: 5px !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-top-fs-btn,
+  .app-shell.is-cinema-mode .cinema-top-exit-btn {
+    min-height: 36px !important;
+    padding: 5px 9px !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-top-fs-btn .cinema-fs-text,
+  .app-shell.is-cinema-mode .cinema-top-fs-btn .cinema-esc-kbd,
+  .app-shell.is-cinema-mode .cinema-top-exit-btn .cinema-esc-kbd {
+    display: none !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-top-exit-btn .cinema-exit-text {
+    display: inline !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-floating-dock-wrap {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+    width: auto !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-floating-dock {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: none !important;
+    gap: 4px !important;
+    padding: 4px !important;
+    border-radius: 13px !important;
+    backdrop-filter: blur(4px) saturate(145%) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(145%) !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-floating-dock:has(.cinema-dock-remove-photo-btn) {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-dock-divider {
+    display: none !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-dock-btn {
+    min-width: 0 !important;
+    min-height: 40px !important;
+    padding: 4px 3px !important;
+    gap: 3px !important;
+    border-radius: 9px !important;
+    font-size: 0.61rem !important;
+    line-height: 1.1 !important;
+    white-space: normal !important;
+    text-align: center !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-dock-btn__icon,
+  .app-shell.is-cinema-mode .cinema-dock-btn svg {
+    flex: 0 0 auto !important;
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-dock-remove-photo-btn span:last-child {
+    display: none !important;
+  }
+
+  .app-shell.is-cinema-mode .cinema-panel-popover {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: calc(100svh - 116px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+    overflow-y: auto !important;
+    scrollbar-width: none !important;
+    backdrop-filter: blur(4px) saturate(145%) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(145%) !important;
+  }
+}
+
 
 /* Tablet touch layout: keep the same tools, with more breathing room than phone. */
 @media (min-width: 601px) and (max-width: 1024px) and (pointer: coarse) {
