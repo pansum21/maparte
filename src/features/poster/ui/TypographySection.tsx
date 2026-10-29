@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePosterContext } from "./PosterContext";
 import type { PosterForm } from "@/features/poster/application/posterReducer";
 import { FONT_FAMILY_COUNT, type FontOption } from "@/core/config";
 import {
@@ -28,6 +29,7 @@ export default function TypographySection({
   onFontChange,
   fontOptions,
 }: TypographySectionProps) {
+  const { effectiveTheme } = usePosterContext();
   const fontCategories = ["Sans serif", "Serif", "Display", "Monospace"] as const;
   const [fontPickerOpen, setFontPickerOpen] = useState(false);
   const uniqueFontOptions = fontOptions.filter((option, index, options) => {
@@ -83,17 +85,17 @@ export default function TypographySection({
             <span className="theme-switch-track" aria-hidden="true" />
           </span>
         </label>
-        <label className="toggle-field">
-          <span>Overlay layer</span>
-          <span className="theme-switch">
-            <input
-              type="checkbox"
-              name="showMarkers"
-              checked={Boolean(form.showMarkers)}
-              onChange={onChange}
-            />
-            <span className="theme-switch-track" aria-hidden="true" />
-          </span>
+        {([['overlayTop', 'Overlay Top'], ['overlayBottom', 'Overlay Bottom']] as const).map(([name, label]) => (
+          <label className="toggle-field" key={name}>
+            <span>{label}</span><span className="theme-switch">
+              <input type="checkbox" name={name} checked={form[name] ?? form.showMarkers} onChange={onChange} />
+              <span className="theme-switch-track" aria-hidden="true" />
+            </span>
+          </label>
+        ))}
+        <label>Poster text color
+          <input type="color" name="posterTextColor" aria-label="Poster text color"
+            value={form.posterTextColor || effectiveTheme.ui.text} onChange={onChange} />
         </label>
 
         <div className="field-grid keep-two-mobile">

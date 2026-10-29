@@ -126,7 +126,7 @@ export default function MarkersSection() {
     activeMarkerId,
   } = state;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [markerPickerTab, setMarkerPickerTab] = useState<"icons" | "emoji">("icons");
+  const [markerPickerTab, setMarkerPickerTab] = useState<"icons" | "emoji" | "uploaded">("icons");
   const [isDefaultColorPickerOpen, setIsDefaultColorPickerOpen] =
     useState(false);
   const [openMarkerColorPickerId, setOpenMarkerColorPickerId] = useState<
@@ -464,9 +464,13 @@ export default function MarkersSection() {
               >
                 Emojis
               </button>
+              <button type="button" role="tab" aria-selected={markerPickerTab === "uploaded"}
+                className={markerPickerTab === "uploaded" ? "is-active" : ""}
+                onClick={() => setMarkerPickerTab("uploaded")}>Uploaded Markers</button>
             </div>
-            {markerPickerTab === "icons" ? (
+            {markerPickerTab !== "emoji" ? (
               <MarkerPicker
+                mode={markerPickerTab === "uploaded" ? "uploaded" : "icons"}
                 markerColor={markerDefaults.color}
                 customIcons={customMarkerIcons}
                 onIconClick={addMarker}

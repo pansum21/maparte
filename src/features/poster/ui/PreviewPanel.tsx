@@ -464,9 +464,9 @@ export default function PreviewPanel({
               onMoveEnd={handleMoveEnd}
             />
           </Suspense>
-          {form.showMarkers ? (
-            <GradientFades color={effectiveTheme.ui.bg} />
-          ) : null}
+          <GradientFades color={effectiveTheme.ui.bg}
+            top={form.overlayTop ?? form.showMarkers}
+            bottom={form.overlayBottom ?? form.showMarkers} />
           <RouteOverlay
             routes={state.routes}
             mapRef={mapRef}
@@ -504,7 +504,7 @@ export default function PreviewPanel({
             landColor={effectiveTheme.map.land}
             showPosterText={form.showPosterText}
             includeCredits={form.includeCredits}
-            showOverlay={form.showMarkers}
+            showOverlay={form.overlayBottom ?? form.showMarkers}
             customDate={form.customDate}
           />
           </div>

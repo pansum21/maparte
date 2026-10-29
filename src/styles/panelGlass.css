@@ -92,3 +92,72 @@
     padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* Compact phone controls: preserve the map view and keep every label reachable. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .location-panel-quick-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 100%;
+  }
+  .location-panel-city { min-width: 0; white-space: normal; }
+  .backdrop-presets-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .backdrop-preset-card { min-width: 0; width: 100%; }
+  .backdrop-preset-name { white-space: normal; overflow-wrap: anywhere; }
+  .backdrop-modal-footer { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .backdrop-modal-footer button { min-width: 0; width: 100%; white-space: normal; }
+  .backdrop-modal-footer .backdrop-reset-btn {
+    background: rgba(239, 68, 68, .14); color: #fca5a5; border: 1px solid rgba(239, 68, 68, .4);
+  }
+  [data-mobile-tab="layout"] .layout-inline-groups { display: block; overflow-x: hidden; }
+  [data-mobile-tab="layout"] .layout-inline-group { display: block; margin-bottom: 12px; }
+  [data-mobile-tab="layout"] .layout-inline-group h3 { display: block; }
+  [data-mobile-tab="layout"] .layout-inline-list {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
+    overflow-x: hidden; white-space: normal;
+  }
+  [data-layout-group="wallpaper"] .layout-inline-list,
+  [data-layout-group="iphone_wallpaper"] .layout-inline-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-mobile-tab="layout"] .layout-card {
+    min-width: 0; width: 100%; height: auto; min-height: 90px; margin: 0; padding: 6px;
+    white-space: normal; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  [data-mobile-tab="layout"] .layout-card-name { font-size: .7rem; line-height: 1.25; white-space: normal; overflow-wrap: anywhere; }
+  [data-mobile-tab="layout"] .layout-card-meta { font-size: .61rem; white-space: normal; }
+  [data-mobile-tab="layout"] .layout-inline-groups .layout-card .layout-card-symbol { width: 34px; height: 26px; }
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  [data-mobile-tab="frames"] .neatline-card-name { font-size: .65rem; white-space: normal; overflow-wrap: anywhere; }
+  [data-mobile-tab="templates"] .occasion-templates-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  [data-mobile-tab="templates"] .occasion-card { min-width: 0; padding: 8px; }
+  [data-mobile-tab="templates"] .occasion-card-title { font-size: .76rem; white-space: normal; }
+  .marker-picker-mode-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .marker-picker-mode-tabs button { min-width: 0; white-space: normal; padding: 7px 3px; font-size: .68rem; }
+
+  .app-shell.is-cinema-mode .cinema-floating-dock-wrap { left: 8px !important; right: 8px !important; width: auto !important; }
+  .app-shell.is-cinema-mode .cinema-floating-dock {
+    display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100% !important; max-width: none !important; gap: 4px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-floating-dock:has(.cinema-dock-remove-photo-btn) { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .app-shell.is-cinema-mode .cinema-dock-divider { display: none !important; }
+  .app-shell.is-cinema-mode .cinema-dock-btn { min-width: 0 !important; padding: 5px 3px !important; white-space: normal !important; font-size: .65rem !important; }
+  .app-shell.is-cinema-mode .cinema-panel-popover,
+  .app-shell.is-cinema-mode .cinema-layout-popover,
+  .app-shell.is-cinema-mode .cinema-placement-popover {
+    left: 8px !important; right: 8px !important; width: auto !important;
+    max-height: min(38vh, 360px) !important;
+    overflow-y: auto !important;
+    background: linear-gradient(155deg, rgba(17,35,52,.58), rgba(8,18,30,.64)) !important;
+    backdrop-filter: blur(4px) saturate(145%) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(145%) !important;
+  }
+  .cinema-range-control { grid-template-columns: 48px minmax(0, 1fr) 48px !important; }
+  .cinema-range-control .cinema-range-step { width: 48px !important; height: 36px !important; min-height: 36px !important; }
+  .cinema-range-control > button:first-child { grid-column: 1 !important; grid-row: 1 !important; }
+  .cinema-range-control > input.cinema-range-slider { grid-column: 2 !important; grid-row: 1 !important; width: 100% !important; }
+  .cinema-range-control > button:last-child { grid-column: 3 !important; grid-row: 1 !important; }
+}
+
+/* Three marker sources also stay together in the desktop panel. */
+.marker-picker-mode-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }

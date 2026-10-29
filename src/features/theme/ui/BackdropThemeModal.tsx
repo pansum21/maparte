@@ -303,18 +303,7 @@ export default function BackdropThemeModal({
               </div>
             </div>
 
-            <div className="mixer-actions-row">
-              <button
-                type="button"
-                className="mixer-apply-btn"
-                onClick={() => {
-                  handleSolidColorChange(customDraft.color1);
-                  onClose();
-                }}
-              >
-                ✓ Set Wall Color &amp; Close
-              </button>
-            </div>
+
           </div>
         ) : (
           <div className="backdrop-custom-mixer">
@@ -506,7 +495,7 @@ export default function BackdropThemeModal({
             className="backdrop-reset-btn"
             onClick={resetToDefault}
           >
-            Reset to Default Wall Color
+            ✕ Reset to Default Wall Color
           </button>
           <button
             type="button"

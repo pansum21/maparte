@@ -20,6 +20,7 @@ interface MarkerPickerProps {
   onRemoveUploadedIcon?: (iconId: string) => void;
   onClearUploadedIcons?: () => void;
   actionSlot?: ReactNode;
+  mode?: "icons" | "uploaded";
 }
 
 const MarkerPicker = memo(function MarkerPicker({
@@ -31,6 +32,7 @@ const MarkerPicker = memo(function MarkerPicker({
   onRemoveUploadedIcon,
   onClearUploadedIcons,
   actionSlot,
+  mode = "icons",
 }: MarkerPickerProps) {
   const [uploadError, setUploadError] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -60,6 +62,7 @@ const MarkerPicker = memo(function MarkerPicker({
 
   return (
     <div className="marker-picker">
+      {mode === "icons" ? <>
       <p className="marker-picker__section-title">Marker Icons</p>
       <div className="marker-picker__grid">
         {predefinedMarkerIcons.map((icon) => (
@@ -79,6 +82,7 @@ const MarkerPicker = memo(function MarkerPicker({
 
       </div>
 
+      </> : <>
       <p className="marker-picker__section-title">Uploaded Markers</p>
       <div className="marker-picker__grid marker-picker__grid--uploaded">
         {customIcons.map((icon) => (
@@ -154,6 +158,7 @@ const MarkerPicker = memo(function MarkerPicker({
         ) : null}
       </div>
 
+      </>}
       <div className="marker-picker__divider marker-picker__divider--actions" />
 
       <div className="marker-picker__actions">

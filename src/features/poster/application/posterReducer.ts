@@ -49,6 +49,9 @@ export interface PosterForm {
   includeRoadMinorLow: boolean;
   includeRoadOutline: boolean;
   showMarkers: boolean;
+  overlayTop?: boolean;
+  overlayBottom?: boolean;
+  posterTextColor?: string;
   showRoutes: boolean;
 }
 

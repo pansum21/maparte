@@ -190,11 +190,10 @@ export function PosterProvider({ children }: { children: ReactNode }) {
   );
 
   const effectiveTheme = useMemo(() => {
-    if (Object.keys(state.customColors).length === 0) {
-      return selectedTheme;
-    }
-    return applyThemeColorOverrides(selectedTheme, state.customColors);
-  }, [selectedTheme, state.customColors]);
+    const colors = { ...state.customColors };
+    if (state.form.posterTextColor) colors["ui.text"] = state.form.posterTextColor;
+    return Object.keys(colors).length ? applyThemeColorOverrides(selectedTheme, colors) : selectedTheme;
+  }, [selectedTheme, state.customColors, state.form.posterTextColor]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

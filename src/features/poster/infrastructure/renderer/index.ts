@@ -67,6 +67,8 @@ export async function compositeExport(
     fontSize = 16,
     showPosterText = true,
     showOverlay = true,
+    overlayTop = showOverlay,
+    overlayBottom = showOverlay,
     includeCredits = true,
     markers = [],
     markerIcons = [],
@@ -110,8 +112,8 @@ export async function compositeExport(
     if (!mapAlreadyInset) ctx.drawImage(mapCanvas, 0, 0, width, height);
 
     // Gradient fades
-    if (showOverlay) {
-      applyFades(ctx, width, height, theme.ui.bg);
+    if (overlayTop || overlayBottom) {
+      applyFades(ctx, width, height, theme.ui.bg, overlayTop, overlayBottom);
     }
 
     // Routes (below markers)
@@ -195,8 +197,8 @@ export async function compositeExport(
 
       ctx.drawImage(mapCanvas, 0, 0, width, height);
 
-      if (showOverlay) {
-        applyFades(ctx, width, height, theme.ui.bg);
+      if (overlayTop || overlayBottom) {
+        applyFades(ctx, width, height, theme.ui.bg, overlayTop, overlayBottom);
       }
 
       if (routes.length > 0 && markerProjection) {
@@ -259,8 +261,8 @@ export async function compositeExport(
         ctx.drawImage(mapCanvas, 0, 0, width, height);
       }
 
-      if (showOverlay) {
-        applyFades(ctx, width, height, theme.ui.bg);
+      if (overlayTop || overlayBottom) {
+        applyFades(ctx, width, height, theme.ui.bg, overlayTop, overlayBottom);
       }
 
       if (routes.length > 0 && markerProjection) {

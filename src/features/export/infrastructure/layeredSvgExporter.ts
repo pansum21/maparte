@@ -48,6 +48,8 @@ interface LayeredSvgOptions {
   fontSize?: number;
   showPosterText: boolean;
   showOverlay: boolean;
+  overlayTop?: boolean;
+  overlayBottom?: boolean;
   includeCredits: boolean;
   markers: MarkerItem[];
   markerIcons: MarkerIconDefinition[];
@@ -231,6 +233,8 @@ export async function createLayeredSvgBlobFromMap({
   fontSize = 16,
   showPosterText,
   showOverlay,
+  overlayTop = showOverlay,
+  overlayBottom = showOverlay,
   includeCredits,
   markers,
   markerIcons,
@@ -445,7 +449,7 @@ export async function createLayeredSvgBlobFromMap({
 
     // 4. Pure Vector Fades
     let fadesSvg = "";
-    if (showOverlay) {
+    if (overlayTop || overlayBottom) {
       const topFadeHeight = exportHeight * 0.22;
       const bottomFadeHeight = exportHeight * 0.32;
       const bottomFadeY = exportHeight - bottomFadeHeight;
@@ -463,8 +467,8 @@ export async function createLayeredSvgBlobFromMap({
   </linearGradient>
 </defs>
 <g id="overlay-fades">
-  <rect x="0" y="0" width="${exportWidth}" height="${topFadeHeight.toFixed(1)}" fill="url(#maparte-fade-top)" />
-  <rect x="0" y="${bottomFadeY.toFixed(1)}" width="${exportWidth}" height="${bottomFadeHeight.toFixed(1)}" fill="url(#maparte-fade-bottom)" />
+  ${overlayTop ? `<rect x="0" y="0" width="${exportWidth}" height="${topFadeHeight.toFixed(1)}" fill="url(#maparte-fade-top)" />` : ""}
+  ${overlayBottom ? `<rect x="0" y="${bottomFadeY.toFixed(1)}" width="${exportWidth}" height="${bottomFadeHeight.toFixed(1)}" fill="url(#maparte-fade-bottom)" />` : ""}
 </g>
 `;
     }
@@ -488,8 +492,8 @@ export async function createLayeredSvgBlobFromMap({
     // 6. Vector Typography
     const textColor = theme.ui?.text || "#111111";
     const landColor = theme.map?.land || "#808080";
-    const attributionColor = computeAttributionColor(textColor, landColor, showOverlay);
-    const attributionAlpha = showOverlay ? 0.55 : 0.9;
+    const attributionColor = computeAttributionColor(textColor, landColor, overlayBottom);
+    const attributionAlpha = overlayBottom ? 0.55 : 0.9;
     const cleanFont = (fontFamily || "Space Grotesk").replace(/['"]/g, "").trim();
     const titleFontFamily = cleanFont ? `'${cleanFont}', 'Space Grotesk', sans-serif` : "'Space Grotesk', sans-serif";
     const bodyFontFamily = "'IBM Plex Mono', 'Space Grotesk', monospace";

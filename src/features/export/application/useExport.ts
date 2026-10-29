@@ -274,6 +274,8 @@ export function useExport() {
             fontSize: Number(form.fontSize) || 16,
             showPosterText: form.showPosterText,
             showOverlay: form.showMarkers,
+            overlayTop: form.overlayTop ?? form.showMarkers,
+            overlayBottom: form.overlayBottom ?? form.showMarkers,
             includeCredits,
             markers: hasVisibleMarkers ? state.markers : [],
             markerIcons: hasVisibleOverlays
@@ -346,6 +348,8 @@ export function useExport() {
           fontSize: Number(form.fontSize) || 16,
           showPosterText: form.showPosterText,
           showOverlay: form.showMarkers,
+            overlayTop: form.overlayTop ?? form.showMarkers,
+            overlayBottom: form.overlayBottom ?? form.showMarkers,
           neatlineSvg,
           includeCredits,
           markers: hasVisibleMarkers ? state.markers : [],
@@ -386,6 +390,8 @@ export function useExport() {
             fontSize: Number(form.fontSize) || 16,
             showPosterText: form.showPosterText,
             showOverlay: form.showMarkers,
+            overlayTop: form.overlayTop ?? form.showMarkers,
+            overlayBottom: form.overlayBottom ?? form.showMarkers,
             includeCredits,
             markers: hasVisibleMarkers ? state.markers : [],
             markerIcons: hasVisibleOverlays

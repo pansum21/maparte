@@ -40,6 +40,8 @@ export interface ExportOptions {
   fontSize: number;
   showPosterText: boolean;
   showOverlay?: boolean;
+  overlayTop?: boolean;
+  overlayBottom?: boolean;
   includeCredits?: boolean;
   markers?: MarkerItem[];
   markerIcons?: MarkerIconDefinition[];

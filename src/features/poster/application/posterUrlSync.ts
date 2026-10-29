@@ -17,6 +17,9 @@ export interface ParsedUrlPosterState {
   displayCountry?: string;
   distance?: string;
   showPosterText?: boolean;
+  overlayTop?: boolean;
+  overlayBottom?: boolean;
+  posterTextColor?: string;
 }
 
 /**
@@ -50,6 +53,12 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
     const dist = params.get("dist") || params.get("distance");
     if (dist && dist.trim()) result.distance = dist.trim();
 
+    for (const key of ["overlayTop", "overlayBottom"] as const) {
+      const value = params.get(key);
+      if (value === "0" || value === "1") result[key] = value === "1";
+    }
+    const color = params.get("textColor");
+    if (color && /^#[0-9a-f]{6}$/i.test(color)) result.posterTextColor = color;
     const text = params.get("text");
     if (text === "0" || text === "false") {
       result.showPosterText = false;
@@ -117,6 +126,10 @@ export function serializePosterStateToUrl(
     params.set("text", "0");
   }
 
+  for (const key of ["overlayTop", "overlayBottom"] as const) {
+    if (form[key] !== undefined) params.set(key, form[key] ? "1" : "0");
+  }
+  if (form.posterTextColor) params.set("textColor", form.posterTextColor);
   const search = params.toString() ? `?${params.toString()}` : "";
   const fullUrl = `${path}${search}`;
 
