@@ -110,7 +110,7 @@ export default function LocationSection({
           <div className="location-panel-quick-cities" role="toolbar" aria-label="Quick city suggestions">
             <span className="location-panel-quick-label">Quick cities</span>
             <div className="location-panel-quick-list">
-              {POPULAR_CITIES.map((city) => <button key={city.id} type="button" className="location-panel-city"
+              {POPULAR_CITIES.map((city) => <button key={city.id} type="button" className="location-panel-city" data-city-name={city.name}
                 onClick={() => handleQuickCitySelect(city)} title={`Explore ${city.name}, ${city.country}`}>
                 <span aria-hidden="true">{city.flag}</span><span>{city.name}</span>
               </button>)}
