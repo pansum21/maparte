@@ -1866,11 +1866,12 @@
     max-height: min(84vh, calc(100dvh - 64px - env(safe-area-inset-bottom, 0px)));
   }
 
-  /* Theme cards use a vertical list on phones so the full names stay readable. */
+  /* Compact two-column theme cards; keep vertical scrolling and readable names. */
   [data-mobile-tab="theme"] .theme-card-list {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    align-content: start;
     overflow-x: hidden;
     overflow-y: auto;
     max-height: min(42vh, 340px);
@@ -1881,15 +1882,33 @@
   }
 
   [data-mobile-tab="theme"] .theme-card-list .theme-card {
-    flex: 0 0 auto;
     width: 100%;
-    min-height: 106px;
+    min-width: 0;
+    height: 72px;
+    min-height: 72px;
+    margin: 0;
+    border-radius: 8px;
   }
 
-  /* Let the marker picker use a larger sheet and keep its own contents scrollable. */
+  [data-mobile-tab="theme"] .theme-card-palette {
+    min-height: 72px;
+  }
+
+  [data-mobile-tab="theme"] .theme-card-name {
+    left: 7px;
+    right: 7px;
+    bottom: 6px;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* Marker controls use the same compact sheet as the other tools. */
   .mobile-drawer-sheet[data-mobile-tab="markers"] {
-    height: min(72vh, calc(100dvh - 74px - env(safe-area-inset-bottom, 0px)));
-    max-height: min(72vh, calc(100dvh - 74px - env(safe-area-inset-bottom, 0px)));
+    height: min(38vh, 360px);
+    max-height: min(38vh, 360px);
   }
 
   [data-mobile-tab="markers"] .mobile-drawer-content,
