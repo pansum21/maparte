@@ -1,6 +1,5 @@
 import {
   memo,
-  useMemo,
   useRef,
   useState,
   type ChangeEvent,
@@ -8,7 +7,6 @@ import {
 } from "react";
 import type { MarkerIconDefinition } from "@/features/markers/domain/types";
 import {
-  featuredMarkerIcons,
   predefinedMarkerIcons,
 } from "@/features/markers/infrastructure/iconRegistry";
 import MarkerVisual from "./MarkerVisual";
@@ -34,17 +32,8 @@ const MarkerPicker = memo(function MarkerPicker({
   onClearUploadedIcons,
   actionSlot,
 }: MarkerPickerProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const appIcons = useMemo(() => predefinedMarkerIcons, []);
-  const shouldShowAllIcons =
-    isExpanded ||
-    (selectedIconId
-      ? !appIcons.some((icon) => icon.id === selectedIconId)
-      : false);
-  const visibleAppIcons = shouldShowAllIcons ? appIcons : featuredMarkerIcons;
-
   const handleUploadChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -61,7 +50,6 @@ const MarkerPicker = memo(function MarkerPicker({
     }
 
     setUploadError("");
-    setIsExpanded(true);
 
     try {
       await onUploadIcon(file);
@@ -74,7 +62,7 @@ const MarkerPicker = memo(function MarkerPicker({
     <div className="marker-picker">
       <p className="marker-picker__section-title">Marker Icons</p>
       <div className="marker-picker__grid">
-        {visibleAppIcons.map((icon) => (
+        {predefinedMarkerIcons.map((icon) => (
           <button
             key={icon.id}
             type="button"
@@ -88,21 +76,7 @@ const MarkerPicker = memo(function MarkerPicker({
             <span className="marker-picker__label">{icon.label}</span>
           </button>
         ))}
-        {appIcons.length > featuredMarkerIcons.length ? (
-          <button
-            type="button"
-            className="marker-picker__option marker-picker__option--toggle"
-            onClick={() => setIsExpanded((prev) => !prev)}
-            aria-label={shouldShowAllIcons ? "Show icon list" : "Show more icons"}
-          >
-            <span className="marker-picker__toggle-sign" aria-hidden="true">
-              {shouldShowAllIcons ? "-" : "+"}
-            </span>
-            <span className="marker-picker__label">
-              {shouldShowAllIcons ? "Show less" : "More Icons"}
-            </span>
-          </button>
-        ) : null}
+
       </div>
 
       <p className="marker-picker__section-title">Uploaded Markers</p>
@@ -150,12 +124,12 @@ const MarkerPicker = memo(function MarkerPicker({
               type="button"
               className="marker-picker__option marker-picker__option--upload-tile"
               onClick={() => inputRef.current?.click()}
-              title="Upload marker"
+              title="Upload Your Marker"
             >
               <span className="marker-picker__upload-plus" aria-hidden="true">
                 +
               </span>
-              <span className="marker-picker__label">Upload Marker</span>
+              <span className="marker-picker__label">Upload Your Marker</span>
             </button>
             <input
               ref={inputRef}

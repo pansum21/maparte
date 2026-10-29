@@ -2233,3 +2233,28 @@
     align-items: center;
   }
 }
+
+/* Dense marker picker with a separate, full-width upload action. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  [data-mobile-tab="markers"] .marker-picker__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+  }
+  [data-mobile-tab="markers"] button.marker-picker__option {
+    min-width: 0;
+    min-height: 52px;
+    padding: 6px 2px;
+  }
+  [data-mobile-tab="markers"] .marker-picker__label {
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+}
+button.marker-picker__option--upload-tile {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
