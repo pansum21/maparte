@@ -14,6 +14,8 @@
   box-shadow: none;
 }
 
+.neatline-mobile-tabs { display: none; }
+
 /* ==========================================================================
    Separated Section Boxes (Borders Box & Adjustments Box)
    ========================================================================== */
@@ -392,15 +394,37 @@
   }
 
   [data-mobile-tab="frames"] .neatline-picker {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     flex: 1 1 auto;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: stretch;
-    gap: 6px;
+    gap: 5px;
     width: 100%;
     height: 100%;
     min-height: 0;
     overflow: hidden;
+  }
+
+  [data-mobile-tab="frames"] .neatline-mobile-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex: 0 0 auto;
+    gap: 5px;
+  }
+
+  [data-mobile-tab="frames"] .neatline-mobile-tabs button {
+    min-height: 34px;
+    border: 1px solid rgba(160, 190, 210, .22);
+    border-radius: 8px;
+    background: rgba(12, 26, 40, .8);
+    color: #cbd5e1;
+    font: 700 .62rem/1.1 inherit;
+  }
+
+  [data-mobile-tab="frames"] .neatline-mobile-tabs button.is-active {
+    border-color: rgba(45, 212, 191, .7);
+    background: rgba(13, 148, 136, .2);
+    color: #ccfbf1;
   }
 
   [data-mobile-tab="frames"] .neatline-section-box {
@@ -418,13 +442,16 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  [data-mobile-tab="frames"] .neatline-borders-box,
+  [data-mobile-tab="frames"] .neatline-adjust-box { display: none; }
+  [data-mobile-tab="frames"] .neatline-picker.is-mobile-styles .neatline-borders-box,
+  [data-mobile-tab="frames"] .neatline-picker.is-mobile-adjust .neatline-adjust-box { display: flex; flex: 1 1 auto; }
+
   [data-mobile-tab="frames"] .neatline-section-box::-webkit-scrollbar {
     display: none;
   }
 
-  [data-mobile-tab="frames"] .neatline-picker:not(.has-selected-border) .neatline-adjust-box {
-    display: flex;
-  }
+  [data-mobile-tab="frames"] .neatline-picker:not(.has-selected-border).is-mobile-adjust .neatline-adjust-box { display: flex; }
 
   [data-mobile-tab="frames"] .neatline-section-box-header {
     position: sticky;

@@ -1106,6 +1106,7 @@ export function NeatlinePicker({
   height: string;
 }) {
   const [selection, setSelection] = useState<NeatlineSelection>(readSelection);
+  const [mobileSection, setMobileSection] = useState<"styles" | "adjust">("styles");
 
   const updateColorMode = (mode: BorderColorMode) => {
     setSelection((current) => ({
@@ -1268,7 +1269,11 @@ export function NeatlinePicker({
   });
 
   return (
-    <section className={`neatline-picker ${selectedLine ? "has-selected-border" : ""}`} aria-label="Borders">
+    <section className={`neatline-picker ${selectedLine ? "has-selected-border" : ""} is-mobile-${mobileSection}`} aria-label="Borders">
+      <div className="neatline-mobile-tabs" role="tablist" aria-label="Border controls">
+        <button type="button" role="tab" aria-selected={mobileSection === "styles"} className={mobileSection === "styles" ? "is-active" : ""} onClick={() => setMobileSection("styles")}>Border Style</button>
+        <button type="button" role="tab" aria-selected={mobileSection === "adjust"} className={mobileSection === "adjust" ? "is-active" : ""} onClick={() => setMobileSection("adjust")}>Adjust &amp; Customize</button>
+      </div>
       {/* BORDERS BOX */}
       <div className="neatline-section-box neatline-borders-box">
         <div className="neatline-section-box-header">

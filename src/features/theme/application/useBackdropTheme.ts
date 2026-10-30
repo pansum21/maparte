@@ -68,6 +68,13 @@ export function initBackdropThemeFromStorage() {
   applyBackdropToDOM(DEFAULT_BACKDROP_STATE);
 }
 
+export function resetBackdropThemeToDefault() {
+  if (typeof window === "undefined") return;
+  try { localStorage.setItem(BACKDROP_STORAGE_KEY, JSON.stringify(DEFAULT_BACKDROP_STATE)); } catch { /* Continue with the in-memory reset. */ }
+  applyBackdropToDOM(DEFAULT_BACKDROP_STATE);
+  window.dispatchEvent(new CustomEvent("maparte:backdrop:change", { detail: DEFAULT_BACKDROP_STATE }));
+}
+
 // Auto-run when file is loaded in browser
 if (typeof window !== "undefined") {
   initBackdropThemeFromStorage();

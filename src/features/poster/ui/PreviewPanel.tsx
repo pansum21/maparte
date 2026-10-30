@@ -61,6 +61,7 @@ interface PreviewPanelProps {
   isEditing?: boolean;
   setIsEditing?: (val: boolean | ((prev: boolean) => boolean)) => void;
   wallPhoto?: string | null;
+  cameraStream?: MediaStream | null;
   cinemaPosterPlacement?: { x: number; y: number; scale: number };
   onCinemaPosterPlacementChange?: (placement: { x: number; y: number; scale: number }) => void;
 }
@@ -71,6 +72,7 @@ export default function PreviewPanel({
   isEditing: controlledIsEditing,
   setIsEditing: controlledSetIsEditing,
   wallPhoto = null,
+  cameraStream = null,
   cinemaPosterPlacement = { x: 0, y: 0, scale: 1 },
   onCinemaPosterPlacementChange,
 }: PreviewPanelProps) {
@@ -98,23 +100,14 @@ export default function PreviewPanel({
   const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
-  const [cinemaSettingsOpen, setCinemaSettingsOpen] = useState(true);
-  const [cinemaSettingsSettled, setCinemaSettingsSettled] = useState(false);
+  const [mainSettingsOpen, setMainSettingsOpen] = useState(false);
+  const cameraVideoRef = useRef<HTMLVideoElement | null>(null);
   const isEditing = controlledIsEditing !== undefined ? controlledIsEditing : internalIsEditing;
   const setIsEditing = controlledSetIsEditing !== undefined ? controlledSetIsEditing : setInternalIsEditing;
 
   useEffect(() => {
-    if (!isCinemaMode) {
-      setCinemaSettingsOpen(true);
-      setCinemaSettingsSettled(false);
-      return;
-    }
-    const timeout = window.setTimeout(() => {
-      setCinemaSettingsOpen(false);
-      setCinemaSettingsSettled(true);
-    }, 3000);
-    return () => window.clearTimeout(timeout);
-  }, [isCinemaMode]);
+    if (cameraVideoRef.current) cameraVideoRef.current.srcObject = cameraStream;
+  }, [cameraStream]);
 
   const [neatlineSelection, setNeatlineSelection] = useState<NeatlineSelection>(readNeatlineSelection);
   const borderMetrics = useMemo(
@@ -393,7 +386,7 @@ export default function PreviewPanel({
   return (
     <section className="preview-panel">
       <div
-        className={`poster-viewport${isCinemaMode ? " is-wall-mockup" : ""}${wallPhoto && isCinemaMode ? " has-user-wall-photo" : ""}`}
+        className={`poster-viewport${isCinemaMode ? " is-wall-mockup" : ""}${wallPhoto && isCinemaMode ? " has-user-wall-photo" : ""}${cameraStream && isCinemaMode ? " has-live-camera-background" : ""}`}
         style={wallPhoto && isCinemaMode ? { "--cinema-wall-photo": `url("${wallPhoto}")` } as CSSProperties : undefined}
       >
         {wallPhoto && isCinemaMode ? (
@@ -404,6 +397,7 @@ export default function PreviewPanel({
             aria-hidden="true"
           />
         ) : null}
+        {cameraStream && isCinemaMode ? <video ref={cameraVideoRef} className="cinema-live-camera-backdrop" autoPlay muted playsInline aria-hidden="true" /> : null}
         {/* Desktop ghost layer: canvas clone of the main map at reduced opacity (hidden in cinema mode) */}
         {!isCinemaMode ? (
           <>
@@ -535,49 +529,11 @@ export default function PreviewPanel({
       </div>
 
       {!isCinemaMode ? (
-        <div className="desktop-right-panel">
-          <SettingsInfo
-            location={infoLocationLabel}
-            theme={effectiveTheme.name}
-            layout={infoLayoutLabel}
-            posterSize={posterSizeLabel}
-            resolution={resolutionInfoLabel}
-            markers={markersLabel}
-            coordinates={coordinatesLabel}
-          />
-          <AdUnit
-            slot={AD_SLOT_SIDEBAR}
-            enabled={ADS_SIDEBAR_ENABLED}
-            className="sidebar-ad-slot"
-          />
-        </div>
-      ) : null}
-
-      {isCinemaMode ? (
-        <aside
-          className={`cinema-current-settings${cinemaSettingsOpen ? " is-open" : ""}${cinemaSettingsSettled ? " is-settled" : ""}`}
-          aria-label="Fullscreen current settings"
-        >
-          <button
-            type="button"
-            className="cinema-current-settings-toggle"
-            onClick={() => setCinemaSettingsOpen((open) => !open)}
-            aria-expanded={cinemaSettingsOpen}
-            aria-controls="cinema-current-settings-panel"
-          >
-            <span aria-hidden="true">⚙</span>
-            <span>Current Settings</span>
-          </button>
-          <div id="cinema-current-settings-panel" className="cinema-current-settings-panel">
-            <SettingsInfo
-              location={infoLocationLabel}
-              theme={effectiveTheme.name}
-              layout={infoLayoutLabel}
-              posterSize={posterSizeLabel}
-              resolution={resolutionInfoLabel}
-              markers={markersLabel}
-              coordinates={coordinatesLabel}
-            />
+        <aside className={`desktop-right-panel${mainSettingsOpen ? " is-open" : ""}`} aria-label="Current settings">
+          <button type="button" className="desktop-current-settings-toggle" onClick={() => setMainSettingsOpen((open) => !open)} aria-expanded={mainSettingsOpen} aria-controls="desktop-current-settings-panel">⚙ Current Settings</button>
+          <div id="desktop-current-settings-panel" className="desktop-current-settings-panel">
+            <SettingsInfo location={infoLocationLabel} theme={effectiveTheme.name} layout={infoLayoutLabel} posterSize={posterSizeLabel} resolution={resolutionInfoLabel} markers={markersLabel} coordinates={coordinatesLabel} />
+            <AdUnit slot={AD_SLOT_SIDEBAR} enabled={ADS_SIDEBAR_ENABLED} className="sidebar-ad-slot" />
           </div>
         </aside>
       ) : null}

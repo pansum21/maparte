@@ -88,16 +88,6 @@ export default function FooterNote() {
           >
             Refund Policy
           </a>
-          {imprintAvailable && " | "}
-          {imprintAvailable && (
-            <a
-              className="source-link"
-              href={LEGAL_DOC_PAGES.imprint}
-              onClick={(event) => handleLegalClick(event, "imprint")}
-            >
-              Imprint
-            </a>
-          )}
           {hasLegalLinks && " | "}
           <button
             type="button"
@@ -109,6 +99,10 @@ export default function FooterNote() {
           >
             Cookie Settings
           </button>
+          {imprintAvailable && " | "}
+          {imprintAvailable && (
+            <a className="source-link" href={LEGAL_DOC_PAGES.imprint} onClick={(event) => handleLegalClick(event, "imprint")}>Imprint</a>
+          )}
         </p>
       </div>
 

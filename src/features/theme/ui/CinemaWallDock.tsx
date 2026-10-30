@@ -16,10 +16,12 @@ interface CinemaWallDockProps {
   hasWallPhoto: boolean;
   placement: Placement;
   onPlacementChange: (placement: Placement) => void;
-  onAboutGuide: () => void;
+  isMobile: boolean;
+  cameraStream: MediaStream | null;
+  onCameraStreamChange: (stream: MediaStream | null) => void;
 }
 
-type ActivePanel = "adjust" | "layout" | null;
+type ActivePanel = "adjust" | "layout" | "wallpaper" | null;
 
 function stepRangeValue(value: number, delta: number, min: number, max: number, step: number) {
   const stepsFromMin = Math.round((value - min) / step) + delta;
@@ -32,13 +34,16 @@ export default function CinemaWallDock({
   hasWallPhoto,
   placement,
   onPlacementChange,
-  onAboutGuide,
+  isMobile,
+  cameraStream,
+  onCameraStreamChange,
 }: CinemaWallDockProps) {
   const { state, dispatch } = usePosterContext();
   const { form } = state;
   const cityName = form.displayCity || form.location || "Custom City";
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
   const [showViewBadge, setShowViewBadge] = useState(true);
+  const [cameraError, setCameraError] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -80,6 +85,26 @@ export default function CinemaWallDock({
     ) {
       void document.documentElement.requestFullscreen().catch(() => {});
     }
+  };
+
+  const handleStartCamera = async () => {
+    setCameraError("");
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCameraError("Camera is not available in this browser.");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
+      onCameraStreamChange(stream);
+      setActivePanel(null);
+    } catch {
+      setCameraError("Camera access was blocked. Allow camera access and try again.");
+    }
+  };
+
+  const handleStopCamera = () => {
+    cameraStream?.getTracks().forEach((track) => track.stop());
+    onCameraStreamChange(null);
   };
 
   const handleRemoveWallPhoto = (e: React.MouseEvent) => {
@@ -145,16 +170,7 @@ export default function CinemaWallDock({
 
       {/* Top Bar - Right Action Buttons */}
       <div className="cinema-top-bar-right">
-        <button
-          type="button"
-          className="cinema-about-guide-btn"
-          onClick={onAboutGuide}
-          aria-label="About Maparte and Guide"
-          title="About Maparte and Guide"
-        >
-          <span aria-hidden="true">ℹ</span>
-          <span>About / Guide</span>
-        </button>
+        {cameraStream ? <button type="button" className="cinema-camera-close" onClick={handleStopCamera}>Close Camera</button> : null}
         <button
           type="button"
           className="cinema-top-fs-btn"
@@ -185,6 +201,15 @@ export default function CinemaWallDock({
       </div>
 
       {/* ── Popovers (Exact matching width, 20px rounded corners, NO cross) ── */}
+
+      {activePanel === "wallpaper" ? (
+        <section className="cinema-panel-popover cinema-wallpaper-popover" aria-label="Upload wallpaper" onClick={(e) => e.stopPropagation()}>
+          <strong>Upload Wallpaper</strong>
+          <button type="button" className="cinema-btn-secondary" onClick={() => fileInputRef.current?.click()}>From Device</button>
+          {isMobile ? <button type="button" className="cinema-btn-primary" onClick={() => void handleStartCamera()}>Open Camera</button> : null}
+          {cameraError ? <p role="alert">{cameraError}</p> : null}
+        </section>
+      ) : null}
 
       {/* 1. Adjust Poster Popover */}
       {activePanel === "adjust" && (
@@ -433,8 +458,8 @@ export default function CinemaWallDock({
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              setActivePanel(null); // Explicitly ensure NO panel can open or remain open
-              fileInputRef.current?.click();
+              if (isMobile) setActivePanel((curr) => curr === "wallpaper" ? null : "wallpaper");
+              else fileInputRef.current?.click();
             }}
             title="Upload your room or wall photo to test framing"
           >

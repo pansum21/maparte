@@ -1493,7 +1493,7 @@ body.has-custom-backdrop .poster-ghost-layer {
   width: min(calc(100vw - 64px), calc((88vh - 60px) * var(--poster-aspect, 0.6666667))) !important;
   /* Keep the paper edge the same thickness on desktop, tablet, and phone. */
   border: 0 !important;
-  outline: 7px solid rgba(255, 255, 255, 0.94) !important;
+  outline: 0 !important;
   margin: 0 auto !important;
   transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 0.96));
   transform-origin: center;
@@ -1501,8 +1501,7 @@ body.has-custom-backdrop .poster-ghost-layer {
   touch-action: none;
   box-shadow:
     0 32px 72px rgba(0, 0, 0, 0.65),
-    0 12px 28px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+    0 12px 28px rgba(0, 0, 0, 0.4) !important;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border 0.4s ease !important;
 }
 
@@ -1517,6 +1516,32 @@ body.has-custom-backdrop .poster-ghost-layer {
   background-size: cover !important;
   background-repeat: no-repeat !important;
 }
+
+.app-shell.is-cinema-mode .poster-viewport.has-live-camera-background {
+  background: #dbe3e8 !important;
+}
+.cinema-live-camera-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.app-shell.is-cinema-mode .poster-frame { z-index: 2; }
+.cinema-camera-close {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 999px;
+  background: rgba(127,29,29,.9);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.cinema-wallpaper-popover { display: flex; flex-direction: column; gap: 10px; }
+.cinema-wallpaper-popover [role="alert"] { margin: 0; color: #fecaca; font-size: .8rem; }
 
 :root[data-backdrop-mode="light"] .app-shell.is-cinema-mode .poster-frame {
   box-shadow:
@@ -2316,7 +2341,7 @@ body.has-custom-backdrop .poster-ghost-layer {
     width: min(calc(100vw - 40px), calc((100svh - 190px) * var(--poster-aspect, 0.6666667))) !important;
     max-height: calc(100svh - 190px) !important;
     border: 0 !important;
-    outline: 7px solid rgba(255, 255, 255, 0.94) !important;
+    outline: 0 !important;
     transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 1)) !important;
   }
 
@@ -2364,7 +2389,7 @@ body.has-custom-backdrop .poster-ghost-layer {
     width: min(calc(100vw - 20px), calc((100svh - 128px) * var(--poster-aspect, 0.6666667))) !important;
     max-height: calc(100svh - 128px) !important;
     border: 0 !important;
-    outline: 7px solid rgba(255, 255, 255, 0.94) !important;
+    outline: 0 !important;
     transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 1)) !important;
   }
 
@@ -3133,3 +3158,17 @@ body.has-custom-backdrop .poster-ghost-layer {
   border-radius: 9px !important;
   margin: 0 !important;
 }
+
+/* Special fullscreen transparency preview: checkerboard wall stays behind the frame. */
+.app-shell.is-cinema-mode .poster-viewport.is-wall-mockup:not(.has-user-wall-photo):not(.has-live-camera-background) {
+  background-color: #f3f4f6 !important;
+  background-image:
+    linear-gradient(45deg, #cbd5e1 25%, transparent 25%),
+    linear-gradient(-45deg, #cbd5e1 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #cbd5e1 75%),
+    linear-gradient(-45deg, transparent 75%, #cbd5e1 75%) !important;
+  background-size: 28px 28px !important;
+  background-position: 0 0, 0 14px, 14px -14px, -14px 0 !important;
+}
+.app-shell.is-cinema-mode .poster-viewport.has-live-camera-background .cinema-live-camera-backdrop,
+.app-shell.is-cinema-mode .poster-viewport.has-user-wall-photo .cinema-wall-photo-backdrop { z-index: 0; }

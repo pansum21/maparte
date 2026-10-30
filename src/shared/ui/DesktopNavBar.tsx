@@ -54,6 +54,7 @@ export default function DesktopNavBar({
   const { flyToLocation } = useMapSync(state, dispatch, mapRef);
 
   const [bearing, setBearing] = useState(0);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
   const searchedLocationRef = useRef<{ lat: number; lon: number } | null>(null);
 
   useEffect(() => {
@@ -157,10 +158,13 @@ export default function DesktopNavBar({
 
   return (
     <nav
-      className={`desktop-nav-bar${panelOpen ? " has-panel-open" : ""}${isLocationActive ? " is-location-open" : ""}`}
+      className={`desktop-nav-bar${panelOpen ? " has-panel-open" : ""}${isLocationActive ? " is-location-open" : ""}${isToolsOpen ? " is-tools-open" : ""}`}
       data-active-tab={activeTab}
       aria-label="Settings and Quick Actions"
     >
+      <button type="button" className="desktop-tools-drawer-toggle" onClick={() => setIsToolsOpen((open) => !open)} aria-expanded={isToolsOpen} aria-label={isToolsOpen ? "Close tools" : "Open tools"}>
+        <span aria-hidden="true">{isToolsOpen ? "‹" : "☰"}</span><span>{isToolsOpen ? "Close" : "Tools"}</span>
+      </button>
       {/* ── 1. LOCATION ROW ── */}
       <div className="desktop-nav-row" data-tab="location">
         <button

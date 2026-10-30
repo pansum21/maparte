@@ -35,7 +35,8 @@ const AnnouncementModal = lazy(
   () => import("@/features/updates/ui/AnnouncementModal"),
 );
 const ExportFab = lazy(() => import("@/features/export/ui/ExportFab"));
-const DesktopLocationBar = lazy(() => import("@/shared/ui/DesktopLocationBar"));
+const loadDesktopLocationBar = () => import("@/shared/ui/DesktopLocationBar");
+const DesktopLocationBar = lazy(loadDesktopLocationBar);
 const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
 const loadAllCitiesModal = () => import("@/features/location/ui/AllCitiesModal");
 const AllCitiesModal = lazy(loadAllCitiesModal);
@@ -180,6 +181,7 @@ export default function AppShell() {
   const cinemaHistoryEntryRef = useRef(false);
   const [isEditing, setIsEditing] = useState(false);
   const [cinemaWallPhoto, setCinemaWallPhoto] = useState<string | null>(null);
+  const [cinemaCameraStream, setCinemaCameraStream] = useState<MediaStream | null>(null);
   const cinemaWallPhotoUrlRef = useRef<string | null>(null);
   const handleCinemaWallPhotoChange = useCallback((photo: string | null) => {
     const previousPhoto = cinemaWallPhotoUrlRef.current;
@@ -193,7 +195,14 @@ export default function AppShell() {
   useEffect(() => () => {
     const photo = cinemaWallPhotoUrlRef.current;
     if (photo?.startsWith("blob:")) URL.revokeObjectURL(photo);
-  }, []);
+    cinemaCameraStream?.getTracks().forEach((track) => track.stop());
+  }, [cinemaCameraStream]);
+
+  useEffect(() => {
+    if (isCinemaMode || !cinemaCameraStream) return;
+    cinemaCameraStream.getTracks().forEach((track) => track.stop());
+    setCinemaCameraStream(null);
+  }, [isCinemaMode, cinemaCameraStream]);
 
   useEffect(() => {
     const resetWallPhoto = () => handleCinemaWallPhotoChange(null);
@@ -221,6 +230,10 @@ export default function AppShell() {
           void document.documentElement.requestFullscreen().catch(() => {});
         }
       } else {
+        setCinemaCameraStream((stream) => {
+          stream?.getTracks().forEach((track) => track.stop());
+          return null;
+        });
         if (typeof document !== "undefined" && document.fullscreenElement) {
           void document.exitFullscreen().catch(() => {});
         }
@@ -433,6 +446,7 @@ export default function AppShell() {
   };
 
   const handleDesktopLocationToggle = () => {
+    void loadDesktopLocationBar();
     setDesktopLocationRowVisible(false);
     setBackdropOpen(false);
     setIsEditing(false);
@@ -492,6 +506,7 @@ export default function AppShell() {
           isCinemaMode={true}
           onToggleCinema={() => handleToggleCinema(false)}
           wallPhoto={cinemaWallPhoto}
+          cameraStream={cinemaCameraStream}
           cinemaPosterPlacement={cinemaPosterPlacement}
           onCinemaPosterPlacementChange={setCinemaPosterPlacement}
         />
@@ -500,22 +515,12 @@ export default function AppShell() {
           onExit={() => handleToggleCinema(false)}
           onWallPhotoChange={handleCinemaWallPhotoChange}
           hasWallPhoto={Boolean(cinemaWallPhoto)}
+          isMobile={isMobileViewport}
+          cameraStream={cinemaCameraStream}
+          onCameraStreamChange={setCinemaCameraStream}
           placement={cinemaPosterPlacement}
           onPlacementChange={setCinemaPosterPlacement}
-          onAboutGuide={() => {
-            setAboutInitialTab("about");
-            setAboutOpen(true);
-          }}
         />
-        {aboutOpen ? (
-          <Suspense fallback={null}>
-            <AboutModal
-              initialTab={aboutInitialTab}
-              onClose={() => setAboutOpen(false)}
-              hideCloseButton
-            />
-          </Suspense>
-        ) : null}
       </div>
     );
   }
@@ -540,10 +545,6 @@ export default function AppShell() {
       <GeneralHeader
         onAboutOpen={() => {
           setAboutInitialTab("about");
-          setAboutOpen(true);
-        }}
-        onGuideOpen={() => {
-          setAboutInitialTab("guide");
           setAboutOpen(true);
         }}
         onCinemaToggle={() => handleToggleCinema(true)}
@@ -707,6 +708,7 @@ export default function AppShell() {
           <AboutModal
             initialTab={aboutInitialTab}
             onClose={() => setAboutOpen(false)}
+            hideCloseButton
           />
         </Suspense>
       ) : null}

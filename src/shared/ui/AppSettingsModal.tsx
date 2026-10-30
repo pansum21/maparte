@@ -6,7 +6,7 @@ import {
 } from "@/features/poster/ui/PosterContext";
 import { useRecentLocations } from "@/features/location/application/useRecentLocations";
 import { openLegalDoc } from "@/features/legal/application/legalDoc";
-import { DEFAULT_BACKDROP_STATE, BACKDROP_STORAGE_KEY } from "@/features/theme/domain/backdropThemes";
+import { resetBackdropThemeToDefault } from "@/features/theme/application/useBackdropTheme";
 import { resetNeatlineSettings } from "@/features/layout/ui/NeatlinePicker";
 import {
   CloseIcon,
@@ -50,14 +50,7 @@ export default function AppSettingsModal({
   const handleResetDefaults = () => {
     dispatch({ type: "RESET_TO_DEFAULTS", state: createDefaultPosterState() });
     resetNeatlineSettings();
-    try {
-      window.localStorage.setItem(BACKDROP_STORAGE_KEY, JSON.stringify(DEFAULT_BACKDROP_STATE));
-    } catch {
-      // Continue resetting the in-memory backdrop if storage is unavailable.
-    }
-    window.dispatchEvent(
-      new CustomEvent("maparte:backdrop:change", { detail: DEFAULT_BACKDROP_STATE }),
-    );
+    resetBackdropThemeToDefault();
     window.dispatchEvent(new Event("maparte:reset-wall-photo"));
     setConfirmation(null);
     setResetDone(true);

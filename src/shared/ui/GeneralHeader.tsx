@@ -3,13 +3,11 @@ import SocialLinkGroup from "@/shared/ui/SocialLinkGroup";
 
 interface GeneralHeaderProps {
   onAboutOpen: () => void;
-  onGuideOpen?: () => void;
   onCinemaToggle?: () => void;
 }
 
 export default function GeneralHeader({
   onAboutOpen,
-  onGuideOpen,
   onCinemaToggle,
 }: GeneralHeaderProps) {
   return (
@@ -44,27 +42,14 @@ export default function GeneralHeader({
 
         <button
           type="button"
-          className="general-header-text-btn general-header-guide-text-btn"
-          onClick={onGuideOpen}
-          aria-label="Guide & How to Use"
-          title="Guide & How to Use"
-        >
-          <span className="general-header-btn-label">📖 Guide</span>
-          <span className="general-header-btn-icon" aria-hidden="true">
-            <span style={{ fontSize: "14px", lineHeight: 1 }}>📖</span>
-          </span>
-        </button>
-
-        <button
-          type="button"
           className="general-header-text-btn general-header-about-text-btn"
           onClick={onAboutOpen}
-          aria-label="About Maparte"
-          title="About Maparte"
+          aria-label="About and Guide"
+          title="About and Guide"
         >
-          <span className="general-header-btn-label">ℹ️ About</span>
+          <span className="general-header-btn-label">ℹ About / Guide</span>
           <span className="general-header-btn-icon" aria-hidden="true">
-            <span style={{ fontSize: "14px", lineHeight: 1 }}>ℹ️</span>
+            <span style={{ fontSize: "14px", lineHeight: 1 }}>ℹ</span>
           </span>
         </button>
       </div>
