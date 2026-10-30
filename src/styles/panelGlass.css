@@ -161,3 +161,11 @@
 
 /* Three marker sources also stay together in the desktop panel. */
 .marker-picker-mode-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* Explicit cells prevent shared range-input rules from moving the slider
+   before its minus button in either editor viewport. */
+.cinema-range-control { grid-template-columns: 48px minmax(0, 1fr) 48px !important; }
+.cinema-range-control .cinema-range-step { width: 48px !important; height: 36px !important; min-height: 36px !important; }
+.cinema-range-control > button:first-child { grid-column: 1 !important; grid-row: 1 !important; }
+.cinema-range-control > input.cinema-range-slider { grid-column: 2 !important; grid-row: 1 !important; width: 100% !important; }
+.cinema-range-control > button:last-child { grid-column: 3 !important; grid-row: 1 !important; }
