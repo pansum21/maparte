@@ -31,7 +31,7 @@ export const MAX_MAP_ZOOM = 22;
 export const DEFAULT_CONTAINER_PX = 600;
 
 /** Duration (ms) for flyTo animation when selecting a location. */
-export const FLY_TO_DURATION_MS = 1800;
+export const FLY_TO_DURATION_MS = 900;
 
 /** Dehradun, India — default fallback when geolocation is denied. */
 export const DEFAULT_LAT = 30.3165;

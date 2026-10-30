@@ -90,6 +90,7 @@ function CityPhoto({
           }}
           alt={`${city} city photo`}
           loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
           decoding="async"
           onError={() => setImageFailed(true)}
         />
@@ -461,7 +462,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
                 <CityPhoto
                   city={item.city}
                   slug={item.slug}
-                  priority={index < 8}
+                  priority={index < 2}
                   credit={(cityPhotosData as Record<string, CityPhotoCredit>)[item.slug]}
                 />
                 <span

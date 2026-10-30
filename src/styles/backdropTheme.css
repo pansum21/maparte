@@ -3172,3 +3172,41 @@ body.has-custom-backdrop .poster-ghost-layer {
 }
 .app-shell.is-cinema-mode .poster-viewport.has-live-camera-background .cinema-live-camera-backdrop,
 .app-shell.is-cinema-mode .poster-viewport.has-user-wall-photo .cinema-wall-photo-backdrop { z-index: 0; }
+
+
+/* Mobile fullscreen dock: keep upload, adjust, and layout controls on one row. */
+@media (max-width: 768px) {
+  .app-shell.is-cinema-mode .cinema-floating-dock-wrap {
+    left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    right: max(12px, env(safe-area-inset-right, 0px)) !important;
+    bottom: max(12px, env(safe-area-inset-bottom, 0px)) !important;
+    width: auto !important;
+  }
+  .app-shell.is-cinema-mode .cinema-floating-dock {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    max-width: none !important;
+    gap: 5px !important;
+    padding: 5px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-dock-btn {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
+    padding: 4px 2px !important;
+    gap: 3px !important;
+    font-size: .56rem !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+  .app-shell.is-cinema-mode .cinema-dock-btn__icon,
+  .app-shell.is-cinema-mode .cinema-dock-btn svg {
+    flex: 0 0 12px !important;
+    width: 12px !important;
+    height: 12px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-dock-divider,
+  .app-shell.is-cinema-mode .cinema-dock-remove-photo-btn { display: none !important; }
+}

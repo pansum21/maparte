@@ -11,6 +11,15 @@
   border-bottom-right-radius: 18px;
 }
 
+.app-shell .all-cities-modal--loading {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+  color: #dbeafe;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
   .app-shell .all-cities-modal {
     top: calc(54px + env(safe-area-inset-top, 0px));
