@@ -63,13 +63,9 @@ export const RAINBOW_COLORS: ColorCapsuleItem[] = [
 ];
 
 export const SINGLE_COLOR_SWATCHES: { id: string; hex: string; name: string }[] = [
-  { id: "black", hex: "#000000", name: "Midnight Black" },
-  { id: "charcoal", hex: "#1e293b", name: "Deep Charcoal" },
-  { id: "dark-slate", hex: "#334155", name: "Dark Slate" },
-  { id: "slate", hex: "#64748b", name: "Slate Gray" },
-  { id: "cool-gray", hex: "#94a3b8", name: "Cool Silver" },
-  { id: "platinum", hex: "#cbd5e1", name: "Platinum" },
-  { id: "white", hex: "#ffffff", name: "Pure White" },
+  { id: "black", hex: "#000000", name: "Black" },
+  { id: "gray", hex: "#6b7280", name: "Gray" },
+  { id: "light-gray", hex: "#d1d5db", name: "Light Gray" },
 ];
 
 export const MIX_GRADIENT_PRESETS: MixGradientPreset[] = [
@@ -77,10 +73,6 @@ export const MIX_GRADIENT_PRESETS: MixGradientPreset[] = [
   { id: "charcoal-silver", from: "#0f172a", to: "#94a3b8" },
   { id: "onyx-white", from: "#000000", to: "#e2e8f0" },
   { id: "black-gold", from: "#0a0a0a", to: "#d4af37" },
-  { id: "midnight-cyan", from: "#020617", to: "#38bdf8" },
-  { id: "deep-navy", from: "#0f172a", to: "#3b82f6" },
-  { id: "sunset", from: "#f43f5e", to: "#fb923c" },
-  { id: "aurora", from: "#a855f7", to: "#06b6d4" },
 ];
 
 export type NeatlineSelection = {
@@ -1429,7 +1421,7 @@ export function NeatlinePicker({
                       value={selection.singleColor || "#000000"}
                       onChange={(e) => updateSingleColor(e.target.value)}
                     />
-                    <span className="neatline-picker-icon" aria-hidden="true">+</span>
+                    <span className="neatline-picker-icon">More</span>
                   </label>
                 </div>
               </div>
