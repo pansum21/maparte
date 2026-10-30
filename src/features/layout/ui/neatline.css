@@ -838,7 +838,7 @@
   .neatline-option {
     height: auto !important;
     min-height: 0;
-    aspect-ratio: 0.86 / 1;
+    aspect-ratio: 1 / 1 !important;
     padding: 6px;
     border-radius: 10px;
   }
@@ -1133,3 +1133,4 @@
   border-color: rgba(239, 68, 68, 0.75);
   color: #ffffff;
 }
+
