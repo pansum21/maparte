@@ -808,6 +808,14 @@
     user-select: none;
   }
 
+  .mobile-drawer-loading {
+    min-height: 84px;
+    display: grid;
+    place-items: center;
+    color: rgba(226, 240, 251, 0.84);
+    font: 600 0.82rem/1.4 "Instrument Sans", sans-serif;
+  }
+
   .mobile-drawer-handle::after {
     content: "";
     display: block;

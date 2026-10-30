@@ -80,17 +80,21 @@ function SettingsDrawer({
         />
         <div className="mobile-drawer-content">
           {mobileTab === "settings" ? (
-            <AppSettingsModal
-              isOpen
-              presentation="panel"
-              onClose={onClose}
-            />
+            <Suspense fallback={<div className="mobile-drawer-loading" role="status">Loading settings…</div>}>
+              <AppSettingsModal
+                isOpen
+                presentation="panel"
+                onClose={onClose}
+              />
+            </Suspense>
           ) : (
-            <SettingsPanel
-              mobileTab={mobileTab}
-              isEditing={isEditing}
-              onToggleEditing={onToggleEditing}
-            />
+            <Suspense fallback={<div className="mobile-drawer-loading" role="status">Loading controls…</div>}>
+              <SettingsPanel
+                mobileTab={mobileTab}
+                isEditing={isEditing}
+                onToggleEditing={onToggleEditing}
+              />
+            </Suspense>
           )}
         </div>
       </div>
