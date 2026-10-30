@@ -194,7 +194,10 @@ export default function PreviewPanel({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    // The blurred desktop backdrop is hidden in cinema mode and on phones.
+    // Avoid copying the full-resolution WebGL canvas there; that work
+    // competes directly with touch and mouse panning.
+    if (!map || isCinemaMode || isMobileViewport) return;
 
     const syncGhostCanvas = () => {
       const ghost = ghostCanvasRef.current;
@@ -212,11 +215,13 @@ export default function PreviewPanel({
       ctx.drawImage(src, 0, 0);
     };
 
-    map.on("render", syncGhostCanvas);
+    // Refresh the backdrop after the map settles instead of doing a costly
+    // WebGL-to-2D copy for every animation frame while the map is moving.
+    map.on("idle", syncGhostCanvas);
     return () => {
-      map.off("render", syncGhostCanvas);
+      map.off("idle", syncGhostCanvas);
     };
-  }, [mapRef]);
+  }, [mapRef, isCinemaMode, isMobileViewport]);
 
   useEffect(() => {
     if (!isMarkerEditorActive) {

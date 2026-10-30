@@ -45,6 +45,19 @@
     0 8px 14px rgba(0, 0, 0, 0.42);
 }
 
+/* User supplied wallpaper is a wall surface behind the poster. Keep it in
+   its own layer on desktop as well as mobile so it can never cover the map. */
+.cinema-wall-photo-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
 /* ── Wall Mockup View ── */
 
 .poster-viewport.is-wall-mockup {
