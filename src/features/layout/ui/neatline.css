@@ -165,7 +165,7 @@
 /* Flat Sleek Single Color Chips */
 .neatline-single-grid {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr)) minmax(42px, 1.35fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(42px, 1.35fr);
   gap: 6px;
 }
 
@@ -315,7 +315,7 @@
 
 @media (max-width: 700px) {
   .neatline-single-grid {
-    grid-template-columns: repeat(7, minmax(0, 1fr)) minmax(38px, 1.25fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(42px, 1.35fr);
     gap: 5px;
   }
 }
@@ -351,6 +351,17 @@
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {
     max-height: 248px !important;
+  }
+  .neatline-picker .neatline-borders-box .neatline-options {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .neatline-picker .neatline-card,
+  .neatline-picker .neatline-option {
+    aspect-ratio: 1 / 1 !important;
+    padding: 5px !important;
+    border-radius: 9px !important;
   }
 
   [data-mobile-tab="frames"] .mobile-drawer-content {
@@ -843,7 +854,7 @@
     margin-top: 4px;
   }
   .neatline-single-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(42px, 1.35fr);
   }
   .neatline-grad-grid {
     grid-template-columns: repeat(2, 1fr);
