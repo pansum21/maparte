@@ -65,6 +65,7 @@ export const DEFAULT_FORM: PosterForm = {
   theme: defaultThemeName,
   layout: defaultLayoutId,
   displayCity: DEFAULT_CITY,
+  displayTown: "",
   displayCountry: DEFAULT_COUNTRY,
   displayContinent: "Asia",
   customDate: "",

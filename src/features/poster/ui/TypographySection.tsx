@@ -117,6 +117,16 @@ export default function TypographySection({
 
         <div className="field-grid keep-two-mobile">
           <label>
+            Display Town / Village
+            <input
+              className="form-control-tall"
+              name="displayTown"
+              value={form.displayTown || ""}
+              onChange={onChange}
+              placeholder="Town / Village"
+            />
+          </label>
+          <label>
             Display city
             <input
               className="form-control-tall"

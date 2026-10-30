@@ -31,6 +31,7 @@ export interface PosterForm {
   theme: string;
   layout: string;
   displayCity: string;
+  displayTown?: string;
   displayCountry: string;
   displayState?: string;
   displayContinent: string;
