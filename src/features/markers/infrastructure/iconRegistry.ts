@@ -66,12 +66,13 @@ function createImageIcon(id: string, label: string, sourcePath: string) {
     source: "predefined",
     kind: "image",
     dataUrl: sourcePath,
-    tintWithMarkerColor: true,
+    tintWithMarkerColor: false,
   } satisfies MarkerIconDefinition;
 }
 
 export const predefinedMarkerIcons: MarkerIconDefinition[] = [
-  createImageIcon("app-marker", "MAPARTE", "/assets/marker.svg"),
+  createImageIcon("app-marker", "M–A", "/assets/marker-ma.png"),
+  createImageIcon("app-marker-a", "A", "/assets/marker-a.png"),
   createSvgIcon("pin", "Pin", FaLocationDot),
   createSvgIcon("heart", "Heart", FaHeart),
   createSvgIcon("ring", "Ring", FaRing),
