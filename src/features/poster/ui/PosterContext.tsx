@@ -264,6 +264,9 @@ export function PosterProvider({ children }: { children: ReactNode }) {
     state.form.customDate,
     state.form.distance,
     state.form.showPosterText,
+    state.form.overlayTop,
+    state.form.overlayBottom,
+    state.form.posterTextColor,
   ]);
 
   useEffect(() => {
