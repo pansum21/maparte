@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import {
   MAX_MARKER_SIZE,
@@ -178,6 +178,7 @@ export default function AppShell() {
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [isCinemaMode, setIsCinemaMode] = useState(false);
+  const cinemaHistoryEntryRef = useRef(false);
   const [isEditing, setIsEditing] = useState(false);
   const [cinemaWallPhoto, setCinemaWallPhoto] = useState<string | null>(null);
   const [cinemaPosterPlacement, setCinemaPosterPlacement] = useState({ x: 0, y: 0, scale: 1 });
@@ -230,6 +231,45 @@ export default function AppShell() {
     mobileTab,
     handleToggleCinema,
   ]);
+
+  useEffect(() => {
+    if (!isCinemaMode) return;
+
+    const previousState = window.history.state;
+    const nextState =
+      previousState && typeof previousState === "object"
+        ? { ...previousState, __maparteCinemaMode: true }
+        : { __maparteCinemaMode: true };
+    window.history.pushState(nextState, "", window.location.href);
+    cinemaHistoryEntryRef.current = true;
+
+    const handleBack = () => {
+      if (!cinemaHistoryEntryRef.current) return;
+      cinemaHistoryEntryRef.current = false;
+      const currentState = window.history.state;
+      window.history.pushState(
+        currentState && typeof currentState === "object" ? currentState : {},
+        "",
+        window.location.href,
+      );
+      setIsCinemaMode(false);
+      if (document.fullscreenElement && document.exitFullscreen) {
+        void document.exitFullscreen().catch(() => {});
+      }
+    };
+
+    window.addEventListener("popstate", handleBack);
+    return () => {
+      window.removeEventListener("popstate", handleBack);
+      if (
+        cinemaHistoryEntryRef.current &&
+        window.history.state?.__maparteCinemaMode === true
+      ) {
+        cinemaHistoryEntryRef.current = false;
+        window.history.back();
+      }
+    };
+  }, [isCinemaMode]);
 
   useEffect(() => {
     if (!isCinemaMode) return;

@@ -35,14 +35,25 @@ const MarkerVisual = memo(function MarkerVisual({
     >
       {icon.kind === "emoji" && icon.emoji ? (
         icon.emojiAssetUrl && !emojiAssetFailed ? (
-          <img
-            className="marker-visual__emoji-image"
-            src={icon.emojiAssetUrl}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            onError={() => setEmojiAssetFailed(true)}
-          />
+          <>
+            <img
+              className="marker-visual__emoji-image-probe"
+              src={icon.emojiAssetUrl}
+              alt=""
+              aria-hidden="true"
+              draggable={false}
+              onError={() => setEmojiAssetFailed(true)}
+            />
+            <span
+              className="marker-visual__emoji-image"
+              aria-hidden="true"
+              style={
+                {
+                  "--marker-mask-url": `url("${icon.emojiAssetUrl}")`,
+                } as CSSProperties
+              }
+            />
+          </>
         ) : (
           <span className="marker-visual__emoji" aria-hidden="true">
             {icon.emoji}

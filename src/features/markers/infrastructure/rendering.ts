@@ -87,7 +87,14 @@ export async function drawMarkersOnCanvas(
         if (icon.emojiAssetUrl) {
           try {
             const image = await loadImage(icon.emojiAssetUrl, true);
-            ctx.drawImage(image, x - size / 2, y - size / 2, size, size);
+            drawTintedImage(
+              ctx,
+              image,
+              x - size / 2,
+              y - size / 2,
+              size,
+              marker.color,
+            );
             return;
           } catch {
             // Keep exports working if the external 3D artwork CDN is unavailable.
@@ -97,6 +104,7 @@ export async function drawMarkersOnCanvas(
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = `${size}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+        ctx.fillStyle = marker.color;
         ctx.fillText(icon.emoji, x, y);
         ctx.restore();
         return;

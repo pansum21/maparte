@@ -16,6 +16,8 @@ export default function EmojiMarkerPicker({ onSelect }: EmojiMarkerPickerProps) 
         width="100%"
         height="100%"
         lazyLoadEmojis
+        autoFocusSearch={false}
+        skinTonesDisabled
         previewConfig={{ showPreview: false }}
         searchPlaceHolder="Search emojis and flags"
         onEmojiClick={({ emoji, unified }) => onSelect(emoji, unified)}
