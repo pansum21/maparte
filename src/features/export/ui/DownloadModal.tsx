@@ -1,16 +1,7 @@
 import { useState, useEffect } from "react";
 import { useExport } from "@/features/export/application/useExport";
 import type { ExportFormat } from "@/features/export/domain/types";
-import {
-  isProUser,
-  isAdminUser,
-  getProCredits,
-  activateProWithKey,
-  checkPaymentReturnUrl,
-  isTierAuthorized,
-  getUnlockedTier,
-  type PaidTier,
-} from "@/features/export/infrastructure/planTier";
+import { checkPaymentReturnUrl } from "@/features/export/infrastructure/planTier";
 import { CloseIcon, DownloadIcon, LoaderIcon } from "@/shared/ui/Icons";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
@@ -185,16 +176,7 @@ export default function DownloadModal({
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(
     resolveInitialFormat(defaultFormat),
   );
-  const [credits, setCredits] = useState(0);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [showKeyInput, setShowKeyInput] = useState(false);
-  const [licenseKey, setLicenseKey] = useState("");
-  const [keyError, setKeyError] = useState("");
   const [bonusNotice, setBonusNotice] = useState<string | null>(null);
-
-  // Email capture state
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
 
   // Quality comparison table toggle
   const [showComparison, setShowComparison] = useState(false);
@@ -202,21 +184,13 @@ export default function DownloadModal({
   useEffect(() => {
     if (isOpen) {
       checkPaymentReturnUrl();
-      const currentCredits = getProCredits();
-      setCredits(currentCredits);
-      setIsAdmin(isAdminUser());
       setSelectedTier(resolveInitialTier(defaultFormat));
       setSelectedFormat(resolveInitialFormat(defaultFormat));
       setBonusNotice(null);
-      setEmailError("");
-      const savedEmail = window.localStorage.getItem("maparte_customer_email") || "";
-      if (savedEmail) setEmail(savedEmail);
     }
   }, [isOpen, defaultFormat]);
 
   if (!isOpen) return null;
-
-  const isPro = isAdmin || credits > 0 || isProUser();
 
   const handleFreeDownload = () => {
     void exportPoster("png", {
@@ -228,8 +202,8 @@ export default function DownloadModal({
     onClose();
   };
 
-  const handleTiffTestDownload = async () => {
-    await exportPoster("tiff", { asPro: true, includeCredits: true });
+  const handleProDownload = async (_formatToExport: ExportFormat = selectedFormat) => {
+    setBonusNotice("Paid downloads are temporarily unavailable.");
   };
 
   const formatToTier = (f: ExportFormat): SelectedTier => {
@@ -260,92 +234,11 @@ export default function DownloadModal({
     setSelectedTier(formatToTier(fmt));
   };
 
-  const handleProDownload = async (formatToExport: ExportFormat = selectedFormat) => {
-    const requiredTier = formatToTier(formatToExport);
-    if (!isAdmin && !isTierAuthorized(requiredTier)) {
-      setBonusNotice("⚠️ Your active license does not include this format. Please select your purchased tier or upgrade.");
-      return;
-    }
-
-    if (isAdmin) {
-      await exportPoster(formatToExport, { asPro: true, includeCredits: true });
-      setBonusNotice("🎉 Ultra-HD poster downloaded!");
-      return;
-    }
-
-    const currentCredits = credits;
-    await exportPoster(formatToExport, { asPro: true, includeCredits: true });
-    const remaining = Math.max(0, currentCredits - 1);
-    setCredits(remaining);
-
-    if (remaining > 0) {
-      setBonusNotice(
-        "🎉 1st poster downloaded! Check your Gmail for your 1-Time BOGO code to create your 2nd poster anytime!",
-      );
-    } else {
-      setBonusNotice("🎉 Ultra-HD poster downloaded! Enjoy your prints!");
-      setTimeout(() => {
-        onClose();
-      }, 2000);
-    }
-  };
-
-  const handleActivateKey = () => {
-    const result = activateProWithKey(licenseKey);
-    if (result.success) {
-      const updatedCredits = getProCredits();
-      setCredits(updatedCredits);
-      setShowKeyInput(false);
-      setKeyError("");
-      if (result.isAdmin) {
-        setIsAdmin(true);
-        setBonusNotice("👑 Permanent Admin access active. Unlimited Ultra-HD downloads!");
-      } else {
-        setBonusNotice(
-          "🎉 BOGO Code verified! You have 2 Ultra-HD downloads unlocked.",
-        );
-      }
-    } else {
-      setKeyError("Invalid code. Please enter your valid paid BOGO access code.");
-    }
-  };
-
-  const validateEmail = (val: string): boolean => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(val.trim());
-  };
-
-  const handlePaymentClick = (tier: TierConfig) => {
-    if (!validateEmail(email)) {
-      setEmailError("Please enter a valid Gmail / Email to receive your order receipt & BOGO code.");
-      return;
-    }
-    setEmailError("");
-    try {
-      window.localStorage.setItem("maparte_customer_email", email.trim());
-    } catch {
-      // ignore
-    }
-
-    const fallbackCheckoutUrl =
-      "https://checkout.dodopayments.com/buy/pdt_0NptYWPjBtVnJxgyRkwI4?quantity=1";
-    const checkoutUrl = import.meta.env.VITE_CHECKOUT_URL || fallbackCheckoutUrl;
-
-    try {
-      const targetUrl = new URL(checkoutUrl, window.location.origin);
-      targetUrl.searchParams.set("customer_email", email.trim());
-      const returnUrl = `${window.location.origin}${window.location.pathname}?payment=success&status=paid&unlocked=pro&tier=${tier.id}`;
-      targetUrl.searchParams.set("redirect_url", returnUrl);
-      targetUrl.searchParams.set("metadata_tier", tier.id);
-      window.open(targetUrl.toString(), "_blank");
-    } catch {
-      window.open(fallbackCheckoutUrl, "_blank");
-    }
-  };
-
   const activeTier = TIERS.find((t) => t.id === selectedTier) || TIERS[0];
-  const unlockedTier = getUnlockedTier();
-  const isTierUnlocked = isAdmin || isTierAuthorized(selectedTier);
+  const credits: number = 0;
+  const isAdmin = false;
+  const unlockedTier = null;
+  const isTierUnlocked = false;
 
   return (
     <div
@@ -612,138 +505,15 @@ export default function DownloadModal({
               </button>
             </div>
           ) : (
-            <div className="tier-purchase-action-wrap">
-              {unlockedTier && !isAdmin && (
-                <div className="tier-upgrade-notice">
-                  <span>
-                    🔒 Your active license is for <strong>{TIERS.find((t) => t.id === unlockedTier)?.label || unlockedTier.toUpperCase()}</strong>. To download <strong>{activeTier.label}</strong>, please complete checkout below.
-                  </span>
-                </div>
-              )}
-
-              {/* Mandatory Gmail Capture (Only needed for checkout) */}
-              <div className="download-gmail-section">
-                <label htmlFor="customer-email-input" className="gmail-input-label">
-                  <span>Enter your Gmail / Email address:</span>
-                  <span className="gmail-required-badge">Required for delivery</span>
-                </label>
-                <div className="gmail-input-wrap">
-                  <input
-                    id="customer-email-input"
-                    type="email"
-                    placeholder="name@gmail.com"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (emailError) setEmailError("");
-                    }}
-                    className={`gmail-text-field ${emailError ? "has-error" : ""}`}
-                  />
-                </div>
-                <p className="gmail-delivery-notice">
-                  🔒 Your order receipt and 1-Time BOGO code will be sent to your Gmail for your 2nd free poster.
-                </p>
-                {emailError && <p className="gmail-error-msg">{emailError}</p>}
-              </div>
-
-              <button
-                type="button"
-                className="tier-btn tier-btn--pro tier-btn--buy-action"
-                disabled={isExporting}
-                onClick={() => handlePaymentClick(activeTier)}
-              >
-                <span>
-                  Get {activeTier.label} ({activeTier.price})
-                </span>
-              </button>
-
-              <div className="tier-redeem-row">
-                {!showKeyInput ? (
-                  <button
-                    type="button"
-                    className="redeem-toggle-btn"
-                    onClick={() => setShowKeyInput(true)}
-                  >
-                    Already paid or have a 1-Time BOGO code?
-                  </button>
-                ) : (
-                  <div className="redeem-input-group">
-                    <input
-                      type="text"
-                      placeholder="Enter your paid code"
-                      value={licenseKey}
-                      onChange={(e) => setLicenseKey(e.target.value)}
-                    />
-                    <button type="button" onClick={handleActivateKey}>
-                      Apply Code
-                    </button>
-                  </div>
-                )}
-                {keyError && <p className="redeem-error">{keyError}</p>}
-              </div>
-
-              {/* Trust Badges */}
-              <div className="download-trust-badges">
-                <div className="trust-badge-item">
-                  <span className="trust-badge-icon" aria-hidden="true">🔒</span>
-                  <div className="trust-badge-content">
-                    <span className="trust-badge-title">256-Bit SSL</span>
-                    <span className="trust-badge-sub">Encrypted Checkout</span>
-                  </div>
-                </div>
-                <div className="trust-badge-item">
-                  <span className="trust-badge-icon" aria-hidden="true">⚡</span>
-                  <div className="trust-badge-content">
-                    <span className="trust-badge-title">Instant Access</span>
-                    <span className="trust-badge-sub">Up to 500 PPI & vector SVG</span>
-                  </div>
-                </div>
-                <div className="trust-badge-item">
-                  <span className="trust-badge-icon" aria-hidden="true">🛡️</span>
-                  <div className="trust-badge-content">
-                    <span className="trust-badge-title">Satisfaction</span>
-                    <span className="trust-badge-sub">100% Guaranteed</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Social Proof Review */}
-              <div className="download-social-proof">
-                <div className="social-proof-stars" aria-label="5 out of 5 stars">
-                  ★★★★★
-                </div>
-                <p className="social-proof-quote">
-                  “Bought this for our 1st anniversary in Austin. It looks so stunning framed on our living room wall!”
-                </p>
-                <span className="social-proof-author">
-                  — Jessica &amp; David M. • Verified Gift Buyer
-                </span>
-              </div>
+            <div className="tier-purchase-action-wrap" role="status">
+              <p className="tier-upgrade-notice">
+                Secure paid downloads are temporarily unavailable while server-side payment verification is being set up. You can still download the free phone wallpaper below.
+              </p>
             </div>
           )}
         </div>
 
         {/* Free screen wallpaper option */}
-        {isAdmin && (
-          <div className="free-screen-wallpaper-box">
-            <div className="free-wallpaper-info">
-              <span className="free-wallpaper-title">TIFF print export — testing</span>
-              <p className="free-wallpaper-desc">
-                Uncompressed TIFF with fixed pixel dimensions and embedded PPI. The same 64 MB safety limit applies on phone and desktop.
-              </p>
-            </div>
-            <button
-              type="button"
-              className="tier-btn tier-btn--free-clean"
-              disabled={isExporting}
-              onClick={() => void handleTiffTestDownload()}
-            >
-              {isExporting ? <LoaderIcon className="is-spinning" /> : <DownloadIcon />}
-              <span>Download TIFF (test)</span>
-            </button>
-          </div>
-        )}
-
         {/* Free screen wallpaper option */}
         <div className="free-screen-wallpaper-box">
             <div className="free-wallpaper-info">

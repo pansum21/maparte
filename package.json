@@ -23,7 +23,7 @@
     "@vercel/speed-insights": "^2.0.0",
     "emoji-picker-react": "^4.22.2",
     "jszip": "^3.10.2",
-    "maplibre-gl": "^5.19.0",
+    "maplibre-gl": "^6.16.0",
     "react": "^18.3.1",
     "react-colorful": "^5.6.1",
     "react-dom": "^18.3.1",
@@ -65,9 +65,9 @@
     "rehype-stringify": "^10.0.1",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.5",
     "typescript": "^5.9.3",
     "unified": "^11.0.5",
-    "vite": "^5.4.11"
+    "vite": "^7.3.7"
   }
 }

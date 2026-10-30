@@ -36,9 +36,6 @@ const AnnouncementModal = lazy(
 );
 const ExportFab = lazy(() => import("@/features/export/ui/ExportFab"));
 const DesktopLocationBar = lazy(() => import("@/shared/ui/DesktopLocationBar"));
-const AdminControlModal = lazy(
-  () => import("@/features/admin/ui/AdminControlModal"),
-);
 const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
 const loadAllCitiesModal = () => import("@/features/location/ui/AllCitiesModal");
 const AllCitiesModal = lazy(loadAllCitiesModal);
@@ -48,13 +45,11 @@ function SettingsDrawer({
   onClose,
   isEditing,
   onToggleEditing,
-  onAdminOpen,
 }: {
   mobileTab: MobileTab;
   onClose: () => void;
   isEditing: boolean;
   onToggleEditing: () => void;
-  onAdminOpen: () => void;
 }) {
   // Start as a content-sized sheet; long sections remain reachable by scrolling
   // and users can still expand the sheet from its handle when they need more room.
@@ -87,7 +82,6 @@ function SettingsDrawer({
               isOpen
               presentation="panel"
               onClose={onClose}
-              onAdminOpen={onAdminOpen}
             />
           ) : (
             <SettingsPanel
@@ -176,7 +170,6 @@ export default function AppShell() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">("about");
   const [backdropOpen, setBackdropOpen] = useState(false);
-  const [adminOpen, setAdminOpen] = useState(false);
   const [isCinemaMode, setIsCinemaMode] = useState(false);
   const cinemaHistoryEntryRef = useRef(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -228,7 +221,7 @@ export default function AppShell() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isCinemaMode) {
-        if (backdropOpen || aboutOpen || adminOpen || (desktopPanelOpen && desktopTab === "settings") || (mobileDrawerOpen && mobileTab === "settings")) return;
+        if (backdropOpen || aboutOpen || (desktopPanelOpen && desktopTab === "settings") || (mobileDrawerOpen && mobileTab === "settings")) return;
         handleToggleCinema(false);
       }
     };
@@ -238,7 +231,6 @@ export default function AppShell() {
     isCinemaMode,
     backdropOpen,
     aboutOpen,
-    adminOpen,
     desktopPanelOpen,
     desktopTab,
     mobileDrawerOpen,
@@ -529,7 +521,6 @@ export default function AppShell() {
           setAboutInitialTab("guide");
           setAboutOpen(true);
         }}
-        onAdminOpen={() => setAdminOpen(true)}
         onCinemaToggle={() => handleToggleCinema(true)}
       />
       <InstallPrompt />
@@ -607,7 +598,6 @@ export default function AppShell() {
                 isOpen={desktopPanelOpen}
                 presentation="panel"
                 onClose={() => setDesktopPanelOpen(false)}
-                onAdminOpen={() => setAdminOpen(true)}
               />
             ) : (
               <SettingsPanel
@@ -633,7 +623,6 @@ export default function AppShell() {
           onClose={() => setMobileDrawerOpen(false)}
           isEditing={isEditing}
           onToggleEditing={() => setIsEditing((prev) => !prev)}
-          onAdminOpen={() => setAdminOpen(true)}
         />
       ) : null}
 
@@ -705,14 +694,6 @@ export default function AppShell() {
       {legalDoc ? (
         <Suspense fallback={null}>
           <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />
-        </Suspense>
-      ) : null}
-      {adminOpen ? (
-        <Suspense fallback={null}>
-          <AdminControlModal
-            isOpen={adminOpen}
-            onClose={() => setAdminOpen(false)}
-          />
         </Suspense>
       ) : null}
       {backdropOpen ? (

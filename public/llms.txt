@@ -1,52 +1,23 @@
 # MAPARTE
 
-> MAPARTE is a free, browser-based custom map art poster and wallpaper creator. Design and
-> edit unlimited custom maps for free: pick any location on Earth, style with 36 layouts,
-> 19 borders with dynamic design scaling, 3D watermorphism colors, and realistic living room
-> wall mockups. Pay only for the high-resolution, watermark-free digital print download (PNG, JPG, PDF, SVG). No sign-up, no account.
+MAPARTE is a browser-based editor for designing custom map posters and wallpapers. Visitors can search for a place or coordinates, adjust the map view, choose themes and layouts, style borders and text, add markers, and upload GPX tracks. An optional room preview helps compare available wall and frame treatments. The Download panel lists the export formats and output settings currently available.
 
-Everything runs client-side in the browser — map rendering and styling happen on
-the user's device, and poster designs are never uploaded to a server. Fonts are
-self-hosted, so choosing a typeface makes no third-party request. Map data comes
-from OpenStreetMap, served as OpenMapTiles vector tiles by OpenFreeMap and
-rendered with MapLibre GL.
+## Location and map data
 
-What it does:
-- Search any city, town, village, or address by name, or enter coordinates directly
-- Smooth 0°–360° map canvas rotation with 15° snap increments and 1-click recentering
-- 36 standard layout formats across international ISO A-series (A4–A0), US inches (8x10" to 24x36"), square formats, and phone wallpapers
-- 19 neatline borders including 10 ornamental rectangular frames (Greek Key, Art Deco, Victorian Filigree, Celtic Braid, Nautical Compass)
-- Physical line thickness adjustment (0.05 cm / 0.5 mm to 1.00 cm / 10.0 mm) and dynamic design scale slider (0.5x to 2.5x)
-- Style roads, water, parks, and building footprints with 3D watermorphism liquid gradients or curated minimal monochrome themes
-- 3D glossy emoji markers (hearts, wedding rings, home pins, flags, planes) and GPX track route uploads
-- Interactive living room Cinema wall preview with 5 moulding finishes (Black, Oak Wood, White, Gold, Frameless) and 64 wall paint colors
-- Ultra-HD export up to 48 Megapixels (300+ DPI), print-calibrated PDF, and infinite-resolution vector SVG (100% watermark-free)
-- Budget-friendly alternative to expensive pre-printed map brands like Mapiful and Grafomap, enabling same-day local printing at Walgreens, CVS, or Staples
+Interactive map tiles are provided by OpenFreeMap using OpenStreetMap-based data and rendered with MapLibre GL. Location search and reverse geocoding use OpenStreetMap's Nominatim service. Search requests and map tile requests are sent to these external services when those features are used. Device location is requested only after the visitor selects the location control.
 
-MAPARTE is a creator-first design studio — designing and styling is 100% free with no limits, and users only pay a small fee for high-resolution digital print downloads.
+## Main links
 
-## Main
+- [MAPARTE editor](https://maparte.vercel.app/)
+- [Privacy Policy](https://maparte.vercel.app/privacy)
+- [Terms](https://maparte.vercel.app/terms)
+- [Refund Policy](https://maparte.vercel.app/refund)
+- [Source repository](https://github.com/pansum21/maparte)
 
-- [MAPARTE](https://maparte.vercel.app): The app itself — create and export a custom map poster
-- [Source code](https://github.com/pansum21/maparte): AGPL-3.0 licensed, contributions welcome
+## Map credits and technology
 
-## Frequently Asked Questions (FAQ)
-
-- **How to create a custom map for free?**: Type any city or location name into the search bar, customize your preferred color theme, typography, borders, and layout, and preview in real living rooms for free.
-- **Where to download high-resolution printable map art?**: Download directly from Maparte after creating your design. Files are delivered in Ultra-HD 300+ DPI PNG, ultra-crisp JPG, print-calibrated PDF, and scalable SVG.
-- **Why is Maparte a cheaper alternative to Mapiful or Grafomap?**: Designing and editing is completely free with zero limits, and high-res digital downloads cost a fraction of pre-printed maps, saving up to 80% with local printing freedom.
-- **Can I create an anniversary or couple map gift?**: Yes, add custom dates, wedding coordinates, love messages, and drop glossy 3D heart or ring markers on your special meeting venue.
-- **Are digital downloads watermark-free?**: Yes, 100% watermark-free with a discreet gallery signature in the lower neatline.
-
-## Legal
-
-- [Privacy Policy](https://maparte.vercel.app/privacy): What is collected, analytics and consent
-- [Imprint](https://maparte.vercel.app/imprint): Operator and contact details
-
-## Optional
-
-- [OpenStreetMap](https://www.openstreetmap.org/copyright): Source of all map data, ODbL licensed
-- [OpenMapTiles](https://openmaptiles.org): Vector tile schema the map styles are built against
-- [OpenFreeMap](https://openfreemap.org): Tile hosting the app fetches at runtime
-- [Nominatim](https://nominatim.openstreetmap.org): Geocoding for location search
-- [MapLibre GL](https://maplibre.org): Rendering engine used for the map canvas
+- [OpenStreetMap copyright and license](https://www.openstreetmap.org/copyright)
+- [OpenFreeMap](https://openfreemap.org/)
+- [OpenMapTiles](https://openmaptiles.org/)
+- [Nominatim](https://nominatim.openstreetmap.org/)
+- [MapLibre GL](https://maplibre.org/)

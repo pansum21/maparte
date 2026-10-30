@@ -1,5 +1,6 @@
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import type { Map as MaplibreMap } from "maplibre-gl";
+import "@/features/map/infrastructure/maplibreWorker";
 import type {
   MarkerIconDefinition,
   MarkerItem,

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useRecentLocations } from "@/features/location/application/useRecentLocations";
-import { isAdminUser } from "@/features/export/infrastructure/planTier";
 import { openLegalDoc } from "@/features/legal/application/legalDoc";
 import {
   CloseIcon,
@@ -14,14 +13,12 @@ import {
 interface AppSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdminOpen?: () => void;
   presentation?: "modal" | "panel";
 }
 
 export default function AppSettingsModal({
   isOpen,
   onClose,
-  onAdminOpen,
   presentation = "modal",
 }: AppSettingsModalProps) {
   const { state, dispatch } = usePosterContext();
@@ -185,27 +182,7 @@ export default function AppSettingsModal({
             </div>
           </div>
 
-          {/* Section 4: Owner & Admin Access */}
-          <div className="app-settings-card">
-            <h3 className="app-settings-card-title">Owner & Admin Access</h3>
-            <div className="settings-admin-row">
-              <p className="admin-status-note">
-                Status: <strong>{isAdminUser() ? "👑 Admin Master Access Active" : "Regular User Mode"}</strong>
-              </p>
-              <button
-                type="button"
-                className="settings-action-btn settings-admin-btn"
-                onClick={() => {
-                  onClose();
-                  onAdminOpen?.();
-                }}
-              >
-                Open Admin Dashboard
-              </button>
-            </div>
-          </div>
-
-          {/* Section 5: Data & Reset */}
+          {/* Section 4: Data & Reset */}
           <div className="app-settings-card">
             <h3 className="app-settings-card-title">Maintenance & Reset</h3>
             <div className="settings-actions-grid">

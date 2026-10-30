@@ -121,10 +121,10 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
             <article className="about-tab-content">
               {/* Hero Banner */}
               <div className="guide-hero-banner">
-                <span className="guide-pill-badge">✨ 100% Client-Side • Privacy-First • No Watermarks</span>
-                <h2 className="guide-hero-title">Design Museum-Quality Custom Map Posters in Ultra-HD & Scalable Vector</h2>
+                <span className="guide-pill-badge">MAPARTE · Custom map design studio</span>
+                <h2 className="guide-hero-title">Turn a place that matters into map art</h2>
                 <p className="guide-hero-desc">
-                  Celebrate your life milestones with bespoke cartographic artwork. Whether it is where you first met, where you exchanged vows, bought your first home, or your favorite travel retreat, MAPARTE turns your memories into timeless wall art.
+                  Choose a location, shape the map, add your own typography and markers, then preview a poster or wallpaper design in the editor.
                 </p>
               </div>
 
@@ -136,60 +136,60 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                 <div className="guide-feature-grid">
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">⚡</div>
-                    <h4>100% Free &amp; Unlimited Design</h4>
-                    <p>No mandatory sign-ups, subscriptions, or paywalls to design. Create, restyle, and preview unlimited maps smoothly in your browser for free.</p>
+                    <h4>Find a location</h4>
+                    <p>Search for a city, town, village, address, or coordinates. Map search and map tiles use external OpenStreetMap-based services.</p>
                   </div>
                   <div className="guide-feature-card">
-                    <div className="feature-card-icon">🔒</div>
-                    <h4>Private &amp; Client-Side</h4>
-                    <p>Your coordinates, home addresses, dates, and love messages never leave your computer. 100% private and telemetry-respecting.</p>
+                    <div className="feature-card-icon">🗺️</div>
+                    <h4>Shape the map</h4>
+                    <p>Adjust the map area and dimensions, rotate and zoom the map, and choose which supported map layers appear.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🖼️</div>
-                    <h4>Zero Watermarks Always</h4>
-                    <p>Every exported poster and mobile wallpaper is completely clean without annoying center watermarks, featuring a discreet gallery studio signature in the lower neatline.</p>
+                    <h4>Build your layout</h4>
+                    <p>Choose a preset or enter custom dimensions, then frame the map with line and decorative border styles.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">📐</div>
-                    <h4>36 Layouts &amp; 19 Borders</h4>
-                    <p>Calibrated for A-series (A4–A0), US inches (8x10" to 24x36"), square prints, and 19 neatlines with cm/mm thickness and dynamic design scaling.</p>
+                    <h4>Personalize the text</h4>
+                    <p>Set the town or village, city, state, and country labels; add a date or tagline; and adjust font, size, and text color.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">💧</div>
-                    <h4>3D Watermorphism &amp; Markers</h4>
-                    <p>Liquid color gradients (Imperial Gold, Sunset Rose, Ocean Royal) paired with glossy 3D emoji markers to commemorate dates, weddings, and trips.</p>
+                    <h4>Mark places and routes</h4>
+                    <p>Add map markers, emoji or uploaded icons, and GPX tracks. Adjust the route appearance and start or finish markers.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🛋️</div>
-                    <h4>Cinema Wall Mockups</h4>
-                    <p>Real-world 3D living room preview with 5 moulding finishes (Black, Oak, White, Gold, Frameless) across 64 paint shades with realistic glass reflections.</p>
+                    <h4>Preview the design</h4>
+                    <p>Review the poster on the canvas or use the room preview to compare background and frame treatments before exporting.</p>
                   </div>
                 </div>
               </section>
 
-              {/* Why Ultra-HD? */}
+              {/* About the editor */}
               <section className="guide-content-section">
                 <h3 className="guide-section-heading">
-                  <span className="qa-indicator">WHY</span> Why Ultra-HD Resolution & Density Metadata Matter for Map Art?
+                  <span className="qa-indicator">WHY</span> A clear, flexible map-making workflow
                 </h3>
                 <div className="guide-comparison-card">
-                  <div className="comparison-col comparison-col--bad">
-                    <span className="comparison-badge">Generic Online Generators</span>
+                  <div className="comparison-col">
+                    <span className="comparison-badge">1 · Find and frame</span>
                     <ul>
-                      <li>❌ Low 72 to 150 DPI resolution files</li>
-                      <li>❌ Blurry street labels and pixelated road lines when printed</li>
-                      <li>❌ Overpriced: charge $15 to $50 for digital files</li>
-                      <li>❌ Large center watermarks on previews</li>
+                      <li>Search by place name or coordinates</li>
+                      <li>Choose a map extent and layout</li>
+                      <li>Adjust map layers, colors, and borders</li>
+                      <li>Set dimensions for a poster or wallpaper</li>
                     </ul>
                   </div>
-                  <div className="comparison-divider" aria-hidden="true">VS</div>
+                  <div className="comparison-divider" aria-hidden="true">→</div>
                   <div className="comparison-col comparison-col--good">
-                    <span className="comparison-badge comparison-badge--gold">MAPARTE Ultra-HD Studio</span>
+                    <span className="comparison-badge comparison-badge--gold">2 · Personalize and preview</span>
                     <ul>
-                      <li>✅ Up to 48 MP Ultra-HD &amp; Infinite Vector SVG</li>
-                      <li>✅ Laser-sharp coastlines, canals, and alleyways up to 70x100 cm</li>
-                      <li>✅ Accessible pricing with Buy One Get One (BOGO) Master Bundle</li>
-                      <li>✅ Watermark-free downloads &amp; live room wall mockup</li>
+                      <li>Add labels, a date, or a tagline</li>
+                      <li>Place markers or import a GPX route</li>
+                      <li>Review the canvas and optional room preview</li>
+                      <li>Check current output choices in Download</li>
                     </ul>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                   <span className="qa-indicator">WHEN</span> When &amp; Why Gift a Custom Map Poster?
                 </h3>
                 <p className="guide-section-intro">
-                  Over 75% of our community creates custom maps as sentimental gifts for life milestones:
+                  A custom map can make a meaningful keepsake for a place, trip, event, or milestone that matters to you.
                 </p>
                 <div className="guide-milestone-grid">
                   <div className="guide-milestone-card">
@@ -212,7 +212,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                   <div className="guide-milestone-card">
                     <span className="milestone-icon">💍</span>
                     <h4>Wedding &amp; Paper Anniversary</h4>
-                    <p>The traditional 1st wedding anniversary gift is paper. A framed Ultra-HD map print of your venue is timeless.</p>
+                    <p>A map of the venue can be a personal way to remember a wedding or anniversary.</p>
                   </div>
                   <div className="guide-milestone-card">
                     <span className="milestone-icon">🏡</span>
@@ -244,7 +244,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                 </h3>
                 <div className="guide-community-card">
                   <p>
-                    MAPARTE is an independent, open-source cartography project built with care in Dehradun, India. If you love using Maparte, you can support its development and keep it free:
+                    MAPARTE is an independent map-art design project. Explore the public project or support its continued development using the links below.
                   </p>
                   <div className="guide-community-actions">
                     {repoUrl && (
@@ -306,7 +306,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                   </div>
 
                   <div className="guide-version-footer">
-                    <span>MAPARTE v{APP_VERSION} • OpenStreetMap Data © Contributors • Dehradun, India</span>
+                    <span>MAPARTE v{APP_VERSION} • Map data and services are credited in the editor</span>
                   </div>
                 </div>
               </section>
@@ -318,7 +318,7 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                 <span className="guide-pill-badge">📖 Creator Walkthrough &amp; Print Handbook</span>
                 <h2 className="guide-hero-title">How to Create, Frame &amp; Print Your Custom Map</h2>
                 <p className="guide-hero-desc">
-                  Design for Free. Pay Only for the High-Res Download. Everything you need to know about designing high-resolution cartography, picking the right paper stock, and framing standard gallery prints with 100% free unlimited styling.
+                  A practical walkthrough of the location, map, layout, text, marker, route, preview, and export controls in the MAPARTE editor.
                 </p>
               </div>
 
@@ -330,18 +330,18 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                 <div className="guide-steps-grid">
                   <div className="guide-step-card">
                     <div className="step-badge">STEP 1</div>
-                    <h4>Explore &amp; Design Your Map Art for Free</h4>
-                    <p>Search any city, town, island, or exact GPS coordinates in our free online map maker. Select from 36 standard print layouts (A-Series, US Inches, Square, &amp; Social Banners), rotate 0°–360° with precision snapping, and frame your favorite streets with zero sign-up required.</p>
+                    <h4>Choose a location and map area</h4>
+                    <p>Search for a place or enter coordinates. Set the map scale and dimensions, then pan, zoom, or rotate the map until the area is framed the way you want.</p>
                   </div>
                   <div className="guide-step-card">
                     <div className="step-badge">STEP 2</div>
-                    <h4>Unlimited Free Editing, Themes &amp; 19 Borders</h4>
-                    <p>Restyle as many custom street maps or travel memory maps as you want—every editing tool is 100% free! Choose from 12+ cartographic themes and 3D liquid watermorphism gradients, select from 19 neatline borders with physical cm/mm thickness and dynamic design scaling, drop 3D emoji markers, or upload GPX routes.</p>
+                    <h4>Style the poster</h4>
+                    <p>Choose a theme, control visible map layers, select a layout or custom size, and tune the border. Add town, city, state, country, or tagline text; then adjust its font, size, and color.</p>
                   </div>
                   <div className="guide-step-card">
                     <div className="step-badge">STEP 3</div>
-                    <h4>Realistic Room Preview, Instant Download &amp; Print Anywhere</h4>
-                    <p>Preview your poster framed against 64 interior wall paint shades with 5 authentic moulding finishes in Cinema Stage mode. Once you love your design, unlock the high-resolution, print-ready digital file (Ultra-HD PNG, JPG, print-calibrated PDF, scalable vector SVG) with a quick one-time payment. Print locally same-day or at home for huge savings!</p>
+                    <h4>Review and export</h4>
+                    <p>Check the live map preview and optional room mockup. Open Download to see the file formats and settings currently available for your design.</p>
                   </div>
                 </div>
               </section>
@@ -354,33 +354,33 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
                 <div className="guide-feature-grid">
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🧭</div>
-                    <h4>Precision 360° Rotation &amp; Geocoding</h4>
-                    <p>Search any global village, mountain, or street via OpenStreetMap. Rotate map orientation smoothly from 0° to 360° with 15° snap increments and 1-click recentering.</p>
+                    <h4>Location search and map movement</h4>
+                    <p>Search places through the location field or provide coordinates. Pan, zoom, rotate, and recenter the map with the editor controls.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">📐</div>
-                    <h4>36 Print Layouts &amp; Wallpapers</h4>
-                    <p>Calibrate dimensions across international A-series (A4–A0), US inches (8x10" to 24x36"), square formats, and phone wallpapers or social banners.</p>
+                    <h4>Poster and wallpaper layouts</h4>
+                    <p>Choose from the layout presets or enter custom width and height. The available presets depend on the selected layout group.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🖼️</div>
-                    <h4>19 Borders &amp; Dynamic Design Scale</h4>
-                    <p>Choose from classic single/double lines or 10 ornamental frames (Greek Key, Art Deco, Victorian Filigree). Adjust line thickness (0.05–1.00 cm) and motif scale (0.5x–2.5x).</p>
+                    <h4>Border styles and spacing</h4>
+                    <p>Choose among the nine line patterns, adjust line thickness and map gap, and use decorative frame options where available.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">💧</div>
-                    <h4>3D Watermorphism &amp; Color Palettes</h4>
-                    <p>Blend liquid gradients (Imperial Gold, Sunset Rose, Ocean Royal) or curated minimal monochromes (Carrara, Noir) across roads, water, parks, and land.</p>
+                    <h4>Map themes and colors</h4>
+                    <p>Pick a map theme, then edit supported palette colors. Theme controls affect the map appearance; poster text has its own color setting.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">📍</div>
-                    <h4>3D Emoji Markers &amp; GPX Track Routes</h4>
-                    <p>Drop glossy 3D heart, ring, home, flag, and airplane pins to highlight special memories, or upload GPX tracks to map marathons, cycling, and hikes.</p>
+                    <h4>Markers and GPX routes</h4>
+                    <p>Place built-in or emoji markers, add supported custom icons, and upload a GPX track. Edit marker placement and route style in their panels.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🛋️</div>
-                    <h4>Backdrop Cinema Wall &amp; 5 Real Frames</h4>
-                    <p>Preview inside Classic Black, Natural Scandinavian Oak, Museum White, Brushed Gold, or Frameless styles against 64 paint colors with realistic glare.</p>
+                    <h4>Room preview</h4>
+                    <p>Open the room preview to compare the artwork against the available wall colors and frame treatments.</p>
                   </div>
                 </div>
               </section>
@@ -388,23 +388,23 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
               {/* What Paper to Use */}
               <section className="guide-content-section">
                 <h3 className="guide-section-heading">
-                  <span className="qa-indicator">WHAT</span> What Paper Stock is Best for Museum-Quality Prints?
+                  <span className="qa-indicator">WHAT</span> How should I choose paper for a print?
                 </h3>
                 <div className="guide-paper-grid">
                   <div className="guide-paper-card">
-                    <div className="paper-tag paper-tag--best">★ Recommended Choice</div>
-                    <h4>Enhanced Matte Paper (210–250 gsm)</h4>
-                    <p>The #1 industry recommendation for minimalist cartography. Absorbs light without glare, delivering deep rich blacks and subtle pastel hues.</p>
+                    <div className="paper-tag paper-tag--best">Common option</div>
+                    <h4>Enhanced matte paper</h4>
+                    <p>Matte paper can reduce glare. Ask your print provider which weight and finish suits the selected file and intended frame.</p>
                   </div>
                   <div className="guide-paper-card">
                     <div className="paper-tag">Satin Sheen</div>
-                    <h4>Satin / Luster Paper (240–260 gsm)</h4>
-                    <p>Provides a gentle, premium sheen that makes coastlines, canals, and river contours shimmer without harsh mirror-like reflections.</p>
+                    <h4>Satin or luster paper</h4>
+                    <p>A satin finish has a slight sheen. Compare a sample with your design and the room lighting.</p>
                   </div>
                   <div className="guide-paper-card">
                     <div className="paper-tag">Archival Fine Art</div>
-                    <h4>100% Cotton Rag (300+ gsm)</h4>
-                    <p>Heavyweight archival fine-art paper that lasts over 100 years without yellowing. The premier choice for wedding and anniversary gifts.</p>
+                    <h4>Cotton rag or fine-art paper</h4>
+                    <p>Fine-art papers vary by provider. Check the printer's permanence, color, and handling specifications before ordering.</p>
                   </div>
                 </div>
               </section>
@@ -412,35 +412,35 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
               {/* What Frame Sizes */}
               <section className="guide-content-section">
                 <h3 className="guide-section-heading">
-                  <span className="qa-indicator">WHAT</span> What Frame Sizes Fit Standard Maparte Exports?
+                  <span className="qa-indicator">WHAT</span> How do I choose a frame size?
                 </h3>
                 <p className="guide-section-intro">
-                  Maparte exports are mathematically calibrated for standard off-the-shelf frames from IKEA, Target, Amazon, and local framing studios:
+                  Choose a layout whose aspect ratio and physical dimensions match the frame or print service you plan to use. Check the dimensions shown in the editor and with your printer:
                 </p>
                 <div className="guide-frames-grid">
                   <div className="guide-frame-pill">
                     <strong>50 x 70 cm (B2)</strong>
-                    <span>#1 Most popular global gallery size</span>
+                    <span>Check the print provider's size chart</span>
                   </div>
                   <div className="guide-frame-pill">
                     <strong>70 x 100 cm (B1)</strong>
-                    <span>Statement living room centerpiece</span>
+                    <span>Check the print provider's size chart</span>
                   </div>
                   <div className="guide-frame-pill">
                     <strong>18 x 24 inches</strong>
-                    <span>Standard North American wall frame</span>
+                    <span>Check the print provider's size chart</span>
                   </div>
                   <div className="guide-frame-pill">
                     <strong>24 x 36 inches</strong>
-                    <span>Oversized living room &amp; lounge print</span>
+                    <span>Check the print provider's size chart</span>
                   </div>
                   <div className="guide-frame-pill">
                     <strong>A4 &amp; A3 Format</strong>
-                    <span>Compact desk, bookshelf &amp; bedroom art</span>
+                    <span>Check the print provider's size chart</span>
                   </div>
                   <div className="guide-frame-pill">
                     <strong>Phone Wallpaper</strong>
-                    <span>Calibrated for iPhone 15/16 Pro OLED screens</span>
+                    <span>Choose a wallpaper layout that suits your device</span>
                   </div>
                 </div>
               </section>
@@ -448,23 +448,23 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
               {/* Where to Print */}
               <section className="guide-content-section">
                 <h3 className="guide-section-heading">
-                  <span className="qa-indicator">WHERE</span> Where Can You Print Your Downloaded File?
+                  <span className="qa-indicator">WHERE</span> Where can I print my design?
                 </h3>
                 <div className="guide-print-locations-grid">
                   <div className="guide-print-card">
-                    <span className="print-type-badge">🏪 Same-Day Local Pickup</span>
-                    <h4>Staples, Office Depot, Walgreens &amp; CVS</h4>
-                    <p>Upload your Ultra-HD file to their photo portal for budget-friendly same-day printing on heavy matte cardstock in 18x24", 24x36", or 50x70 cm.</p>
+                    <span className="print-type-badge">🏪 Local print shop</span>
+                    <h4>Ask your local print provider</h4>
+                    <p>Confirm accepted file types, pixel dimensions, paper options, and turnaround with the provider before ordering.</p>
                   </div>
                   <div className="guide-print-card">
-                    <span className="print-type-badge">🌐 Fine-Art Delivered Prints</span>
-                    <h4>WhiteWall, Mpix &amp; Shutterfly</h4>
-                    <p>World-class master photo labs that offer genuine Hahnemühle fine-art paper, custom wood frames, and acrylic mounts shipped to your door.</p>
+                    <span className="print-type-badge">🌐 Online print service</span>
+                    <h4>Choose a provider that serves your region</h4>
+                    <p>Review that provider's file requirements, paper and frame choices, shipping area, and return terms.</p>
                   </div>
                   <div className="guide-print-card">
-                    <span className="print-type-badge">📺 Ambient Smart Displays</span>
-                    <h4>Samsung The Frame TV &amp; 4K Displays</h4>
-                    <p>Export in wallpaper mode or high-res landscape and upload directly to your Smart TV to transform your living room screen into dynamic art.</p>
+                    <span className="print-type-badge">📺 Screen display</span>
+                    <h4>Use a compatible wallpaper layout</h4>
+                    <p>Check the selected output dimensions and your display's supported image format before transferring the file.</p>
                   </div>
                 </div>
               </section>
@@ -472,124 +472,40 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
               {/* Frequently Asked Questions */}
               <section className="guide-content-section">
                 <h3 className="guide-section-heading">
-                  <span className="qa-indicator">FAQ</span> Frequently Asked Questions (FAQ)
+                  <span className="qa-indicator">FAQ</span> Frequently Asked Questions
                 </h3>
                 <div className="guide-faq-accordion">
                   <details className="guide-faq-item" open>
-                    <summary className="guide-faq-question">
-                      How can I generate and design custom city maps for free?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      You can easily design, style, and edit unlimited custom city maps online using our free editor tool. Simply type any city, town, or GPS coordinates in the world, customize the layout across 36 formats, and experiment with 12+ color themes and 19 neatline borders. Editing and designing your map is 100% free with no hidden charges, trial lockouts, or mandatory account creation.
-                    </p>
+                    <summary className="guide-faq-question">How do I start a map?</summary>
+                    <p className="guide-faq-answer">Search for a place in the location field or enter coordinates, then adjust the map area and choose a layout. Place-name search and map tiles rely on external OpenStreetMap-based services.</p>
                   </details>
-
                   <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      Where can I download the high-resolution printable map art?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Right here on Maparte! Once you are completely satisfied with your custom design and room mockup, you can instantly download the high-resolution, print-ready digital file directly from our website after making a quick, one-time payment. Files are delivered in Ultra-HD 300+ DPI PNG, ultra-crisp JPG, print-calibrated PDF, and infinite-resolution vector SVG.
-                    </p>
+                    <summary className="guide-faq-question">Can I make a poster for a small town or village?</summary>
+                    <p className="guide-faq-answer">You can search by place name or use coordinates to move the map to a specific area. Available map detail depends on the underlying map data at that location.</p>
                   </details>
-
                   <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      Is there a limit to how many maps I can create, edit, and preview?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Not at all! There is absolutely zero limit. You can create, restyle, rotate, and preview as many custom street maps, anniversary gifts, or travel memory posters as you want for free. Every styling tool, color palette, and living room wall mockup is 100% free. You only pay when you decide to download the final high-quality file for printing.
-                    </p>
+                    <summary className="guide-faq-question">What can I customize?</summary>
+                    <p className="guide-faq-answer">Use the editor to choose a theme and layout, change supported map layers, adjust borders, add location labels and a tagline, and tune text styling.</p>
                   </details>
-
                   <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      Why is Maparte a great cheaper alternative to pre-printed map brands like Mapiful or Grafomap?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Most premium pre-printed map brands charge heavily ($45 to $80+) plus shipping, and charge $15 to $50 just for digital files. Maparte serves as a budget-friendly, creator-first alternative: all designing and editing tools are 100% free, and Ultra-HD digital downloads start at an accessible fraction of that price. You receive immediate digital delivery and can print locally the very same day at Walgreens, CVS, or Staples, saving up to 80% overall.
-                    </p>
+                    <summary className="guide-faq-question">Can I add my own markers or a walking route?</summary>
+                    <p className="guide-faq-answer">Yes. The Markers panel includes built-in and emoji choices and supports custom icon uploads. The Routes panel accepts GPX tracks and provides route and endpoint styling.</p>
                   </details>
-
                   <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      What is the difference between digital map art downloads and pre-printed posters?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Digital map art downloads provide immediate access without waiting days or weeks for shipping, eliminate the risk of damaged or bent tubes in transit, and give you complete freedom over where and how you print. You can print multiple copies for family, choose your preferred local paper stock (matte, cotton rag, or canvas), and re-print anytime, all while avoiding costly international courier fees.
-                    </p>
+                    <summary className="guide-faq-question">Which file formats can I download?</summary>
+                    <p className="guide-faq-answer">Open the Download panel to see the formats and output settings currently available for your design. Resolution and file details depend on the selected output and poster dimensions.</p>
                   </details>
-
                   <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      What is the best way to print my downloaded custom map poster?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Because Maparte exports files with exact physical dimensions and embedded DPI metadata, printing is effortless: you can print at home on any inkjet printer using heavyweight matte photo paper (200+ gsm), pick up same-day prints from your local Walgreens, CVS, Staples, or Office Depot, or upload to fine-art labs like WhiteWall or Mpix for archival Hahnemühle framing.
-                    </p>
+                    <summary className="guide-faq-question">Does MAPARTE use my device location automatically?</summary>
+                    <p className="guide-faq-answer">No. Device location is requested only when you choose the location control. If you use place search or reverse geocoding, the relevant location query is sent to the map-search service. See the Privacy Policy for details.</p>
                   </details>
-
                   <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      Are the digital map downloads 100% watermark-free?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Yes, 100%! All downloaded files (including our free clean mobile wallpapers and paid Ultra-HD prints) have zero intrusive center watermarks or distracting advertisements. Every export features an elegant, discreet studio signature in the lower neatline border, mathematically calibrated for gallery framing.
-                    </p>
+                    <summary className="guide-faq-question">Why is OpenStreetMap credited on the map?</summary>
+                    <p className="guide-faq-answer">MAPARTE uses OpenStreetMap data and map services. The credit and license link need to remain visible with the map or exported artwork.</p>
                   </details>
-
                   <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      How can I make a custom anniversary or couple map gift?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Creating a custom anniversary map is simple and heartfelt: search the location where you first met, had your first date, or exchanged wedding vows. Under Typography, customize the title with your names and special occasion date (e.g., '14.02.2024 • Where Our Story Began'), drop a glossy 3D heart or wedding ring emoji marker on your exact venue, and preview it in Scandinavian Oak or Gallery Gold framing.
-                    </p>
-                  </details>
-
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      Can I create a map of a small village, rural countryside, or exact GPS coordinates?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Yes! Maparte is powered by global OpenStreetMap cartography, which covers every road, country lane, footpath, coastline, canal, and GPS coordinate on planet Earth. Simply type the village name or paste exact latitude and longitude coordinates into the search bar, then zoom in to capture your exact neighborhood.
-                    </p>
-                  </details>
-
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      What paper stock and frame finishes look best for minimalist map art?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      For paper, we strongly recommend Enhanced Matte Paper (210–250 gsm) because it absorbs ambient light without glare, delivering deep contrast and crisp street typography. For frames, Maparte offers 5 calibrated finishes: Classic Matte Black, Natural Scandinavian Oak, Modern Museum White, Brushed Gallery Gold, and Frameless Floating acrylic.
-                    </p>
-                  </details>
-
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      How do the 19 neatline borders and design scale controls work?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Maparte features 19 distinct framing styles: classic single/double/triple neatlines, drafting ticks, and 10 ornamental rectangular frames (Greek Key, Victorian Filigree, Art Deco Stepped, Celtic Braid, Nautical Compass, Diamond Lattice, Antique Atlas, etc.). You can adjust line thickness from 0.05 cm (0.5 mm) up to 1.00 cm (10.0 mm), and for ornamental frames, use the dedicated Design Size slider (0.5x to 2.5x) to scale corner motifs so fine details stay crisp at any thickness.
-                    </p>
-                  </details>
-
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      How does the Buy One Get One (BOGO) guarantee work?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Our Buy One Get One Free (BOGO) promo code is exclusively included with our $9.99 All-in-One Master Bundle tier. Upon purchase, a unique coupon code is delivered directly to your email, unlocking a 100% free second Ultra-HD download for a matching pair (e.g., His &amp; Hers hometowns, or engagement &amp; wedding venues).
-                    </p>
-                  </details>
-
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">
-                      Which cities are included in the curated 400 World Cities directory?
-                    </summary>
-                    <p className="guide-faq-answer">
-                      Maparte features a curated directory of 400 world-famous destinations organized into 4 major continental regions with exactly 100 cities each: <strong>Americas</strong> (North America, South America, Central America, and the Caribbean), <strong>Europe</strong> (historic capitals and cultural hubs), <strong>Asia &amp; Oceania</strong> (Asian megacities, Middle Eastern skylines, and Australian coastal hubs), and <strong>Africa</strong> (vibrant capitals and historic trading ports). Each city card includes local photography, authentic country identities, and pre-calibrated coordinates for instant one-click poster styling. In addition to these 400 cities, you can search and render any global village, street, or GPS coordinate on Earth.
-                    </p>
+                    <summary className="guide-faq-question">How do I prepare a design for printing?</summary>
+                    <p className="guide-faq-answer">Choose the intended physical dimensions before exporting. Check the selected file's pixel dimensions and effective resolution with your print provider, and confirm their bleed, color, and paper requirements.</p>
                   </details>
                 </div>
               </section>
