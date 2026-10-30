@@ -2149,6 +2149,9 @@
 
 /* Compact Edit Map rotation strip on phones; no full-screen veil. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  /* Current Settings is a desktop main-window side drawer only. */
+  .app-shell > .preview-panel .desktop-right-panel { display: none !important; }
+
   .mobile-drawer.mobile-drawer--edit-map {
     inset: auto 12px calc(74px + env(safe-area-inset-bottom, 0px));
     display: block;
