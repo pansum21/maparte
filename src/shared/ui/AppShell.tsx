@@ -345,6 +345,7 @@ export default function AppShell() {
     const preload = () => {
       void import("@/features/poster/ui/SettingsPanel");
       void import("@/shared/ui/DesktopLocationBar");
+      void loadAllCitiesModal();
       void import("@/features/export/ui/ExportFab");
       void import("@/features/updates/ui/AnnouncementModal");
     };
@@ -447,6 +448,7 @@ export default function AppShell() {
 
   const handleDesktopLocationToggle = () => {
     void loadDesktopLocationBar();
+    void loadAllCitiesModal();
     setDesktopLocationRowVisible(false);
     setBackdropOpen(false);
     setIsEditing(false);
@@ -732,7 +734,7 @@ export default function AppShell() {
       ) : null}
 
       {allCitiesOpen ? (
-        <Suspense fallback={null}>
+        <Suspense fallback={<section className="all-cities-modal all-cities-modal--loading" role="status">Loading locations…</section>}>
           <AllCitiesModal
             isOpen={allCitiesOpen}
             onClose={() => setAllCitiesOpen(false)}
