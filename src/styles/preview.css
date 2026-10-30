@@ -39,7 +39,8 @@
   max-height: 82vh;
   overflow: hidden;
   border-radius: 4px;
-  border: 1px solid rgba(179, 210, 230, 0.28);
+  border: 0;
+  outline: 1px solid rgba(179, 210, 230, 0.28);
   box-shadow:
     0 24px 34px rgba(0, 0, 0, 0.5),
     0 8px 14px rgba(0, 0, 0, 0.42);

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import "./neatline.css";
 
 const CONFIG_STORAGE_KEY = "maparte_neatline_layers";
@@ -11,6 +11,7 @@ const BORDER_CONTROL_STEP_CM = 0.01;
 const GAP_CONTROL_STEP_CM = 0.01;
 const SLIDER_MAX_LINE_WIDTH_CM = 0.40;
 const SLIDER_MAX_GAP_CM = 0.35;
+const BORDER_UNITS_PER_CM = 48;
 
 function stepWithinRange(value: number, delta: number, min: number, max: number, step: number) {
   const stepsFromMin = Math.round((value - min) / step) + delta;
@@ -133,11 +134,9 @@ export const MIN_LINE_WIDTH_CM = 0.05;
 const DEFAULT_LINE_WIDTHS: Record<LinePattern, number[]> = Object.fromEntries(
   Object.entries(DEFAULT_LINE_WIDTHS_CM).map(([pattern, arr]) => [
     pattern,
-    arr.map((cm) => cm * 48.0),
+    arr.map((cm) => cm * BORDER_UNITS_PER_CM),
   ]),
 ) as Record<LinePattern, number[]>;
-
-const MAX_LINE_WIDTH = MAX_LINE_WIDTH_CM * 48.0;
 
 const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
   top: "#b44737",
@@ -146,7 +145,7 @@ const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
   left: "#526b9b",
 };
 
-const OUTER_MAT_MAX_CM = 0.10; // Exactly 1.0 mm outer margin from paper corners
+const OUTER_EDGE_CLEARANCE_CM = 0.01; // 0.1 mm between the outer stroke and paper edge
 
 export function hasPatternDesign(_pattern: LinePattern): boolean {
   return false;
@@ -211,6 +210,27 @@ export function getPatternSpanUnits(
   }
 }
 
+/** Center positions for each printed line, leaving the same clear gap between every pair. */
+function getBorderLayerOffsets(
+  pattern: LinePattern,
+  widths: number[],
+  edgeInset: number,
+  designScale = 1.0,
+): number[] {
+  const clearGap = 6.0 * designScale;
+  if (pattern === "single") return [edgeInset];
+
+  const offsets = [edgeInset];
+  for (let index = 0; index < lineCount(pattern) - 1; index += 1) {
+    const currentWidth = widths[index] ?? widths[0] ?? 4.8;
+    const nextWidth = widths[index + 1] ?? currentWidth;
+    offsets.push(
+      (offsets[index] ?? edgeInset) + currentWidth / 2 + clearGap + nextWidth / 2,
+    );
+  }
+  return offsets;
+}
+
 /** Shared physical measurements for the mat, map opening, and border art. */
 export function getPosterBorderMetrics(
   widthValue?: string | number,
@@ -225,7 +245,10 @@ export function getPosterBorderMetrics(
   const height = Number(heightValue) > 0 ? Number(heightValue) : 29.7;
   const shortSide = Math.min(width, height);
   const hasBorder = Boolean(lineId && lineId !== "none");
-  const innerW = 1000;
+  // Use a fixed unit scale so physical line widths stay identical on every
+  // poster size. A fixed 1000-unit viewBox made wide layouts render borders
+  // much too thick and small layouts render them too thin.
+  const innerW = width * BORDER_UNITS_PER_CM;
 
   // Automatically activate white mat behind border when any border is selected.
   // When no border ("none"), full bleed without white mat.
@@ -243,7 +266,7 @@ export function getPosterBorderMetrics(
   // Sleek, modern white border width (~3.5mm - 5mm on standard posters, not broad 10mm / 1cm)
   const targetMatRatio = 0.022;
   const targetMapInset = Math.max(0.40, Math.min(0.85, shortSide * targetMatRatio));
-  const minOuterMargin = 0.06; // 0.6mm minimum white clearance
+  const outerMarginCm = OUTER_EDGE_CLEARANCE_CM;
 
   if (!showWhiteMat) {
     if (!hasBorder) {
@@ -258,7 +281,7 @@ export function getPosterBorderMetrics(
         spanUnits: 0,
         edgeInset: 1.5,
         offInner: 1.5,
-        unitScale: innerW / width,
+        unitScale: BORDER_UNITS_PER_CM,
         innerW,
         innerH,
         mapInsetX: "0%",
@@ -274,39 +297,42 @@ export function getPosterBorderMetrics(
       };
     }
 
-    // Border selected without white border (outerBorderCm = 0.10):
-    // The border sits near the edge of the sheet with approx 0.10 cm (1mm) space from the edge!
-    const outerBorderCm = 0.10;
-    const usableWidthCm = Math.max(0.1, width - outerBorderCm * 2);
-    const usableHeightCm = Math.max(0.1, height - outerBorderCm * 2);
+    // Keep the outer stroke 0.1 mm from the paper edge. The map opening is
+    // measured from the actual inner stroke edge, so a zero gap touches it.
+    const outerBorderCm = outerMarginCm;
+    // Border artwork fills the whole poster box; the 0.1 mm paper margin is
+    // part of its viewBox, not an extra inset around the SVG.
+    const usableWidthCm = width;
+    const usableHeightCm = height;
     const innerH = (innerW * usableHeightCm) / usableWidthCm;
-    const unitScale = innerW / usableWidthCm;
+    const unitScale = BORDER_UNITS_PER_CM;
 
-    let borderBandCm = 0;
     let spanUnits = 0;
     let edgeInset = 1.5;
     let offInner = edgeInset;
+    let borderBandCm = 0;
 
     const style = lineStyles.find((s) => s.id === lineId);
     if (style) {
       const widths = widthsFor(style.id, thicknesses || {});
-      const maxStroke = widths.length ? Math.max(...widths) : 2.0;
-      edgeInset = maxStroke / 2 + 0.5;
-      const rawSpan = getPatternSpanUnits(style.pattern, widths, designScale);
-      const maxSafeSpan = innerH > 0 ? Math.max(6, innerH * 0.14) : rawSpan;
-      spanUnits = Math.min(rawSpan, maxSafeSpan);
+      const outerStrokeWidth = widths[0] ?? 2.0;
+      edgeInset = outerStrokeWidth / 2 + outerBorderCm * unitScale;
+      const offsets = getBorderLayerOffsets(style.pattern, widths, edgeInset, designScale);
+      offInner = offsets[offsets.length - 1] ?? edgeInset;
+      const rawSpan = offInner - edgeInset;
+      spanUnits = rawSpan;
       offInner = edgeInset + spanUnits;
-      const innerStrokeWidth = widths[widths.length - 1] ?? maxStroke;
+      const innerStrokeWidth = widths[widths.length - 1] ?? outerStrokeWidth;
+      const outerEdgeUnits = edgeInset - outerStrokeWidth / 2;
       const innerEdgeUnits = offInner + innerStrokeWidth / 2;
-      borderBandCm = innerEdgeUnits / unitScale;
+      borderBandCm = (innerEdgeUnits - outerEdgeUnits) / unitScale;
     }
 
-    // Border sits near the edge of the sheet. Map insets inward: mapInsetCm = outerBorderCm + borderBandCm + gapCm
     const mapInsetCm = outerBorderCm + borderBandCm + gapCm;
     const mapInsetXRatio = mapInsetCm / width;
     const mapInsetYRatio = mapInsetCm / height;
-    const matInsetXRatio = outerBorderCm / width;
-    const matInsetYRatio = outerBorderCm / height;
+    const matInsetXRatio = 0;
+    const matInsetYRatio = 0;
 
     return {
       showWhiteMat: false,
@@ -342,7 +368,7 @@ export function getPosterBorderMetrics(
     const usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
     const usableHeightCm = Math.max(0.1, height - outerMatCm * 2);
     const innerH = (innerW * usableHeightCm) / usableWidthCm;
-    const unitScale = innerW / usableWidthCm;
+    const unitScale = BORDER_UNITS_PER_CM;
     const mapInsetXRatio = mapInsetCm / width;
     const mapInsetYRatio = mapInsetCm / height;
     const matInsetXRatio = mapInsetXRatio;
@@ -374,51 +400,44 @@ export function getPosterBorderMetrics(
     };
   }
 
-  // White mat ON + Border selected:
-  // 1. Sleek white border: ~3.5mm - 5mm (not 10mm / 1cm broad)
-  // 2. Outward expansion: As line thickness increases, it grows OUTWARD towards the paper edge,
-  //    keeping the map opening steady so the map does NOT shrink inward!
-  // 3. Inner line touches the map opening flush (+ gapCm).
-  // Initial calculation based on targetMapInset
-  let usableWidthCm = Math.max(0.1, width - targetMapInset * 2);
-  let usableHeightCm = Math.max(0.1, height - targetMapInset * 2);
+  // White mat ON + Border selected: keep a 0.1 mm paper-edge clearance;
+  // the innermost stroke meets the map unless the user adds an inner gap.
+  const outerMatCm = outerMarginCm;
+  // SVG spans the full paper; the outside clearance is measured inside this
+  // coordinate space so every responsive transform preserves it exactly.
+  const usableWidthCm = width;
+  const usableHeightCm = height;
   let innerH = (innerW * usableHeightCm) / usableWidthCm;
-  let unitScale = innerW / usableWidthCm;
+  const unitScale = BORDER_UNITS_PER_CM;
 
   let spanUnits = 0;
   let edgeInset = 1.5;
   let offInner = edgeInset;
   let innerStrokeWidth = 2.0;
+  let outerStrokeWidth = 2.0;
 
   const style = lineStyles.find((s) => s.id === lineId);
   if (style) {
     const widths = widthsFor(style.id, thicknesses || {});
-    const maxStroke = widths.length ? Math.max(...widths) : 2.0;
-    edgeInset = maxStroke / 2 + 0.5;
-    const rawSpan = getPatternSpanUnits(style.pattern, widths, designScale);
-    const maxSafeSpan = innerH > 0 ? Math.max(6, innerH * 0.14) : rawSpan;
-    spanUnits = Math.min(rawSpan, maxSafeSpan);
+    outerStrokeWidth = widths[0] ?? 2.0;
+    edgeInset = outerStrokeWidth / 2 + outerMatCm * unitScale;
+    const offsets = getBorderLayerOffsets(style.pattern, widths, edgeInset, designScale);
+    offInner = offsets[offsets.length - 1] ?? edgeInset;
+    const rawSpan = offInner - edgeInset;
+    spanUnits = rawSpan;
     offInner = edgeInset + spanUnits;
-    innerStrokeWidth = widths[widths.length - 1] ?? maxStroke;
+    innerStrokeWidth = widths[widths.length - 1] ?? outerStrokeWidth;
   }
+  const outerEdgeUnits = edgeInset - outerStrokeWidth / 2;
   const innerEdgeUnits = offInner + innerStrokeWidth / 2;
-  let borderBandCm = innerEdgeUnits / unitScale;
+  const borderBandCm = (innerEdgeUnits - outerEdgeUnits) / unitScale;
 
-  // Outward expansion logic:
-  // The outer white margin shrinks as border thickness grows outward!
-  const outerMatCm = Math.max(minOuterMargin, targetMapInset - borderBandCm);
-  usableWidthCm = Math.max(0.1, width - outerMatCm * 2);
-  const actualUsableHeightCm = Math.max(0.1, height - outerMatCm * 2);
-  innerH = (innerW * actualUsableHeightCm) / usableWidthCm;
-  unitScale = innerW / usableWidthCm;
-  borderBandCm = innerEdgeUnits / unitScale;
-
-  // Map opening insets to meet the inner stroke of the border (+ gapCm)
+  // A zero gap puts the map edge directly against the innermost stroke.
   const mapInsetCm = outerMatCm + borderBandCm + gapCm;
   const mapInsetXRatio = mapInsetCm / width;
   const mapInsetYRatio = mapInsetCm / height;
-  const matInsetXRatio = outerMatCm / width;
-  const matInsetYRatio = outerMatCm / height;
+  const matInsetXRatio = 0;
+  const matInsetYRatio = 0;
 
   return {
     showWhiteMat: true,
@@ -564,7 +583,7 @@ export function thicknessesInCm(
     const value = Number(saved[index]);
     if (!Number.isFinite(value)) return defaults[index] ?? 0.10;
     // Migrate legacy SVG-unit values (> 1.05) to cm
-    const cm = value > 1.05 ? value / 48.0 : value;
+    const cm = value > 1.05 ? value / BORDER_UNITS_PER_CM : value;
     return Math.min(MAX_LINE_WIDTH_CM, Math.max(MIN_LINE_WIDTH_CM, Math.round(cm * 100) / 100));
   });
 }
@@ -574,7 +593,7 @@ export function widthsFor(
   thicknesses: Record<string, number[]>,
 ): number[] {
   const cmArr = thicknessesInCm(styleId, thicknesses);
-  return cmArr.map((cm) => cm * 48.0);
+  return cmArr.map((cm) => cm * BORDER_UNITS_PER_CM);
 }
 
 function lineLabel(pattern: LinePattern, index: number): string {
@@ -602,6 +621,30 @@ function lineLabel(pattern: LinePattern, index: number): string {
   }
 }
 
+function AdjustmentInfo({ label, help }: { label: string; help: string }) {
+  const [open, setOpen] = useState(false);
+  const tooltipId = useId();
+  return (
+    <span className="neatline-info-wrap">
+      <button
+        type="button"
+        className="neatline-info-button"
+        aria-label={`Info: ${label}`}
+        aria-expanded={open}
+        aria-controls={tooltipId}
+        onClick={() => setOpen((value) => !value)}
+      >
+        i
+      </button>
+      {open ? (
+        <span className="neatline-info-tooltip" id={tooltipId} role="tooltip">
+          {help}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
 export function NeatlineArtwork({
   selection,
   className = "",
@@ -625,11 +668,15 @@ export function NeatlineArtwork({
     selection.designScale,
     selection.showWhiteMat,
   );
-  const { innerW, innerH, edgeInset, offInner, spanUnits } = metrics;
+  const { innerW, innerH, edgeInset, offInner } = metrics;
   const widths = widthsFor(line.id, selection.thicknesses);
+  const layerOffsets = getBorderLayerOffsets(
+    line.pattern,
+    widths,
+    edgeInset,
+    selection.designScale ?? 1.0,
+  );
   const maxStroke = widths.length ? Math.max(...widths) : 1;
-  const dScale = selection.designScale ?? 1.0;
-
   const isMix = selection.colorMode === "mix";
   const gradId = `neatline-grad-${className ? className.trim().replace(/\s+/g, "-") : "main"}`;
   const fromColor = selection.gradientFrom || "#f43f5e";
@@ -663,9 +710,9 @@ export function NeatlineArtwork({
     case "triple": {
       const offsets =
         line.pattern === "double"
-          ? [edgeInset, offInner]
+          ? layerOffsets
           : line.pattern === "triple"
-            ? [edgeInset, (edgeInset + offInner) / 2, offInner]
+            ? layerOffsets
             : [edgeInset];
 
       return (
@@ -1377,9 +1424,15 @@ export function NeatlinePicker({
               {/* All physical spacing values are displayed in centimeters. */}
               {thicknessesInCm(selectedLine.id, selection.thicknesses).map((cmVal, index) => (
                 <div className="neatline-adjustment" key={`${selectedLine.id}-${index}`}>
-                  <span className="neatline-adjustment-label">
-                    {lineLabel(selectedLine.pattern, index)}
-                  </span>
+                  <div className="neatline-adjustment-heading">
+                    <span className="neatline-adjustment-label">
+                      {lineLabel(selectedLine.pattern, index)}
+                    </span>
+                    <AdjustmentInfo
+                      label={lineLabel(selectedLine.pattern, index)}
+                      help="इस परत की प्रिंट होने वाली मोटाई बदलती है। दूसरी परतों के बीच की दूरी अलग रहती है।"
+                    />
+                  </div>
                   <div className="neatline-adjustment-control">
                     <button
                       type="button"
@@ -1411,7 +1464,13 @@ export function NeatlinePicker({
 
               {hasPatternDesign(selectedLine.pattern) ? (
                 <div className="neatline-adjustment" key="design-scale-slider">
-                  <span className="neatline-adjustment-label">Design size &amp; pattern</span>
+                  <div className="neatline-adjustment-heading">
+                    <span className="neatline-adjustment-label">Design size &amp; pattern</span>
+                    <AdjustmentInfo
+                      label="Design size and pattern"
+                      help="यह लाइन के पैटर्न का फैलाव बदलता है; पोस्टर का आकार नहीं बदलता।"
+                    />
+                  </div>
                   <div className="neatline-adjustment-control">
                     <button
                       type="button"
@@ -1442,7 +1501,13 @@ export function NeatlinePicker({
               ) : null}
 
               <div className="neatline-adjustment" key="map-gap-slider">
-                <span className="neatline-adjustment-label">Map spacing (gap)</span>
+                <div className="neatline-adjustment-heading">
+                  <span className="neatline-adjustment-label">Map spacing (gap)</span>
+                  <AdjustmentInfo
+                    label="Map spacing"
+                    help="0.00 cm पर अंदर वाली बॉर्डर लाइन map को छूती है। बढ़ाने पर map अंदर की ओर सिमटता है; बॉर्डर बाहर नहीं जाती।"
+                  />
+                </div>
                 <div className="neatline-adjustment-control">
                   <button
                     type="button"

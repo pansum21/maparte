@@ -1492,7 +1492,8 @@ body.has-custom-backdrop .poster-ghost-layer {
   max-height: calc(88vh - 60px) !important;
   width: min(calc(100vw - 64px), calc((88vh - 60px) * var(--poster-aspect, 0.6666667))) !important;
   /* Keep the paper edge the same thickness on desktop, tablet, and phone. */
-  border-width: 7px !important;
+  border: 0 !important;
+  outline: 7px solid rgba(255, 255, 255, 0.94) !important;
   margin: 0 auto !important;
   transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 0.96));
   transform-origin: center;
@@ -2222,7 +2223,8 @@ body.has-custom-backdrop .poster-ghost-layer {
   .app-shell.is-cinema-mode .poster-frame {
     width: min(calc(100vw - 40px), calc((100svh - 190px) * var(--poster-aspect, 0.6666667))) !important;
     max-height: calc(100svh - 190px) !important;
-    border-width: 7px !important;
+    border: 0 !important;
+    outline: 7px solid rgba(255, 255, 255, 0.94) !important;
     transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 1)) !important;
   }
 
@@ -2269,7 +2271,8 @@ body.has-custom-backdrop .poster-ghost-layer {
   .app-shell.is-cinema-mode .poster-frame {
     width: min(calc(100vw - 20px), calc((100svh - 128px) * var(--poster-aspect, 0.6666667))) !important;
     max-height: calc(100svh - 128px) !important;
-    border-width: 7px !important;
+    border: 0 !important;
+    outline: 7px solid rgba(255, 255, 255, 0.94) !important;
     transform: translate(var(--cinema-poster-x, 0vw), var(--cinema-poster-y, 0vh)) scale(var(--cinema-poster-scale, 1)) !important;
   }
 

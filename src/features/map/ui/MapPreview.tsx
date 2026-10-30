@@ -217,7 +217,12 @@ export default function MapPreview({
 
     if (interactive) {
       map.scrollZoom.enable();
-      map.dragPan.enable();
+      map.dragPan.enable({
+        linearity: 0.3,
+        easing: (t) => 1 - (1 - t) ** 3,
+        maxSpeed: 1400,
+        deceleration: 2500,
+      });
       map.touchZoomRotate.enable();
       map.doubleClickZoom.enable();
       map.keyboard.enable();

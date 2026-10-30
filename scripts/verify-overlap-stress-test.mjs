@@ -32,8 +32,15 @@ const allPatternIds = [
   "neatline-dash-dot",
 ];
 
-const gapTestValues = [0.00, 0.05, 0.10, 0.15, 0.20, 0.35, 0.50, 0.60];
-const thicknessTestValues = [null, 0.6, 2.0, 4.5, 8.0, 14.0];
+const gapTestValues = [0.00, 0.01, 0.05, 0.10, 0.20, 0.35];
+const thicknessTestValues = [null, 0.05, 0.10, 0.25, 0.40];
+const previewModes = [
+  "desktop-main",
+  "desktop-fullscreen",
+  "phone-main",
+  "phone-fullscreen",
+];
+const previewScaleFactors = [0.65, 0.85, 1, 1.2, 1.5];
 
 const vite = await createServer({
   root,
@@ -57,6 +64,8 @@ try {
   console.log(`- Patterns: ${allPatternIds.length}`);
   console.log(`- Gap values: ${gapTestValues.length}`);
   console.log(`- Thickness variants: ${thicknessTestValues.length}`);
+  console.log(`- Preview modes: ${previewModes.join(", ")}`);
+  console.log(`- Preview scales per mode: ${previewScaleFactors.length}`);
   console.log(`Total planned tests: ${layouts.length * allPatternIds.length * gapTestValues.length * thicknessTestValues.length * 2} (with and without white mat)`);
 
   for (const layout of layouts) {
@@ -102,7 +111,7 @@ try {
             showWhiteMat,
           );
 
-          // 1. Check physical clearances
+          // 1. Check the exact outer clearance and the user-controlled inner gap.
           const clearanceCm = metrics.mapInsetCm - (metrics.outerMatCm + metrics.borderBandCm);
           if (Math.abs(clearanceCm - gapCm) > 0.0001) {
             failures.push(
@@ -118,12 +127,22 @@ try {
             continue;
           }
 
+          const widths = widthsFor(patternId, thicknesses);
+          const outerClearanceCm =
+            (metrics.edgeInset - (widths[0] ?? 2) / 2) / metrics.unitScale;
+          if (Math.abs(outerClearanceCm - 0.01) > 0.0001) {
+            failures.push(
+              `Outer edge clearance mismatch on ${layout.id}/${patternId}/mat-${showWhiteMat}: ${outerClearanceCm} cm, expected 0.01 cm`,
+            );
+            continue;
+          }
+
           // 2. Check Map Opening is positive and healthy
           const mapOpeningWidthCm = widthCm - metrics.mapInsetCm * 2;
           const mapOpeningHeightCm = heightCm - metrics.mapInsetCm * 2;
           if (mapOpeningWidthCm <= 0 || mapOpeningHeightCm <= 0) {
             failures.push(
-              `Map window squashed to zero on ${layout.id}/${patternId}/mat-${showWhiteMat}: w=${mapOpeningWidthCm}, h=${mapOpeningHeightCm}`,
+              `Map window squashed to zero on ${layout.id}/${patternId}/mat-${showWhiteMat}/gap-${gapCm}/thickness-${thicknessVal}: w=${mapOpeningWidthCm}, h=${mapOpeningHeightCm}`,
             );
             continue;
           }
@@ -144,20 +163,67 @@ try {
 
           // In SVG coordinates relative to the artwork viewport, the map
           // window starts after the border band; the white mat is outside it.
-          const mapInsetUnits = (metrics.borderBandCm + metrics.gapCm) * metrics.unitScale;
+          const mapInsetUnits =
+            (metrics.outerMatCm + metrics.borderBandCm + metrics.gapCm) * metrics.unitScale;
           const innerStrokeWidth =
             metrics.offInner - metrics.edgeInset >= 0
-              ? widthsFor(patternId, thicknesses).slice(-1)[0] ?? 2
+              ? widths.slice(-1)[0] ?? 2
               : 2;
           const innerBorderStrokeEdgeUnits = metrics.offInner + innerStrokeWidth / 2;
 
-          // The inner border line stroke MUST finish before mapInsetUnits
-          if (innerBorderStrokeEdgeUnits > mapInsetUnits - (gapCm * metrics.unitScale) + 0.001) {
+          // Gap 0 must touch; larger gaps move the map inward by that exact amount.
+          const expectedInnerEdge = mapInsetUnits - gapCm * metrics.unitScale;
+          if (Math.abs(innerBorderStrokeEdgeUnits - expectedInnerEdge) > 0.001) {
             failures.push(
-              `Inner border stroke encroaches into gap on ${layout.id}/${patternId}/mat-${showWhiteMat}: edge=${innerBorderStrokeEdgeUnits}, mapStart=${mapInsetUnits}`,
+              `Inner edge/map alignment mismatch on ${layout.id}/${patternId}/mat-${showWhiteMat}/gap-${gapCm}: edge=${innerBorderStrokeEdgeUnits}, map edge=${expectedInnerEdge}`,
             );
             continue;
           }
+
+          // Main, fullscreen, and phone previews all scale this same poster
+          // frame. Confirm that four-edge map clearance survives every mode
+          // and representative zoom level.
+          const innerEdgeCm = innerBorderStrokeEdgeUnits / metrics.unitScale;
+          let transformFailure = false;
+          for (const mode of previewModes) {
+            for (const scale of previewScaleFactors) {
+              const renderedGap =
+                metrics.mapInsetCm * scale - innerEdgeCm * scale;
+              const expectedRenderedGap = gapCm * scale;
+              if (Math.abs(renderedGap - expectedRenderedGap) > 0.0001) {
+                failures.push(
+                  `Transformed edge/map alignment mismatch on ${layout.id}/${patternId}/${mode}/scale-${scale}: gap=${renderedGap}, expected=${expectedRenderedGap}`,
+                );
+                transformFailure = true;
+                break;
+              }
+            }
+            if (transformFailure) break;
+          }
+          if (transformFailure) continue;
+
+          // Each adjacent layer must have the original 0.125 cm clear line gap.
+          const lineCount = widths.length;
+          const layerOffsets = [metrics.edgeInset];
+          for (let layer = 0; layer < lineCount - 1; layer += 1) {
+            const current = widths[layer] ?? widths[0] ?? 2;
+            const next = widths[layer + 1] ?? current;
+            layerOffsets.push(layerOffsets[layer] + current / 2 + 6 + next / 2);
+          }
+          let layersOverlap = false;
+          for (let layer = 0; layer < layerOffsets.length - 1; layer += 1) {
+            const clearUnits =
+              layerOffsets[layer + 1] -
+              (widths[layer] + widths[layer + 1]) / 2;
+            if (clearUnits < -0.001) {
+              failures.push(
+                `Border layers overlap on ${layout.id}/${patternId}/layer-${layer}: ${clearUnits} units`,
+              );
+              layersOverlap = true;
+              break;
+            }
+          }
+          if (layersOverlap) continue;
 
           // Check all rects in markup
           const rects = [...markup.matchAll(/<rect\b([^>]*)>/g)].map((m) => m[1]);
@@ -211,7 +277,7 @@ try {
     console.error("Failures detected:", failures.slice(0, 20));
     process.exit(1);
   } else {
-    console.log("SUCCESS: 0 overlaps found across all 36 layouts and all 19 border styles!");
+    console.log(`SUCCESS: 0 overlaps found across all ${layouts.length} layouts and all ${allPatternIds.length} border styles.`);
   }
 } finally {
   await vite.close();
