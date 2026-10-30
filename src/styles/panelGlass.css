@@ -286,3 +286,18 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
   [data-mobile-tab="frames"] .neatline-single-chip, [data-mobile-tab="frames"] .neatline-grad-chip { box-sizing: border-box !important; width: 60% !important; justify-self: center !important; aspect-ratio: 2.5 / 1 !important; height: auto !important; min-height: 0 !important; }
   .app-shell.is-cinema-mode .cinema-dock-upload-btn > span:last-child { white-space: nowrap !important; font-size: .58rem !important; }
 }
+
+
+/* Give each compact mobile border row its own track; fixed panel height scrolls. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options {
+    grid-auto-rows: clamp(64px, 13vw, 92px) !important;
+    overflow-y: auto !important;
+    align-content: start !important;
+  }
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-option {
+    height: 100% !important;
+    aspect-ratio: auto !important;
+    align-self: stretch !important;
+  }
+}
