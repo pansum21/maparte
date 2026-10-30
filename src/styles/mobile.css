@@ -1977,7 +1977,7 @@
 
   /* Keep the hidden file picker out of the grid so visible controls use all columns. */
   .app-shell.is-cinema-mode .cinema-floating-dock > #cinema-wall-photo-input {
-    position: absolute !important;
+    display: none !important;
   }
 
   .app-shell.is-cinema-mode .cinema-floating-dock:has(.cinema-dock-remove-photo-btn) {
