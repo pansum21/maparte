@@ -6,7 +6,7 @@ This page describes the data handling visible in the MAPARTE website code. It is
 
 ## Data stored in your browser
 
-MAPARTE stores some editor settings and cached data in your browser's local storage. This can include recent place searches and coordinates, map-search cache entries, selected appearance and layout settings, custom marker data, export-related preferences, and a locally saved email value used by the current download flow. The app also keeps a small local diagnostics backlog for troubleshooting; this backlog is not sent to a third-party endpoint by that diagnostics code. You can clear recent places in Settings, and you can remove other site storage through your browser's site-data controls.
+MAPARTE stores some editor settings and cached data in your browser's local storage. This can include recent place searches and coordinates, map-search cache entries, selected appearance and layout settings, custom marker data, and export-related preferences. The current site does not collect or save an email for checkout. A value saved by an older version may remain in your browser until you clear this site's storage. The app also keeps a small local diagnostics backlog for troubleshooting; this backlog is not sent to a third-party endpoint by that diagnostics code. You can clear recent places in Settings, and you can remove other site storage through your browser's site-data controls.
 
 ## Map and location services
 
@@ -18,7 +18,7 @@ The site includes Google Analytics, Google AdSense, Vercel Analytics, and Vercel
 
 ## Downloads and payments
 
-The current download flow asks for an email in some cases, stores that value in local browser storage, and may include it when opening the configured checkout provider. Payment and download behavior is still being tested and is not described here as a completed production billing service. Do not enter payment details unless the checkout provider page and its terms are clear to you. Any external provider processes information under its own privacy and payment policies.
+The site currently offers a free phone wallpaper download. Paid downloads and checkout are disabled; this version does not send email addresses or payment details to a billing provider. A secure server-side payment and entitlement flow has not been configured.
 
 ## Accounts and credentials
 

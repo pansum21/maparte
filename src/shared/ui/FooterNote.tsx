@@ -124,7 +124,7 @@ export default function FooterNote() {
       <div className="desktop-footer-middle brand-promise">
         <p className="brand-promise-note">Map it. Make it yours.</p>
         <p className="brand-offer-note">
-          Create and edit for free. Pay when you download.
+          Create and edit for free. Download a free phone wallpaper.
         </p>
       </div>
 

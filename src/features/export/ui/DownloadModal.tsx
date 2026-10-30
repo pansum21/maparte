@@ -31,7 +31,7 @@ const TIERS: TierConfig[] = [
     id: "png",
     format: "png",
     label: "PNG Image",
-    price: "$4.99",
+    price: "Unavailable",
     desc: "Best for Phone & 4K/8K Wallpapers",
     included: [
       "Up to 500 PPI at supported print sizes; exact file resolution depends on size and device",
@@ -43,14 +43,13 @@ const TIERS: TierConfig[] = [
       "No JPG file included",
       "No PDF print file for commercial print shops",
       "No raw mathematical SVG vector source code",
-      "No BOGO 2nd poster free",
     ],
   },
   {
     id: "jpg",
     format: "jpg",
     label: "JPG Image",
-    price: "$4.99",
+    price: "Unavailable",
     desc: "Compact & Light for Social Sharing",
     included: [
       "Up to 500 PPI at supported print sizes; actual density is embedded in the JPG",
@@ -62,33 +61,31 @@ const TIERS: TierConfig[] = [
       "No lossless PNG file included",
       "No PDF print file for commercial print shops",
       "No raw mathematical SVG vector source code",
-      "No BOGO 2nd poster free",
     ],
   },
   {
     id: "duo",
     format: "image_bundle",
     label: "PNG + JPG Duo Pack",
-    price: "$5.99",
-    badge: "🔥 POPULAR DUO",
+    price: "Unavailable",
+    badge: "TWO FORMATS",
     desc: "Both Image Formats (PNG + JPG) in 1 Pack",
     included: [
       "PNG + JPG exports with actual pixel-density metadata for the selected print size",
       "Use the lossless PNG for editing and JPG for smaller sharing files",
-      "Save $4 compared to buying PNG and JPG separately",
+      "Two image formats in one package",
       "Permanent MapArte studio signature branding",
     ],
     notIncluded: [
       "No PDF print file for commercial print shops",
       "No raw mathematical SVG vector source code",
-      "No BOGO 2nd poster free",
     ],
   },
   {
     id: "pdf",
     format: "pdf",
     label: "PDF Document",
-    price: "$6.99",
+    price: "Unavailable",
     desc: "Best for Home & Print Shops",
     included: [
       "Print-sized PDF; effective PPI follows the embedded image pixels and selected size",
@@ -98,14 +95,13 @@ const TIERS: TierConfig[] = [
     ],
     notIncluded: [
       "No raw SVG vector geometry for CAD/plotters",
-      "No BOGO 2nd poster free",
     ],
   },
   {
     id: "svg",
     format: "svg",
     label: "SVG Vector",
-    price: "$7.99",
+    price: "Unavailable",
     desc: "Scalable Vector SVG",
     included: [
       "Vector map paths and typography scale without raster pixelation",
@@ -115,21 +111,17 @@ const TIERS: TierConfig[] = [
     ],
     notIncluded: [
       "Single format purchase (no pre-compiled PDF/PNG included)",
-      "No BOGO 2nd poster free",
     ],
   },
   {
     id: "combo",
     format: "zip",
     label: "All-in-One Master Bundle",
-    price: "$9.99",
-    badge: "🎁 BUY 1 GET 1 FREE",
-    desc: "All Formats (PNG+JPG+PDF+SVG) + 2nd Poster Free",
+    price: "Unavailable",
+    desc: "All Formats (PNG+JPG+PDF+SVG)",
     included: [
       "PNG/JPG with actual density metadata, print-sized PDF and vector SVG in one ZIP",
-      "🎁 BUY 1 GET 1 FREE (BOGO): 2nd Matching Poster 100% Free!",
-      "Unique 1-Time BOGO bonus code delivered directly to your Gmail",
-      "Save 65% vs buying individual formats ($30+ value)",
+      "Combined file formats in one ZIP",
       "Permanent MapArte studio signature branding",
     ],
     notIncluded: [],
@@ -176,18 +168,13 @@ export default function DownloadModal({
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(
     resolveInitialFormat(defaultFormat),
   );
-  const [bonusNotice, setBonusNotice] = useState<string | null>(null);
-
   // Quality comparison table toggle
-  const [showComparison, setShowComparison] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       checkPaymentReturnUrl();
       setSelectedTier(resolveInitialTier(defaultFormat));
-      setSelectedFormat(resolveInitialFormat(defaultFormat));
-      setBonusNotice(null);
-    }
+      setSelectedFormat(resolveInitialFormat(defaultFormat));    }
   }, [isOpen, defaultFormat]);
 
   if (!isOpen) return null;
@@ -202,28 +189,6 @@ export default function DownloadModal({
     onClose();
   };
 
-  const handleProDownload = async (_formatToExport: ExportFormat = selectedFormat) => {
-    setBonusNotice("Paid downloads are temporarily unavailable.");
-  };
-
-  const formatToTier = (f: ExportFormat): SelectedTier => {
-    if (f === "jpg") return "jpg";
-    if (f === "image_bundle") return "duo";
-    if (f === "pdf") return "pdf";
-    if (f === "svg") return "svg";
-    if (f === "zip") return "combo";
-    return "png";
-  };
-
-  const tierToFormat = (t: SelectedTier): ExportFormat => {
-    if (t === "jpg") return "jpg";
-    if (t === "duo") return "image_bundle";
-    if (t === "pdf") return "pdf";
-    if (t === "svg") return "svg";
-    if (t === "combo") return "zip";
-    return "png";
-  };
-
   const handleTierSelect = (tier: TierConfig) => {
     setSelectedTier(tier.id);
     setSelectedFormat(tier.format);
@@ -231,14 +196,10 @@ export default function DownloadModal({
 
   const handleFormatSelect = (fmt: ExportFormat) => {
     setSelectedFormat(fmt);
-    setSelectedTier(formatToTier(fmt));
+    setSelectedTier(resolveInitialTier(fmt));
   };
 
   const activeTier = TIERS.find((t) => t.id === selectedTier) || TIERS[0];
-  const credits: number = 0;
-  const isAdmin = false;
-  const unlockedTier = null;
-  const isTierUnlocked = false;
 
   return (
     <div
@@ -259,12 +220,12 @@ export default function DownloadModal({
             <div className="coffee-tagline-badge">
               <span className="coffee-emoji">☕</span>
               <span className="coffee-tagline-text">
-                Buy your wallpaper cheaper than your cup of coffee!
+                Free phone wallpaper available
               </span>
             </div>
             <h3 id="download-modal-title">Download Custom Map Art</h3>
             <p className="download-modal-subtitle">
-              Choose your format & print quality • Clean, gallery-ready art (no center watermarks)
+              Select a format to preview its details. Paid file downloads are temporarily unavailable.
             </p>
           </div>
           <button
@@ -276,12 +237,6 @@ export default function DownloadModal({
             <CloseIcon />
           </button>
         </div>
-
-        {bonusNotice && (
-          <div className="pro-bonus-alert">
-            <span>{bonusNotice}</span>
-          </div>
-        )}
 
         {/* Explore First Banner */}
         <div className="explore-first-banner" role="status">
@@ -356,7 +311,7 @@ export default function DownloadModal({
               <span className="active-tier-price">{activeTier.price}</span>
             </div>
             {activeTier.id === "combo" && (
-              <span className="combo-savings-tag">🔥 Best Value • Save 50% vs Mapiful ($19.99)</span>
+              <span className="combo-savings-tag">Paid downloads temporarily unavailable</span>
             )}
           </div>
 
@@ -458,59 +413,11 @@ export default function DownloadModal({
             </div>
           </div>
 
-          {/* Action Area: Download if Authorized, else Purchase */}
-          {isTierUnlocked ? (
-            <div className="tier-pro-active-box">
-              <div className="pro-unlocked-banner">
-                <span>
-                  {isAdmin
-                    ? "👑 High-resolution export & vector SVG available"
-                    : `🎁 ${credits} Ultra-HD ${credits === 1 ? "Poster" : "Posters"} Available`}
-                </span>
-              </div>
-              {!isAdmin && credits > 0 && (
-                <div className="pro-code-badge">
-                  <span>
-                    🎁 <strong>1-Time BOGO Access Active</strong>
-                  </span>
-                  <p className="bogo-single-use-note">
-                    ({credits} {credits === 1 ? "download" : "downloads"} remaining. Customize and download your matching poster anytime!)
-                  </p>
-                </div>
-              )}
-              {!isAdmin && credits > 1 && (
-                <p className="tier-bogo-hint">
-                  Download this poster now. Your 2nd matching poster can be customized and downloaded next!
-                </p>
-              )}
-
-              <button
-                type="button"
-                className="tier-btn tier-btn--pro"
-                disabled={isExporting}
-                onClick={() => handleProDownload(selectedFormat)}
-              >
-                {isExporting ? (
-                  <LoaderIcon className="is-spinning" />
-                ) : (
-                  <DownloadIcon />
-                )}
-                <span>
-                  {selectedFormat === "zip"
-                    ? "Download Master Bundle (.ZIP - All 4 Formats)"
-                    : selectedFormat === "image_bundle"
-                    ? "Download Duo Pack (.ZIP - PNG + JPG)"
-                    : `Download Ultra-HD (${selectedFormat.toUpperCase()})`}
-                </span>
-              </button>
-            </div>
-          ) : (
-            <div className="tier-purchase-action-wrap" role="status">
-              <p className="tier-upgrade-notice">
-                Secure paid downloads are temporarily unavailable while server-side payment verification is being set up. You can still download the free phone wallpaper below.
-              </p>
-            </div>
-          )}
+          <div className="tier-purchase-action-wrap" role="status">
+            <p className="tier-upgrade-notice">
+              Paid downloads and checkout are temporarily unavailable. You can still download the free phone wallpaper below.
+            </p>
+          </div>
         </div>
 
         {/* Free screen wallpaper option */}
@@ -540,131 +447,9 @@ export default function DownloadModal({
             </button>
         </div>
 
-        {/* Quality Comparison Toggle */}
-        <div className="quality-comparison-section">
-          <button
-            type="button"
-            className="quality-comparison-toggle-btn"
-            onClick={() => setShowComparison(!showComparison)}
-          >
-            {showComparison ? "▲ Hide Comparison Chart" : "▼ View Full Quality & Offer Comparison Chart"}
-          </button>
-
-          {showComparison && (
-            <div className="quality-comparison-table-wrap">
-              <table className="quality-comparison-table">
-                <thead>
-                  <tr>
-                    <th>Feature &amp; Details</th>
-                    <th>Free ($0)</th>
-                    <th>PNG ($4.99)</th>
-                    <th>JPG ($4.99)</th>
-                    <th>Duo ($5.99)</th>
-                    <th>PDF ($6.99)</th>
-                    <th>SVG ($7.99)</th>
-                    <th className="th-highlight">Combo ($9.99)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Formats Included</td>
-                    <td>1 File (.PNG)</td>
-                    <td>1 File (.PNG)</td>
-                    <td>1 File (.JPG)</td>
-                    <td>2 Files (.PNG + .JPG)</td>
-                    <td>1 File (.PDF)</td>
-                    <td>1 File (.SVG)</td>
-                    <td className="td-highlight">📦 ALL 4 Files (PNG + JPG + PDF + SVG)</td>
-                  </tr>
-                  <tr>
-                    <td>Raster resolution (effective PPI)</td>
-                    <td>Screen-oriented PNG</td>
-                    <td>Up to 500 PPI; varies with size/device</td>
-                    <td>Up to 500 PPI; varies with size/device</td>
-                    <td>PNG + JPG; actual density metadata</td>
-                    <td>Raster PDF; effective PPI follows actual pixels</td>
-                    <td>Vector paths; map detail depends on source data</td>
-                    <td className="td-highlight">Raster exports + vector SVG</td>
-                  </tr>
-                  <tr>
-                    <td>Best Used For</td>
-                    <td>Phone Screen Wallpaper</td>
-                    <td>Lossless sharing, editing &amp; print use</td>
-                    <td>Social Sharing &amp; Photo Labs</td>
-                    <td>Screens &amp; Quick Mobile Sharing</td>
-                    <td>Framing &amp; Local Print Shops</td>
-                    <td>Designers, CAD &amp; Plotters</td>
-                    <td className="td-highlight">All Screens + Wall Framing</td>
-                  </tr>
-                  <tr>
-                    <td>Center Watermark</td>
-                    <td>❌ None (Clean)</td>
-                    <td>❌ None (Clean)</td>
-                    <td>❌ None (Clean)</td>
-                    <td>❌ None (Clean)</td>
-                    <td>❌ None (Clean)</td>
-                    <td>❌ None (Clean)</td>
-                    <td className="td-highlight">❌ None (100% Clean)</td>
-                  </tr>
-                  <tr>
-                    <td>Print suitability</td>
-                    <td>Screen-focused; depends on output size</td>
-                    <td>Depends on effective PPI and printer</td>
-                    <td>Depends on effective PPI and printer</td>
-                    <td>Depends on effective PPI and printer</td>
-                    <td>Raster artwork; PPI follows actual pixels</td>
-                    <td>Vector paths scale; detail depends on map data</td>
-                    <td className="td-highlight">Raster PPI labeled + scalable SVG paths</td>
-                  </tr>
-                  <tr>
-                    <td>Zoom Capability</td>
-                    <td>Limited by native pixels</td>
-                    <td>Limited by native pixels</td>
-                    <td>Limited by native pixels</td>
-                    <td>Limited by native pixels</td>
-                    <td>Raster pixels limit zoom</td>
-                    <td>Paths scale; detail depends on map data</td>
-                    <td className="td-highlight">Raster limits + scalable SVG paths</td>
-                  </tr>
-                  <tr>
-                    <td>Vector Paths (Illustrator/CAD)</td>
-                    <td>✕</td>
-                    <td>✕</td>
-                    <td>✕</td>
-                    <td>✕</td>
-                    <td>✕</td>
-                    <td>✓ Vector paths where available</td>
-                    <td className="td-highlight">✓ Vector paths where available</td>
-                  </tr>
-                  <tr>
-                    <td>Studio Signature (MAPARTE)</td>
-                    <td>✓ Permanent</td>
-                    <td>✓ Permanent</td>
-                    <td>✓ Permanent</td>
-                    <td>✓ Permanent</td>
-                    <td>✓ Permanent</td>
-                    <td>✓ Permanent</td>
-                    <td className="td-highlight">✓ Permanent</td>
-                  </tr>
-                  <tr>
-                    <td>1-Time BOGO Code (2nd Poster)</td>
-                    <td>✕</td>
-                    <td>✕</td>
-                    <td>✕</td>
-                    <td>✕</td>
-                    <td>✕</td>
-                    <td>✕</td>
-                    <td className="td-highlight">🎁 2nd Matching Poster FREE!</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
         <div className="download-modal-footer">
           <p>
-            Instant digital download • Cheaper than coffee • 100% secure checkout
+            Paid downloads and checkout are currently unavailable.
           </p>
         </div>
       </div>
