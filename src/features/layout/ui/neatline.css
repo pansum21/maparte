@@ -338,7 +338,7 @@
 
 /* Keep three rows of border options visible after a border is selected. */
 .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {
-  max-height: 390px !important;
+  max-height: 490px !important;
   min-height: 84px !important;
 }
 
