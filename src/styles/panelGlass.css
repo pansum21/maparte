@@ -304,4 +304,8 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     aspect-ratio: auto !important;
     align-self: stretch !important;
   }
+  [data-mobile-tab="frames"] .neatline-picker:not(.has-selected-border) .neatline-borders-box .neatline-options,
+  [data-mobile-tab="frames"] .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {
+    min-height: 0 !important;
+  }
 }
