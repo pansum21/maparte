@@ -236,3 +236,5 @@
   .wall-expand-handle span { width: 44px; height: 5px; border-radius: 4px; background: rgba(180,205,225,.5); }
   .export-modal.backdrop-theme-modal.is-expanded { height: calc(100dvh - 130px - env(safe-area-inset-bottom, 0px)); max-height: calc(100dvh - 130px - env(safe-area-inset-bottom, 0px)); }
 }
+.app-shell.is-cinema-mode .cinema-top-exit-btn .cinema-exit-text,
+.app-shell.is-cinema-mode .cinema-top-fs-btn .cinema-fs-text { display: none !important; }
