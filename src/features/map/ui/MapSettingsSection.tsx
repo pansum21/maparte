@@ -180,7 +180,7 @@ export default function MapSettingsSection({
   }
 
   function handleLayoutSelectInline(layoutId: string) {
-    onLayoutChange(layoutId);
+    onLayoutChange(form.layout === layoutId ? "print_a4_portrait" : layoutId);
     setIsLayoutEditing(false);
   }
 

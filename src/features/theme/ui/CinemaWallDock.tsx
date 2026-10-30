@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
-import { layoutGroups } from "@/features/layout/infrastructure/layoutRepository";
+import { layoutGroups, getLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { LayoutIcon } from "@/shared/ui/Icons";
 
@@ -164,7 +164,7 @@ export default function CinemaWallDock({
           aria-label="Back to Editor"
         >
           <span className="cinema-exit-icon" aria-hidden="true">
-            ↶
+            ↩
           </span>
           <span className="cinema-exit-text">Back to Editor</span>
           <kbd className="cinema-esc-kbd">ESC</kbd>
@@ -348,9 +348,9 @@ export default function CinemaWallDock({
                       onClick={() =>
                         dispatch({
                           type: "SET_LAYOUT",
-                          layoutId: layout.id,
-                          widthCm: formatLayoutCm(layout.widthCm),
-                          heightCm: formatLayoutCm(layout.heightCm),
+                          layoutId: form.layout === layout.id ? "print_a4_portrait" : layout.id,
+                          widthCm: formatLayoutCm((form.layout === layout.id ? getLayoutOption("print_a4_portrait") : layout).widthCm),
+                          heightCm: formatLayoutCm((form.layout === layout.id ? getLayoutOption("print_a4_portrait") : layout).heightCm),
                         })
                       }
                     >

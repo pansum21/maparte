@@ -203,3 +203,36 @@
 .cinema-range-control > input.cinema-range-slider { max-width: none !important; justify-self: stretch !important; }
 .app-shell.is-cinema-mode .cinema-top-fs-btn,
 .app-shell.is-cinema-mode .cinema-top-exit-btn { min-width: 48px !important; min-height: 36px !important; border-radius: 7px !important; }
+
+/* The wall panel has the same optional expanded state as the tool sheets. */
+.wall-expand-handle { display: none; }
+.backdrop-tone-groups[data-expanded="false"] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.backdrop-tone-groups[data-expanded="false"] .backdrop-tone-group,
+.backdrop-tone-groups[data-expanded="false"] .backdrop-presets-grid { display: contents; }
+.backdrop-tone-groups[data-expanded="false"] .backdrop-tone-heading { display: none; }
+.backdrop-more-gradients { min-height: 68px; border: 1px dashed rgba(125,211,252,.5); border-radius: 10px; background: rgba(56,189,248,.1); color: #bae6fd; }
+.app-shell.is-cinema-mode .cinema-top-fs-btn,
+.app-shell.is-cinema-mode .cinema-top-exit-btn { display: inline-flex !important; width: 48px !important; height: 38px !important; padding: 0 !important; justify-content: center !important; align-items: center !important; }
+.app-shell.is-cinema-mode .cinema-fs-text,
+.app-shell.is-cinema-mode .cinema-exit-text,
+.app-shell.is-cinema-mode .cinema-esc-kbd { display: none !important; }
+.app-shell.is-cinema-mode .cinema-fs-icon,
+.app-shell.is-cinema-mode .cinema-exit-icon { display: block !important; margin: 0 !important; font-size: 23px !important; line-height: 1 !important; }
+.app-shell.is-cinema-mode .cinema-panel-popover,
+.app-shell.is-cinema-mode .cinema-layout-popover,
+.app-shell.is-cinema-mode .cinema-placement-popover,
+.app-shell.is-cinema-mode .cinema-layout-list { scrollbar-width: none !important; }
+.app-shell.is-cinema-mode .cinema-panel-popover::-webkit-scrollbar,
+.app-shell.is-cinema-mode .cinema-layout-list::-webkit-scrollbar { display: none !important; width: 0 !important; }
+.cinema-placement-controls label { grid-template-columns: minmax(0, 1fr) max-content !important; justify-items: stretch !important; }
+.cinema-range-control { max-width: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 5px !important; }
+  [data-mobile-tab="frames"] .neatline-option { padding: 5px 2px !important; }
+  [data-mobile-tab="layout"] .layout-card-copy,
+  [data-mobile-tab="layout"] .layout-card-name,
+  [data-mobile-tab="layout"] .layout-card-meta { width: 100%; text-align: center; }
+  .wall-expand-handle { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 26px; margin: 0; padding: 8px; background: transparent; border: 0; }
+  .wall-expand-handle span { width: 44px; height: 5px; border-radius: 4px; background: rgba(180,205,225,.5); }
+  .export-modal.backdrop-theme-modal.is-expanded { height: calc(100dvh - 130px - env(safe-area-inset-bottom, 0px)); max-height: calc(100dvh - 130px - env(safe-area-inset-bottom, 0px)); }
+}

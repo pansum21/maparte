@@ -35,7 +35,10 @@ import { getEmojiAssetUrl } from "@/features/markers/infrastructure/fluentEmojiA
 
 function addMarkerRelief(id: string, svg: string) {
   const filter = `marker-relief-${id}`;
-  const defs = `<defs><filter id="${filter}" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="soft"/><feSpecularLighting in="soft" surfaceScale="5" specularConstant=".8" specularExponent="18" lighting-color="#ffffff" result="shine"><fePointLight x="-100" y="-150" z="250"/></feSpecularLighting><feComposite in="shine" in2="SourceAlpha" operator="in" result="clipped"/><feComposite in="SourceGraphic" in2="clipped" operator="arithmetic" k1="0" k2="1" k3=".7" k4="0"/></filter></defs>`;
+  const extent = Number(svg.match(/viewBox="[^"]*?([\d.]+)\s*"/)?.[1]) || 512;
+  const gradient = `marker-volume-${id}`;
+  const defs = `<defs><linearGradient id="${gradient}" x1="0" y1="0" x2=".7" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".25" stop-color="currentColor"/><stop offset=".65" stop-color="currentColor"/><stop offset="1" stop-color="#111827"/></linearGradient><filter id="${filter}" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="${extent * .018}" result="soft"/><feSpecularLighting in="soft" surfaceScale="${extent * .08}" specularConstant="1.1" specularExponent="14" lighting-color="#ffffff" result="shine"><fePointLight x="${extent * .15}" y="${-extent * .2}" z="${extent * .65}"/></feSpecularLighting><feComposite in="shine" in2="SourceAlpha" operator="in" result="clipped"/><feComposite in="SourceGraphic" in2="clipped" operator="arithmetic" k1="0" k2="1" k3=".85" k4="0"/></filter></defs>`;
+  svg = svg.replace('fill="currentColor"', `fill="url(#${gradient})"`);
   return svg.replace(/(<svg[^>]*>)/, `$1${defs}<g filter="url(#${filter})">`).replace('</svg>', '</g></svg>');
 }
 

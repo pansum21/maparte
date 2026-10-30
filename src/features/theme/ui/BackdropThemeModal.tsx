@@ -83,6 +83,8 @@ export default function BackdropThemeModal({
 
   const [selectedCategory, setSelectedCategory] = useState<WallCategory>("all");
   const [showWallInfo, setShowWallInfo] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [showAllGradients, setShowAllGradients] = useState(false);
 
   // Keep a local draft for smooth slider dragging and text inputs
   const [customDraft, setCustomDraft] = useState<CustomGradientConfig>(
@@ -121,9 +123,9 @@ export default function BackdropThemeModal({
   const groupedPresets = useMemo(
     () => WALL_TONE_ORDER.map((tone) => ({
       tone,
-      presets: filteredPresets.filter((preset) => getWallTone(preset.hex) === tone),
+      presets: (showAllGradients ? filteredPresets : filteredPresets.slice(0, 5)).filter((preset) => getWallTone(preset.hex) === tone),
     })).filter((group) => group.presets.length > 0),
-    [filteredPresets],
+    [filteredPresets, showAllGradients],
   );
 
   const selectedPreset = presets.find((preset) => preset.id === backdropState.presetId);
@@ -171,12 +173,14 @@ export default function BackdropThemeModal({
       onClick={onClose}
     >
       <div
-        className="export-modal backdrop-theme-modal"
+        className={`export-modal backdrop-theme-modal${expanded ? " is-expanded" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-label="Wall Color"
         onClick={(e) => e.stopPropagation()}
       >
+        <button type="button" className="wall-expand-handle" aria-label={expanded ? "Collapse wall panel" : "Expand wall panel"}
+          aria-expanded={expanded} onClick={() => setExpanded(value => !value)}><span /></button>
         <div className="backdrop-modal-header">
           <div className="backdrop-modal-heading-row">
             <div className="backdrop-modal-heading-copy">
@@ -188,8 +192,8 @@ export default function BackdropThemeModal({
               </span>
               <p className="backdrop-selected-wall-desc">
                 {activeTab === "solid"
-                  ? "Choose a curated designer swatch or pick any custom solid wall color with real-time preview."
-                  : "Preview against 64 shaded room lighting presets or mix a custom lighting gradient."}
+                  ? "Solid wall: designer paint swatches and any custom color. Changes preview and save instantly."
+                  : "Gradient wall: 64 lighting presets, two custom colors and an adjustable light angle. Changes save instantly."}
               </p>
             </div>
             <div className="backdrop-modal-actions">
@@ -231,7 +235,7 @@ export default function BackdropThemeModal({
           <p className="backdrop-seo-description" id="wall-color-seo-description" hidden={!showWallInfo}>
             {WALL_SEO_DESCRIPTION}
           </p>
-          <span className="backdrop-seo-copy">{WALL_SEO_DESCRIPTION}</span>
+
         </div>
 
         {activeTab === "solid" ? (
@@ -437,7 +441,7 @@ export default function BackdropThemeModal({
                   </button>
                 </div>
               ) : (
-                <div className="backdrop-tone-groups">
+                <div className="backdrop-tone-groups" data-expanded={showAllGradients}>
                   {groupedPresets.map(({ tone, presets: tonePresets }) => (
                     <section className="backdrop-tone-group" key={tone} aria-label={`${WALL_TONE_LABELS[tone]} wall colors`}>
                       <h3 className="backdrop-tone-heading">{WALL_TONE_LABELS[tone]}</h3>
@@ -483,6 +487,10 @@ export default function BackdropThemeModal({
                       </div>
                     </section>
                   ))}
+                  {filteredPresets.length > 5 ? <button type="button" className="backdrop-more-gradients"
+                    aria-expanded={showAllGradients} onClick={() => setShowAllGradients(value => !value)}>
+                    {showAllGradients ? "Show fewer gradients" : "More Gradients"}
+                  </button> : null}
                 </div>
               )}
             </div>
