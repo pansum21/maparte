@@ -271,3 +271,8 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
 .cinema-placement-controls .cinema-range-control > button { flex: 0 0 48px !important; margin: 0 !important; }
 .marker-visual__icon svg { shape-rendering: geometricPrecision; overflow: visible; }
 .marker-settings-screen .marker-visual { filter: drop-shadow(0 2px 1px rgba(3,10,18,.3)); }
+/* Prevent legacy output rules from creating an implicit third column that
+   steals width from the control row. */
+.app-shell.is-cinema-mode .cinema-placement-controls label > output { grid-column: 2 !important; grid-row: 1 !important; }
+.app-shell.is-cinema-mode .cinema-placement-controls label > span:first-child { grid-column: 1 !important; grid-row: 1 !important; }
+.app-shell.is-cinema-mode .cinema-placement-controls label > .cinema-range-control { grid-column: 1 / 3 !important; grid-row: 2 !important; }
