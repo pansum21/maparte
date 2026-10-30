@@ -110,20 +110,20 @@ export default function MobileNavBar({
               <FullScreenIcon className="mobile-nav-icon" />
               <span className="mobile-nav-label">Full Screen</span>
             </button>
+            <button
+              type="button"
+              className={`mobile-nav-tab mobile-nav-tab--settings${settingsOpen ? " is-active" : ""}`}
+              aria-label="Settings"
+              aria-expanded={settingsOpen}
+              aria-pressed={settingsOpen}
+              onClick={onSettingsClick}
+            >
+              <SettingsIcon className="mobile-nav-icon" />
+              <span className="mobile-nav-label">Settings</span>
+            </button>
           </div>
-          <div className="mobile-nav-fade" aria-hidden="true" />
         </div>
       </nav>
-
-      <button
-        type="button"
-        className={`mobile-nav-settings${settingsOpen ? " is-active" : ""}`}
-        aria-label="Settings"
-        aria-expanded={settingsOpen}
-        onClick={onSettingsClick}
-      >
-        <SettingsIcon className="mobile-nav-settings-icon" />
-      </button>
     </div>
   );
 }

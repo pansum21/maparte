@@ -160,6 +160,33 @@ export default function MapPreview({
 
     mapRef.current = map;
 
+    // Use a lighter preview buffer while the camera moves, then restore its
+    // full pixel density shortly after interaction. This avoids rendering a
+    // multi-megapixel preserved canvas on every drag frame, especially on phones.
+    let interactionPixelRatioFrame = 0;
+    let restorePixelRatioTimer: number | undefined;
+    const lowerPixelRatioDuringMovement = () => {
+      window.clearTimeout(restorePixelRatioTimer);
+      window.cancelAnimationFrame(interactionPixelRatioFrame);
+      interactionPixelRatioFrame = window.requestAnimationFrame(() => {
+        const interactiveRatio = Math.min(getMapPixelRatio(), 1.25);
+        if (map.getPixelRatio() > interactiveRatio + 0.05) {
+          map.setPixelRatio(interactiveRatio);
+        }
+      });
+    };
+    const restorePixelRatioAfterMovement = () => {
+      window.clearTimeout(restorePixelRatioTimer);
+      restorePixelRatioTimer = window.setTimeout(() => {
+        const fullRatio = getMapPixelRatio();
+        if (Math.abs(map.getPixelRatio() - fullRatio) > 0.05) {
+          map.setPixelRatio(fullRatio);
+        }
+      }, 180);
+    };
+    map.on("movestart", lowerPixelRatioDuringMovement);
+    map.on("moveend", restorePixelRatioAfterMovement);
+
     map.on("moveend", () => {
       if (isSyncing.current) return;
       const currentCenter = map.getCenter();
@@ -199,6 +226,10 @@ export default function MapPreview({
     window.visualViewport?.addEventListener("scroll", syncPixelRatio, { passive: true });
 
     return () => {
+      map.off("movestart", lowerPixelRatioDuringMovement);
+      map.off("moveend", restorePixelRatioAfterMovement);
+      window.cancelAnimationFrame(interactionPixelRatioFrame);
+      window.clearTimeout(restorePixelRatioTimer);
       resizeObserver.disconnect();
       window.removeEventListener("resize", syncPixelRatio);
       window.visualViewport?.removeEventListener("resize", syncPixelRatio);
@@ -217,7 +248,12 @@ export default function MapPreview({
 
     if (interactive) {
       map.scrollZoom.enable();
-      map.dragPan.enable();
+      map.dragPan.enable({
+        linearity: 0.3,
+        easing: (t) => 1 - (1 - t) ** 3,
+        maxSpeed: 1400,
+        deceleration: 2500,
+      });
       map.touchZoomRotate.enable();
       map.doubleClickZoom.enable();
       map.keyboard.enable();
