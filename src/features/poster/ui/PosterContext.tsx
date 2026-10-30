@@ -257,6 +257,7 @@ export function PosterProvider({ children }: { children: ReactNode }) {
   }, [
     state.form.displayCity,
     state.form.displayCountry,
+    state.form.displayState,
     state.form.location,
     state.form.theme,
     state.form.layout,

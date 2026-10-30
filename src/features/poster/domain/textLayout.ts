@@ -93,3 +93,9 @@ export function computeAttributionColor(
     : 0.5;
   return luma < 0.52 ? "#f5faff" : "#0e1822";
 }
+
+/** Collapse omitted location fields without reserving empty text rows. */
+export function resolvePosterLabels(city: string, state = "", country = "") {
+  const labels = [city, state, country].map(value => value.trim()).filter(Boolean);
+  return { city: labels[0] || "", country: labels.slice(1).join(" · ") };
+}

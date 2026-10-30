@@ -85,14 +85,14 @@ export default function PosterTextOverlay({
           >
             {cityLabel}
           </p>
-          <hr
+          {city && country ? <hr
             className="poster-divider"
             style={{
               borderColor: textColor,
               top: `${TEXT_DIVIDER_Y_RATIO * 100}%`,
             }}
-          />
-          <p
+          /> : null}
+          {country ? <p
             className="poster-country"
             style={{
               fontFamily: titleFont,
@@ -101,13 +101,13 @@ export default function PosterTextOverlay({
             }}
           >
             {country.toUpperCase()}
-          </p>
+          </p> : null}
           {hasTagline && (
             <p
               className="poster-tagline"
               style={{
                 fontFamily: bodyFont,
-                top: "91.8%",
+                top: `${(country ? .918 : .89) * 100}%`,
                 fontSize: taglineFontSize,
                 letterSpacing: "0.06em",
               }}
@@ -119,7 +119,7 @@ export default function PosterTextOverlay({
             className="poster-coords"
             style={{
               fontFamily: bodyFont,
-              top: `${(hasTagline ? 0.938 : TEXT_COORDS_Y_RATIO) * 100}%`,
+              top: `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
               fontSize: coordsFontSize,
             }}
           >

@@ -33,6 +33,12 @@ import type {
 import { MARKER_FEATURED_ICON_COUNT } from "@/features/markers/infrastructure/constants";
 import { getEmojiAssetUrl } from "@/features/markers/infrastructure/fluentEmojiAssets";
 
+function addMarkerRelief(id: string, svg: string) {
+  const filter = `marker-relief-${id}`;
+  const defs = `<defs><filter id="${filter}" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="soft"/><feSpecularLighting in="soft" surfaceScale="5" specularConstant=".8" specularExponent="18" lighting-color="#ffffff" result="shine"><fePointLight x="-100" y="-150" z="250"/></feSpecularLighting><feComposite in="shine" in2="SourceAlpha" operator="in" result="clipped"/><feComposite in="SourceGraphic" in2="clipped" operator="arithmetic" k1="0" k2="1" k3=".7" k4="0"/></filter></defs>`;
+  return svg.replace(/(<svg[^>]*>)/, `$1${defs}<g filter="url(#${filter})">`).replace('</svg>', '</g></svg>');
+}
+
 function createSvgIcon(id: string, label: string, component: IconType) {
   return {
     id,
@@ -40,13 +46,13 @@ function createSvgIcon(id: string, label: string, component: IconType) {
     source: "predefined",
     kind: "svg",
     component,
-    svgMarkup: renderToStaticMarkup(
+    svgMarkup: addMarkerRelief(id, renderToStaticMarkup(
       createElement(component, {
         size: 24,
         color: "currentColor",
         "aria-hidden": true,
       }),
-    ),
+    )),
   } satisfies MarkerIconDefinition;
 }
 

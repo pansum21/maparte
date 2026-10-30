@@ -164,7 +164,7 @@ export default function CinemaWallDock({
           aria-label="Back to Editor"
         >
           <span className="cinema-exit-icon" aria-hidden="true">
-            ←
+            ↶
           </span>
           <span className="cinema-exit-text">Back to Editor</span>
           <kbd className="cinema-esc-kbd">ESC</kbd>

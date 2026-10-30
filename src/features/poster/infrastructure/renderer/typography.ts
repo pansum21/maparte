@@ -80,8 +80,8 @@ export function drawPosterText(
     const cityY = height * TEXT_CITY_Y_RATIO;
     const lineY = height * TEXT_DIVIDER_Y_RATIO;
     const countryY = height * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
-    const taglineY = height * 0.918;
-    const coordinatesY = height * (hasTagline ? 0.938 : TEXT_COORDS_Y_RATIO);
+    const taglineY = height * (country ? .918 : .89);
+    const coordinatesY = height * (hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9));
 
     ctx.fillStyle = textColor;
     ctx.textAlign = "center";
@@ -89,12 +89,14 @@ export function drawPosterText(
     ctx.font = `700 ${cityFontSize}px ${titleFontFamily}`;
     ctx.fillText(cityLabel, width * 0.5, cityY);
 
+    if (city && country) {
     ctx.strokeStyle = textColor;
     ctx.lineWidth = Math.max(1, 3 * dimScale);
     ctx.beginPath();
     ctx.moveTo(width * 0.4, lineY);
     ctx.lineTo(width * 0.6, lineY);
     ctx.stroke();
+    }
 
     ctx.font = `300 ${countryFontSize}px ${titleFontFamily}`;
     ctx.fillText(country.toUpperCase(), width * 0.5, countryY);

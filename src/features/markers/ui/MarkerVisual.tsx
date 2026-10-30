@@ -65,7 +65,7 @@ const MarkerVisual = memo(function MarkerVisual({
           aria-hidden="true"
         />
       ) : (
-        icon.component ? (
+        icon.component && !icon.svgMarkup ? (
           <span className="marker-visual__icon" aria-hidden="true">
             <icon.component size={size} color={color} />
           </span>

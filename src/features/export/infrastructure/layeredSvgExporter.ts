@@ -480,6 +480,15 @@ export async function createLayeredSvgBlobFromMap({
       for (const m of markers) {
         const pt = projectCoord([m.lon, m.lat]);
         const radius = Math.max(4, (m.size || 16) * 0.5 * scaleFactor);
+        const definition = markerIcons.find(icon => icon.id === m.iconId);
+        if (definition?.kind === "svg" && definition.svgMarkup) {
+          const size = radius * 2;
+          const svg = definition.svgMarkup.replace(/currentColor/g, m.color || theme.ui.text)
+            .replace(/<svg\b[^>]*>/, root => root.replace(/\s(?:width|height)="[^"]*"/g, ""))
+            .replace("<svg", `<svg x="${pt.x - radius}" y="${pt.y - radius}" width="${size}" height="${size}"`);
+          markerItemsSvg.push(svg);
+          continue;
+        }
         const strokeW = Math.max(1.5, radius * 0.28);
         markerItemsSvg.push(`  <circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="${radius.toFixed(1)}" fill="${theme.ui.text}" stroke="${theme.ui.bg}" stroke-width="${strokeW.toFixed(1)}" />`);
         markerItemsSvg.push(`  <circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="${(radius * 0.35).toFixed(1)}" fill="${theme.ui.bg}" />`);
@@ -533,15 +542,15 @@ export async function createLayeredSvgBlobFromMap({
       const cityY = exportHeight * TEXT_CITY_Y_RATIO;
       const lineY = exportHeight * TEXT_DIVIDER_Y_RATIO;
       const countryY = exportHeight * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
-      const taglineY = exportHeight * 0.918;
-      const coordinatesY = exportHeight * (hasTagline ? 0.938 : TEXT_COORDS_Y_RATIO);
+      const taglineY = exportHeight * (displayCountry ? .918 : .89);
+      const coordinatesY = exportHeight * (hasTagline ? (displayCountry ? .938 : .918) : (displayCountry ? TEXT_COORDS_Y_RATIO : .9));
       const lineW = Math.max(1, 3 * dimScale);
       const lineX1 = exportWidth * 0.4;
       const lineX2 = exportWidth * 0.6;
 
       vectorTypographySvg += `
   <text x="${exportWidth * 0.5}" y="${cityY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" fill="${textColor}">${escapeXml(cityLabel)}</text>
-  <line x1="${lineX1}" y1="${lineY}" x2="${lineX2}" y2="${lineY}" stroke="${textColor}" stroke-width="${lineW}" stroke-linecap="round" />
+  ${displayCity && displayCountry ? `<line x1="${lineX1}" y1="${lineY}" x2="${lineX2}" y2="${lineY}" stroke="${textColor}" stroke-width="${lineW}" stroke-linecap="round" />` : ""}
   <text x="${exportWidth * 0.5}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="300" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
 `;
       if (hasTagline) {

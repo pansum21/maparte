@@ -1,3 +1,4 @@
+import { resolvePosterLabels } from "@/features/poster/domain/textLayout";
 import {
   useCallback,
   useEffect,
@@ -52,8 +53,6 @@ import {
 
 const LOCKED_HINT = "Map is locked to prevent unintended movement.";
 const UNLOCK_HINT = `${LOCKED_HINT}\nClick to unlock map editing.`;
-const COUNTRY_VIEW_ZOOM_LEVEL = 10;
-const CONTINENT_VIEW_ZOOM_LEVEL = 6;
 const DEFAULT_LOCATION_LABEL = "Dehradun, Uttarakhand, India";
 
 interface PreviewPanelProps {
@@ -246,19 +245,9 @@ export default function PreviewPanel({
   const markerCount = state.markers.length;
   const markersLabel = `${markerCount} marker${markerCount === 1 ? "" : "s"}`;
   const coordinatesLabel = `${formLat.toFixed(4)}, ${formLon.toFixed(4)}`;
-  const isCityCountryView = mapZoom >= COUNTRY_VIEW_ZOOM_LEVEL;
-  const isCountryContinentView =
-    mapZoom >= CONTINENT_VIEW_ZOOM_LEVEL && mapZoom < COUNTRY_VIEW_ZOOM_LEVEL;
-  const cityLabel = isCityCountryView
-    ? form.displayCity || form.location || "Dehradun"
-    : isCountryContinentView
-      ? form.displayCountry || "India"
-      : form.displayContinent || "Earth";
-  const countryLabel = isCityCountryView
-    ? form.displayCountry || "India"
-    : isCountryContinentView
-      ? form.displayContinent || "Asia"
-      : "Earth";
+  const { city: cityLabel, country: countryLabel } = resolvePosterLabels(
+    form.displayCity, form.displayState, form.displayCountry,
+  );
 
   const handleStartEditing = useCallback(() => {
     setIsEditing(true);

@@ -97,7 +97,7 @@
         },
         {
           "id": "print_poster_12x18_in",
-          "name": "Poster 12 × 18 in",
+          "name": "Poster 12 \u00d7 18 in",
           "description": "Common medium poster print size.",
           "width": 30.48,
           "height": 45.72,
@@ -107,7 +107,7 @@
         },
         {
           "id": "print_poster_18x24_in",
-          "name": "Poster 18 × 24 in",
+          "name": "Poster 18 \u00d7 24 in",
           "description": "Common large poster print size.",
           "width": 45.72,
           "height": 60.96,
@@ -117,7 +117,7 @@
         },
         {
           "id": "print_poster_24x36_in",
-          "name": "Poster 24 × 36 in",
+          "name": "Poster 24 \u00d7 36 in",
           "description": "Common extra-large poster print size.",
           "width": 60.96,
           "height": 91.44,
@@ -127,7 +127,7 @@
         },
         {
           "id": "print_poster_50x70_cm",
-          "name": "Poster 50 × 70 cm (B2)",
+          "name": "Poster 50 \u00d7 70 cm (B2)",
           "description": "Popular global gallery poster frame size (IKEA, Target).",
           "width": 50,
           "height": 70,
@@ -137,7 +137,7 @@
         },
         {
           "id": "print_poster_70x100_cm",
-          "name": "Poster 70 × 100 cm (B1)",
+          "name": "Poster 70 \u00d7 100 cm (B1)",
           "description": "Large statement poster frame size (IKEA Ribba, Habitat).",
           "width": 70,
           "height": 100,
@@ -335,8 +335,8 @@
       "layouts": [
         {
           "id": "wallpaper_iphone_15_pro",
-          "name": "iPhone 15 Pro",
-          "description": "Vertical wallpaper format for iPhone 15 Pro.",
+          "name": "iPhone 15 Pro / 16",
+          "description": "1179 \u00d7 2556 px \u2014 iPhone 15 Pro and iPhone 16.",
           "width": 1179,
           "height": 2556,
           "unit": "px",
@@ -345,12 +345,32 @@
         },
         {
           "id": "wallpaper_iphone_15_pro_max",
-          "name": "iPhone 15 Pro Max",
-          "description": "Vertical wallpaper format for iPhone 15 Pro Max.",
+          "name": "iPhone 15 Pro Max / 16 Plus",
+          "description": "1290 \u00d7 2796 px \u2014 iPhone 15 Pro Max and iPhone 16 Plus.",
           "width": 1290,
           "height": 2796,
           "unit": "px",
           "posterWidthCm": 13.84,
+          "posterHeightCm": 30
+        },
+        {
+          "id": "wallpaper_iphone_17",
+          "name": "iPhone 16 Pro / 17 / 17 Pro",
+          "description": "1206 \u00d7 2622 px \u2014 iPhone 16 Pro, iPhone 17 and iPhone 17 Pro.",
+          "width": 1206,
+          "height": 2622,
+          "unit": "px",
+          "posterWidthCm": 13.7986,
+          "posterHeightCm": 30
+        },
+        {
+          "id": "wallpaper_iphone_17_pro_max",
+          "name": "iPhone 16 Pro Max / 17 Pro Max",
+          "description": "1320 \u00d7 2868 px \u2014 iPhone 16 Pro Max and iPhone 17 Pro Max.",
+          "width": 1320,
+          "height": 2868,
+          "unit": "px",
+          "posterWidthCm": 13.8075,
           "posterHeightCm": 30
         }
       ]

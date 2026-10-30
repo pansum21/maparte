@@ -93,11 +93,20 @@ export default function TypographySection({
             </span>
           </label>
         ))}
-        <label>Poster text color
+        <label>Poster text color</label>
+        <div className="poster-text-color-controls">
           <input type="color" name="posterTextColor" aria-label="Poster text color"
             value={form.posterTextColor || effectiveTheme.ui.text} onChange={onChange}
             onInput={(event) => dispatch({ type: "SET_FIELD", name: "posterTextColor", value: event.currentTarget.value })} />
-        </label>
+          <input type="text" aria-label="Poster text color HEX" maxLength={7}
+            key={form.posterTextColor || effectiveTheme.ui.text}
+            defaultValue={form.posterTextColor || effectiveTheme.ui.text}
+            onBlur={(event) => {
+              const value = event.currentTarget.value.trim();
+              if (/^#[0-9a-f]{6}$/i.test(value)) dispatch({ type: "SET_FIELD", name: "posterTextColor", value });
+              else event.currentTarget.value = form.posterTextColor || effectiveTheme.ui.text;
+            }} />
+        </div>
 
         <div className="field-grid keep-two-mobile">
           <label>
@@ -109,6 +118,10 @@ export default function TypographySection({
               onChange={onChange}
               placeholder={PLACEHOLDER_EXAMPLE_CITY}
             />
+          </label>
+          <label>Display state
+            <input className="form-control-tall" name="displayState" value={form.displayState || ""}
+              onChange={onChange} placeholder="Optional state / region" />
           </label>
           <label>
             Display country

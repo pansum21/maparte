@@ -15,6 +15,7 @@ export interface ParsedUrlPosterState {
   customDate?: string;
   displayCity?: string;
   displayCountry?: string;
+  displayState?: string;
   distance?: string;
   showPosterText?: boolean;
   overlayTop?: boolean;
@@ -45,10 +46,11 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
     if (tagline !== null && tagline !== undefined) result.customDate = tagline;
 
     const city = params.get("city");
-    if (city && city.trim()) result.displayCity = city.trim();
+    if (city !== null) result.displayCity = city.trim();
 
+    if (params.has("state")) result.displayState = params.get("state") || "";
     const country = params.get("country");
-    if (country && country.trim()) result.displayCountry = country.trim();
+    if (country !== null) result.displayCountry = country.trim();
 
     const dist = params.get("dist") || params.get("distance");
     if (dist && dist.trim()) result.distance = dist.trim();
@@ -105,13 +107,13 @@ export function serializePosterStateToUrl(
 
   // 5. Display city override (if different from city default)
   const baseCity = matchedCity ? matchedCity.city : DEFAULT_CITY;
-  if (form.displayCity && form.displayCity.trim() !== baseCity.trim()) {
+  if (form.displayCity.trim() !== baseCity.trim()) {
     params.set("city", form.displayCity.trim());
   }
 
   // 6. Display country override (if different from country default)
   const baseCountry = matchedCity ? matchedCity.country : DEFAULT_COUNTRY;
-  if (form.displayCountry && form.displayCountry.trim() !== baseCountry.trim()) {
+  if (form.displayCountry.trim() !== baseCountry.trim()) {
     params.set("country", form.displayCountry.trim());
   }
 
@@ -130,6 +132,7 @@ export function serializePosterStateToUrl(
     if (form[key] !== undefined) params.set(key, form[key] ? "1" : "0");
   }
   if (form.posterTextColor) params.set("textColor", form.posterTextColor);
+  if (form.displayState) params.set("state", form.displayState);
   const search = params.toString() ? `?${params.toString()}` : "";
   const fullUrl = `${path}${search}`;
 

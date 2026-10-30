@@ -32,6 +32,7 @@ export interface PosterForm {
   layout: string;
   displayCity: string;
   displayCountry: string;
+  displayState?: string;
   displayContinent: string;
   customDate?: string;
   fontFamily: string;

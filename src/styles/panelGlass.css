@@ -169,3 +169,37 @@
 .cinema-range-control > button:first-child { grid-column: 1 !important; grid-row: 1 !important; }
 .cinema-range-control > input.cinema-range-slider { grid-column: 2 !important; grid-row: 1 !important; width: 100% !important; }
 .cinema-range-control > button:last-child { grid-column: 3 !important; grid-row: 1 !important; }
+
+/* Larger ratio illustrations without changing the compact card grid. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  [data-mobile-tab="layout"] [data-layout-group="wallpaper"] .layout-inline-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  [data-mobile-tab="layout"] .layout-inline-groups .layout-card { padding: 5px 3px 3px; }
+  [data-mobile-tab="layout"] .layout-inline-groups .layout-card .layout-card-symbol {
+    display: block; width: calc(100% - 2px); height: auto; max-height: none;
+    aspect-ratio: 64 / 40; margin: 4px 1px 0; object-fit: contain;
+  }
+  .mobile-drawer-sheet[data-mobile-tab="markers"]:has(.marker-settings-screen--emoji) {
+    height: min(55dvh, 440px); max-height: min(55dvh, 440px);
+  }
+  [data-mobile-tab="markers"] .mobile-drawer-content { padding: 0 12px 8px; }
+  [data-mobile-tab="markers"] .markers-section__content { margin-top: 5px; gap: 5px; }
+  [data-mobile-tab="markers"] .markers-section-head-actions { gap: 4px; }
+  [data-mobile-tab="markers"] .markers-section-head-actions button { min-height: 30px; padding: 4px 7px; }
+  [data-mobile-tab="markers"] .marker-settings-screen--emoji .marker-emoji-picker-wrap {
+    height: min(32dvh, 280px); min-height: 180px; flex: 1 0 180px;
+  }
+  [data-mobile-tab="markers"] .maparte-emoji-picker .epr-header { padding: 4px; }
+  [data-mobile-tab="markers"] .maparte-emoji-picker .epr-search-container { padding: 0; }
+  [data-mobile-tab="markers"] .maparte-emoji-picker input.epr-search { min-height: 30px; height: 30px; }
+}
+.poster-text-color-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin-bottom: 12px; }
+.poster-text-color-controls input { min-width: 0; width: 100%; height: 44px; box-sizing: border-box; }
+.poster-text-color-controls input[type="color"] { padding: 3px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+.poster-text-color-controls input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.poster-text-color-controls input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 5px; }
+.cinema-placement-controls, .cinema-placement-controls label, .cinema-range-control { width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; }
+.cinema-range-control { padding: 0 !important; margin: 0 !important; justify-self: stretch !important; }
+.cinema-range-control > button:last-child { justify-self: end !important; }
+.cinema-range-control > input.cinema-range-slider { max-width: none !important; justify-self: stretch !important; }
+.app-shell.is-cinema-mode .cinema-top-fs-btn,
+.app-shell.is-cinema-mode .cinema-top-exit-btn { min-width: 48px !important; min-height: 36px !important; border-radius: 7px !important; }
