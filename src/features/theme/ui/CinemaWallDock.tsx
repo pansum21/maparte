@@ -16,6 +16,7 @@ interface CinemaWallDockProps {
   hasWallPhoto: boolean;
   placement: Placement;
   onPlacementChange: (placement: Placement) => void;
+  onAboutGuide: () => void;
 }
 
 type ActivePanel = "adjust" | "layout" | null;
@@ -31,12 +32,19 @@ export default function CinemaWallDock({
   hasWallPhoto,
   placement,
   onPlacementChange,
+  onAboutGuide,
 }: CinemaWallDockProps) {
   const { state, dispatch } = usePosterContext();
   const { form } = state;
   const cityName = form.displayCity || form.location || "Custom City";
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
+  const [showViewBadge, setShowViewBadge] = useState(true);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setShowViewBadge(false), 2000);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   // Close open panel on ESC key first before exiting cinema mode
   useEffect(() => {
@@ -125,7 +133,7 @@ export default function CinemaWallDock({
 
       {/* Top Bar - Center Title Badge */}
       <div className="cinema-top-bar-center">
-        <div className="cinema-center-view-badge">
+        <div className={`cinema-center-view-badge${showViewBadge ? " is-visible" : " is-hidden"}`}>
           <span className="cinema-center-icon" aria-hidden="true">
             🖼️
           </span>
@@ -137,6 +145,16 @@ export default function CinemaWallDock({
 
       {/* Top Bar - Right Action Buttons */}
       <div className="cinema-top-bar-right">
+        <button
+          type="button"
+          className="cinema-about-guide-btn"
+          onClick={onAboutGuide}
+          aria-label="About Maparte and Guide"
+          title="About Maparte and Guide"
+        >
+          <span aria-hidden="true">ℹ</span>
+          <span>About / Guide</span>
+        </button>
         <button
           type="button"
           className="cinema-top-fs-btn"

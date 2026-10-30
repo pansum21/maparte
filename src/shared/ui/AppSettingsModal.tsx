@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import {
+  createDefaultPosterState,
+  usePosterContext,
+} from "@/features/poster/ui/PosterContext";
 import { useRecentLocations } from "@/features/location/application/useRecentLocations";
 import { openLegalDoc } from "@/features/legal/application/legalDoc";
+import { DEFAULT_BACKDROP_STATE, BACKDROP_STORAGE_KEY } from "@/features/theme/domain/backdropThemes";
+import { resetNeatlineSettings } from "@/features/layout/ui/NeatlinePicker";
 import {
   CloseIcon,
   SettingsIcon,
@@ -21,10 +26,11 @@ export default function AppSettingsModal({
   onClose,
   presentation = "modal",
 }: AppSettingsModalProps) {
-  const { state, dispatch } = usePosterContext();
+  const { dispatch } = usePosterContext();
   const { clearRecent, recent } = useRecentLocations();
   const [clearedRecent, setClearedRecent] = useState(false);
   const [resetDone, setResetDone] = useState(false);
+  const [confirmation, setConfirmation] = useState<"reset" | "clear" | null>(null);
   const [cookieSettingsUnavailable, setCookieSettingsUnavailable] =
     useState(false);
 
@@ -41,22 +47,19 @@ export default function AppSettingsModal({
 
   if (!isOpen) return null;
 
-  const handleToggle = (field: "showPosterText" | "showMarkers" | "showRoutes") => {
-    dispatch({
-      type: "SET_FIELD",
-      name: field,
-      value: !state.form[field],
-    });
-  };
-
   const handleResetDefaults = () => {
-    dispatch({ type: "RESET_COLORS" });
-    dispatch({ type: "CLEAR_MARKERS" });
-    dispatch({ type: "CLEAR_ROUTES" });
-    dispatch({
-      type: "SET_THEME",
-      themeId: "midnight_blue",
-    });
+    dispatch({ type: "RESET_TO_DEFAULTS", state: createDefaultPosterState() });
+    resetNeatlineSettings();
+    try {
+      window.localStorage.setItem(BACKDROP_STORAGE_KEY, JSON.stringify(DEFAULT_BACKDROP_STATE));
+    } catch {
+      // Continue resetting the in-memory backdrop if storage is unavailable.
+    }
+    window.dispatchEvent(
+      new CustomEvent("maparte:backdrop:change", { detail: DEFAULT_BACKDROP_STATE }),
+    );
+    window.dispatchEvent(new Event("maparte:reset-wall-photo"));
+    setConfirmation(null);
     setResetDone(true);
     setTimeout(() => setResetDone(false), 2500);
   };
@@ -82,6 +85,7 @@ export default function AppSettingsModal({
 
   const handleClearHistory = () => {
     clearRecent();
+    setConfirmation(null);
     setClearedRecent(true);
     setTimeout(() => setClearedRecent(false), 2500);
   };
@@ -122,52 +126,7 @@ export default function AppSettingsModal({
         </div>
 
         <div className="app-settings-content">
-          {/* Section 1: Poster Display Options */}
-          <div className="app-settings-card">
-            <h3 className="app-settings-card-title">Poster Elements</h3>
-            <div className="app-settings-toggles">
-              <label className="settings-toggle-row">
-                <span className="toggle-label-text">
-                  <strong>Poster Text Overlay</strong>
-                  <span className="toggle-sub">City & Country typography overlay</span>
-                </span>
-                <input
-                  type="checkbox"
-                  className="settings-checkbox"
-                  checked={state.form.showPosterText}
-                  onChange={() => handleToggle("showPosterText")}
-                />
-              </label>
-
-              <label className="settings-toggle-row">
-                <span className="toggle-label-text">
-                  <strong>Pins & Markers</strong>
-                  <span className="toggle-sub">Show or hide custom location pins</span>
-                </span>
-                <input
-                  type="checkbox"
-                  className="settings-checkbox"
-                  checked={state.form.showMarkers}
-                  onChange={() => handleToggle("showMarkers")}
-                />
-              </label>
-
-              <label className="settings-toggle-row">
-                <span className="toggle-label-text">
-                  <strong>GPS Routes</strong>
-                  <span className="toggle-sub">Show or hide route tracks</span>
-                </span>
-                <input
-                  type="checkbox"
-                  className="settings-checkbox"
-                  checked={state.form.showRoutes}
-                  onChange={() => handleToggle("showRoutes")}
-                />
-              </label>
-            </div>
-          </div>
-
-          {/* Section 3: Quality & Engine Info */}
+          {/* Export quality and engine information */}
           <div className="app-settings-card">
             <h3 className="app-settings-card-title">Export Quality & Engine</h3>
             <div className="settings-quality-info">
@@ -189,7 +148,7 @@ export default function AppSettingsModal({
               <button
                 type="button"
                 className="settings-action-btn"
-                onClick={handleResetDefaults}
+                onClick={() => setConfirmation("reset")}
               >
                 {resetDone ? (
                   <>
@@ -204,7 +163,7 @@ export default function AppSettingsModal({
               <button
                 type="button"
                 className="settings-action-btn"
-                onClick={handleClearHistory}
+                onClick={() => setConfirmation("clear")}
                 disabled={recent.length === 0}
               >
                 {clearedRecent ? (
@@ -222,12 +181,44 @@ export default function AppSettingsModal({
             </div>
           </div>
 
+          {confirmation ? (
+            <div className="settings-confirm-wrap">
+              <section
+                className="settings-confirm-dialog"
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="settings-confirm-title"
+                aria-describedby="settings-confirm-description"
+              >
+                <h3 id="settings-confirm-title">
+                  {confirmation === "reset" ? "Reset to defaults?" : "Clear search data?"}
+                </h3>
+                <p id="settings-confirm-description">
+                  {confirmation === "reset"
+                    ? "This resets your saved poster settings and customizations, including the theme, wall, border, markers and routes. The editor will start again from its default state."
+                    : "This removes your saved search history. Your current poster and other settings will stay as they are."}
+                </p>
+                <div className="settings-confirm-actions">
+                  <button
+                    type="button"
+                    className="settings-action-btn"
+                    onClick={() => setConfirmation(null)}
+                  >Cancel</button>
+                  <button
+                    type="button"
+                    className="settings-action-btn settings-action-btn--confirm"
+                    onClick={confirmation === "reset" ? handleResetDefaults : handleClearHistory}
+                  >{confirmation === "reset" ? "Reset everything" : "Clear history"}</button>
+                </div>
+              </section>
+            </div>
+          ) : null}
+
           {/* Legal, consent and project links, grouped with the app settings. */}
           <div className="app-settings-card app-settings-links-card">
             <h3 className="app-settings-card-title">Policies & Site Links</h3>
             <p className="settings-links-description">
-              Policies explain privacy, terms and refunds. Cookie settings manage
-              consent choices. Source code opens the project on GitHub.
+              Policies explain privacy, terms and refunds. Cookie settings manage consent choices.
             </p>
             <div className="settings-actions-grid">
               <button
@@ -258,14 +249,6 @@ export default function AppSettingsModal({
               >
                 Manage Cookie Choices
               </button>
-              <a
-                className="settings-action-btn"
-                href="https://github.com/pansum21/maparte"
-                target="_blank"
-                rel="noreferrer"
-              >
-                View Source on GitHub
-              </a>
             </div>
             {cookieSettingsUnavailable ? (
               <p className="settings-links-note" role="status">

@@ -1419,6 +1419,10 @@
     margin: 10px 8px 0;
     padding: 9px 12px;
     display: grid;
+    grid-template-areas:
+      "brand"
+      "legal"
+      "credits";
     gap: 5px;
     justify-items: center;
     text-align: center;
@@ -1443,6 +1447,10 @@
     justify-items: center;
     gap: 4px;
   }
+
+  .app-shell > .app-footer .desktop-footer-middle { grid-area: brand; }
+  .app-shell > .app-footer .desktop-footer-left { grid-area: legal; }
+  .app-shell > .app-footer .desktop-footer-right { grid-area: credits; }
 
   .app-shell > .app-footer .desktop-footer-info-btn {
     display: none;

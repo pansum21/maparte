@@ -55,7 +55,9 @@ function SettingsDrawer({
   // and users can still expand the sheet from its handle when they need more room.
   const [isExpanded, setIsExpanded] = useState(false);
   const { sheetRef, handleRef, handleProps } = useSwipeDown(onClose, 80, {
-    onExpand: () => setIsExpanded(true),
+    onExpand: () => {
+      if (mobileTab !== "frames") setIsExpanded(true);
+    },
   });
 
   return (
@@ -188,6 +190,12 @@ export default function AppShell() {
     const photo = cinemaWallPhotoUrlRef.current;
     if (photo?.startsWith("blob:")) URL.revokeObjectURL(photo);
   }, []);
+
+  useEffect(() => {
+    const resetWallPhoto = () => handleCinemaWallPhotoChange(null);
+    window.addEventListener("maparte:reset-wall-photo", resetWallPhoto);
+    return () => window.removeEventListener("maparte:reset-wall-photo", resetWallPhoto);
+  }, [handleCinemaWallPhotoChange]);
   const [cinemaPosterPlacement, setCinemaPosterPlacement] = useState({ x: 0, y: 0, scale: 1 });
   const [allCitiesOpen, setAllCitiesOpen] = useState(false);
 
@@ -490,7 +498,20 @@ export default function AppShell() {
           hasWallPhoto={Boolean(cinemaWallPhoto)}
           placement={cinemaPosterPlacement}
           onPlacementChange={setCinemaPosterPlacement}
+          onAboutGuide={() => {
+            setAboutInitialTab("about");
+            setAboutOpen(true);
+          }}
         />
+        {aboutOpen ? (
+          <Suspense fallback={null}>
+            <AboutModal
+              initialTab={aboutInitialTab}
+              onClose={() => setAboutOpen(false)}
+              hideCloseButton
+            />
+          </Suspense>
+        ) : null}
       </div>
     );
   }

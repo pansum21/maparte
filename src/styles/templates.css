@@ -364,6 +364,48 @@
   display: none;
 }
 
+.settings-confirm-wrap {
+  padding: 10px 0;
+}
+
+.settings-confirm-dialog {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid rgba(125, 216, 240, 0.36);
+  border-radius: 12px;
+  background: linear-gradient(155deg, rgba(18, 38, 56, 0.98), rgba(9, 19, 30, 0.98));
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.42);
+}
+
+.settings-confirm-dialog h3 {
+  margin: 0 0 8px;
+  color: #e8f7ff;
+  font-size: 0.92rem;
+}
+
+.settings-confirm-dialog p {
+  margin: 0;
+  color: rgba(213, 231, 245, 0.82);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.settings-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.settings-confirm-actions .settings-action-btn {
+  min-height: 36px;
+}
+
+.settings-action-btn--confirm {
+  border-color: rgba(125, 216, 240, 0.52);
+  background: rgba(14, 165, 233, 0.2);
+}
+
 .app-settings-header {
   display: flex;
   align-items: center;

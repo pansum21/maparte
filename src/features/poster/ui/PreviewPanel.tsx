@@ -98,8 +98,23 @@ export default function PreviewPanel({
   const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
+  const [cinemaSettingsOpen, setCinemaSettingsOpen] = useState(true);
+  const [cinemaSettingsSettled, setCinemaSettingsSettled] = useState(false);
   const isEditing = controlledIsEditing !== undefined ? controlledIsEditing : internalIsEditing;
   const setIsEditing = controlledSetIsEditing !== undefined ? controlledSetIsEditing : setInternalIsEditing;
+
+  useEffect(() => {
+    if (!isCinemaMode) {
+      setCinemaSettingsOpen(true);
+      setCinemaSettingsSettled(false);
+      return;
+    }
+    const timeout = window.setTimeout(() => {
+      setCinemaSettingsOpen(false);
+      setCinemaSettingsSettled(true);
+    }, 3000);
+    return () => window.clearTimeout(timeout);
+  }, [isCinemaMode]);
 
   const [neatlineSelection, setNeatlineSelection] = useState<NeatlineSelection>(readNeatlineSelection);
   const borderMetrics = useMemo(
@@ -536,6 +551,35 @@ export default function PreviewPanel({
             className="sidebar-ad-slot"
           />
         </div>
+      ) : null}
+
+      {isCinemaMode ? (
+        <aside
+          className={`cinema-current-settings${cinemaSettingsOpen ? " is-open" : ""}${cinemaSettingsSettled ? " is-settled" : ""}`}
+          aria-label="Fullscreen current settings"
+        >
+          <button
+            type="button"
+            className="cinema-current-settings-toggle"
+            onClick={() => setCinemaSettingsOpen((open) => !open)}
+            aria-expanded={cinemaSettingsOpen}
+            aria-controls="cinema-current-settings-panel"
+          >
+            <span aria-hidden="true">⚙</span>
+            <span>Current Settings</span>
+          </button>
+          <div id="cinema-current-settings-panel" className="cinema-current-settings-panel">
+            <SettingsInfo
+              location={infoLocationLabel}
+              theme={effectiveTheme.name}
+              layout={infoLayoutLabel}
+              posterSize={posterSizeLabel}
+              resolution={resolutionInfoLabel}
+              markers={markersLabel}
+              coordinates={coordinatesLabel}
+            />
+          </div>
+        </aside>
       ) : null}
     </section>
   );

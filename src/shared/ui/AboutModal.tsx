@@ -18,9 +18,10 @@ import {
 export interface AboutModalProps {
   onClose: () => void;
   initialTab?: "about" | "guide";
+  hideCloseButton?: boolean;
 }
 
-export default function AboutModal({ onClose, initialTab = "about" }: AboutModalProps) {
+export default function AboutModal({ onClose, initialTab = "about", hideCloseButton = false }: AboutModalProps) {
   const [activeTab, setActiveTab] = useState<"about" | "guide">(initialTab);
 
   const repoUrl = String(REPO_URL ?? "").trim();
@@ -104,15 +105,17 @@ export default function AboutModal({ onClose, initialTab = "about" }: AboutModal
             </button>
           </nav>
 
-          <button
-            type="button"
-            className="about-modal-close"
-            onClick={onClose}
-            aria-label="Close dialog (Escape)"
-            title="Close (ESC)"
-          >
-            <CloseIcon />
-          </button>
+          {!hideCloseButton ? (
+            <button
+              type="button"
+              className="about-modal-close"
+              onClick={onClose}
+              aria-label="Close dialog (Escape)"
+              title="Close (ESC)"
+            >
+              <CloseIcon />
+            </button>
+          ) : null}
         </header>
 
         {/* Modal Content Body */}

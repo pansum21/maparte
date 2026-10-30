@@ -83,6 +83,7 @@ export interface PosterState {
 /* ────── Actions ────── */
 
 export type PosterAction =
+  | { type: "RESET_TO_DEFAULTS"; state: PosterState }
   | { type: "SET_FIELD"; name: string; value: string | boolean }
   | {
       type: "SET_FORM_FIELDS";
@@ -133,6 +134,8 @@ export function posterReducer(
   action: PosterAction,
 ): PosterState {
   switch (action.type) {
+    case "RESET_TO_DEFAULTS":
+      return action.state;
     case "SET_FIELD": {
       const nextForm = { ...state.form, [action.name]: action.value };
       const nextDisplayNameOverrides = { ...state.displayNameOverrides };

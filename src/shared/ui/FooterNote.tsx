@@ -109,15 +109,6 @@ export default function FooterNote() {
           >
             Cookie Settings
           </button>
-          {" | "}
-          <a
-            className="source-link"
-            href="https://github.com/pansum21/maparte"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Source code
-          </a>
         </p>
       </div>
 

@@ -1693,6 +1693,98 @@ body.has-custom-backdrop .poster-ghost-layer {
   pointer-events: auto !important;
 }
 
+.cinema-about-guide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid rgba(125, 211, 252, 0.38);
+  border-radius: 999px;
+  background: rgba(10, 20, 32, 0.88);
+  color: #f8fafc;
+  font: 700 0.78rem/1 inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  backdrop-filter: blur(18px);
+}
+
+.cinema-center-view-badge {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.cinema-center-view-badge.is-hidden {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.cinema-current-settings {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  z-index: 10000001;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  max-width: min(360px, calc(100vw - 56px));
+  transform: translate(0, -50%);
+  transition: transform 0.36s cubic-bezier(0.2, 0.75, 0.25, 1);
+  pointer-events: auto;
+}
+
+.cinema-current-settings.is-settled:not(.is-open) {
+  transform: translate(calc(100% - 48px), -50%);
+}
+
+.cinema-current-settings-toggle {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 0 0 48px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 6px;
+  border: 1px solid rgba(125, 211, 252, 0.38);
+  border-right: 0;
+  border-radius: 12px 0 0 12px;
+  background: rgba(10, 20, 32, 0.94);
+  color: #eaf7ff;
+  font: 700 0.65rem/1.1 inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  writing-mode: vertical-rl;
+}
+
+.cinema-current-settings-toggle span:first-child {
+  font-size: 1.1rem;
+  writing-mode: horizontal-tb;
+}
+
+.cinema-current-settings-panel {
+  width: min(300px, calc(100vw - 56px));
+  max-height: min(72vh, 620px);
+  overflow: auto;
+  padding: 10px;
+  border: 1px solid rgba(125, 211, 252, 0.38);
+  border-radius: 0 14px 14px 0;
+  background: rgba(8, 18, 29, 0.96);
+  backdrop-filter: blur(20px);
+  pointer-events: auto;
+}
+
+.cinema-current-settings-panel .settings-info-card {
+  margin: 0;
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .cinema-current-settings,
+  .cinema-about-guide-btn {
+    display: none;
+  }
+}
+
 /* 1. Heading Block in Top Left */
 .cinema-heading-block {
   display: flex;

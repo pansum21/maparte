@@ -87,11 +87,11 @@ export const DEFAULT_FORM: PosterForm = {
   showRoutes: true,
 };
 
-function getInitialState(): PosterState {
+function getInitialState(readUrlState = true): PosterState {
   let form = { ...DEFAULT_FORM };
   let selectedLocation = null;
 
-  if (typeof window !== "undefined") {
+  if (readUrlState && typeof window !== "undefined") {
     const matched = resolveCityFromUrl(window.location.pathname, window.location.search);
     if (matched) {
       form = {
@@ -152,6 +152,10 @@ function getInitialState(): PosterState {
 }
 
 const INITIAL_STATE: PosterState = getInitialState();
+
+export function createDefaultPosterState(): PosterState {
+  return getInitialState(false);
+}
 
 /* ────── Context shapes ────── */
 

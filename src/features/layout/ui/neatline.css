@@ -40,6 +40,10 @@
   animation: neatlineAdjustSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.neatline-picker:not(.has-selected-border) .neatline-adjust-box {
+  display: none;
+}
+
 @keyframes neatlineAdjustSlideUp {
   from {
     opacity: 0;
@@ -211,7 +215,7 @@
   font-weight: 700;
   color: #9fbcd0;
   line-height: 1;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 /* Flat Linear Gradient Chips */
@@ -345,6 +349,167 @@
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {
     max-height: 248px !important;
+  }
+
+  [data-mobile-tab="frames"] .mobile-drawer-content {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    padding: 4px 8px 8px;
+  }
+
+  [data-mobile-tab="frames"] .mobile-drawer-content .settings-panel {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  [data-mobile-tab="frames"] .mobile-section--frames {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  [data-mobile-tab="frames"] .mobile-section--frames > .accordion-body.is-open {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  [data-mobile-tab="frames"] .mobile-section--frames > .accordion-body > .accordion-body-inner {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 0 6px;
+  }
+
+  [data-mobile-tab="frames"] .neatline-picker {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 6px;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  [data-mobile-tab="frames"] .neatline-section-box {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0 !important;
+    padding: 7px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [data-mobile-tab="frames"] .neatline-section-box::-webkit-scrollbar {
+    display: none;
+  }
+
+  [data-mobile-tab="frames"] .neatline-picker:not(.has-selected-border) .neatline-adjust-box {
+    display: flex;
+  }
+
+  [data-mobile-tab="frames"] .neatline-section-box-header {
+    position: sticky;
+    z-index: 2;
+    top: -7px;
+    min-height: 34px;
+    margin: -7px -7px 6px;
+    padding: 7px;
+    background: rgba(12, 26, 40, 0.98);
+  }
+
+  [data-mobile-tab="frames"] .neatline-section-box-title,
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-section-box-title {
+    font-size: 0.64rem;
+    letter-spacing: 0.02em;
+  }
+
+  [data-mobile-tab="frames"] .neatline-section-box-subtitle {
+    max-width: 42%;
+    font-size: 0.52rem;
+  }
+
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    height: auto;
+    overflow-y: visible !important;
+  }
+
+  [data-mobile-tab="frames"] .neatline-card,
+  [data-mobile-tab="frames"] .neatline-option {
+    aspect-ratio: 1 / 1;
+    padding: 3px;
+    border-radius: 7px;
+  }
+
+  [data-mobile-tab="frames"] .neatline-card-name,
+  [data-mobile-tab="frames"] .neatline-option-name {
+    font-size: 0.49rem;
+    letter-spacing: 0;
+  }
+
+  [data-mobile-tab="frames"] .neatline-swatch {
+    height: 27px;
+  }
+
+  [data-mobile-tab="frames"] .neatline-adjust-box .neatline-color-subblock {
+    gap: 6px;
+    margin-bottom: 7px;
+  }
+
+  [data-mobile-tab="frames"] .neatline-color-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  [data-mobile-tab="frames"] .neatline-color-tabs {
+    width: 100%;
+  }
+
+  [data-mobile-tab="frames"] .neatline-color-tab {
+    flex: 1 1 50%;
+    padding: 3px 4px;
+  }
+
+  [data-mobile-tab="frames"] .neatline-single-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  [data-mobile-tab="frames"] .neatline-grad-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  [data-mobile-tab="frames"] .neatline-sliders-subblock {
+    gap: 6px;
+  }
+
+  [data-mobile-tab="frames"] .neatline-adjustments {
+    gap: 8px;
+    padding: 7px;
   }
 }
 

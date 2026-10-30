@@ -5,6 +5,7 @@ const CONFIG_STORAGE_KEY = "maparte_neatline_layers";
 const LEGACY_STYLE_KEY = "maparte_neatline_style";
 const THICKNESS_STORAGE_KEY = "maparte_neatline_thicknesses";
 export const NEATLINE_CHANGE_EVENT = "maparte:neatline:change";
+export const NEATLINE_RESET_EVENT = "maparte:neatline:reset";
 const MIN_MAP_GAP_CM = 0.0;
 const MAX_MAP_GAP_CM = 1.00;
 const BORDER_CONTROL_STEP_CM = 0.01;
@@ -145,7 +146,7 @@ const LINE_COLORS: Record<"top" | "right" | "bottom" | "left", string> = {
   left: "#526b9b",
 };
 
-const OUTER_EDGE_CLEARANCE_CM = 0.01; // 0.1 mm between the outer stroke and paper edge
+const OUTER_EDGE_CLEARANCE_CM = 0.001; // 0.01 mm between the outer stroke and paper edge
 
 export function hasPatternDesign(_pattern: LinePattern): boolean {
   return false;
@@ -569,6 +570,14 @@ function readSelection(): NeatlineSelection {
 
 export function readNeatlineSelection(): NeatlineSelection {
   return readSelection();
+}
+
+export function resetNeatlineSettings(): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(CONFIG_STORAGE_KEY);
+  window.localStorage.removeItem(LEGACY_STYLE_KEY);
+  window.localStorage.removeItem(THICKNESS_STORAGE_KEY);
+  window.dispatchEvent(new Event(NEATLINE_RESET_EVENT));
 }
 
 export function thicknessesInCm(
@@ -1139,6 +1148,12 @@ export function NeatlinePicker({
   const layerCount = selection.lineId !== "none" ? 1 : 0;
 
   useEffect(() => {
+    const reset = () => setSelection(readSelection());
+    window.addEventListener(NEATLINE_RESET_EVENT, reset);
+    return () => window.removeEventListener(NEATLINE_RESET_EVENT, reset);
+  }, []);
+
+  useEffect(() => {
     try {
       window.localStorage.setItem(
         CONFIG_STORAGE_KEY,
@@ -1257,7 +1272,7 @@ export function NeatlinePicker({
       {/* BORDERS BOX */}
       <div className="neatline-section-box neatline-borders-box">
         <div className="neatline-section-box-header">
-          <span className="neatline-section-box-title">Border Styles</span>
+          <span className="neatline-section-box-title">Border Style</span>
           <span className="neatline-section-box-subtitle">
             {selectedLine ? selectedLine.name : "Clean Full Bleed"}
           </span>
@@ -1290,14 +1305,17 @@ export function NeatlinePicker({
         </div>
       </div>
 
-      {/* 3. ADJUSTMENTS BOX (Color, Thickness & Spacing) */}
-      {selectedLine ? (
-        <div className="neatline-section-box neatline-adjust-box">
-          <div className="neatline-section-box-header">
-            <span className="neatline-section-box-title">Adjust &amp; Customize</span>
-            <span className="neatline-section-box-subtitle">{selectedLine.name}</span>
-          </div>
+      {/* ADJUSTMENTS BOX (Color, Thickness & Spacing) */}
+      <div className="neatline-section-box neatline-adjust-box">
+        <div className="neatline-section-box-header">
+          <span className="neatline-section-box-title">Adjust &amp; Customize</span>
+          <span className="neatline-section-box-subtitle">
+            {selectedLine?.name ?? ""}
+          </span>
+        </div>
 
+        {selectedLine ? (
+          <>
           {/* Sub-block A: Border Color */}
           <div className="neatline-color-subblock">
             <div className="neatline-color-header">
@@ -1542,8 +1560,9 @@ export function NeatlinePicker({
               </p>
             </fieldset>
           </div>
-        </div>
-      ) : null}
+          </>
+        ) : null}
+      </div>
     </section>
   );
 }
