@@ -295,6 +295,7 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     box-sizing: border-box !important;
     height: calc(clamp(64px, 13vw, 92px) + 8px) !important;
     max-height: calc(clamp(64px, 13vw, 92px) + 8px) !important;
+    min-height: 0 !important;
     overflow-y: auto !important;
     align-content: start !important;
   }
