@@ -97,8 +97,17 @@ export default function CinemaWallDock({
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
       onCameraStreamChange(stream);
       setActivePanel(null);
-    } catch {
-      setCameraError("Camera access was blocked. Allow camera access and try again.");
+    } catch (error) {
+      const errorName = error instanceof DOMException ? error.name : "";
+      if (errorName === "NotAllowedError" || errorName === "SecurityError") {
+        setCameraError("Camera permission is blocked for this site. Allow Camera in your browser’s site settings, then tap Open Camera again.");
+      } else if (errorName === "NotFoundError" || errorName === "OverconstrainedError") {
+        setCameraError("No available camera was found on this device.");
+      } else if (errorName === "NotReadableError" || errorName === "AbortError") {
+        setCameraError("The camera is already in use by another app. Close it and try again.");
+      } else {
+        setCameraError("Could not open the camera. Check browser permission and try again.");
+      }
     }
   };
 
