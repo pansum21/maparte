@@ -39,7 +39,8 @@ function applyBackdropToDOM(state: BackdropThemeState) {
     backgroundImage = gradient;
   }
 
-  document.querySelectorAll<HTMLElement>(".poster-viewport").forEach((viewport) => {\n    viewport.classList.toggle("has-custom-wall-color", state.type === "custom");
+  document.querySelectorAll<HTMLElement>(".poster-viewport").forEach((viewport) => {
+    viewport.classList.toggle("has-custom-wall-color", state.type === "custom");
     if (backgroundColor === null || backgroundImage === null) {
       viewport.classList.remove("has-wall-theme");
       viewport.style.removeProperty("--wall-bg-color");
