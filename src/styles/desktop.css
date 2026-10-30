@@ -2977,7 +2977,7 @@
     border-left: 0;
     border-radius: 0 14px 14px 0;
     box-shadow: 0 16px 44px rgba(0, 0, 0, .42);
-    transform: translateX(calc(-100% + 52px));
+    transform: translateX(calc(-100% + 72px));
     transition: transform .22s cubic-bezier(.2,.75,.25,1);
     pointer-events: auto;
   }
