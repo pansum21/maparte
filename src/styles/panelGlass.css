@@ -238,3 +238,36 @@
 }
 .app-shell.is-cinema-mode .cinema-top-exit-btn .cinema-exit-text,
 .app-shell.is-cinema-mode .cinema-top-fs-btn .cinema-fs-text { display: none !important; }
+
+/* Expanded sheets share one scroll region; no nested compact list cap. */
+.mobile-drawer-sheet.is-expanded[data-mobile-tab="theme"] .theme-card-list {
+  max-height: none; overflow: visible; flex-shrink: 0;
+}
+.mobile-drawer-sheet.is-expanded[data-mobile-tab="theme"] .mobile-drawer-content { overflow-y: auto; }
+.wall-expand-handle { touch-action: none; user-select: none; cursor: ns-resize; }
+.backdrop-presets-section-header > .mixer-label { font-weight: 800; font-size: .92rem; }
+.typography-mode-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 12px; }
+.typography-panel-block [hidden] { display: none !important; }
+
+/* Native range controls get the complete available track, with no inherited
+   text-field padding or minimum width. Values are not remapped for styling. */
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; box-sizing: border-box !important;
+  width: 100% !important; min-width: 0 !important; max-width: none !important;
+  padding: 0 !important; margin: 0 !important; border: 0 !important;
+  height: 24px !important; min-height: 24px !important; background: transparent !important;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 6px; border: 0; border-radius: 3px; background: rgba(125,211,252,.3); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; margin-top: -5px; border: 1px solid #b8efff; border-radius: 50%; background: #38bdf8; box-shadow: none; }
+input[type="range"]::-moz-range-track { width: 100%; height: 6px; border: 0; border-radius: 3px; background: rgba(125,211,252,.3); }
+input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px solid #b8efff; border-radius: 50%; background: #38bdf8; box-shadow: none; }
+.cinema-placement-controls label { grid-template-columns: minmax(0, 1fr) max-content !important; padding: 0 !important; margin: 0 !important; }
+.cinema-placement-controls label > .cinema-range-control {
+  display: flex !important; grid-column: 1 / -1 !important; align-items: center !important;
+  gap: 8px !important; padding: 0 !important; width: 100% !important;
+}
+.cinema-placement-controls .cinema-range-control > input { flex: 1 1 0% !important; width: 0 !important; }
+.cinema-placement-controls .cinema-range-control > button { flex: 0 0 48px !important; margin: 0 !important; }
+.marker-visual__icon svg { shape-rendering: geometricPrecision; overflow: visible; }
+.marker-settings-screen .marker-visual { filter: drop-shadow(0 2px 1px rgba(3,10,18,.3)); }

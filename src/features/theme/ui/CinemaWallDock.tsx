@@ -196,16 +196,16 @@ export default function CinemaWallDock({
                 <button
                   type="button"
                   className="cinema-range-step"
-                  onClick={() => adjustPlacement("scale", -1, 0.3, 10, 0.05)}
-                  disabled={placement.scale <= 0.3}
+                  onClick={() => adjustPlacement("scale", -1, 0, 10, 0.1)}
+                  disabled={placement.scale <= 0}
                   aria-label="Decrease poster size"
                 >−</button>
                 <input
                   type="range"
                   className="cinema-range-slider"
-                  min="0.30"
+                  min="0.00"
                   max="10.00"
-                  step="0.05"
+                  step="0.10"
                   value={placement.scale}
                   onChange={(event) =>
                     onPlacementChange({
@@ -218,7 +218,7 @@ export default function CinemaWallDock({
                 <button
                   type="button"
                   className="cinema-range-step"
-                  onClick={() => adjustPlacement("scale", 1, 0.3, 10, 0.05)}
+                  onClick={() => adjustPlacement("scale", 1, 0, 10, 0.1)}
                   disabled={placement.scale >= 10}
                   aria-label="Increase poster size"
                 >+</button>

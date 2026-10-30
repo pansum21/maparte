@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { CheckIcon } from "@/shared/ui/Icons";
 import {
@@ -84,6 +84,7 @@ export default function BackdropThemeModal({
   const [selectedCategory, setSelectedCategory] = useState<WallCategory>("all");
   const [showWallInfo, setShowWallInfo] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const dragStartY = useRef<number | null>(null);
   const [showAllGradients, setShowAllGradients] = useState(false);
 
   // Keep a local draft for smooth slider dragging and text inputs
@@ -180,7 +181,15 @@ export default function BackdropThemeModal({
         onClick={(e) => e.stopPropagation()}
       >
         <button type="button" className="wall-expand-handle" aria-label={expanded ? "Collapse wall panel" : "Expand wall panel"}
-          aria-expanded={expanded} onClick={() => setExpanded(value => !value)}><span /></button>
+          aria-expanded={expanded}
+          onPointerDown={(event) => { dragStartY.current = event.clientY; event.currentTarget.setPointerCapture(event.pointerId); }}
+          onPointerUp={(event) => {
+            const delta = event.clientY - (dragStartY.current ?? event.clientY);
+            dragStartY.current = null;
+            if (Math.abs(delta) > 30) setExpanded(delta < 0);
+            else setExpanded(value => !value);
+          }}
+          onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setExpanded(value => !value); } }}><span /></button>
         <div className="backdrop-modal-header">
           <div className="backdrop-modal-heading-row">
             <div className="backdrop-modal-heading-copy">
@@ -190,11 +199,7 @@ export default function BackdropThemeModal({
                   ? "Solid Wall Paint & Designer Swatches"
                   : selectedPreset?.name ?? "Shaded Room Lighting"}
               </span>
-              <p className="backdrop-selected-wall-desc">
-                {activeTab === "solid"
-                  ? "Solid wall: designer paint swatches and any custom color. Changes preview and save instantly."
-                  : "Gradient wall: 64 lighting presets, two custom colors and an adjustable light angle. Changes save instantly."}
-              </p>
+
             </div>
             <div className="backdrop-modal-actions">
               <button
@@ -233,7 +238,9 @@ export default function BackdropThemeModal({
           </div>
 
           <p className="backdrop-seo-description" id="wall-color-seo-description" hidden={!showWallInfo}>
-            {WALL_SEO_DESCRIPTION}
+            <strong>Wall Color:</strong> Choose a single solid color from designer swatches or enter your own color. Changes preview and save instantly.
+            <br /><br />
+            <strong>Gradient Wall:</strong> Choose from 64 lighting presets or combine two custom colors and adjust the light-source angle. Changes preview and save instantly.
           </p>
 
         </div>

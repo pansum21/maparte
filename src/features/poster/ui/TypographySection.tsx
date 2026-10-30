@@ -31,6 +31,7 @@ export default function TypographySection({
 }: TypographySectionProps) {
   const { effectiveTheme, dispatch } = usePosterContext();
   const fontCategories = ["Sans serif", "Serif", "Display", "Monospace"] as const;
+  const [activePanel, setActivePanel] = useState<"text" | "style">("text");
   const [fontPickerOpen, setFontPickerOpen] = useState(false);
   const uniqueFontOptions = fontOptions.filter((option, index, options) => {
     const key = option.value.trim().toLowerCase() || "space grotesk";
@@ -72,7 +73,11 @@ export default function TypographySection({
   return (
     <>
       <section className="panel-block typography-panel-block">
-        <p className="section-summary-label">STYLE</p>
+        <div className="marker-picker-mode-tabs typography-mode-tabs" role="tablist" aria-label="Text controls">
+          <button type="button" role="tab" aria-selected={activePanel === "text"} className={activePanel === "text" ? "is-active" : ""} onClick={() => setActivePanel("text")}>Text</button>
+          <button type="button" role="tab" aria-selected={activePanel === "style"} className={activePanel === "style" ? "is-active" : ""} onClick={() => setActivePanel("style")}>Style</button>
+        </div>
+        <div hidden={activePanel !== "style"}>
         <label className="toggle-field">
           <span>Poster text</span>
           <span className="theme-switch">
@@ -93,6 +98,8 @@ export default function TypographySection({
             </span>
           </label>
         ))}
+        </div>
+        <div hidden={activePanel !== "text"}>
         <label>Poster text color</label>
         <div className="poster-text-color-controls">
           <input type="color" name="posterTextColor" aria-label="Poster text color"
@@ -144,6 +151,8 @@ export default function TypographySection({
             placeholder="e.g. 14.02.2024 • Where We Met"
           />
         </label>
+        </div>
+        <div hidden={activePanel !== "style"}>
         <div className={`font-picker-field${fontPickerOpen ? " is-open" : ""}`}>
           <div className="font-picker-toolbar">
             <span className="font-select-label-row">
@@ -214,6 +223,7 @@ export default function TypographySection({
           ) : null}
         </div>
 
+        </div>
       </section>
     </>
   );

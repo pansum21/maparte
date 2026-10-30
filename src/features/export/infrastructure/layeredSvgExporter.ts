@@ -483,7 +483,7 @@ export async function createLayeredSvgBlobFromMap({
         const definition = markerIcons.find(icon => icon.id === m.iconId);
         if (definition?.kind === "svg" && definition.svgMarkup) {
           const size = radius * 2;
-          const svg = definition.svgMarkup.replace(/currentColor/g, m.color || theme.ui.text)
+          const svg = definition.svgMarkup.replace(/marker-(relief|volume)-/g, `${m.id.replace(/[^a-zA-Z0-9]/g, "")}-marker-$1-`).replace(/currentColor/g, m.color || theme.ui.text)
             .replace(/<svg\b[^>]*>/, root => root.replace(/\s(?:width|height)="[^"]*"/g, ""))
             .replace("<svg", `<svg x="${pt.x - radius}" y="${pt.y - radius}" width="${size}" height="${size}"`);
           markerItemsSvg.push(svg);

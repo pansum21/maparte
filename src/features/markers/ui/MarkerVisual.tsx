@@ -1,4 +1,4 @@
-import { memo, useEffect, useState, type CSSProperties } from "react";
+import { memo, useEffect, useState, useId, type CSSProperties } from "react";
 import type { MarkerIconDefinition } from "@/features/markers/domain/types";
 
 interface MarkerVisualProps {
@@ -14,6 +14,7 @@ const MarkerVisual = memo(function MarkerVisual({
   color,
   className = "",
 }: MarkerVisualProps) {
+  const markerInstanceId = useId().replace(/[^a-zA-Z0-9]/g, "");
   const [emojiAssetFailed, setEmojiAssetFailed] = useState(false);
   useEffect(() => setEmojiAssetFailed(false), [icon.emojiAssetUrl]);
 
@@ -73,7 +74,7 @@ const MarkerVisual = memo(function MarkerVisual({
           <span
             className="marker-visual__icon"
             aria-hidden="true"
-            dangerouslySetInnerHTML={{ __html: icon.svgMarkup ?? "" }}
+            dangerouslySetInnerHTML={{ __html: (icon.svgMarkup ?? "").replace(/marker-(relief|volume)-/g, `${markerInstanceId}-marker-$1-`) }}
           />
         )
       )}
