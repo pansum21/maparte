@@ -3015,7 +3015,7 @@
     z-index: 80;
     width: 344px;
     max-width: calc(100vw - 56px);
-    transform: translate(calc(100% - 46px), -50%);
+    transform: translate(100%, -50%);
     transition: transform .24s cubic-bezier(.2,.75,.25,1);
     pointer-events: auto;
   }

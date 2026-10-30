@@ -88,7 +88,7 @@ export default function FooterNote() {
           >
             Refund Policy
           </a>
-          {hasLegalLinks && " | "}
+          {" | "}
           <button
             type="button"
             className="source-link"
