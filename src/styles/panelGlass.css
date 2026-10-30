@@ -292,6 +292,8 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   [data-mobile-tab="frames"] .neatline-borders-box .neatline-options {
     grid-auto-rows: clamp(64px, 13vw, 92px) !important;
+    height: calc(clamp(64px, 13vw, 92px) + 8px) !important;
+    max-height: calc(clamp(64px, 13vw, 92px) + 8px) !important;
     overflow-y: auto !important;
     align-content: start !important;
   }
