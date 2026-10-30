@@ -1,40 +1,22 @@
-import { useState } from "react";
 import { InfoIcon } from "@/shared/ui/Icons";
 import SocialLinkGroup from "@/shared/ui/SocialLinkGroup";
 
 interface GeneralHeaderProps {
   onAboutOpen: () => void;
   onGuideOpen?: () => void;
-  onAdminOpen?: () => void;
   onCinemaToggle?: () => void;
 }
 
 export default function GeneralHeader({
   onAboutOpen,
   onGuideOpen,
-  onAdminOpen,
   onCinemaToggle,
 }: GeneralHeaderProps) {
-  const [tapCount, setTapCount] = useState(0);
-
-  const handleLogoClick = () => {
-    setTapCount((prev) => {
-      const next = prev + 1;
-      if (next >= 5) {
-        onAdminOpen?.();
-        return 0;
-      }
-      return next;
-    });
-  };
-
   return (
     <header className="general-header">
       <div
         className="desktop-brand"
-        onClick={handleLogoClick}
         title="MAPARTE"
-        style={{ cursor: "pointer" }}
       >
         <img
           className="desktop-brand-logo brand-logo"

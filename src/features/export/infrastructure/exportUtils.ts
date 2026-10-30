@@ -1,7 +1,9 @@
-import maplibregl, {
+import * as maplibregl from "maplibre-gl";
+import {
   type Map as MaplibreMap,
   type StyleSpecification,
 } from "maplibre-gl";
+import "@/features/map/infrastructure/maplibreWorker";
 import type { MarkerProjectionInput } from "@/features/markers/domain/types";
 import { MAP_OVERZOOM_SCALE } from "@/features/map/infrastructure/constants";
 

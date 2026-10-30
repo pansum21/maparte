@@ -1,61 +1,11 @@
-/**
- * Free vs Pro export tier.
- * TEMPORARY: the plan is a flag stored in the browser, for testing only.
- * Replace isProUser() with a real, server-verified check once login and
- * payments exist.
- */
-const PLAN_KEY = "maparte_plan";
-const CREDITS_KEY = "maparte_pro_credits";
-const ADMIN_MODE_KEY = "maparte_admin_mode";
-const UNLOCKED_TIER_KEY = "maparte_unlocked_tier";
+/** Paid export entitlements are unavailable until server-side verification exists. */
 export const FREE_DPI = 300;
 
 export type PaidTier = "png" | "jpg" | "duo" | "pdf" | "svg" | "combo";
 
-export function getUnlockedTier(): PaidTier | null {
-  if (isAdminUser()) {
-    return "combo";
-  }
-  try {
-    const raw = window.localStorage.getItem(UNLOCKED_TIER_KEY);
-    if (raw && ["png", "jpg", "duo", "pdf", "svg", "combo"].includes(raw)) {
-      return raw as PaidTier;
-    }
-    // If pro user with active credits, default to combo
-    if (getProCredits() > 0) {
-      return "combo";
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export function setUnlockedTier(tier: PaidTier | null): void {
-  try {
-    if (tier) {
-      window.localStorage.setItem(UNLOCKED_TIER_KEY, tier);
-    } else {
-      window.localStorage.removeItem(UNLOCKED_TIER_KEY);
-    }
-  } catch {
-    // ignore
-  }
-}
-
-export function isTierAuthorized(tier: PaidTier): boolean {
-  if (isAdminUser()) return true;
-  if (getProCredits() <= 0) return false;
-  const unlocked = getUnlockedTier();
-  if (!unlocked) return false;
-  if (unlocked === "combo") return true;
-  if (unlocked === "duo") return tier === "duo" || tier === "png" || tier === "jpg";
-  return unlocked === tier;
-}
-
-export const BOGO_PRO_CODE = "MAPARTE.B01G01.2026";
-export const LEGACY_BOGO_CODE = "maparte.bogo.in@bogo";
-export const MASTER_ADMIN_KEY = "admin@maparte.boss";
+export function getUnlockedTier(): PaidTier | null { return null; }
+export function setUnlockedTier(_tier: PaidTier | null): void {}
+export function isTierAuthorized(_tier: PaidTier): boolean { return false; }
 
 /** Watermark look. Change these numbers to taste. */
 const WATERMARK_TEXT = "MAPARTE";
@@ -64,179 +14,42 @@ const WATERMARK_OPACITY = 0.22; // 0 = invisible, 1 = solid
 const WATERMARK_ANGLE = -Math.PI / 7; // slight diagonal; use 0 for straight
 
 export function isAdminUser(): boolean {
-  try {
-    return window.localStorage.getItem(ADMIN_MODE_KEY) === "true";
-  } catch {
-    return false;
-  }
+  return false;
 }
 
-export function setAdminMode(enabled: boolean): void {
+export function setAdminMode(_enabled: boolean): void {
   try {
-    if (enabled) {
-      window.localStorage.setItem(ADMIN_MODE_KEY, "true");
-      window.localStorage.setItem(CREDITS_KEY, "999999");
-      window.localStorage.setItem(PLAN_KEY, "pro");
-      window.localStorage.setItem(UNLOCKED_TIER_KEY, "combo");
-    } else {
-      window.localStorage.removeItem(ADMIN_MODE_KEY);
-      window.localStorage.removeItem(CREDITS_KEY);
-      window.localStorage.removeItem(PLAN_KEY);
-      window.localStorage.removeItem(UNLOCKED_TIER_KEY);
+    for (const key of ["maparte_admin_mode", "maparte_pro_credits", "maparte_plan", "maparte_unlocked_tier"]) {
+      window.localStorage.removeItem(key);
     }
   } catch {
     // ignore
   }
 }
 
-export function getProCredits(): number {
-  if (isAdminUser()) {
-    return 999999;
-  }
-  try {
-    const raw = window.localStorage.getItem(CREDITS_KEY);
-    if (raw !== null) {
-      const parsed = parseInt(raw, 10);
-      return Number.isNaN(parsed) || parsed < 0 ? 0 : parsed;
-    }
-    // If legacy pro plan was set without explicit credits, grant default 2 BOGO credits
-    if (window.localStorage.getItem(PLAN_KEY) === "pro") {
-      return 2;
-    }
-    return 0;
-  } catch {
-    return 0;
-  }
-}
-
-export function setProCredits(count: number): void {
-  try {
-    const safeCount = Math.max(0, Math.floor(count));
-    window.localStorage.setItem(CREDITS_KEY, safeCount.toString());
-    if (safeCount > 0) {
-      window.localStorage.setItem(PLAN_KEY, "pro");
-    } else {
-      window.localStorage.removeItem(PLAN_KEY);
-    }
-  } catch {
-    // ignore
-  }
-}
-
-export function addProCredits(count: number = 2): number {
-  if (isAdminUser()) {
-    return 999999;
-  }
-  const current = getProCredits();
-  const next = current + count;
-  setProCredits(next);
-  return next;
-}
-
-export function consumeProCredit(): number {
-  if (isAdminUser()) {
-    return 999999;
-  }
-  const current = getProCredits();
-  const next = Math.max(0, current - 1);
-  setProCredits(next);
-  return next;
-}
-
-export function isProUser(): boolean {
-  return isAdminUser() || getProCredits() > 0;
-}
-
-export function setProUser(isPro: boolean): void {
-  if (isPro) {
-    if (getProCredits() <= 0) {
-      setProCredits(2);
-      setUnlockedTier("combo");
-    }
-  } else {
-    setProCredits(0);
-    setAdminMode(false);
-    setUnlockedTier(null);
-  }
-}
-
-export interface ActivationResult {
-  success: boolean;
-  isAdmin?: boolean;
-}
-
-export function activateProWithKey(key: string): ActivationResult {
-  const normalized = key.trim().toLowerCase();
-  if (
-    normalized === MASTER_ADMIN_KEY.toLowerCase() ||
-    normalized === "maparte.admin@boss" ||
-    normalized === "admin@boss" ||
-    normalized === "maparteboss"
-  ) {
-    setAdminMode(true);
-    setUnlockedTier("combo");
-    return { success: true, isAdmin: true };
-  }
-  if (
-    normalized === BOGO_PRO_CODE.toLowerCase() ||
-    normalized === LEGACY_BOGO_CODE.toLowerCase() ||
-    normalized === "maparte.b01g01.2026"
-  ) {
-    addProCredits(2);
-    setUnlockedTier("combo");
-    return { success: true, isAdmin: false };
-  }
-  return { success: false };
-}
+export function getProCredits(): number { return 0; }
+export function setProCredits(_count: number): void { setAdminMode(false); }
+export function addProCredits(_count: number = 2): number { return 0; }
+export function consumeProCredit(): number { return 0; }
+export function isProUser(): boolean { return false; }
+export function setProUser(_isPro: boolean): void { setAdminMode(false); }
+export interface ActivationResult { success: false; isAdmin?: false; }
+export function activateProWithKey(_key: string): ActivationResult { return { success: false }; }
 
 export function checkPaymentReturnUrl(): boolean {
+  // Remove any legacy browser-only admin or plan flags from previous releases.
+  setAdminMode(false);
   try {
     const url = new URL(window.location.href);
-    const adminParam = url.searchParams.get("admin");
-    if (adminParam === "boss" || adminParam === "true" || adminParam === "maparte") {
-      setAdminMode(true);
-      setUnlockedTier("combo");
-      url.searchParams.delete("admin");
-      const cleanPath =
-        url.pathname + (url.search ? url.search : "") + (url.hash ? url.hash : "");
-      window.history.replaceState({}, document.title, cleanPath);
-      return true;
-    }
-
-    const paymentParam = url.searchParams.get("payment");
-    const statusParam = url.searchParams.get("status") || url.searchParams.get("payment_status");
-    const unlockedParam = url.searchParams.get("unlocked");
-    const hasDodoPayment = url.searchParams.has("payment_id") || url.searchParams.has("checkout_id");
-
-    const hasSuccess =
-      paymentParam === "success" ||
-      unlockedParam === "pro" ||
-      statusParam === "paid" ||
-      statusParam === "succeeded" ||
-      statusParam === "success" ||
-      hasDodoPayment;
-
-    if (hasSuccess) {
-      addProCredits(2);
-      const tierParam = url.searchParams.get("tier") || url.searchParams.get("metadata_tier");
-      if (tierParam && ["png", "jpg", "duo", "pdf", "svg", "combo"].includes(tierParam)) {
-        setUnlockedTier(tierParam as PaidTier);
-      } else {
-        setUnlockedTier("combo");
+    const params = ["admin", "payment", "status", "payment_status", "unlocked", "tier", "metadata_tier", "payment_id", "checkout_id"];
+    let changed = false;
+    for (const param of params) {
+      if (url.searchParams.has(param)) {
+        url.searchParams.delete(param);
+        changed = true;
       }
-      url.searchParams.delete("tier");
-      url.searchParams.delete("metadata_tier");
-      url.searchParams.delete("payment");
-      url.searchParams.delete("unlocked");
-      url.searchParams.delete("status");
-      url.searchParams.delete("payment_status");
-      url.searchParams.delete("payment_id");
-      url.searchParams.delete("checkout_id");
-      const cleanPath =
-        url.pathname + (url.search ? url.search : "") + (url.hash ? url.hash : "");
-      window.history.replaceState({}, document.title, cleanPath);
-      return true;
     }
+    if (changed) window.history.replaceState({}, document.title, url.pathname + (url.search ? url.search : "") + url.hash);
   } catch {
     // ignore
   }

@@ -11,7 +11,7 @@ const CITY_DATABASE = {
     country: "United States", continent: "North America", lat: 40.7128, lon: -74.0060, distance: 15000,
     tagline: "The Iconic Manhattan Grid & Hudson River Estuary",
     landmarks: ["Manhattan Grid", "Central Park", "Brooklyn Bridge", "Hudson River", "Times Square", "SoHo"],
-    description: "Transform New York City into museum-quality wall art. Featuring Manhattan's legendary 1811 Commissioners' street grid, the rectangular oasis of Central Park, the Brooklyn waterfront, and Staten Island ferry routes in ultra-high resolution (up to 500 PPI Ultra-HD)."
+    description: "Create a custom map design centered on New York City, New York. Explore the city map, choose a layout and theme, and personalize labels, borders, markers, or a GPX route in MAPARTE."
   },
   "Paris": {
     country: "France", continent: "Europe", lat: 48.8566, lon: 2.3522, distance: 12000,
@@ -35,19 +35,19 @@ const CITY_DATABASE = {
     country: "Italy", continent: "Europe", lat: 41.9028, lon: 12.4964, distance: 11000,
     tagline: "The Eternal City of Seven Hills & Tiber River Bridges",
     landmarks: ["Colosseum", "Tiber River", "Vatican City", "Trastevere", "Pantheon", "Villa Borghese"],
-    description: "Celebrate your romantic trip to Rome, Italy with a custom framed map poster. Trace the meandering curves of the River Tiber, ancient cobblestone alleys of Trastevere, and classical imperial plazas in ultra-high resolution (up to 500 PPI)."
+    description: "Create a custom map design centered on Rome, Italy. Explore the city map, choose a layout and theme, and personalize labels, borders, markers, or a GPX route in MAPARTE."
   },
   "Mumbai": {
     country: "India", continent: "Asia", lat: 18.9220, lon: 72.8347, distance: 14000,
     tagline: "The City of Dreams & Coastal Marine Drive",
     landmarks: ["Marine Drive", "Gateway of India", "Bandra-Worli Sea Link", "Colaba", "Juhu Beach", "CSMT Terminus"],
-    description: "Design museum-grade custom map posters of Mumbai (Bombay), India. Featuring the iconic crescent curve of Marine Drive (Queen's Necklace), the Bandra-Worli Sea Link over the Arabian Sea, and the colonial heritage grid of South Bombay in ultra-high resolution (up to 500 PPI Ultra-HD)."
+    description: "Create a custom map design centered on Mumbai, India. Explore the city map, choose a layout and theme, and personalize labels, borders, markers, or a GPX route in MAPARTE."
   },
   "Delhi": {
     country: "India", continent: "Asia", lat: 28.6139, lon: 77.2090, distance: 16000,
     tagline: "Historic Capital of India & Lutyens' Architectural Grandeur",
     landmarks: ["India Gate", "Red Fort", "Connaught Place", "Humayun's Tomb", "Lotus Temple", "Qutub Minar"],
-    description: "Create print-ready custom map posters of Delhi, India. Capture the circular radial symmetry of Connaught Place, the ceremonial boulevards of Lutyens' Delhi, and the winding alleys of Old Delhi along the Yamuna River."
+    description: "Create a custom map design centered on Delhi, India. Explore the city map, choose a layout and theme, and personalize labels, borders, markers, or a GPX route in MAPARTE."
   },
   "Goa": {
     country: "India", continent: "Asia", lat: 15.4989, lon: 73.8278, distance: 22000,
@@ -77,13 +77,13 @@ const CITY_DATABASE = {
     country: "United States", continent: "North America", lat: 41.8781, lon: -87.6298, distance: 14000,
     tagline: "The Windy City's Lakefront Horizon & Chicago River Grid",
     landmarks: ["Lake Michigan Coastline", "Chicago River", "The Loop", "Millennium Park", "Lincoln Park", "Navy Pier"],
-    description: "Frame Chicago, Illinois in ultra-high resolution (up to 500 PPI Ultra-HD). Trace the expansive blue waterfront of Lake Michigan, the engineering marvel of the Chicago River, and the iconic orthogonal Loop street grid."
+    description: "Create a custom map design centered on Chicago, Illinois. Explore the city map, choose a layout and theme, and personalize labels, borders, markers, or a GPX route in MAPARTE."
   },
   "San Francisco": {
     country: "United States", continent: "North America", lat: 37.7749, lon: -122.4194, distance: 13000,
     tagline: "Peninsula of Iconic Hills, Bridges & Golden Gate Bay",
     landmarks: ["Golden Gate Bridge", "San Francisco Bay", "Alcatraz", "Market Street", "Mission District", "Pacific Heights"],
-    description: "Design a high-resolution map poster of San Francisco, California. Showcasing the rugged peninsula topography, Golden Gate strait, Bay Bridge span, and dramatic grid hills."
+    description: "Create a custom map design centered on San Francisco, California. Explore the city map, choose a layout and theme, and personalize labels, borders, markers, or a GPX route in MAPARTE."
   },
   "Los Angeles": {
     country: "United States", continent: "North America", lat: 34.0522, lon: -118.2437, distance: 24000,
@@ -305,7 +305,7 @@ const CITY_DATABASE = {
     country: "Belgium", continent: "Europe", lat: 50.8503, lon: 4.3517, distance: 10000,
     tagline: "Capital of Europe with Historic Pentagon Street Ring",
     landmarks: ["Grand Place", "Pentagon Inner Ring", "Royal Palace", "Jubilee Park (Cinquantenaire)", "European Quarter"],
-    description: "Showcase Brussels (Bruxelles), Belgium in high-resolution (up to 500 PPI) cartography. Highlighting the historic pentagonal city center, royal boulevards, and green suburban parks."
+    description: "Create a custom map design centered on Brussels, Belgium. Explore the city map, choose a layout and theme, and personalize labels, borders, markers, or a GPX route in MAPARTE."
   },
   "Munich": {
     country: "Germany", continent: "Europe", lat: 48.1351, lon: 11.5820, distance: 12000,
@@ -389,7 +389,7 @@ const CITY_DATABASE = {
     country: "Malaysia", continent: "Asia", lat: 3.1390, lon: 101.6869, distance: 14000,
     tagline: "Tropical Metropolis of Petronas Towers & River Confluence",
     landmarks: ["Petronas Twin Towers", "Klang River", "Gombak River", "KLCC Park", "Bukit Bintang", "Batu Caves"],
-    description: "Showcase Kuala Lumpur, Malaysia in rich high-resolution (up to 500 PPI). Highlighting the historic muddy confluence of the Klang and Gombak rivers, lush city parks, and towering twin spires."
+    description: "Create a custom map design centered on Kuala Lumpur, Malaysia. Explore the city map, choose a layout and theme, and personalize labels, borders, markers, or a GPX route in MAPARTE."
   },
   "Manila": {
     country: "Philippines", continent: "Asia", lat: 14.5995, lon: 120.9842, distance: 14000,
@@ -431,7 +431,7 @@ const CITY_DATABASE = {
     country: "Peru", continent: "South America", lat: -12.0464, lon: -77.0428, distance: 15000,
     tagline: "The City of Kings atop the Dramatic Pacific Cliffs",
     landmarks: ["Miraflores Boardwalk (Malecón)", "Pacific Ocean Cliffs", "Barranco", "Historic Center", "Rímac River"],
-    description: "Showcase Lima, Peru in high-resolution wall art. Highlight the dramatic coastal cliffs of Miraflores overlooking the Pacific surf and the historic colonial center."
+    description: "Create a custom map design centered on Lima, Peru. Explore the city map, choose a layout and theme, and personalize labels, borders, markers, or a GPX route in MAPARTE."
   },
   "Mexico City": {
     country: "Mexico", continent: "North America", lat: 19.4326, lon: -99.1332, distance: 18000,
@@ -504,26 +504,12 @@ for (let i = 0; i < cityDirectory.length; i++) {
   const item = cityDirectory[i];
   const custom = CITY_DATABASE[item.city] || Object.values(CITY_DATABASE).find(c => c.slug === item.slug);
 
-  const landmarks = custom?.landmarks && custom.landmarks.length > 0
-    ? custom.landmarks
-    : (item.landmarks && item.landmarks.length > 0
-        ? item.landmarks
-        : [
-            `${item.city} City Center`,
-            `${item.city} Waterfront & Riverways`,
-            `${item.city} Historic Quarter`,
-            'Metropolitan District',
-            'Botanical Gardens & Parks'
-          ]);
+  const landmarks = custom?.landmarks?.length ? custom.landmarks : [];
 
-  const tagline = custom?.tagline || (
-    item.isCapital
-      ? `Historic Capital City of ${item.country} & Scenic Street Grid`
-      : `Vibrant Cartographic Destination in ${item.country} & Urban Grid`
-  );
+  const tagline = custom?.tagline || `Map design for ${item.city}, ${item.country}`;
 
   const description = custom?.description || (
-    `Design museum-quality custom map posters of ${item.city}, ${item.country}. Capture the iconic street grids, coastal contours, and historic districts of this ${item.continent} destination in ultra-high resolution (up to 500 PPI Ultra-HD). Perfect for travel memories, personalized anniversary gifts, and modern minimalist wall decor.`
+    `Create a custom map design centered on ${item.city}, ${item.country}. Choose a map theme and layout, adjust labels and borders, and add markers or a GPX route in MAPARTE.`
   );
 
   output.push({
@@ -539,8 +525,7 @@ for (let i = 0; i < cityDirectory.length; i++) {
     tagline,
     description,
     rank: i + 1,
-    annualSearches: custom?.annualSearches || `Curated World City • ${item.country}`,
-    metaDescription: custom?.metaDescription || `Create a custom map poster of ${item.city}, ${item.country}, featuring ${landmarks[0]} and ${landmarks[1] || item.city}. Edit for free; pay to download.`
+    metaDescription: custom?.metaDescription || `Design a custom map poster or wallpaper of ${item.city}, ${item.country}. Choose a layout, style the map, and personalize labels and markers in MAPARTE.`
   });
 }
 

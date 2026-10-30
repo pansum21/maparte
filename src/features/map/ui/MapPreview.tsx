@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import type { LayerSpecification, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import "@/features/map/infrastructure/maplibreWorker";
 import type { MapInstanceRef } from "@/features/map/domain/types";
 import {
   MAP_CENTER_SYNC_EPSILON,
@@ -35,7 +36,7 @@ function applyIncrementalStyleUpdate(
     if (nextPaint) {
       for (const key of Object.keys(nextPaint)) {
         if (JSON.stringify(nextPaint[key]) !== JSON.stringify(prevPaint?.[key])) {
-          map.setPaintProperty(layer.id, key, nextPaint[key]);
+          map.setPaintProperty(layer.id, key as never, nextPaint[key] as never);
         }
       }
     }
@@ -52,7 +53,7 @@ function applyIncrementalStyleUpdate(
         if (
           JSON.stringify(nextLayout[key]) !== JSON.stringify(prevLayout?.[key])
         ) {
-          map.setLayoutProperty(layer.id, key, nextLayout[key]);
+          map.setLayoutProperty(layer.id, key as never, nextLayout[key] as never);
         }
       }
     }

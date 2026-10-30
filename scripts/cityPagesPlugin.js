@@ -25,28 +25,23 @@ function escapeXml(str) {
 
 export function transformHtmlForCity(html, city) {
   const cityTitle = `${escapeAttr(city.city)} Map Poster &amp; Wall Art | MAPARTE`;
-  const cityDesc = escapeAttr(city.description);
+  const cityDesc = String(city.description ?? '');
+  const cityBodyDescription = escapeAttr(city.description ?? '');
   const cityMetaDesc = escapeAttr(city.metaDescription || city.description);
   const cityUrl = `https://maparte.vercel.app/cities/${city.slug}`;
   const cityPhotoUrl = `https://maparte.vercel.app/assets/city-photos/${city.slug}.webp`;
   const cityPhotoAlt = `${escapeAttr(city.city)} custom map art poster and wallpaper preview`;
-  const keywords = `${city.city} map poster, ${city.city} city map print, ${city.city} custom map art, ${city.city} street map, ${city.city} wall art, buy ${city.city} map, ${city.city} map wallpaper, free map generator, maparte`;
 
   let result = html;
 
   // 1. Title
   result = result.replace(/<title>.*?<\/title>/, `<title>${cityTitle}</title>`);
 
-  // 2. Meta description & keywords
+  // 2. Meta description
   result = result.replace(
     /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/,
     `<meta name="description" content="${cityMetaDesc}" />`,
   );
-  result = result.replace(
-    /<meta\s+name="keywords"\s+content="[^"]*"\s*\/?>/,
-    `<meta name="keywords" content="${escapeAttr(keywords)}" />`,
-  );
-
   // 3. Canonical & Open Graph URL
   result = result.replace(
     /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/,
@@ -66,7 +61,7 @@ export function transformHtmlForCity(html, city) {
     /property="og:description"\s+content="[^"]*"/,
     `property="og:description" content="${cityMetaDesc}"`,
   );
-  result = result.replace(/property="og:image:type"\s+content="[^"]*"/, `property="og:image:type" content="image/jpeg"`);
+  result = result.replace(/property="og:image:type"\s+content="[^"]*"/, `property="og:image:type" content="image/webp"`);
   result = result.replace(/property="og:image:secure_url"\s+content="[^"]*"/, `property="og:image:secure_url" content="${cityPhotoUrl}"`);
   result = result.replace(/property="og:image"\s+content="[^"]*"/,
     `property="og:image" content="${cityPhotoUrl}"`,
@@ -92,9 +87,9 @@ export function transformHtmlForCity(html, city) {
     `name="twitter:image:alt" content="${cityPhotoAlt}"`,
   );
 
-  // 5. Schema JSON-LD injection for Breadcrumb and City Product
+  // 5. Schema JSON-LD injection for the city page and its breadcrumb
   const citySchema = `
-    <!-- City Breadcrumbs & Product Structured Data -->
+    <!-- City page and breadcrumb structured data -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -102,39 +97,24 @@ export function transformHtmlForCity(html, city) {
           {
             "@type": "BreadcrumbList",
             "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://maparte.vercel.app/"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Cities",
-                "item": "https://maparte.vercel.app/#popular-cities"
-              },
-              {
-                "@type": "ListItem",
-                "position": 3,
-                "name": "${escapeAttr(city.city)} Map Poster",
-                "item": "${cityUrl}"
-              }
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://maparte.vercel.app/" },
+              { "@type": "ListItem", "position": 2, "name": "Cities", "item": "https://maparte.vercel.app/#popular-cities" },
+              { "@type": "ListItem", "position": 3, "name": ${JSON.stringify(`${city.city} Map Poster`)}, "item": "${cityUrl}" }
             ]
           },
           {
-            "@type": "Product",
-            "name": "${escapeAttr(city.city)} Custom Map Poster",
-            "image": "${cityPhotoUrl}",
-            "description": "${cityDesc}",
-            "brand": {
-              "@type": "Brand",
-              "name": "MAPARTE"
-            },
-            "additionalProperty": {
-              "@type": "PropertyValue",
-              "name": "Download pricing",
-              "value": "One-time payment is required to download the finished high-resolution file."
+            "@type": "WebPage",
+            "name": ${JSON.stringify(`${city.city} Map Poster & Wall Art | MAPARTE`)},
+            "url": "${cityUrl}",
+            "description": ${JSON.stringify(cityDesc)},
+            "about": {
+              "@type": "Place",
+              "name": ${JSON.stringify(`${city.city}, ${city.country}`)},
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": ${Number(city.lat)},
+                "longitude": ${Number(city.lon)}
+              }
             }
           }
         ]
@@ -162,14 +142,14 @@ export function transformHtmlForCity(html, city) {
           <h1 style="font-size: 2.3rem; color: #f8fafc; margin-bottom: 12px; font-weight: 700; letter-spacing: -0.01em;">Custom Map Poster of ${escapeAttr(city.city)}, ${escapeAttr(city.country)}</h1>
           <p style="font-size: 1.1rem; color: #dfba73; margin-bottom: 18px; font-weight: 600;">${escapeAttr(city.tagline)}</p>
           <p style="font-size: 1.15rem; color: #94a3b8; max-width: 860px; margin: 0 auto 24px; line-height: 1.65;">
-            ${city.description}
+            ${cityBodyDescription}
           </p>
           <div style="display: inline-flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
-            <a href="/cities/${city.slug}" style="background: linear-gradient(135deg, #dfba73, #c49d56); color: #0b1722; font-weight: 700; padding: 13px 28px; border-radius: 8px; text-decoration: none; font-size: 1rem; box-shadow: 0 4px 14px rgba(223, 186, 115, 0.35);">🎨 Customize ${escapeAttr(city.city)} Map Poster Live in Ultra-HD</a>
+            <a href="/cities/${city.slug}" style="background: linear-gradient(135deg, #dfba73, #c49d56); color: #0b1722; font-weight: 700; padding: 13px 28px; border-radius: 8px; text-decoration: none; font-size: 1rem; box-shadow: 0 4px 14px rgba(223, 186, 115, 0.35);">🎨 Customize a map of ${escapeAttr(city.city)}</a>
             <a href="#popular-cities" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; padding: 13px 26px; border-radius: 8px; text-decoration: none; font-size: 0.95rem;">Browse Other Cities</a>
           </div>
           <div style="margin-top: 24px; font-size: 0.88rem; color: #94a3b8;">
-            Geographic Coordinates: <strong>${Number(city.lat).toFixed(4)}° N, ${Number(city.lon).toFixed(4)}° E</strong> • Formats: <strong>Ultra-HD PNG, Vector PDF &amp; Layered SVG</strong>
+            Map location: <strong>${Number(city.lat).toFixed(4)}, ${Number(city.lon).toFixed(4)}</strong> • Use the editor's Download panel to check current output choices.
           </div>
           <div style="margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
             ${landmarksHtml}
@@ -241,9 +221,9 @@ export function cityPagesPlugin() {
         count++;
       }
 
-      // Generate comprehensive sitemap.xml with all 400 cities + Google Image tags
+      // Generate sitemap.xml for the editor, legal pages, and city pages
       const sitemapEntries = [
-        `  <url>\n    <loc>https://maparte.vercel.app</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Free Map Poster &amp; Wallpaper Creator</image:title>\n    </image:image>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.vercel.app</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Custom Map Poster &amp; Wallpaper Maker</image:title>\n    </image:image>\n  </url>`,
         `  <url>\n    <loc>https://maparte.vercel.app/privacy</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
         `  <url>\n    <loc>https://maparte.vercel.app/terms</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
         `  <url>\n    <loc>https://maparte.vercel.app/refund</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
@@ -252,7 +232,7 @@ export function cityPagesPlugin() {
 
       for (const city of cities) {
         sitemapEntries.push(
-          `  <url>\n    <loc>https://maparte.vercel.app/cities/${city.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/city-photos/${city.slug}.webp</image:loc>\n      <image:title>${escapeXml(city.city)} Custom Map Poster &amp; Wall Art</image:title>\n      <image:caption>Design and download custom map posters of ${escapeXml(city.city)}, ${escapeXml(city.country)} in Ultra-HD</image:caption>\n    </image:image>\n  </url>`,
+          `  <url>\n    <loc>https://maparte.vercel.app/cities/${city.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/city-photos/${city.slug}.webp</image:loc>\n      <image:title>${escapeXml(city.city)} map design by MAPARTE</image:title>\n      <image:caption>City photo preview for the ${escapeXml(city.city)}, ${escapeXml(city.country)} map design page</image:caption>\n    </image:image>\n  </url>`,
         );
       }
 
