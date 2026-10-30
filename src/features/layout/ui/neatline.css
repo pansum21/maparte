@@ -338,7 +338,7 @@
 
 /* Show the first nine border choices on desktop; the final style stays scrollable. */
 .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {
-  max-height: 356px !important;
+  max-height: 332px !important;
   min-height: 84px !important;
 }
 
