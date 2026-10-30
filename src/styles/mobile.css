@@ -1846,6 +1846,7 @@
   }
 
   .mobile-drawer-sheet {
+    height: min(38vh, 360px);
     max-height: min(38vh, 360px);
     background: linear-gradient(
       180deg,
@@ -2260,24 +2261,17 @@ button.marker-picker__option--upload-tile {
 }
 
 
-/* Keep the mobile border picker tall enough for three complete rows. The
-   drawer stays anchored while its contents scroll inside the sheet. */
-@media (max-width: 768px) {
-  .mobile-drawer-sheet[data-mobile-tab="frames"] {
-    height: min(70vh, calc(100dvh - 112px - env(safe-area-inset-bottom, 0px)));
-    max-height: min(70vh, calc(100dvh - 112px - env(safe-area-inset-bottom, 0px)));
-  }
 
-  .mobile-drawer-sheet[data-mobile-tab="frames"].is-expanded {
-    height: min(84vh, calc(100dvh - 64px - env(safe-area-inset-bottom, 0px)));
-    max-height: min(84vh, calc(100dvh - 64px - env(safe-area-inset-bottom, 0px)));
-  }
-
-  [data-mobile-tab="frames"] .mobile-drawer-content {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
+/* Keep custom wall photos visible behind the poster in mobile cinema mode. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .app-shell.is-cinema-mode .cinema-wall-photo-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
   }
 }

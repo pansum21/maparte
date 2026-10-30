@@ -376,6 +376,14 @@ export default function PreviewPanel({
         className={`poster-viewport${isCinemaMode ? " is-wall-mockup" : ""}${wallPhoto && isCinemaMode ? " has-user-wall-photo" : ""}`}
         style={wallPhoto && isCinemaMode ? { "--cinema-wall-photo": `url("${wallPhoto}")` } as CSSProperties : undefined}
       >
+        {wallPhoto && isCinemaMode ? (
+          <img
+            className="cinema-wall-photo-backdrop"
+            src={wallPhoto}
+            alt=""
+            aria-hidden="true"
+          />
+        ) : null}
         {/* Desktop ghost layer: canvas clone of the main map at reduced opacity (hidden in cinema mode) */}
         {!isCinemaMode ? (
           <>

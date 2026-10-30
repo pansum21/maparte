@@ -58,25 +58,20 @@ export default function CinemaWallDock({
     // Explicitly guarantee no panel is opened or remains open
     setActivePanel(null);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        onWallPhotoChange(reader.result);
-        setActivePanel(null);
-        if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
-          document.activeElement.blur();
-        }
-        // Auto re-engage browser fullscreen after file picker dialog closes
-        if (
-          typeof document !== "undefined" &&
-          document.documentElement.requestFullscreen &&
-          !document.fullscreenElement
-        ) {
-          void document.documentElement.requestFullscreen().catch(() => {});
-        }
-      }
-    };
-    reader.readAsDataURL(file);
+    const objectUrl = URL.createObjectURL(file);
+    onWallPhotoChange(objectUrl);
+    setActivePanel(null);
+    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    // Re-enter browser fullscreen when supported after the file picker closes.
+    if (
+      typeof document !== "undefined" &&
+      document.documentElement.requestFullscreen &&
+      !document.fullscreenElement
+    ) {
+      void document.documentElement.requestFullscreen().catch(() => {});
+    }
   };
 
   const handleRemoveWallPhoto = (e: React.MouseEvent) => {
@@ -392,7 +387,20 @@ export default function CinemaWallDock({
             accept="image/*"
             tabIndex={-1}
             aria-hidden="true"
-            style={{ display: "none" }}
+            style={{
+              position: "fixed",
+              left: 0,
+              bottom: 0,
+              width: 1,
+              height: 1,
+              padding: 0,
+              margin: -1,
+              overflow: "hidden",
+              clipPath: "inset(50%)",
+              whiteSpace: "nowrap",
+              opacity: 0,
+              pointerEvents: "none",
+            }}
             onChange={(event) => {
               handleWallPhoto(event.currentTarget.files?.[0]);
               // Reset so selecting the same file again triggers onChange

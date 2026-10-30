@@ -181,6 +181,20 @@ export default function AppShell() {
   const cinemaHistoryEntryRef = useRef(false);
   const [isEditing, setIsEditing] = useState(false);
   const [cinemaWallPhoto, setCinemaWallPhoto] = useState<string | null>(null);
+  const cinemaWallPhotoUrlRef = useRef<string | null>(null);
+  const handleCinemaWallPhotoChange = useCallback((photo: string | null) => {
+    const previousPhoto = cinemaWallPhotoUrlRef.current;
+    if (previousPhoto?.startsWith("blob:") && previousPhoto !== photo) {
+      URL.revokeObjectURL(previousPhoto);
+    }
+    cinemaWallPhotoUrlRef.current = photo;
+    setCinemaWallPhoto(photo);
+  }, []);
+
+  useEffect(() => () => {
+    const photo = cinemaWallPhotoUrlRef.current;
+    if (photo?.startsWith("blob:")) URL.revokeObjectURL(photo);
+  }, []);
   const [cinemaPosterPlacement, setCinemaPosterPlacement] = useState({ x: 0, y: 0, scale: 1 });
   const [allCitiesOpen, setAllCitiesOpen] = useState(false);
 
@@ -480,7 +494,7 @@ export default function AppShell() {
 
         <CinemaWallDock
           onExit={() => handleToggleCinema(false)}
-          onWallPhotoChange={setCinemaWallPhoto}
+          onWallPhotoChange={handleCinemaWallPhotoChange}
           hasWallPhoto={Boolean(cinemaWallPhoto)}
           placement={cinemaPosterPlacement}
           onPlacementChange={setCinemaPosterPlacement}

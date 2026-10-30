@@ -126,7 +126,7 @@
   [data-mobile-tab="layout"] .layout-card-name { font-size: .7rem; line-height: 1.25; white-space: normal; overflow-wrap: anywhere; }
   [data-mobile-tab="layout"] .layout-card-meta { font-size: .61rem; white-space: normal; }
   [data-mobile-tab="layout"] .layout-inline-groups .layout-card .layout-card-symbol { width: 34px; height: 26px; }
-  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
   [data-mobile-tab="frames"] .neatline-card-name { font-size: .65rem; white-space: normal; overflow-wrap: anywhere; }
   [data-mobile-tab="templates"] .occasion-templates-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   [data-mobile-tab="templates"] .occasion-card { min-width: 0; padding: 8px; }
@@ -136,7 +136,7 @@
 
   .app-shell.is-cinema-mode .cinema-floating-dock-wrap { left: 8px !important; right: 8px !important; width: auto !important; }
   .app-shell.is-cinema-mode .cinema-floating-dock {
-    display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     width: 100% !important; max-width: none !important; gap: 4px !important;
   }
   .app-shell.is-cinema-mode .cinema-floating-dock:has(.cinema-dock-remove-photo-btn) { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
@@ -227,7 +227,7 @@
 .cinema-placement-controls label { grid-template-columns: minmax(0, 1fr) max-content !important; justify-items: stretch !important; }
 .cinema-range-control { max-width: none !important; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
-  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px !important; }
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 6px !important; }
   [data-mobile-tab="frames"] .neatline-option { padding: 5px 2px !important; }
   [data-mobile-tab="layout"] .layout-card-copy,
   [data-mobile-tab="layout"] .layout-card-name,

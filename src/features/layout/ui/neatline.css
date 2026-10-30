@@ -336,10 +336,16 @@
   min-height: 84px !important;
 }
 
-/* Keep three rows of border options visible after a border is selected. */
+/* Show the first nine border choices on desktop; the final style stays scrollable. */
 .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {
-  max-height: 490px !important;
+  max-height: 356px !important;
   min-height: 84px !important;
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {
+    max-height: 248px !important;
+  }
 }
 
 .neatline-borders-box .neatline-options::-webkit-scrollbar,
