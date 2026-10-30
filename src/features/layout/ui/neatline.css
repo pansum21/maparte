@@ -336,9 +336,9 @@
   min-height: 84px !important;
 }
 
-/* When a border is selected, keep two rows of options visible. */
+/* Keep three rows of border options visible after a border is selected. */
 .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {
-  max-height: 248px !important;
+  max-height: 390px !important;
   min-height: 84px !important;
 }
 
