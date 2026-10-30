@@ -2989,17 +2989,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 4px;
     align-self: flex-end;
-    min-width: 44px;
+    width: 64px;
+    min-width: 64px;
     min-height: 40px;
     margin: -2px 0 8px auto;
-    padding: 0 10px;
+    padding: 0 4px;
     border: 1px solid rgba(45, 212, 191, .45);
     border-radius: 10px;
     background: #102b3a;
     color: #e6fffb;
-    font: 700 .75rem/1 inherit;
+    font: 700 .68rem/1 inherit;
     cursor: pointer;
   }
   .desktop-nav-row { width: 100%; min-width: 0; pointer-events: auto; }
