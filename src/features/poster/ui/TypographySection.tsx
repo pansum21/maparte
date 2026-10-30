@@ -29,7 +29,7 @@ export default function TypographySection({
   onFontChange,
   fontOptions,
 }: TypographySectionProps) {
-  const { effectiveTheme } = usePosterContext();
+  const { effectiveTheme, dispatch } = usePosterContext();
   const fontCategories = ["Sans serif", "Serif", "Display", "Monospace"] as const;
   const [fontPickerOpen, setFontPickerOpen] = useState(false);
   const uniqueFontOptions = fontOptions.filter((option, index, options) => {
@@ -95,7 +95,8 @@ export default function TypographySection({
         ))}
         <label>Poster text color
           <input type="color" name="posterTextColor" aria-label="Poster text color"
-            value={form.posterTextColor || effectiveTheme.ui.text} onChange={onChange} />
+            value={form.posterTextColor || effectiveTheme.ui.text} onChange={onChange}
+            onInput={(event) => dispatch({ type: "SET_FIELD", name: "posterTextColor", value: event.currentTarget.value })} />
         </label>
 
         <div className="field-grid keep-two-mobile">
