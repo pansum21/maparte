@@ -75,7 +75,7 @@ const MarkerPicker = memo(function MarkerPicker({
             onClick={() => onIconClick(icon.id)}
             title={icon.label}
           >
-            <MarkerVisual icon={icon} size={30} color={markerColor} />
+            <MarkerVisual icon={icon} size={icon.id === "app-marker" || icon.id === "app-marker-a" ? 44 : 30} color={markerColor} />
             <span className="marker-picker__label">{icon.label}</span>
           </button>
         ))}
