@@ -3039,3 +3039,14 @@
   .desktop-current-settings-panel { max-height: min(76vh, 650px); overflow: auto; padding: 8px; border: 1px solid rgba(146,176,200,.2); border-radius: 14px 0 0 14px; background: rgba(8,18,29,.96); }
   .desktop-current-settings-panel .settings-info-card { margin: 0; }
 }
+
+
+/* Requested desktop refinements: restore the always-visible tools rail and remove the markers' sharp outer card. */
+@media (min-width: 769px) {
+  .app-shell > .desktop-nav-bar, .app-shell > .desktop-nav-bar.is-tools-open { position: relative !important; inset: auto !important; width: auto !important; max-height: none !important; padding: 10px 0 10px 6px !important; overflow: visible !important; transform: none !important; transition: none !important; border-radius: 0 !important; box-shadow: none !important; pointer-events: none !important; }
+  .desktop-tools-drawer-toggle { display: none !important; }
+  .desktop-nav-row { width: max-content !important; pointer-events: none !important; }
+  .desktop-nav-tab { width: 52px !important; min-height: 52px !important; flex-direction: column !important; gap: 3px !important; padding: 4px 0 !important; }
+  .desktop-nav-label { font-size: .48rem !important; line-height: 1 !important; text-transform: uppercase !important; }
+  .app-shell[data-desktop-tab="markers"] .marker-settings-screen { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+}

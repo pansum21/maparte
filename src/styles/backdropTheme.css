@@ -2467,6 +2467,10 @@ body.has-custom-backdrop .poster-ghost-layer {
   display: none !important;
 }
 .poster-viewport.has-wall-theme .poster-ghost-layer {
+  opacity: 0.16 !important;
+  filter: blur(8px) saturate(0.6) brightness(0.85) !important;
+}
+.poster-viewport.has-wall-theme.has-custom-wall-color .poster-ghost-layer {
   opacity: 0 !important;
   filter: none !important;
 }
