@@ -69,6 +69,12 @@
   color: #e2e8f0;
 }
 
+.neatline-borders-box .neatline-section-box-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
 .neatline-section-box-subtitle {
   font-family: "Spline Sans Mono", monospace;
   font-size: 0.62rem;
@@ -309,12 +315,12 @@
 }
 
 /* ==========================================================================
-   Border Cards 2-Column Grid (Shows 4 cards clearly, matching Layout Cards)
+   Border Cards 3-Column Grid
    ========================================================================== */
 .neatline-borders-box .neatline-options,
 .neatline-options {
   display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 8px !important;
   overflow-y: auto !important;
   overscroll-behavior: contain;
@@ -330,9 +336,9 @@
   min-height: 84px !important;
 }
 
-/* When a border is clicked/selected: options shrink back to show 4 cards smoothly */
+/* When a border is selected, keep two rows of options visible. */
 .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {
-  max-height: 176px !important;
+  max-height: 248px !important;
   min-height: 84px !important;
 }
 
@@ -348,10 +354,11 @@
   box-sizing: border-box;
   width: 100% !important;
   min-width: 0;
-  height: 84px !important;
-  min-height: 84px;
+  height: auto !important;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
   margin: 0 !important;
-  padding: 6px 6px 8px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -570,9 +577,10 @@
   }
   .neatline-card,
   .neatline-option {
-    height: 96px !important;
-    min-height: 96px;
-    padding: 6px 8px 8px;
+    height: auto !important;
+    min-height: 0;
+    aspect-ratio: 0.86 / 1;
+    padding: 6px;
     border-radius: 10px;
   }
   .neatline-card-name,
