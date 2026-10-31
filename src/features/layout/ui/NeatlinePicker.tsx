@@ -22,13 +22,15 @@ function stepWithinRange(value: number, delta: number, min: number, max: number,
 export type LinePattern =
   | "single"
   | "double"
-  | "triple"
   | "thick-thin"
   | "thin-thick"
-  | "triple-sandwich"
   | "dashed"
   | "dotted"
-  | "dash-dot";
+  | "dash-dot"
+  | "triple"
+  | "triple-sandwich"
+  | "line-dash-dot"
+  | "dot-dash-line";
 
 export type LineStyle = {
   id: string;
@@ -94,31 +96,37 @@ export type NeatlineSelection = {
 };
 
 export const lineStyles: LineStyle[] = [
-  // 3 Baseline styles
+  // 1-Line
   { id: "neatline-single", name: "Single line", kind: "line", pattern: "single" },
-  { id: "neatline-double", name: "Double line", kind: "line", pattern: "double" },
-  { id: "neatline-triple", name: "Triple line", kind: "line", pattern: "triple" },
 
-  // 6 Cartography Line Styles
+  // 2-Line Sequence
+  { id: "neatline-double", name: "Double line", kind: "line", pattern: "double" },
   { id: "neatline-thick-thin", name: "Thick-Thin", kind: "line", pattern: "thick-thin" },
   { id: "neatline-thin-thick", name: "Thin-Thick", kind: "line", pattern: "thin-thick" },
-  { id: "neatline-triple-sandwich", name: "Thin-Thick-Thin", kind: "line", pattern: "triple-sandwich" },
   { id: "neatline-dashed", name: "Modern Dashed", kind: "line", pattern: "dashed" },
   { id: "neatline-dotted", name: "Fine Dotted", kind: "line", pattern: "dotted" },
   { id: "neatline-dash-dot", name: "Dash-Dot", kind: "line", pattern: "dash-dot" },
+
+  // 3-Line Sequence
+  { id: "neatline-triple", name: "Triple line", kind: "line", pattern: "triple" },
+  { id: "neatline-triple-sandwich", name: "Thin-Thick-Thin", kind: "line", pattern: "triple-sandwich" },
+  { id: "neatline-line-dash-dot", name: "Line-Dash-Dot", kind: "line", pattern: "line-dash-dot" },
+  { id: "neatline-dot-dash-line", name: "Dot-Dash-Line", kind: "line", pattern: "dot-dash-line" },
 ];
 export const NEATLINE_STYLES = lineStyles;
 
 export const DEFAULT_LINE_WIDTHS_CM: Record<LinePattern, number[]> = {
   single: [0.10],
   double: [0.10, 0.06],
-  triple: [0.10, 0.06, 0.05],
   "thick-thin": [0.15, 0.06],
   "thin-thick": [0.06, 0.15],
-  "triple-sandwich": [0.06, 0.14, 0.06],
   dashed: [0.10, 0.06],
   dotted: [0.06, 0.14],
   "dash-dot": [0.10, 0.06],
+  triple: [0.10, 0.06, 0.05],
+  "triple-sandwich": [0.06, 0.14, 0.06],
+  "line-dash-dot": [0.08, 0.08, 0.10],
+  "dot-dash-line": [0.10, 0.08, 0.08],
 };
 
 export const MAX_LINE_WIDTH_CM = 1.00;
@@ -150,20 +158,24 @@ export function getBorderCategoryTag(pattern: LinePattern): string {
       return "1-Line Minimal";
     case "double":
       return "2-Line Classic";
-    case "triple":
-      return "3-Line Stripe";
     case "thick-thin":
       return "Gallery Mat";
     case "thin-thick":
       return "Inset Frame";
-    case "triple-sandwich":
-      return "3-Tier Frame";
     case "dashed":
       return "Dashed Border";
     case "dotted":
       return "Pin-Dot Border";
     case "dash-dot":
       return "CAD Metric";
+    case "triple":
+      return "3-Line Stripe";
+    case "triple-sandwich":
+      return "3-Tier Frame";
+    case "line-dash-dot":
+      return "3-Layer Hybrid";
+    case "dot-dash-line":
+      return "3-Layer Inverse";
     default:
       return "Line Border";
   }
@@ -471,6 +483,8 @@ function lineCount(pattern: LinePattern): number {
       return 2;
     case "triple":
     case "triple-sandwich":
+    case "line-dash-dot":
+    case "dot-dash-line":
       return 3;
     default:
       return 1;
@@ -617,6 +631,10 @@ function lineLabel(pattern: LinePattern, index: number): string {
       return index === 0 ? "Outer solid line" : "Dot size";
     case "dash-dot":
       return index === 0 ? "Dash-Dot line thickness" : "Inner solid line";
+    case "line-dash-dot":
+      return ["Outer solid line", "Middle dashed line", "Inner dotted line"][index] ?? "Line";
+    case "dot-dash-line":
+      return ["Outer dotted line", "Middle dashed line", "Inner solid line"][index] ?? "Line";
     default:
       return `Line ${index + 1}`;
   }
@@ -943,7 +961,100 @@ export function NeatlineArtwork({
         </svg>
       );
     }
+    
+    case "line-dash-dot": {
+      const off0 = layerOffsets[0] ?? edgeInset;
+      const off1 = layerOffsets[1] ?? (edgeInset + offInner) / 2;
+      const off2 = layerOffsets[2] ?? offInner;
+      return (
+        <svg
+          className={`neatline-artwork ${className}`}
+          viewBox={`0 0 ${innerW} ${innerH}`}
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          {gradientDef}
+          <rect
+            x={off0}
+            y={off0}
+            width={innerW - off0 * 2}
+            height={innerH - off0 * 2}
+            fill="none"
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+          />
+          <rect
+            x={off1}
+            y={off1}
+            width={innerW - off1 * 2}
+            height={innerH - off1 * 2}
+            fill="none"
+            stroke={secondaryColor}
+            strokeWidth={widths[1]}
+            strokeDasharray="14 8"
+            strokeLinecap="round"
+          />
+          <rect
+            x={off2}
+            y={off2}
+            width={innerW - off2 * 2}
+            height={innerH - off2 * 2}
+            fill="none"
+            stroke={primaryColor}
+            strokeWidth={widths[2]}
+            strokeDasharray="1 8"
+            strokeLinecap="round"
+          />
+        </svg>
+      );
+    }
 
+    case "dot-dash-line": {
+      const off0 = layerOffsets[0] ?? edgeInset;
+      const off1 = layerOffsets[1] ?? (edgeInset + offInner) / 2;
+      const off2 = layerOffsets[2] ?? offInner;
+      return (
+        <svg
+          className={`neatline-artwork ${className}`}
+          viewBox={`0 0 ${innerW} ${innerH}`}
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          {gradientDef}
+          <rect
+            x={off0}
+            y={off0}
+            width={innerW - off0 * 2}
+            height={innerH - off0 * 2}
+            fill="none"
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+            strokeDasharray="1 8"
+            strokeLinecap="round"
+          />
+          <rect
+            x={off1}
+            y={off1}
+            width={innerW - off1 * 2}
+            height={innerH - off1 * 2}
+            fill="none"
+            stroke={secondaryColor}
+            strokeWidth={widths[1]}
+            strokeDasharray="14 8"
+            strokeLinecap="round"
+          />
+          <rect
+            x={off2}
+            y={off2}
+            width={innerW - off2 * 2}
+            height={innerH - off2 * 2}
+            fill="none"
+            stroke={primaryColor}
+            strokeWidth={widths[2]}
+          />
+        </svg>
+      );
+    }
     default:
       return null;
   }
@@ -1069,6 +1180,24 @@ function NeatlineSwatch({
                 <g fill="none" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M 62 7 H 9 V 38" stroke={p} strokeWidth="2.2" strokeDasharray="9 3 2 3" />
                   <path d="M 62 17 H 19 V 38" stroke={s} strokeWidth="1.4" />
+                </g>
+              );
+
+              case "line-dash-dot":
+              return (
+                <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M 62 6 H 8 V 38" stroke={p} strokeWidth="1.6" />
+                  <path d="M 62 13 H 15 V 38" stroke={s} strokeWidth="1.6" strokeDasharray="6 4" />
+                  <path d="M 62 20 H 22 V 38" stroke={p} strokeWidth="2.0" strokeDasharray="1 4" />
+                </g>
+              );
+
+            case "dot-dash-line":
+              return (
+                <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M 62 6 H 8 V 38" stroke={p} strokeWidth="2.0" strokeDasharray="1 4" />
+                  <path d="M 62 13 H 15 V 38" stroke={s} strokeWidth="1.6" strokeDasharray="6 4" />
+                  <path d="M 62 20 H 22 V 38" stroke={p} strokeWidth="1.6" />
                 </g>
               );
 
