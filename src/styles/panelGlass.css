@@ -290,14 +290,14 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
 
 /* Give each compact mobile border row its own track; fixed panel height scrolls. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
-  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options {
-    grid-auto-rows: clamp(64px, 13vw, 92px) !important;
-    box-sizing: border-box !important;
-    height: calc(clamp(64px, 13vw, 92px) + 8px) !important;
-    max-height: calc(clamp(64px, 13vw, 92px) + 8px) !important;
-    min-height: 0 !important;
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options,
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-options.neatline-picker {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    height: auto !important;
+    max-height: min(46dvh, 320px) !important;
     overflow-y: auto !important;
-    align-content: start !important;
+    padding-bottom: 6px !important;
   }
   [data-mobile-tab="frames"] .neatline-borders-box .neatline-option {
     height: 100% !important;
