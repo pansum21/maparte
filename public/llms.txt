@@ -8,10 +8,10 @@ Interactive map tiles are provided by OpenFreeMap using OpenStreetMap-based data
 
 ## Main links
 
-- [MAPARTE editor](https://maparte.vercel.app/)
-- [Privacy Policy](https://maparte.vercel.app/privacy)
-- [Terms](https://maparte.vercel.app/terms)
-- [Refund Policy](https://maparte.vercel.app/refund)
+- [MAPARTE editor](https://maparte.com/)
+- [Privacy Policy](https://maparte.com/privacy)
+- [Terms](https://maparte.com/terms)
+- [Refund Policy](https://maparte.com/refund)
 - [Source repository](https://github.com/pansum21/maparte)
 
 ## Map credits and technology

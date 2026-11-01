@@ -28,8 +28,8 @@ export function transformHtmlForCity(html, city) {
   const cityDesc = String(city.description ?? '');
   const cityBodyDescription = escapeAttr(city.description ?? '');
   const cityMetaDesc = escapeAttr(city.metaDescription || city.description);
-  const cityUrl = `https://maparte.vercel.app/cities/${city.slug}`;
-  const cityPhotoUrl = `https://maparte.vercel.app/assets/city-photos/${city.slug}.webp`;
+  const cityUrl = `https://maparte.com/cities/${city.slug}`;
+  const cityPhotoUrl = `https://maparte.com/assets/city-photos/${city.slug}.webp`;
   const cityPhotoAlt = `${escapeAttr(city.city)} custom map art poster and wallpaper preview`;
 
   let result = html;
@@ -97,8 +97,8 @@ export function transformHtmlForCity(html, city) {
           {
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://maparte.vercel.app/" },
-              { "@type": "ListItem", "position": 2, "name": "Cities", "item": "https://maparte.vercel.app/#popular-cities" },
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://maparte.com/" },
+              { "@type": "ListItem", "position": 2, "name": "Cities", "item": "https://maparte.com/#popular-cities" },
               { "@type": "ListItem", "position": 3, "name": ${JSON.stringify(`${city.city} Map Poster`)}, "item": "${cityUrl}" }
             ]
           },
@@ -223,16 +223,16 @@ export function cityPagesPlugin() {
 
       // Generate sitemap.xml for the editor, legal pages, and city pages
       const sitemapEntries = [
-        `  <url>\n    <loc>https://maparte.vercel.app</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Custom Map Poster &amp; Wallpaper Maker</image:title>\n    </image:image>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.vercel.app/privacy</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.vercel.app/terms</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.vercel.app/refund</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.vercel.app/imprint</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.com</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Custom Map Poster &amp; Wallpaper Maker</image:title>\n    </image:image>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.com/privacy</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.com/terms</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.com/refund</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.com/imprint</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
       ];
 
       for (const city of cities) {
         sitemapEntries.push(
-          `  <url>\n    <loc>https://maparte.vercel.app/cities/${city.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://maparte.vercel.app/assets/city-photos/${city.slug}.webp</image:loc>\n      <image:title>${escapeXml(city.city)} map design by MAPARTE</image:title>\n      <image:caption>City photo preview for the ${escapeXml(city.city)}, ${escapeXml(city.country)} map design page</image:caption>\n    </image:image>\n  </url>`,
+          `  <url>\n    <loc>https://maparte.com/cities/${city.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/city-photos/${city.slug}.webp</image:loc>\n      <image:title>${escapeXml(city.city)} map design by MAPARTE</image:title>\n      <image:caption>City photo preview for the ${escapeXml(city.city)}, ${escapeXml(city.country)} map design page</image:caption>\n    </image:image>\n  </url>`,
         );
       }
 

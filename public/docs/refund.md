@@ -1,6 +1,6 @@
 # Digital Products Refund Policy
 
-At **MapArte** (maparte.vercel.app), we specialize in custom-rendered, ultra-high-definition digital map art and wallpapers.
+At **MapArte** (maparte.com), we specialize in custom-rendered, ultra-high-definition digital map art and wallpapers.
 
 ## 1. Nature of Digital Goods
 Due to the immediate digital nature of our custom 4K/8K downloads, **all sales are generally final and non-refundable** once the watermark-free file has been generated and downloaded.

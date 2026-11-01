@@ -8,7 +8,7 @@ const stagingDir = path.join(root, ".city-photo-staging");
 const cities = JSON.parse(await readFile(path.join(root, "src/data/cityDirectory.json"), "utf8"));
 const existingPhotos = JSON.parse(await readFile(path.join(root, "src/data/cityPhotos.json"), "utf8"));
 const reviewBlanks = JSON.parse(await readFile(path.join(root, "src/data/cityPhotoReviewBlanks.json"), "utf8"));
-const userAgent = "MapArteCityPhotoBuilder/1.0 (https://maparte.vercel.app/)";
+const userAgent = "MapArteCityPhotoBuilder/1.0 (https://maparte.com/)";
 let nextCommonsRequestAt = 0;
 const cleanText = (value = "") => String(value).replace(/<[^>]*>/g, " ").replace(/&nbsp;|&#160;/g, " ").replace(/\s+/g, " ").trim();
 const assetFilenameFor = (slug) => slug === "al-ahmadi-map-poster" ? "al-ahmadi-city-poster.webp" : `${slug}.webp`;
