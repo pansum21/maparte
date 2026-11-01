@@ -34,6 +34,8 @@ const designerPatterns = [
   ["neatline-dash-dot", 2],
   ["neatline-line-dash-dot", 3],
   ["neatline-dot-dash-line", 3],
+  ["neatline-corner-crosshairs", 2],
+  ["neatline-wide-gallery", 2],
 ];
 
 const allPatterns = [...baselinePatterns, ...designerPatterns];
@@ -63,7 +65,7 @@ try {
     React.createElement(NeatlinePicker, { width: "21", height: "29.7" }),
   );
 
-  // Verify all 11 line patterns are declared and present in picker markup
+  // Verify all 13 line patterns are declared and present in picker markup
   for (const [lineId] of allPatterns) {
     if (!pickerMarkup.includes(`data-border-style="${lineId}"`)) {
       errors.push(`${lineId}: missing from NeatlinePicker options`);
@@ -287,7 +289,7 @@ try {
     designerPatterns: designerPatterns.length,
     cases: totalCases,
     failures: errors.length,
-    layoutReportsSummary: `Verified ${layouts.length} layouts across all 11 border styles and multiple gap/thickness matrices.`,
+    layoutReportsSummary: `Verified ${layouts.length} layouts across all 13 border styles and multiple gap/thickness matrices.`,
     firstFailures: errors.slice(0, 30),
   };
   console.log(JSON.stringify(result, null, 2));

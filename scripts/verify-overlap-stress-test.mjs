@@ -32,6 +32,8 @@ const allPatternIds = [
   "neatline-dash-dot",
   "neatline-line-dash-dot",
   "neatline-dot-dash-line",
+  "neatline-corner-crosshairs",
+  "neatline-wide-gallery",
 ];
 
 const gapTestValues = [0.00, 0.01, 0.05, 0.10, 0.20, 0.35];

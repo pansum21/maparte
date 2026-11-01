@@ -27,6 +27,8 @@ export type LinePattern =
   | "dashed"
   | "dotted"
   | "dash-dot"
+  | "corner-crosshairs"
+  | "wide-gallery"
   | "triple"
   | "triple-sandwich"
   | "line-dash-dot"
@@ -106,6 +108,8 @@ export const lineStyles: LineStyle[] = [
   { id: "neatline-dashed", name: "Modern Dashed", kind: "line", pattern: "dashed" },
   { id: "neatline-dotted", name: "Fine Dotted", kind: "line", pattern: "dotted" },
   { id: "neatline-dash-dot", name: "Dash-Dot", kind: "line", pattern: "dash-dot" },
+  { id: "neatline-corner-crosshairs", name: "Corner Crosshairs", kind: "line", pattern: "corner-crosshairs" },
+  { id: "neatline-wide-gallery", name: "Wide Gallery", kind: "line", pattern: "wide-gallery" },
 
   // 3-Line Sequence
   { id: "neatline-triple", name: "Triple line", kind: "line", pattern: "triple" },
@@ -123,6 +127,8 @@ export const DEFAULT_LINE_WIDTHS_CM: Record<LinePattern, number[]> = {
   dashed: [0.10, 0.06],
   dotted: [0.06, 0.14],
   "dash-dot": [0.10, 0.06],
+  "corner-crosshairs": [0.10, 0.05],
+  "wide-gallery": [0.04, 0.18],
   triple: [0.10, 0.06, 0.05],
   "triple-sandwich": [0.06, 0.14, 0.06],
   "line-dash-dot": [0.08, 0.08, 0.10],
@@ -168,6 +174,10 @@ export function getBorderCategoryTag(pattern: LinePattern): string {
       return "Pin-Dot Border";
     case "dash-dot":
       return "CAD Metric";
+    case "corner-crosshairs":
+      return "Swiss Precision";
+    case "wide-gallery":
+      return "Luxury Gallery";
     case "triple":
       return "3-Line Stripe";
     case "triple-sandwich":
@@ -186,7 +196,7 @@ export function getPatternSpanUnits(
   widths: number[] = [],
   designScale = 1.0,
 ): number {
-  const clearGap = 6.0 * designScale;
+  const clearGap = pattern === "wide-gallery" ? 18.0 * designScale : 6.0 * designScale;
   switch (pattern) {
     case "single":
       return 0;
@@ -195,7 +205,9 @@ export function getPatternSpanUnits(
     case "thin-thick":
     case "dashed":
     case "dotted":
-    case "dash-dot": {
+    case "dash-dot":
+    case "corner-crosshairs":
+    case "wide-gallery": {
       const w0 = widths[0] ?? 4.8;
       const w1 = widths[1] ?? 4.8;
       return (w0 + w1) / 2 + clearGap;
@@ -222,7 +234,7 @@ function getBorderLayerOffsets(
   edgeInset: number,
   designScale = 1.0,
 ): number[] {
-  const clearGap = 6.0 * designScale;
+  const clearGap = pattern === "wide-gallery" ? 18.0 * designScale : 6.0 * designScale;
   if (pattern === "single") return [edgeInset];
 
   const offsets = [edgeInset];
@@ -480,6 +492,8 @@ function lineCount(pattern: LinePattern): number {
     case "dashed":
     case "dotted":
     case "dash-dot":
+    case "corner-crosshairs":
+    case "wide-gallery":
       return 2;
     case "triple":
     case "triple-sandwich":
@@ -631,6 +645,10 @@ function lineLabel(pattern: LinePattern, index: number): string {
       return index === 0 ? "Outer solid line" : "Dot size";
     case "dash-dot":
       return index === 0 ? "Dash-Dot line thickness" : "Inner solid line";
+    case "corner-crosshairs":
+      return index === 0 ? "Outer crosshair frame" : "Inner precision line";
+    case "wide-gallery":
+      return index === 0 ? "Outer hairline" : "Inner gallery frame";
     case "line-dash-dot":
       return ["Outer solid line", "Middle dashed line", "Inner dotted line"][index] ?? "Line";
     case "dot-dash-line":
@@ -1055,6 +1073,150 @@ export function NeatlineArtwork({
         </svg>
       );
     }
+
+    case "corner-crosshairs": {
+      const off0 = edgeInset;
+      const off1 = offInner;
+      const tickArm = Math.max(6, Math.min(16, (off1 - off0) * 0.8));
+      return (
+        <svg
+          className={`neatline-artwork ${className}`}
+          viewBox={`0 0 ${innerW} ${innerH}`}
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          {gradientDef}
+          <rect
+            data-edge="outer"
+            x={off0}
+            y={off0}
+            width={innerW - off0 * 2}
+            height={innerH - off0 * 2}
+            fill="none"
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+          />
+          <rect
+            data-edge="inner"
+            x={off1}
+            y={off1}
+            width={innerW - off1 * 2}
+            height={innerH - off1 * 2}
+            fill="none"
+            stroke={secondaryColor}
+            strokeWidth={widths[1]}
+            strokeDasharray="4 4"
+          />
+          <line
+            x1={off1 - tickArm}
+            y1={off1}
+            x2={off1 + tickArm}
+            y2={off1}
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+            strokeLinecap="round"
+          />
+          <line
+            x1={off1}
+            y1={off1 - tickArm}
+            x2={off1}
+            y2={off1 + tickArm}
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+            strokeLinecap="round"
+          />
+          <line
+            x1={innerW - off1 - tickArm}
+            y1={off1}
+            x2={innerW - off1 + tickArm}
+            y2={off1}
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+            strokeLinecap="round"
+          />
+          <line
+            x1={innerW - off1}
+            y1={off1 - tickArm}
+            x2={innerW - off1}
+            y2={off1 + tickArm}
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+            strokeLinecap="round"
+          />
+          <line
+            x1={off1 - tickArm}
+            y1={innerH - off1}
+            x2={off1 + tickArm}
+            y2={innerH - off1}
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+            strokeLinecap="round"
+          />
+          <line
+            x1={off1}
+            y1={innerH - off1 - tickArm}
+            x2={off1}
+            y2={innerH - off1 + tickArm}
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+            strokeLinecap="round"
+          />
+          <line
+            x1={innerW - off1 - tickArm}
+            y1={innerH - off1}
+            x2={innerW - off1 + tickArm}
+            y2={innerH - off1}
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+            strokeLinecap="round"
+          />
+          <line
+            x1={innerW - off1}
+            y1={innerH - off1 - tickArm}
+            x2={innerW - off1}
+            y2={innerH - off1 + tickArm}
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+            strokeLinecap="round"
+          />
+        </svg>
+      );
+    }
+
+    case "wide-gallery": {
+      const off0 = edgeInset;
+      const off1 = offInner;
+      return (
+        <svg
+          className={`neatline-artwork ${className}`}
+          viewBox={`0 0 ${innerW} ${innerH}`}
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          {gradientDef}
+          <rect
+            data-edge="outer"
+            x={off0}
+            y={off0}
+            width={innerW - off0 * 2}
+            height={innerH - off0 * 2}
+            fill="none"
+            stroke={primaryColor}
+            strokeWidth={widths[0]}
+          />
+          <rect
+            data-edge="inner"
+            x={off1}
+            y={off1}
+            width={innerW - off1 * 2}
+            height={innerH - off1 * 2}
+            fill="none"
+            stroke={secondaryColor}
+            strokeWidth={widths[1]}
+          />
+        </svg>
+      );
+    }
     default:
       return null;
   }
@@ -1180,6 +1342,24 @@ function NeatlineSwatch({
                 <g fill="none" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M 62 7 H 9 V 38" stroke={p} strokeWidth="2.2" strokeDasharray="9 3 2 3" />
                   <path d="M 62 17 H 19 V 38" stroke={s} strokeWidth="1.4" />
+                </g>
+              );
+
+            case "corner-crosshairs":
+              return (
+                <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="6" y1="14" x2="62" y2="14" stroke={p} strokeWidth="2.2" />
+                  <line x1="16" y1="4" x2="16" y2="38" stroke={p} strokeWidth="2.2" />
+                  <path d="M 62 22 H 24 V 38" stroke={s} strokeWidth="1.2" strokeDasharray="3 3" />
+                  <circle cx="24" cy="22" r="1.5" fill={s} />
+                </g>
+              );
+
+            case "wide-gallery":
+              return (
+                <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M 62 4 H 6 V 38" stroke={p} strokeWidth="1.0" />
+                  <path d="M 62 18 H 20 V 38" stroke={s} strokeWidth="3.2" />
                 </g>
               );
 
@@ -1576,7 +1756,7 @@ export function NeatlinePicker({
                     </span>
                     <AdjustmentInfo
                       label={lineLabel(selectedLine.pattern, index)}
-                      help="इस परत की प्रिंट होने वाली मोटाई बदलती है। दूसरी परतों के बीच की दूरी अलग रहती है।"
+                      help="Adjusts the printed thickness of this layer. Spacing between other layers remains intact."
                     />
                   </div>
                   <div className="neatline-adjustment-control">
@@ -1614,7 +1794,7 @@ export function NeatlinePicker({
                     <span className="neatline-adjustment-label">Design size &amp; pattern</span>
                     <AdjustmentInfo
                       label="Design size and pattern"
-                      help="यह लाइन के पैटर्न का फैलाव बदलता है; पोस्टर का आकार नहीं बदलता।"
+                      help="Scales the pattern detail without changing the overall poster dimensions."
                     />
                   </div>
                   <div className="neatline-adjustment-control">
@@ -1651,7 +1831,7 @@ export function NeatlinePicker({
                   <span className="neatline-adjustment-label">Map spacing (gap)</span>
                   <AdjustmentInfo
                     label="Map spacing"
-                    help="0.00 cm पर अंदर वाली बॉर्डर लाइन map को छूती है। बढ़ाने पर map अंदर की ओर सिमटता है; बॉर्डर बाहर नहीं जाती।"
+                    help="At 0.00 cm, the innermost border meets the map boundary. Increasing this adds breathing space between the border and map."
                   />
                 </div>
                 <div className="neatline-adjustment-control">
