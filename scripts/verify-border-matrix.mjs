@@ -32,6 +32,8 @@ const designerPatterns = [
   ["neatline-dashed", 2],
   ["neatline-dotted", 2],
   ["neatline-dash-dot", 2],
+  ["neatline-line-dash-dot", 3],
+  ["neatline-dot-dash-line", 3],
 ];
 
 const allPatterns = [...baselinePatterns, ...designerPatterns];

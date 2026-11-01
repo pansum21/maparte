@@ -150,7 +150,7 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🖼️</div>
                     <h4>Build your layout</h4>
-                    <p>Choose a preset or enter custom dimensions, then frame the map with line and decorative border styles.</p>
+                    <p>Choose a preset or enter custom dimensions, then frame the map with cartographic line border styles and custom spacing.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">📐</div>
@@ -368,7 +368,7 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🖼️</div>
                     <h4>Border styles and spacing</h4>
-                    <p>Choose among the nine line patterns, adjust line thickness and map gap, and use decorative frame options where available.</p>
+                    <p>Choose among the 11 cartographic line patterns, adjust line thickness, map spacing, and design size with responsive preview controls.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">💧</div>

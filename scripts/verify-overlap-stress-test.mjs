@@ -30,6 +30,8 @@ const allPatternIds = [
   "neatline-dashed",
   "neatline-dotted",
   "neatline-dash-dot",
+  "neatline-line-dash-dot",
+  "neatline-dot-dash-line",
 ];
 
 const gapTestValues = [0.00, 0.01, 0.05, 0.10, 0.20, 0.35];
@@ -130,9 +132,9 @@ try {
           const widths = widthsFor(patternId, thicknesses);
           const outerClearanceCm =
             (metrics.edgeInset - (widths[0] ?? 2) / 2) / metrics.unitScale;
-          if (Math.abs(outerClearanceCm - 0.01) > 0.0001) {
+          if (Math.abs(outerClearanceCm - 0.001) > 0.0001) {
             failures.push(
-              `Outer edge clearance mismatch on ${layout.id}/${patternId}/mat-${showWhiteMat}: ${outerClearanceCm} cm, expected 0.01 cm`,
+              `Outer edge clearance mismatch on ${layout.id}/${patternId}/mat-${showWhiteMat}: ${outerClearanceCm} cm, expected 0.001 cm`,
             );
             continue;
           }

@@ -1260,10 +1260,7 @@ export function NeatlinePicker({
     [selection.lineId],
   );
 
-  const displayedStyles: BorderStyle[] = [
-    { id: "none", name: "No border", kind: "line", pattern: "single" },
-    ...lineStyles,
-  ];
+  const displayedStyles: BorderStyle[] = lineStyles;
   const lineWidths = selectedLine
     ? widthsFor(selectedLine.id, selection.thicknesses)
     : [];
@@ -1310,12 +1307,24 @@ export function NeatlinePicker({
   }, [selection]);
 
   const selectStyle = (style: BorderStyle) => {
+    // If clicking the already selected border, toggle it off!
+    if (selection.lineId === style.id) {
+      setSelection((current) => ({
+        ...current,
+        lineId: "none",
+        cornerId: "none",
+        frameId: "none",
+        showWhiteMat: false,
+      }));
+      return;
+    }
+
     setSelection((current) => ({
       ...current,
       lineId: style.id,
       cornerId: "none",
       frameId: "none",
-      showWhiteMat: style.id !== "none",
+      showWhiteMat: true,
     }));
   };
 
@@ -1375,12 +1384,7 @@ export function NeatlinePicker({
       ),
     );
 
-  const isSelected = (style: BorderStyle) => {
-    if (style.id === "none") {
-      return selection.lineId === "none";
-    }
-    return style.id === selection.lineId;
-  };
+  const isSelected = (style: BorderStyle) => style.id === selection.lineId;
 
   const swatchSelection = (style: BorderStyle): NeatlineSelection => ({
     ...selection,
@@ -1420,9 +1424,7 @@ export function NeatlinePicker({
             >
               <div className="neatline-card-copy">
                 <span className="neatline-card-name">
-                  {style.id === "none"
-                    ? "No border"
-                    : style.name.replace(/^(Classic|Vintage|Designer|Ornate)\s+/i, "")}
+                  {style.name.replace(/^(Classic|Vintage|Designer|Ornate)\s+/i, "")}
                 </span>
               </div>
               <NeatlineSwatch style={style} selection={swatchSelection(style)} />
