@@ -60,22 +60,9 @@
       ]
     }
   ],
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "maparte.vercel.app"
-        }
-      ],
-      "destination": "https://maparte.com/$1",
-      "permanent": true
-    }
-  ],
   "rewrites": [
     {
-      "source": "/((?!api/|assets/|docs/|privacy|imprint|terms|refund|cities/|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|google|BingSiteAuth|favicon|icon).*)$",
+      "source": "/((?!api/|assets/|docs/|privacy|imprint|terms|refund|cities/|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|google.*|BingSiteAuth.*|favicon|icon).*)$",
       "destination": "/index.html"
     }
   ]
