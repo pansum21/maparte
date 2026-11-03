@@ -27,6 +27,7 @@ export default function MapShapePicker({
           return (
             <button
               key={shape.id}
+              data-shape={shape.id}
               type="button"
               className={`map-shape-card${isActive ? " is-active" : ""}`}
               onClick={() => onShapeChange(shape.id)}

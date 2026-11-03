@@ -38,8 +38,14 @@ export default function TemplatesSection({
         type: "SET_FORM_FIELDS",
         resetDisplayNameOverrides: true,
         fields: {
+          textMode: "map",
+          presetTitle: "",
+          presetSubtitle: "",
+          presetExtra: "",
           displayCity: defaultCity,
           displayCountry: defaultCountry,
+          mapShape: "full",
+          shapeFinish: "shadow",
         },
       });
       return;
@@ -49,16 +55,22 @@ export default function TemplatesSection({
     // 1. Update theme
     dispatch({ type: "SET_THEME", themeId: template.themeId });
 
-    // 2. Update typography & text overlay
+    // 2. Update typography, text overlay & thematic shape
     dispatch({
       type: "SET_FORM_FIELDS",
       resetDisplayNameOverrides: false,
       fields: {
         fontFamily: template.fontFamily,
+        textMode: "preset",
+        presetTitle: template.cityText,
+        presetSubtitle: template.countryText,
+        presetExtra: "",
         displayCity: template.cityText,
         displayCountry: template.countryText,
         showPosterText: true,
         showMarkers: true,
+        mapShape: template.mapShape || "full",
+        shapeFinish: template.shapeFinish || "shadow",
       },
     });
 
@@ -68,7 +80,10 @@ export default function TemplatesSection({
     const marker = createMarkerItem({
       lat,
       lon,
-      defaults: state.markerDefaults,
+      defaults: {
+        ...state.markerDefaults,
+        color: template.markerColor || state.markerDefaults.color,
+      },
       iconId: template.markerIconId,
     });
 

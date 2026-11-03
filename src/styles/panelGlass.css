@@ -246,7 +246,7 @@
 .mobile-drawer-sheet.is-expanded[data-mobile-tab="theme"] .mobile-drawer-content { overflow-y: auto; }
 .wall-expand-handle { touch-action: none; user-select: none; cursor: ns-resize; }
 .backdrop-presets-section-header > .mixer-label { font-weight: 800; font-size: .92rem; }
-.typography-mode-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 12px; }
+.typography-mode-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 12px; }
 .typography-panel-block [hidden] { display: none !important; }
 
 /* Native range controls get the complete available track, with no inherited

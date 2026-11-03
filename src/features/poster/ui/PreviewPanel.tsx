@@ -1,6 +1,6 @@
 import MapShapeDefs from "@/features/layout/ui/MapShapeDefs";
 import { MAP_SHAPES } from "@/features/layout/domain/shapeTypes";
-import { resolvePosterLabels } from "@/features/poster/domain/textLayout";
+import { resolvePosterLabels, getActivePosterLabels } from "@/features/poster/domain/textLayout";
 import {
   useCallback,
   useEffect,
@@ -71,6 +71,103 @@ interface PreviewPanelProps {
   onCinemaPosterPlacementChange?: (placement: { x: number; y: number; scale: number }) => void;
 }
 
+
+function renderThematicFrame(shapeId?: string) {
+  if (!shapeId) return null;
+  if (shapeId === "house") {
+    return (
+      <svg
+        className="poster-shape-thematic-overlay"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        style={{ position: "absolute", zIndex: 4, pointerEvents: "none", overflow: "visible" }}
+      >
+        {/* Architectural terracotta chimney */}
+        <rect x="25" y="13" width="10" height="14" fill="#9a3412" rx="1" />
+        <rect x="23" y="10" width="14" height="4" rx="1" fill="#ea580c" />
+        {/* 3D Terracotta gable roof with dimensional bevel */}
+        <path
+          d="M 50 3 L 94 38 L 88 42 L 50 11 L 12 42 L 6 38 Z"
+          fill="#c2410c"
+          filter="drop-shadow(0 4px 8px rgba(0,0,0,0.28))"
+        />
+        <path
+          d="M 50 3 L 94 38 L 91 40 L 50 6 L 9 40 L 6 38 Z"
+          fill="#fb923c"
+          fillOpacity="0.85"
+        />
+      </svg>
+    );
+  }
+  if (shapeId === "mountain") {
+    return (
+      <svg
+        className="poster-shape-thematic-overlay"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        style={{ position: "absolute", zIndex: 4, pointerEvents: "none", overflow: "visible" }}
+      >
+        {/* Center Peak Frosted Snow Cap */}
+        <path
+          d="M 47 22 L 50 17 L 53 22 L 58 35 L 50 30 L 42 35 Z"
+          fill="#e0f2fe"
+          filter="drop-shadow(0 3px 6px rgba(14,165,233,0.35))"
+        />
+        {/* Left Peak Snow Cap */}
+        <path
+          d="M 23 38 L 27 33 L 31 38 L 35 48 L 27 43 L 19 48 Z"
+          fill="#e0f2fe"
+          fillOpacity="0.95"
+        />
+        {/* Right Peak Snow Cap */}
+        <path
+          d="M 68 40 L 72 35 L 76 40 L 80 50 L 72 45 L 64 50 Z"
+          fill="#e0f2fe"
+          fillOpacity="0.95"
+        />
+        {/* Sculpted Alpine Ridgelines */}
+        <path
+          d="M 50 30 L 50 65 M 27 43 L 29 68 M 72 45 L 70 68"
+          stroke="#0284c7"
+          strokeWidth="1.2"
+          strokeDasharray="2,3"
+          strokeOpacity="0.75"
+        />
+      </svg>
+    );
+  }
+  if (shapeId === "stamp") {
+    return (
+      <svg
+        className="poster-shape-thematic-overlay"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        style={{ position: "absolute", zIndex: 4, pointerEvents: "none", overflow: "visible" }}
+      >
+        {/* Classic Vintage Airmail Chevron Flags */}
+        <polygon points="1,1 8,1 1,8" fill="#ef4444" />
+        <polygon points="11,1 18,1 1,18 1,11" fill="#2563eb" />
+        <polygon points="21,1 28,1 1,28 1,21" fill="#ef4444" />
+        <polygon points="99,1 92,1 99,8" fill="#2563eb" />
+        <polygon points="89,1 82,1 99,18 99,11" fill="#ef4444" />
+        <polygon points="79,1 72,1 99,28 99,21" fill="#2563eb" />
+        <polygon points="99,99 92,99 99,92" fill="#ef4444" />
+        <polygon points="89,99 82,99 99,82 99,89" fill="#2563eb" />
+        <polygon points="1,99 8,99 1,92" fill="#2563eb" />
+        <polygon points="11,99 18,99 1,82 1,89" fill="#ef4444" />
+        {/* Postmark cancellation waves */}
+        <path d="M 66 14 Q 72 10 78 14 T 90 14" stroke="#dc2626" strokeWidth="1.2" fill="none" strokeOpacity="0.85" />
+        <path d="M 66 18 Q 72 14 78 18 T 90 18" stroke="#dc2626" strokeWidth="1.2" fill="none" strokeOpacity="0.85" />
+        <path d="M 66 22 Q 72 18 78 22 T 90 22" stroke="#dc2626" strokeWidth="1.2" fill="none" strokeOpacity="0.85" />
+      </svg>
+    );
+  }
+  return null;
+}
+
 export default function PreviewPanel({
   isCinemaMode = false,
   onToggleCinema,
@@ -83,18 +180,18 @@ export default function PreviewPanel({
 }: PreviewPanelProps) {
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
-  const activeShapeDef = useMemo(
-    () => MAP_SHAPES.find((s) => s.id === (state.form.mapShape || "full")),
-    [state.form.mapShape],
-  );
-  const isShaped = Boolean(state.form.mapShape && state.form.mapShape !== "full");
-  const posterBg = isShaped ? "#ffffff" : effectiveTheme.ui.bg;
-  const posterTextColor = isShaped ? "#0f172a" : effectiveTheme.ui.text;
   const {
     form,
     isMarkerEditorActive,
     activeMarkerId,
   } = state;
+  const activeShapeDef = useMemo(
+    () => MAP_SHAPES.find((s) => s.id === (form.mapShape || "full")),
+    [form.mapShape],
+  );
+  const isShaped = Boolean(form.mapShape && form.mapShape !== "full");
+  const posterBg = isShaped ? "#ffffff" : effectiveTheme.ui.bg;
+  const posterTextColor = form.posterTextColor || (isShaped ? "#0f172a" : effectiveTheme.ui.text);
   const hasVisibleMarkers = form.showMarkers && state.markers.length > 0;
   const {
     mapCenter,
@@ -295,9 +392,7 @@ export default function PreviewPanel({
   const markerCount = state.markers.length;
   const markersLabel = `${markerCount} marker${markerCount === 1 ? "" : "s"}`;
   const coordinatesLabel = `${formLat.toFixed(4)}, ${formLon.toFixed(4)}`;
-  const { city: cityLabel, country: countryLabel } = resolvePosterLabels(
-    form.displayCity, form.displayState, form.displayCountry,
-  );
+  const { city: cityLabel, country: countryLabel, customDate: activeCustomDate } = getActivePosterLabels(form);
 
   const handleStartEditing = useCallback(() => {
     setIsEditing(true);
@@ -601,6 +696,9 @@ export default function PreviewPanel({
             </svg>
           ) : null}
 
+          {/* 3D Colorful Thematic Designer Frame Accents */}
+          {isShaped ? renderThematicFrame(form.mapShape) : null}
+
           {/* PosterTextOverlay rendered at poster-frame level so it is NEVER clipped by the shape */}
           <PosterTextOverlay
             city={cityLabel}
@@ -614,7 +712,7 @@ export default function PreviewPanel({
             showPosterText={form.showPosterText}
             includeCredits={form.includeCredits}
             showOverlay={isShaped ? false : (form.overlayBottom ?? form.showMarkers)}
-            customDate={form.customDate}
+            customDate={activeCustomDate}
           />
           <NeatlineArtwork
             selection={neatlineSelection}

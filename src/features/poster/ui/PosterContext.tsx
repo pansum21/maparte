@@ -317,10 +317,10 @@ export function PosterProvider({ children }: { children: ReactNode }) {
   );
 
   const effectiveTheme = useMemo(() => {
-    const colors = { ...state.customColors };
-    if (state.form.posterTextColor) colors["ui.text"] = state.form.posterTextColor;
-    return Object.keys(colors).length ? applyThemeColorOverrides(selectedTheme, colors) : selectedTheme;
-  }, [selectedTheme, state.customColors, state.form.posterTextColor]);
+    return Object.keys(state.customColors).length
+      ? applyThemeColorOverrides(selectedTheme, state.customColors)
+      : selectedTheme;
+  }, [selectedTheme, state.customColors]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -398,7 +398,7 @@ export function PosterProvider({ children }: { children: ReactNode }) {
   ]);
 
   useEffect(() => {
-    const markerThemeColor = effectiveTheme.ui.text;
+    const markerThemeColor = selectedTheme.ui.text;
     const previouslySynced = lastSyncedMarkerThemeColorRef.current;
 
     if (previouslySynced === markerThemeColor) {
@@ -409,12 +409,12 @@ export function PosterProvider({ children }: { children: ReactNode }) {
     dispatch({
       type: "SET_MARKER_DEFAULTS",
       defaults: { color: markerThemeColor },
-      applyToMarkers: true,
+      applyToMarkers: false,
     });
-  }, [dispatch, effectiveTheme.ui.text]);
+  }, [dispatch, selectedTheme.ui.text]);
 
   useEffect(() => {
-    const routeThemeColor = effectiveTheme.ui.text;
+    const routeThemeColor = selectedTheme.ui.text;
     if (lastSyncedRouteThemeColorRef.current === routeThemeColor) {
       return;
     }
@@ -422,9 +422,9 @@ export function PosterProvider({ children }: { children: ReactNode }) {
     dispatch({
       type: "SET_ROUTE_DEFAULTS",
       defaults: { color: routeThemeColor },
-      applyToRoutes: true,
+      applyToRoutes: false,
     });
-  }, [dispatch, effectiveTheme.ui.text]);
+  }, [dispatch, selectedTheme.ui.text]);
 
   useEffect(() => {
     let isCancelled = false;

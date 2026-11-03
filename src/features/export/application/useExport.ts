@@ -1,4 +1,4 @@
-import { resolvePosterLabels } from "@/features/poster/domain/textLayout";
+import { resolvePosterLabels, getActivePosterLabels } from "@/features/poster/domain/textLayout";
 import { useCallback, useMemo } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import {
@@ -268,9 +268,9 @@ export function useExport() {
             exportHeight: size.height,
             theme: effectiveTheme,
             center: { lat, lon },
-            displayCity: resolvePosterLabels(form.displayCity, form.displayState, form.displayCountry).city,
-            displayCountry: resolvePosterLabels(form.displayCity, form.displayState, form.displayCountry).country,
-            customDate: form.customDate,
+            displayCity: getActivePosterLabels(form).city,
+            displayCountry: getActivePosterLabels(form).country,
+            customDate: getActivePosterLabels(form).customDate,
             fontFamily: form.fontFamily.trim(),
             fontSize: Number(form.fontSize) || 16,
             showPosterText: form.showPosterText,
@@ -342,9 +342,9 @@ export function useExport() {
           center: { lat, lon },
           widthInches,
           heightInches,
-          displayCity: resolvePosterLabels(form.displayCity, form.displayState, form.displayCountry).city,
-          displayCountry: resolvePosterLabels(form.displayCity, form.displayState, form.displayCountry).country,
-          customDate: form.customDate,
+          displayCity: getActivePosterLabels(form).city,
+            displayCountry: getActivePosterLabels(form).country,
+            customDate: getActivePosterLabels(form).customDate,
           fontFamily: form.fontFamily.trim(),
           fontSize: Number(form.fontSize) || 16,
           showPosterText: form.showPosterText,
@@ -384,9 +384,9 @@ export function useExport() {
             exportHeight: size.height,
             theme: effectiveTheme,
             center: { lat, lon },
-            displayCity: resolvePosterLabels(form.displayCity, form.displayState, form.displayCountry).city,
-            displayCountry: resolvePosterLabels(form.displayCity, form.displayState, form.displayCountry).country,
-            customDate: form.customDate,
+            displayCity: getActivePosterLabels(form).city,
+            displayCountry: getActivePosterLabels(form).country,
+            customDate: getActivePosterLabels(form).customDate,
             fontFamily: form.fontFamily.trim(),
             fontSize: Number(form.fontSize) || 16,
             showPosterText: form.showPosterText,

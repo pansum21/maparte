@@ -25,6 +25,10 @@ export interface ParsedUrlPosterState {
   overlayTop?: boolean;
   overlayBottom?: boolean;
   posterTextColor?: string;
+  textMode?: "map" | "preset";
+  presetTitle?: string;
+  presetSubtitle?: string;
+  presetExtra?: string;
 }
 
 /**
@@ -51,13 +55,20 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
     if (font && font.trim()) result.fontFamily = font.trim();
 
     const tagline = params.get("tagline") || params.get("date");
-    if (tagline !== null && tagline !== undefined) result.customDate = tagline;
+    if (tagline !== null && tagline !== undefined) {
+      result.customDate = tagline;
+      result.presetSubtitle = tagline;
+    }
 
     const title = params.get("title") || params.get("headline");
+    const city = params.get("city");
     if (title && title.trim()) {
-      result.displayCity = title.trim();
+      result.textMode = "preset";
+      result.presetTitle = title.trim();
+      if (city !== null && city.trim()) {
+        result.displayCity = city.trim();
+      }
     } else {
-      const city = params.get("city");
       if (city !== null) result.displayCity = city.trim();
     }
 

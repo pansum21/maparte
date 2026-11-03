@@ -274,11 +274,11 @@ export function getPosterBorderMetrics(
       ? showWhiteMatParam
       : hasBorder;
 
-  // Default gap is 0.0cm (edge-to-edge flush with map boundary).
+  // Default gap is 0.1cm (1.0 mm between map and innermost thin line).
   const gapCm =
     typeof customGapCm === "number" && Number.isFinite(customGapCm)
       ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, customGapCm))
-      : 0.0;
+      : 0.1;
 
   // Sleek, modern white border width (~3.5mm - 5mm on standard posters, not broad 10mm / 1cm)
   const targetMatRatio = 0.022;
@@ -532,9 +532,9 @@ function readSelection(): NeatlineSelection {
     thicknesses: readThicknesses(),
     lineVariant: "plain",
     cornerVariant: "plain",
-    mapGapCm: 0.0,
+    mapGapCm: 0.1,
     colorMode: "single",
-    singleColor: "#000000",
+    singleColor: "#0f172a",
     gradientFrom: "#000000",
     gradientTo: "#475569",
     designScale: 1.0,
@@ -542,6 +542,14 @@ function readSelection(): NeatlineSelection {
   };
   if (typeof window === "undefined") return empty;
   try {
+    // 1. Check URL parameters
+    const searchParams = new URLSearchParams(window.location.search);
+    const urlBorder = searchParams.get("border") || searchParams.get("neatline");
+    const urlGap = searchParams.get("mapGap") || searchParams.get("gap");
+    const urlTheme = searchParams.get("theme") || "";
+    const isDark = urlTheme.includes("midnight") || urlTheme.includes("noir") || urlTheme.includes("asphalt");
+    const defaultColor = isDark ? "#dfba73" : "#0f172a";
+
     const stored = window.localStorage.getItem(CONFIG_STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored) as Partial<NeatlineSelection>;
@@ -552,7 +560,12 @@ function readSelection(): NeatlineSelection {
             ? "mix"
             : "single";
 
-      const lineId = parsed.lineId && isLineId(parsed.lineId) ? parsed.lineId : "none";
+      let lineId = "none";
+      if (urlBorder && isLineId(urlBorder)) {
+        lineId = urlBorder;
+      } else if (parsed.lineId && isLineId(parsed.lineId)) {
+        lineId = parsed.lineId;
+      }
       const showWhiteMat = lineId !== "none";
 
       return {
@@ -563,9 +576,11 @@ function readSelection(): NeatlineSelection {
         lineVariant: colorMode === "mix" ? "colorful" : "plain",
         thicknesses: readThicknesses(),
         mapGapCm:
-          typeof parsed.mapGapCm === "number" && Number.isFinite(parsed.mapGapCm)
-            ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, parsed.mapGapCm))
-            : 0.0,
+          urlGap && !isNaN(Number(urlGap))
+            ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, Number(urlGap)))
+            : typeof parsed.mapGapCm === "number" && Number.isFinite(parsed.mapGapCm)
+              ? Math.max(MIN_MAP_GAP_CM, Math.min(MAX_MAP_GAP_CM, parsed.mapGapCm))
+              : 0.1,
         colorMode,
         singleColor:
           parsed.singleColor && parsed.singleColor !== "#354b62"
@@ -580,8 +595,19 @@ function readSelection(): NeatlineSelection {
         showWhiteMat,
       };
     }
+    if (urlBorder && isLineId(urlBorder)) {
+      empty.lineId = urlBorder;
+      empty.showWhiteMat = true;
+      empty.mapGapCm = 0.1;
+      empty.singleColor = defaultColor;
+      return empty;
+    }
     const legacy = window.localStorage.getItem(LEGACY_STYLE_KEY) || "none";
-    if (isLineId(legacy)) empty.lineId = legacy;
+    if (isLineId(legacy)) {
+      empty.lineId = legacy;
+      empty.showWhiteMat = true;
+      empty.mapGapCm = 0.1;
+    }
     return empty;
   } catch {
     return empty;
@@ -723,7 +749,7 @@ export function NeatlineArtwork({
   const gradId = `neatline-grad-${className ? className.trim().replace(/\s+/g, "-") : "main"}`;
   const fromColor = selection.gradientFrom || "#f43f5e";
   const toColor = selection.gradientTo || "#fb923c";
-  const singleColor = selection.singleColor || "#9CC3DA";
+  const singleColor = selection.singleColor || "#0f172a";
 
   const strokeColor = isMix ? `url(#${gradId})` : singleColor;
   const primaryColor = strokeColor;

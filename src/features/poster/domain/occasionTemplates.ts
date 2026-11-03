@@ -1,3 +1,5 @@
+import type { MapShapeId, ShapeFinishId } from "@/features/layout/domain/shapeTypes";
+
 export interface OccasionTemplate {
   id: string;
   badge: string;
@@ -10,6 +12,8 @@ export interface OccasionTemplate {
   markerIconId: string;
   markerColor?: string;
   description: string;
+  mapShape?: MapShapeId;
+  shapeFinish?: ShapeFinishId;
 }
 
 export const OCCASION_TEMPLATES: OccasionTemplate[] = [
@@ -23,7 +27,10 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     cityText: "WHERE WE MET",
     countryText: "FOREVER & ALWAYS • 14 FEB",
     markerIconId: "heart",
-    description: "Deep midnight blue tones with classic serif font and a heart pinned right where your love story began.",
+    markerColor: "#e11d48",
+    description: "Deep midnight blue tones with classic serif font and a romantic 3D heart cutout.",
+    mapShape: "heart",
+    shapeFinish: "shadow",
   },
   {
     id: "she_said_yes",
@@ -35,7 +42,10 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     cityText: "SHE SAID YES",
     countryText: "THE PROPOSAL • WE SAID FOREVER",
     markerIconId: "ring",
-    description: "Carrara white marble tones with timeless serif lettering and a diamond ring pin marking the proposal.",
+    markerColor: "#0ea5e9",
+    description: "Carrara white marble tones with timeless serif lettering and a romantic 3D heart cutout.",
+    mapShape: "heart",
+    shapeFinish: "shadow",
   },
   {
     id: "our_wedding_day",
@@ -47,7 +57,10 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     cityText: "MR & MRS",
     countryText: "OUR WEDDING DAY • TO HAVE & TO HOLD",
     markerIconId: "champagne",
-    description: "Romantic ruby tones with elegant typography and celebratory champagne glasses at your venue.",
+    markerColor: "#d97706",
+    description: "Romantic ruby tones with timeless 1:1 circular gallery cutout representing the wedding ring.",
+    mapShape: "circle",
+    shapeFinish: "shadow",
   },
   {
     id: "our_first_home",
@@ -59,7 +72,10 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     cityText: "OUR FIRST HOME",
     countryText: "HOME SWEET HOME • EST. 2024",
     markerIconId: "home",
-    description: "Warm neutral architectural tones and modern typography with a home pin at your exact address.",
+    markerColor: "#ea580c",
+    description: "Warm neutral architectural tones with 3D terracotta gable roof and chimney cutout.",
+    mapShape: "house",
+    shapeFinish: "shadow",
   },
   {
     id: "travel_memories",
@@ -70,8 +86,11 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     fontFamily: "Oswald",
     cityText: "MEMORIES OF A LIFETIME",
     countryText: "OUR GREATEST ADVENTURE",
-    markerIconId: "star",
-    description: "Burnt terracotta Mediterranean warmth and bold editorial headlines celebrating your favorite travel memories.",
+    markerIconId: "plane",
+    markerColor: "#d97706",
+    description: "Burnt terracotta warmth with classic vintage travel postage stamp and airmail styling.",
+    mapShape: "stamp",
+    shapeFinish: "shadow",
   },
   {
     id: "marathon_race",
@@ -82,8 +101,11 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     fontFamily: "Bebas Neue",
     cityText: "FINISHER 42.195 KM",
     countryText: "SWEAT • DETERMINATION • GLORY",
-    markerIconId: "pin",
-    description: "High-contrast noir stealth styling with bold athletic typography for your greatest physical triumphs.",
+    markerIconId: "runner",
+    markerColor: "#ef4444",
+    description: "High-contrast noir stealth styling with bold architectural vault curve for athletic triumphs.",
+    mapShape: "arch",
+    shapeFinish: "shadow",
   },
   {
     id: "baby_arrival",
@@ -94,8 +116,11 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     fontFamily: "Playfair Display",
     cityText: "WELCOME TO THE WORLD",
     countryText: "BORN 14.08.2024 • 7 LBS 4 OZ • 08:42 AM",
-    markerIconId: "heart",
-    description: "Soft dreamy pastel hues and gentle serif typography marking the exact hospital or town where your little one was born.",
+    markerIconId: "feet",
+    markerColor: "#ec4899",
+    description: "Soft dreamy pastel hues with circular gallery depth marking where your little one was born.",
+    mapShape: "circle",
+    shapeFinish: "shadow",
   },
   {
     id: "hometown_roots",
@@ -107,7 +132,10 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     cityText: "WHERE ROOTS RUN DEEP",
     countryText: "NO MATTER HOW FAR • ALWAYS HOME",
     markerIconId: "tree",
-    description: "Warm architectural earth tones and clean modernist typography honoring the childhood streets and community where you grew up.",
+    markerColor: "#10b981",
+    description: "Warm architectural earth tones with soft squircle gallery curve honoring childhood roots.",
+    mapShape: "squircle",
+    shapeFinish: "shadow",
   },
   {
     id: "mountain_summit",
@@ -119,6 +147,9 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     cityText: "SUMMIT ELEVATION 4,810 M",
     countryText: "CONQUERED THE PEAK • 15.07.2024",
     markerIconId: "flag",
-    description: "Deep evergreen alpine forest tones and bold athletic summit coordinates celebrating your mountain conquests and trails.",
+    markerColor: "#06b6d4",
+    description: "Deep evergreen alpine forest tones with sculpted triple-peak mountain aperture and frosted snow caps.",
+    mapShape: "mountain",
+    shapeFinish: "shadow",
   },
 ];

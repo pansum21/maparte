@@ -228,13 +228,25 @@
   border-radius: 0 !important;
 }
 
-/* Unified Exact Geometry for Heart & Circle */
-.poster-frame[data-map-shape="heart"] .poster-map-window,
+/* 1. Flawless 1:1 Circle Geometry (Never stretched into oval) */
 .poster-frame[data-map-shape="circle"] .poster-map-window,
-.poster-frame[data-map-shape="heart"] .poster-shape-shadow-caster,
 .poster-frame[data-map-shape="circle"] .poster-shape-shadow-caster,
+.poster-frame[data-map-shape="circle"] .poster-shape-stroke-overlay,
+.poster-frame[data-map-shape="circle"] .poster-shape-thematic-overlay {
+  top: 6% !important;
+  left: 8% !important;
+  right: 8% !important;
+  width: calc(100% - 16%) !important;
+  aspect-ratio: 1 / 1 !important;
+  height: auto !important;
+  bottom: auto !important;
+}
+
+/* 2. Unified Geometry for Heart */
+.poster-frame[data-map-shape="heart"] .poster-map-window,
+.poster-frame[data-map-shape="heart"] .poster-shape-shadow-caster,
 .poster-frame[data-map-shape="heart"] .poster-shape-stroke-overlay,
-.poster-frame[data-map-shape="circle"] .poster-shape-stroke-overlay {
+.poster-frame[data-map-shape="heart"] .poster-shape-thematic-overlay {
   top: 5% !important;
   left: 7% !important;
   right: 7% !important;
@@ -243,13 +255,25 @@
   height: calc(100% - 30%) !important;
 }
 
-/* Unified Exact Geometry for Squircle & Arch */
+/* 3. Unified Geometry for Squircle, Arch, House, Mountain, Stamp */
 .poster-frame[data-map-shape="squircle"] .poster-map-window,
 .poster-frame[data-map-shape="arch"] .poster-map-window,
+.poster-frame[data-map-shape="house"] .poster-map-window,
+.poster-frame[data-map-shape="mountain"] .poster-map-window,
+.poster-frame[data-map-shape="stamp"] .poster-map-window,
 .poster-frame[data-map-shape="squircle"] .poster-shape-shadow-caster,
 .poster-frame[data-map-shape="arch"] .poster-shape-shadow-caster,
+.poster-frame[data-map-shape="house"] .poster-shape-shadow-caster,
+.poster-frame[data-map-shape="mountain"] .poster-shape-shadow-caster,
+.poster-frame[data-map-shape="stamp"] .poster-shape-shadow-caster,
 .poster-frame[data-map-shape="squircle"] .poster-shape-stroke-overlay,
-.poster-frame[data-map-shape="arch"] .poster-shape-stroke-overlay {
+.poster-frame[data-map-shape="arch"] .poster-shape-stroke-overlay,
+.poster-frame[data-map-shape="house"] .poster-shape-stroke-overlay,
+.poster-frame[data-map-shape="mountain"] .poster-shape-stroke-overlay,
+.poster-frame[data-map-shape="stamp"] .poster-shape-stroke-overlay,
+.poster-frame[data-map-shape="house"] .poster-shape-thematic-overlay,
+.poster-frame[data-map-shape="mountain"] .poster-shape-thematic-overlay,
+.poster-frame[data-map-shape="stamp"] .poster-shape-thematic-overlay {
   top: 5% !important;
   left: 6% !important;
   right: 6% !important;
@@ -279,7 +303,22 @@
   -webkit-clip-path: url(#maparte-shape-arch);
 }
 
-/* 1. 3D Depth Shadow Caster (Layered behind the map window) */
+.poster-frame:not(.shape-finish-blur)[data-map-shape="house"] .poster-map-window {
+  clip-path: url(#maparte-shape-house);
+  -webkit-clip-path: url(#maparte-shape-house);
+}
+
+.poster-frame:not(.shape-finish-blur)[data-map-shape="mountain"] .poster-map-window {
+  clip-path: url(#maparte-shape-mountain);
+  -webkit-clip-path: url(#maparte-shape-mountain);
+}
+
+.poster-frame:not(.shape-finish-blur)[data-map-shape="stamp"] .poster-map-window {
+  clip-path: url(#maparte-shape-stamp);
+  -webkit-clip-path: url(#maparte-shape-stamp);
+}
+
+/* 1. 3D Depth Shadow Caster (Layered behind the map window with overflow visible) */
 .poster-shape-shadow-caster {
   position: absolute;
   pointer-events: none;
@@ -314,9 +353,26 @@
   -webkit-mask-image: url(#maparte-blur-arch);
 }
 
+.poster-frame.shape-finish-blur[data-map-shape="house"] .poster-map-window {
+  mask-image: url(#maparte-blur-house);
+  -webkit-mask-image: url(#maparte-blur-house);
+}
+
+.poster-frame.shape-finish-blur[data-map-shape="mountain"] .poster-map-window {
+  mask-image: url(#maparte-blur-mountain);
+  -webkit-mask-image: url(#maparte-blur-mountain);
+}
+
+.poster-frame.shape-finish-blur[data-map-shape="stamp"] .poster-map-window {
+  mask-image: url(#maparte-blur-stamp);
+  -webkit-mask-image: url(#maparte-blur-stamp);
+}
+
 /* 3. Ultra-delicate 0.05 mm Hairline Fine Border (Layered above map) */
-.poster-shape-stroke-overlay {
+.poster-shape-stroke-overlay,
+.poster-shape-thematic-overlay {
   position: absolute;
   pointer-events: none;
   z-index: 4;
+  overflow: visible !important;
 }

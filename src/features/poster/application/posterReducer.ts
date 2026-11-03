@@ -36,6 +36,10 @@ export interface PosterForm {
   displayState?: string;
   displayContinent: string;
   customDate?: string;
+  textMode?: "map" | "preset";
+  presetTitle?: string;
+  presetSubtitle?: string;
+  presetExtra?: string;
   fontFamily: string;
   fontSize: string;
   showPosterText: boolean;

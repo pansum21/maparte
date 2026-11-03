@@ -99,3 +99,34 @@ export function resolvePosterLabels(city: string, state = "", country = "") {
   const labels = [city, state, country].map(value => value.trim()).filter(Boolean);
   return { city: labels[0] || "", country: labels.slice(1).join(" · ") };
 }
+
+export interface ActivePosterLabelsInput {
+  textMode?: "map" | "preset";
+  displayCity: string;
+  displayTown?: string;
+  displayCountry: string;
+  displayState?: string;
+  customDate?: string;
+  presetTitle?: string;
+  presetSubtitle?: string;
+  presetExtra?: string;
+}
+
+/** Resolves poster labels depending on whether Map Text or Preset Text mode is active. */
+export function getActivePosterLabels(form: ActivePosterLabelsInput) {
+  const isPreset = form.textMode === "preset" || (form.textMode !== "map" && Boolean(form.presetTitle));
+  const mainTitle = isPreset ? (form.presetTitle || form.displayCity) : (form.displayCity || form.displayTown || "");
+  const subtitle = isPreset
+    ? (form.presetSubtitle !== undefined ? form.presetSubtitle : form.displayCountry)
+    : form.displayCountry;
+  const extraLine = isPreset
+    ? (form.presetExtra !== undefined ? form.presetExtra : form.customDate)
+    : form.customDate;
+
+  const { city, country } = resolvePosterLabels(
+    mainTitle,
+    isPreset ? "" : (form.displayState || ""),
+    subtitle,
+  );
+  return { city, country, customDate: extraLine };
+}
