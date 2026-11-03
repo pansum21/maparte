@@ -103,8 +103,8 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     countryText: "SWEAT • DETERMINATION • GLORY",
     markerIconId: "runner",
     markerColor: "#ef4444",
-    description: "High-contrast noir stealth styling with bold architectural vault curve for athletic triumphs.",
-    mapShape: "arch",
+    description: "High-contrast noir stealth styling with antique parchment marathon scroll and medal seal.",
+    mapShape: "scroll",
     shapeFinish: "shadow",
   },
   {
@@ -118,8 +118,8 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     countryText: "BORN 14.08.2024 • 7 LBS 4 OZ • 08:42 AM",
     markerIconId: "feet",
     markerColor: "#ec4899",
-    description: "Soft dreamy pastel hues with circular gallery depth marking where your little one was born.",
-    mapShape: "circle",
+    description: "Soft dreamy pastel hues with adorable newborn baby footprints marking baby's birthplace.",
+    mapShape: "baby",
     shapeFinish: "shadow",
   },
   {

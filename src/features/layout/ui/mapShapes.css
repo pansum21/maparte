@@ -261,19 +261,27 @@
 .poster-frame[data-map-shape="house"] .poster-map-window,
 .poster-frame[data-map-shape="mountain"] .poster-map-window,
 .poster-frame[data-map-shape="stamp"] .poster-map-window,
+.poster-frame[data-map-shape="scroll"] .poster-map-window,
+.poster-frame[data-map-shape="baby"] .poster-map-window,
 .poster-frame[data-map-shape="squircle"] .poster-shape-shadow-caster,
 .poster-frame[data-map-shape="arch"] .poster-shape-shadow-caster,
 .poster-frame[data-map-shape="house"] .poster-shape-shadow-caster,
 .poster-frame[data-map-shape="mountain"] .poster-shape-shadow-caster,
 .poster-frame[data-map-shape="stamp"] .poster-shape-shadow-caster,
+.poster-frame[data-map-shape="scroll"] .poster-shape-shadow-caster,
+.poster-frame[data-map-shape="baby"] .poster-shape-shadow-caster,
 .poster-frame[data-map-shape="squircle"] .poster-shape-stroke-overlay,
 .poster-frame[data-map-shape="arch"] .poster-shape-stroke-overlay,
 .poster-frame[data-map-shape="house"] .poster-shape-stroke-overlay,
 .poster-frame[data-map-shape="mountain"] .poster-shape-stroke-overlay,
 .poster-frame[data-map-shape="stamp"] .poster-shape-stroke-overlay,
+.poster-frame[data-map-shape="scroll"] .poster-shape-stroke-overlay,
+.poster-frame[data-map-shape="baby"] .poster-shape-stroke-overlay,
 .poster-frame[data-map-shape="house"] .poster-shape-thematic-overlay,
 .poster-frame[data-map-shape="mountain"] .poster-shape-thematic-overlay,
-.poster-frame[data-map-shape="stamp"] .poster-shape-thematic-overlay {
+.poster-frame[data-map-shape="stamp"] .poster-shape-thematic-overlay,
+.poster-frame[data-map-shape="scroll"] .poster-shape-thematic-overlay,
+.poster-frame[data-map-shape="baby"] .poster-shape-thematic-overlay {
   top: 5% !important;
   left: 6% !important;
   right: 6% !important;
@@ -316,6 +324,15 @@
 .poster-frame:not(.shape-finish-blur)[data-map-shape="stamp"] .poster-map-window {
   clip-path: url(#maparte-shape-stamp);
   -webkit-clip-path: url(#maparte-shape-stamp);
+}
+.poster-frame:not(.shape-finish-blur)[data-map-shape="scroll"] .poster-map-window {
+  clip-path: url(#maparte-shape-scroll);
+  -webkit-clip-path: url(#maparte-shape-scroll);
+}
+
+.poster-frame:not(.shape-finish-blur)[data-map-shape="baby"] .poster-map-window {
+  clip-path: url(#maparte-shape-baby);
+  -webkit-clip-path: url(#maparte-shape-baby);
 }
 
 /* 1. 3D Depth Shadow Caster (Layered behind the map window with overflow visible) */
@@ -366,6 +383,15 @@
 .poster-frame.shape-finish-blur[data-map-shape="stamp"] .poster-map-window {
   mask-image: url(#maparte-blur-stamp);
   -webkit-mask-image: url(#maparte-blur-stamp);
+}
+.poster-frame.shape-finish-blur[data-map-shape="scroll"] .poster-map-window {
+  mask-image: url(#maparte-blur-scroll);
+  -webkit-mask-image: url(#maparte-blur-scroll);
+}
+
+.poster-frame.shape-finish-blur[data-map-shape="baby"] .poster-map-window {
+  mask-image: url(#maparte-blur-baby);
+  -webkit-mask-image: url(#maparte-blur-baby);
 }
 
 /* 3. Ultra-delicate 0.05 mm Hairline Fine Border (Layered above map) */

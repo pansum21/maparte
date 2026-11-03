@@ -165,6 +165,43 @@ function renderThematicFrame(shapeId?: string) {
       </svg>
     );
   }
+  if (shapeId === "scroll") {
+    return (
+      <svg
+        className="poster-shape-thematic-overlay"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        style={{ position: "absolute", zIndex: 4, pointerEvents: "none", overflow: "visible" }}
+      >
+        {/* Top parchment scroll roll */}
+        <path d="M 8 12 C 8 8, 92 8, 92 12 C 94 15, 94 18, 92 20 C 90 22, 10 22, 8 20 C 6 18, 6 15, 8 12 Z" fill="#b45309" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.25))" />
+        <path d="M 12 12 L 88 12" stroke="#fef3c7" strokeWidth="1.2" strokeLinecap="round" />
+        {/* Bottom parchment scroll roll */}
+        <path d="M 8 84 C 8 80, 92 80, 92 84 C 94 87, 94 90, 92 92 C 90 94, 10 94, 8 92 C 6 90, 6 87, 8 84 Z" fill="#b45309" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.25))" />
+        {/* Finisher medal wax seal */}
+        <circle cx="50" cy="88" r="4.8" fill="#ef4444" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))" />
+        <circle cx="50" cy="88" r="3.2" fill="#facc15" />
+        <path d="M 47.5 92 L 45 97.5 L 48.5 96 L 50 93 Z" fill="#dc2626" />
+        <path d="M 52.5 92 L 55 97.5 L 51.5 96 L 50 93 Z" fill="#dc2626" />
+      </svg>
+    );
+  }
+  if (shapeId === "baby") {
+    return (
+      <svg
+        className="poster-shape-thematic-overlay"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        style={{ position: "absolute", zIndex: 4, pointerEvents: "none", overflow: "visible" }}
+      >
+        <circle cx="28" cy="88" r="1.5" fill="#f472b6" fillOpacity="0.8" />
+        <circle cx="72" cy="84" r="1.5" fill="#38bdf8" fillOpacity="0.8" />
+        <circle cx="50" cy="50" r="1.2" fill="#fbbf24" fillOpacity="0.85" />
+      </svg>
+    );
+  }
   return null;
 }
 
