@@ -120,6 +120,17 @@ function getInitialState(readUrlState = true): PosterState {
         ...form,
         ...urlOverrides,
       };
+      if (urlOverrides.latitude && urlOverrides.longitude && !matched) {
+        selectedLocation = {
+          id: `custom:${urlOverrides.latitude},${urlOverrides.longitude}`,
+          label: urlOverrides.displayCity || "Custom Location",
+          lat: Number(urlOverrides.latitude),
+          lon: Number(urlOverrides.longitude),
+          city: urlOverrides.displayCity || "",
+          country: urlOverrides.displayCountry || "",
+          continent: "",
+        };
+      }
     }
   }
 
@@ -145,7 +156,7 @@ function getInitialState(readUrlState = true): PosterState {
     selectedLocation,
     userLocation: null,
     displayNameOverrides: {
-      city: false,
+      city: Boolean(typeof window !== "undefined" && parsePosterStateFromUrl(window.location.search).displayCity),
       country: false,
     },
   };
@@ -243,8 +254,8 @@ export function PosterProvider({ children }: { children: ReactNode }) {
   // Synchronize browser address bar URL and title when city or customization changes
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const city = state.form.displayCity || state.form.location;
-    const country = state.form.displayCountry;
+    const city = state.selectedLocation?.city || state.form.displayCity || state.form.location;
+    const country = state.selectedLocation?.country || state.form.displayCountry;
     const matched = findCityMatch(city, country);
 
     const { fullUrl } = serializePosterStateToUrl(state.form, matched);

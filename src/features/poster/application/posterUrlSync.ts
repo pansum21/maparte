@@ -17,6 +17,8 @@ export interface ParsedUrlPosterState {
   displayCountry?: string;
   displayState?: string;
   distance?: string;
+  latitude?: string;
+  longitude?: string;
   showPosterText?: boolean;
   overlayTop?: boolean;
   overlayBottom?: boolean;
@@ -45,8 +47,13 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
     const tagline = params.get("tagline") || params.get("date");
     if (tagline !== null && tagline !== undefined) result.customDate = tagline;
 
-    const city = params.get("city");
-    if (city !== null) result.displayCity = city.trim();
+    const title = params.get("title") || params.get("headline");
+    if (title && title.trim()) {
+      result.displayCity = title.trim();
+    } else {
+      const city = params.get("city");
+      if (city !== null) result.displayCity = city.trim();
+    }
 
     if (params.has("state")) result.displayState = params.get("state") || "";
     const country = params.get("country");
@@ -54,6 +61,12 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
 
     const dist = params.get("dist") || params.get("distance");
     if (dist && dist.trim()) result.distance = dist.trim();
+
+    const lat = params.get("lat") || params.get("latitude");
+    if (lat && !isNaN(Number(lat))) result.latitude = lat.trim();
+
+    const lon = params.get("lon") || params.get("longitude");
+    if (lon && !isNaN(Number(lon))) result.longitude = lon.trim();
 
     for (const key of ["overlayTop", "overlayBottom"] as const) {
       const value = params.get(key);
@@ -107,8 +120,8 @@ export function serializePosterStateToUrl(
 
   // 5. Display city override (if different from city default)
   const baseCity = matchedCity ? matchedCity.city : DEFAULT_CITY;
-  if (form.displayCity.trim() !== baseCity.trim()) {
-    params.set("city", form.displayCity.trim());
+  if (form.displayCity && form.displayCity.trim() !== baseCity.trim()) {
+    params.set("title", form.displayCity.trim());
   }
 
   // 6. Display country override (if different from country default)

@@ -62,7 +62,11 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!api/|assets/|docs/|privacy|imprint|terms|refund|cities/|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|google.*|BingSiteAuth.*|favicon|icon).*)$",
+      "source": "/where-we-met",
+      "destination": "/where-we-met-map/index.html"
+    },
+    {
+      "source": "/((?!api/|assets/|docs/|privacy|imprint|terms|refund|cities/|where-we-met|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|google.*|BingSiteAuth.*|favicon|icon).*)$",
       "destination": "/index.html"
     }
   ]

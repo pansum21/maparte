@@ -257,6 +257,38 @@ ${body}
   };
 }
 
+function marketingPagesPlugin() {
+  const PAGES = ["mapiful-alternative", "where-we-met-map"];
+  let resolvedConfig;
+
+  return {
+    name: "marketing-pages",
+    configResolved(config) {
+      resolvedConfig = config;
+    },
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const pathname = (req.url ?? "").split("?")[0].replace(/\/$/, "");
+        const matched = PAGES.find((slug) => pathname === `/${slug}`);
+        if (!matched) return next();
+
+        const filePath = path.resolve(
+          resolvedConfig.root,
+          "public",
+          matched,
+          "index.html",
+        );
+        if (fs.existsSync(filePath)) {
+          const html = fs.readFileSync(filePath, "utf8");
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          return res.end(html);
+        }
+        next();
+      });
+    },
+  };
+}
+
 function serviceWorkerBuildIdPlugin() {
   let resolvedConfig;
 
@@ -372,10 +404,14 @@ function seoVerificationPlugin() {
 }
 
 export default defineConfig({
+  optimizeDeps: {
+    entries: ["index.html"],
+  },
   plugins: [
     react(),
     adsensePlugin(),
     legalPagesPlugin(),
+    marketingPagesPlugin(),
     cityPagesPlugin(),
     serviceWorkerBuildIdPlugin(),
     googleMapsResolverPlugin(),

@@ -10,6 +10,24 @@
     </image:image>
   </url>
   <url>
+    <loc>https://maparte.com/mapiful-alternative</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>
+      <image:title>The #1 Mapiful Alternative in 2026 | MAPARTE</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://maparte.com/where-we-met-map</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>
+      <image:title>Where We Met Custom Map Poster &amp; Wall Art | MAPARTE</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://maparte.com/privacy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
