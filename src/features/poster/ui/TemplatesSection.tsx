@@ -44,8 +44,6 @@ export default function TemplatesSection({
           presetExtra: "",
           displayCity: defaultCity,
           displayCountry: defaultCountry,
-          mapShape: "full",
-          shapeFinish: "shadow",
         },
       });
       return;
@@ -55,7 +53,7 @@ export default function TemplatesSection({
     // 1. Update theme
     dispatch({ type: "SET_THEME", themeId: template.themeId });
 
-    // 2. Update typography, text overlay & thematic shape
+    // 2. Update typography, text overlay 
     dispatch({
       type: "SET_FORM_FIELDS",
       resetDisplayNameOverrides: false,
@@ -69,8 +67,6 @@ export default function TemplatesSection({
         displayCountry: template.countryText,
         showPosterText: true,
         showMarkers: true,
-        mapShape: template.mapShape || "full",
-        shapeFinish: template.shapeFinish || "shadow",
       },
     });
 

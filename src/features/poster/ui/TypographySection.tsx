@@ -36,9 +36,7 @@ export default function TypographySection({
     form.textMode === "preset" || Boolean(form.presetTitle) ? "preset" : "map"
   );
   const [fontPickerOpen, setFontPickerOpen] = useState(false);
-
-  const isShaped = Boolean(form.mapShape && form.mapShape !== "full");
-  const currentTextColor = form.posterTextColor || (isShaped ? "#0f172a" : effectiveTheme.ui.text);
+  const currentTextColor = form.posterTextColor || effectiveTheme.ui.text;
 
   const uniqueFontOptions = fontOptions.filter((option, index, options) => {
     const key = option.value.trim().toLowerCase() || "space grotesk";

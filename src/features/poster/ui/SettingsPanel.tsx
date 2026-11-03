@@ -84,8 +84,6 @@ export default function SettingsPanel({
     handleNumericFieldBlur,
     handleThemeChange,
     handleLayoutChange,
-    handleShapeChange,
-    handleShapeFinishChange,
     handleColorChange,
     handleResetColors,
     handleLocationSelect,
@@ -230,8 +228,6 @@ export default function SettingsPanel({
                 onThemeChange={handleThemeChange}
                 onFontChange={handleFontChange}
                 onLayoutChange={handleLayoutChange}
-                onShapeChange={handleShapeChange}
-                onShapeFinishChange={handleShapeFinishChange}
                 selectedTheme={selectedTheme}
                 themeOptions={themeOptions}
                 layoutGroups={layoutGroups}
@@ -272,8 +268,6 @@ export default function SettingsPanel({
                 onThemeChange={handleThemeChange}
                 onFontChange={handleFontChange}
                 onLayoutChange={handleLayoutChange}
-                onShapeChange={handleShapeChange}
-                onShapeFinishChange={handleShapeFinishChange}
                 selectedTheme={selectedTheme}
                 themeOptions={themeOptions}
                 layoutGroups={layoutGroups}

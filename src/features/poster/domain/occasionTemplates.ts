@@ -1,5 +1,3 @@
-import type { MapShapeId, ShapeFinishId } from "@/features/layout/domain/shapeTypes";
-
 export interface OccasionTemplate {
   id: string;
   badge: string;
@@ -12,8 +10,6 @@ export interface OccasionTemplate {
   markerIconId: string;
   markerColor?: string;
   description: string;
-  mapShape?: MapShapeId;
-  shapeFinish?: ShapeFinishId;
 }
 
 export const OCCASION_TEMPLATES: OccasionTemplate[] = [
@@ -28,9 +24,7 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     countryText: "FOREVER & ALWAYS • 14 FEB",
     markerIconId: "heart",
     markerColor: "#e11d48",
-    description: "Deep midnight blue tones with classic serif font and a romantic 3D heart cutout.",
-    mapShape: "heart",
-    shapeFinish: "shadow",
+    description: "Deep midnight blue tones with classic serif font and a luxury 3D heart pin marker.",
   },
   {
     id: "she_said_yes",
@@ -43,9 +37,7 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     countryText: "THE PROPOSAL • WE SAID FOREVER",
     markerIconId: "ring",
     markerColor: "#0ea5e9",
-    description: "Carrara white marble tones with timeless serif lettering and a romantic 3D heart cutout.",
-    mapShape: "heart",
-    shapeFinish: "shadow",
+    description: "Carrara white marble tones with timeless serif lettering and a luxury 3D heart pin marker.",
   },
   {
     id: "our_wedding_day",
@@ -59,8 +51,6 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     markerIconId: "champagne",
     markerColor: "#d97706",
     description: "Romantic ruby tones with timeless 1:1 circular gallery cutout representing the wedding ring.",
-    mapShape: "circle",
-    shapeFinish: "shadow",
   },
   {
     id: "our_first_home",
@@ -74,8 +64,6 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     markerIconId: "home",
     markerColor: "#ea580c",
     description: "Warm neutral architectural tones with 3D terracotta gable roof and chimney cutout.",
-    mapShape: "house",
-    shapeFinish: "shadow",
   },
   {
     id: "travel_memories",
@@ -89,8 +77,6 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     markerIconId: "plane",
     markerColor: "#d97706",
     description: "Burnt terracotta warmth with classic vintage travel postage stamp and airmail styling.",
-    mapShape: "stamp",
-    shapeFinish: "shadow",
   },
   {
     id: "marathon_race",
@@ -104,8 +90,6 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     markerIconId: "runner",
     markerColor: "#ef4444",
     description: "High-contrast noir stealth styling with antique parchment marathon scroll and medal seal.",
-    mapShape: "scroll",
-    shapeFinish: "shadow",
   },
   {
     id: "baby_arrival",
@@ -119,8 +103,6 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     markerIconId: "feet",
     markerColor: "#ec4899",
     description: "Soft dreamy pastel hues with adorable newborn baby footprints marking baby's birthplace.",
-    mapShape: "baby",
-    shapeFinish: "shadow",
   },
   {
     id: "hometown_roots",
@@ -134,8 +116,6 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     markerIconId: "tree",
     markerColor: "#10b981",
     description: "Warm architectural earth tones with soft squircle gallery curve honoring childhood roots.",
-    mapShape: "squircle",
-    shapeFinish: "shadow",
   },
   {
     id: "mountain_summit",
@@ -149,7 +129,5 @@ export const OCCASION_TEMPLATES: OccasionTemplate[] = [
     markerIconId: "flag",
     markerColor: "#06b6d4",
     description: "Deep evergreen alpine forest tones with sculpted triple-peak mountain aperture and frosted snow caps.",
-    mapShape: "mountain",
-    shapeFinish: "shadow",
   },
 ];

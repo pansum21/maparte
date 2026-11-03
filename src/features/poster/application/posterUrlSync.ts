@@ -11,8 +11,6 @@ import {
 export interface ParsedUrlPosterState {
   theme?: string;
   layout?: string;
-  mapShape?: import("@/features/layout/domain/shapeTypes").MapShapeId;
-  shapeFinish?: import("@/features/layout/domain/shapeTypes").ShapeFinishId;
   fontFamily?: string;
   customDate?: string;
   displayCity?: string;
@@ -46,11 +44,6 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
 
     const border = params.get("border") || params.get("layout");
     if (border && border.trim()) result.layout = border.trim();
-    const shape = params.get("shape");
-    if (shape) result.mapShape = shape as any;
-    const shapeFinish = params.get("shapeFinish");
-    if (shapeFinish) result.shapeFinish = shapeFinish as any;
-
     const font = params.get("font") || params.get("fontFamily");
     if (font && font.trim()) result.fontFamily = font.trim();
 
