@@ -1004,6 +1004,7 @@
 
   /* Tool panels share one side-attached drawer beside the tool rail. */
   .app-shell[data-desktop-tab="layout"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="shapes"] .desktop-left-panel,
   .app-shell[data-desktop-tab="theme"] .desktop-left-panel,
   .app-shell[data-desktop-tab="frames"] .desktop-left-panel,
   .app-shell[data-desktop-tab="templates"] .desktop-left-panel,
@@ -1022,6 +1023,7 @@
   }
 
   .app-shell[data-desktop-tab="layout"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="shapes"] .desktop-settings-slide,
   .app-shell[data-desktop-tab="theme"] .desktop-settings-slide,
   .app-shell[data-desktop-tab="frames"] .desktop-settings-slide,
   .app-shell[data-desktop-tab="templates"] .desktop-settings-slide,
@@ -1716,6 +1718,9 @@
   }
 
   [data-desktop-tab="layout"]
+    .desktop-settings-slide
+    .mobile-section:not(.mobile-section--layout-settings),
+  [data-desktop-tab="shapes"]
     .desktop-settings-slide
     .mobile-section:not(.mobile-section--layout-settings) {
     display: none;
@@ -2520,10 +2525,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   margin-bottom: 10px;
 }
 
@@ -2796,24 +2801,48 @@
 .all-cities-search-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
   min-width: 0;
   height: 36px;
   box-sizing: border-box;
-  margin: 0;
-  padding: 0 14px;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  border-radius: 8px;
-  background: rgba(12, 26, 40, 0.75);
+  margin: 0 0 10px 0;
+  padding: 0;
+  border: none !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 .all-cities-search-icon { display: inline-flex; flex: 0 0 auto; color: #9fb9cc; }
 .all-cities-search-icon svg { width: 20px; height: 20px; }
 .all-cities-search-input { min-width: 0; width: 100%; height: 100%; font: 500 0.94rem/1.3 "Instrument Sans", sans-serif; background: transparent; }
 .all-cities-search-input::placeholder { color: rgba(193, 211, 226, 0.56); }
-.all-cities-clear-btn {
-  position: absolute; right: 88px; top: 50%; transform: translateY(-50%);
-  flex: 0 0 auto; width: 30px; height: 30px; border: 0; border-radius: 50%;
-  background: rgba(255,255,255,.08); color: #d9e8f5; font-size: 1.25rem; cursor: pointer;
+.all-cities-clear-btn,
+button.all-cities-clear-btn:not(:disabled):hover,
+button.all-cities-clear-btn:focus-visible,
+button.all-cities-clear-btn:active {
+  position: absolute !important;
+  right: 6px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  flex: 0 0 auto !important;
+  width: 20px !important;
+  height: 20px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: rgba(255,255,255,.16) !important;
+  color: #d9e8f5 !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+button.all-cities-clear-btn:not(:disabled):hover {
+  background: rgba(255,255,255,.28) !important;
+  color: #ffffff !important;
 }
 .all-cities-location-actions { position: absolute; right: 10px; top: 50%; display: flex; gap: 7px; transform: translateY(-50%); }
 .all-cities-search-input { padding-right: 78px; }
@@ -2881,13 +2910,13 @@
     padding: 12px;
     border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 18px; border-bottom-right-radius: 18px;
   }
-  .all-cities-search-bar { height: 36px; gap: 8px; padding: 0 8px; border-radius: 8px; }
+  .all-cities-search-bar { height: 36px; gap: 6px; padding: 0; border: none !important; background: transparent !important; box-shadow: none !important; }
   .all-cities-search-icon svg { width: 17px; height: 17px; }
   .all-cities-search-input { font-size: .84rem; padding-right: 74px; }
   .all-cities-location-actions { right: 7px; gap: 5px; }
   .all-cities-location-action { width: 28px; height: 28px; border-radius: 8px; }
   .all-cities-location-action svg { width: 16px; height: 16px; }
-  .all-cities-clear-btn { right: 76px; width: 25px; height: 25px; font-size: 1.05rem; }
+  .all-cities-clear-btn { right: 6px !important; width: 20px !important; height: 20px !important; font-size: 11px !important; transform: translateY(-50%) !important; }
   .all-cities-continents { gap: 6px; }
   .all-cities-continent-pill { min-height: 32px; padding: 4px 3px; border-radius: 9px; font-size: .72rem; }
   .all-cities-grid { gap: 8px; padding-right: 1px; }

@@ -5,6 +5,7 @@ import cityPhotosData from "@/data/cityPhotos.json";
 import { useCurrentLocation } from "@/features/location/application/useCurrentLocation";
 import { useLocationAutocomplete } from "@/features/location/application/useLocationAutocomplete";
 import { useMapSync } from "@/features/map/application/useMapSync";
+import { DEFAULT_DISTANCE_METERS } from "@/core/config";
 import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import type { SearchResult } from "@/features/location/domain/types";
@@ -186,7 +187,14 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
 
   const onLocationSelect = (result: SearchResult) => {
     handleLocationSelectBase(result);
-    flyToLocation(result.lat, result.lon);
+    dispatch({
+      type: "SET_FORM_FIELDS",
+      resetDisplayNameOverrides: true,
+      fields: {
+        distance: String(DEFAULT_DISTANCE_METERS),
+      },
+    });
+    flyToLocation(result.lat, result.lon, false, DEFAULT_DISTANCE_METERS);
     onClose();
   };
 
@@ -212,9 +220,10 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
         displayCity: item.city,
         displayCountry: item.country,
         displayContinent: item.continent,
+        distance: String(DEFAULT_DISTANCE_METERS),
       },
     });
-    flyToLocation(item.lat, item.lon);
+    flyToLocation(item.lat, item.lon, false, DEFAULT_DISTANCE_METERS);
     onClose();
   };
 
@@ -237,11 +246,13 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "5px",
-            height: "42px",
-            padding: "4px 6px",
+            gap: "6px",
+            height: "36px",
+            padding: 0,
+            border: "none",
+            background: "transparent",
+            boxShadow: "none",
             boxSizing: "border-box",
-            overflow: "hidden",
           }}
         >
           <button
@@ -291,67 +302,89 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
           >
             <MyLocationIcon />
           </button>
-          <input
-            type="text"
-            className="all-cities-search-input"
-            name="location"
-            placeholder="Search city, country..."
-            value={state.form.location}
-            onChange={handleInputChange}
-            onFocus={() => setLocationFocused(true)}
-            onBlur={() => setLocationFocused(false)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") void searchNow(event.currentTarget.value);
-            }}
-            autoComplete="off"
+
+          <div
+            className="all-cities-input-wrap"
             style={{
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
               flex: "1 1 auto",
               minWidth: 0,
-              width: 0,
-              height: "30px",
-              boxSizing: "border-box",
-              padding: "0 8px",
-              border: "1px solid rgba(56, 189, 248, 0.35)",
-              borderRadius: "7px",
-              background: "rgba(12, 26, 40, 0.75)",
-              color: "#fff",
-              fontSize: "14px",
-              outline: "none",
+              height: "32px",
             }}
-          />
-          {hasLocationValue ? (
-            <button
-              type="button"
-              className="all-cities-clear-btn"
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => {
-                setTypedQuery("");
-                dispatch({
-                  type: "SET_FORM_FIELDS",
-                  fields: { location: "" },
-                });
+          >
+            <input
+              type="text"
+              className="all-cities-search-input"
+              name="location"
+              placeholder="Search city, country or Google Maps..."
+              value={state.form.location}
+              onChange={handleInputChange}
+              onFocus={() => setLocationFocused(true)}
+              onBlur={() => setLocationFocused(false)}
+              onKeyDown={async (event) => {
+                if (event.key === "Enter") {
+                  const results = await searchNow(event.currentTarget.value);
+                  if (Array.isArray(results) && results.length > 0) {
+                    onLocationSelect(results[0]);
+                  }
+                }
               }}
-              aria-label="Clear location input"
-              title="Clear input"
+              autoComplete="off"
               style={{
-                display: "inline-grid",
-                placeItems: "center",
-                flex: "0 0 24px",
-                width: "24px",
-                height: "24px",
-                padding: 0,
-                border: "none",
-                borderRadius: "50%",
-                background: "rgba(255, 255, 255, 0.12)",
-                color: "#d9e8f5",
-                cursor: "pointer",
-                fontSize: "12px",
-                lineHeight: "1",
+                width: "100%",
+                height: "32px",
+                boxSizing: "border-box",
+                padding: hasLocationValue ? "0 28px 0 10px" : "0 10px",
+                border: "1px solid rgba(56, 189, 248, 0.35)",
+                borderRadius: "7px",
+                background: "rgba(12, 26, 40, 0.75)",
+                color: "#fff",
+                fontSize: "14px",
+                outline: "none",
               }}
-            >
-              ✕
-            </button>
-          ) : null}
+            />
+            {hasLocationValue ? (
+              <button
+                type="button"
+                className="all-cities-clear-btn"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => {
+                  setTypedQuery("");
+                  dispatch({
+                    type: "SET_FORM_FIELDS",
+                    fields: { location: "" },
+                  });
+                }}
+                aria-label="Clear location input"
+                title="Clear input"
+                style={{
+                  position: "absolute",
+                  right: "6px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  display: "inline-grid",
+                  placeItems: "center",
+                  flex: "0 0 20px",
+                  width: "20px",
+                  height: "20px",
+                  padding: 0,
+                  margin: 0,
+                  border: "none",
+                  borderRadius: "50%",
+                  background: "rgba(255, 255, 255, 0.16)",
+                  color: "#d9e8f5",
+                  cursor: "pointer",
+                  fontSize: "11px",
+                  lineHeight: "1",
+                }}
+              >
+                ✕
+              </button>
+            ) : null}
+          </div>
+
           <button
             type="button"
             className="all-cities-search-icon"

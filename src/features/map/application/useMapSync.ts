@@ -279,12 +279,13 @@ export function useMapSync(
   }, [form.latitude, form.longitude, updateLocationFromCoordinates]);
 
   const flyToLocation = useCallback(
-    (lat: number, lon: number, keepCurrentZoom = false) => {
+    (lat: number, lon: number, keepCurrentZoom = false, targetDistance?: number) => {
       const bounds = resolveZoomBounds(lat, effectiveContainerPx);
+      const dist = targetDistance ?? formDistance;
       const zoom = keepCurrentZoom
         ? clamp(mapRef.current?.getZoom() ?? mapZoom, bounds.minZoom, bounds.maxZoom)
         : clamp(
-            distanceToZoom(formDistance, lat, effectiveContainerPx),
+            distanceToZoom(dist, lat, effectiveContainerPx),
             bounds.minZoom,
             bounds.maxZoom,
           );
