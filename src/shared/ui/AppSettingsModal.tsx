@@ -26,7 +26,7 @@ export default function AppSettingsModal({
   onClose,
   presentation = "modal",
 }: AppSettingsModalProps) {
-  const { dispatch } = usePosterContext();
+  const { dispatch, mapRef } = usePosterContext();
   const { clearRecent, recent } = useRecentLocations();
   const [clearedRecent, setClearedRecent] = useState(false);
   const [resetDone, setResetDone] = useState(false);
@@ -52,6 +52,13 @@ export default function AppSettingsModal({
     resetNeatlineSettings();
     resetBackdropThemeToDefault();
     window.dispatchEvent(new Event("maparte:reset-wall-photo"));
+    if (mapRef?.current) {
+      mapRef.current.setBearing(0);
+      mapRef.current.setPitch(0);
+    }
+    if (typeof window !== "undefined") {
+      window.history.replaceState({}, "", "/");
+    }
     setConfirmation(null);
     setResetDone(true);
     setTimeout(() => setResetDone(false), 2500);

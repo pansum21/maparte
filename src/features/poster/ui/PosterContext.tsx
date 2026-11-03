@@ -85,6 +85,8 @@ export const DEFAULT_FORM: PosterForm = {
   includeRoadOutline: true,
   showMarkers: true,
   showRoutes: true,
+  mapShape: "full",
+  shapeFinish: "shadow",
 };
 
 function getInitialState(readUrlState = true): PosterState {
@@ -156,7 +158,7 @@ function getInitialState(readUrlState = true): PosterState {
     selectedLocation,
     userLocation: null,
     displayNameOverrides: {
-      city: Boolean(typeof window !== "undefined" && parsePosterStateFromUrl(window.location.search).displayCity),
+      city: Boolean(readUrlState && typeof window !== "undefined" && parsePosterStateFromUrl(window.location.search).displayCity),
       country: false,
     },
   };

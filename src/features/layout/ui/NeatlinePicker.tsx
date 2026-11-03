@@ -597,7 +597,11 @@ export function resetNeatlineSettings(): void {
   window.localStorage.removeItem(CONFIG_STORAGE_KEY);
   window.localStorage.removeItem(LEGACY_STYLE_KEY);
   window.localStorage.removeItem(THICKNESS_STORAGE_KEY);
+  const empty = readSelection();
   window.dispatchEvent(new Event(NEATLINE_RESET_EVENT));
+  window.dispatchEvent(
+    new CustomEvent<NeatlineSelection>(NEATLINE_CHANGE_EVENT, { detail: empty }),
+  );
 }
 
 export function thicknessesInCm(

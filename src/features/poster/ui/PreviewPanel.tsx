@@ -1,3 +1,5 @@
+import MapShapeDefs from "@/features/layout/ui/MapShapeDefs";
+import { MAP_SHAPES } from "@/features/layout/domain/shapeTypes";
 import { resolvePosterLabels } from "@/features/poster/domain/textLayout";
 import {
   useCallback,
@@ -47,6 +49,7 @@ import {
   NeatlineArtwork,
   getPosterBorderMetrics,
   NEATLINE_CHANGE_EVENT,
+  NEATLINE_RESET_EVENT,
   readNeatlineSelection,
   type NeatlineSelection,
 } from "@/features/layout/ui/NeatlinePicker";
@@ -78,6 +81,11 @@ export default function PreviewPanel({
 }: PreviewPanelProps) {
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
+  const activeShapeDef = useMemo(
+    () => MAP_SHAPES.find((s) => s.id === (state.form.mapShape || "full")),
+    [state.form.mapShape],
+  );
+  const isShaped = Boolean(state.form.mapShape && state.form.mapShape !== "full");
   const {
     form,
     isMarkerEditorActive,
@@ -137,8 +145,15 @@ export default function PreviewPanel({
       const custom = event as CustomEvent<NeatlineSelection>;
       setNeatlineSelection(custom.detail || readNeatlineSelection());
     };
+    const handleNeatlineReset = () => {
+      setNeatlineSelection(readNeatlineSelection());
+    };
     window.addEventListener(NEATLINE_CHANGE_EVENT, handleNeatlineChange);
-    return () => window.removeEventListener(NEATLINE_CHANGE_EVENT, handleNeatlineChange);
+    window.addEventListener(NEATLINE_RESET_EVENT, handleNeatlineReset);
+    return () => {
+      window.removeEventListener(NEATLINE_CHANGE_EVENT, handleNeatlineChange);
+      window.removeEventListener(NEATLINE_RESET_EVENT, handleNeatlineReset);
+    };
   }, []);
 
   const [mapBearing, setMapBearing] = useState(0);
@@ -412,9 +427,11 @@ export default function PreviewPanel({
             </div>
           </>
         ) : null}
+        <MapShapeDefs />
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat ? " has-white-mat" : " is-full-bleed"}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat ? " has-white-mat" : " is-full-bleed"} shape-finish-${form.shapeFinish || "shadow"}`}
+          data-map-shape={form.mapShape || "full"}
           onPointerDown={(event) => {
             if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
             posterDragRef.current = {
@@ -504,6 +521,27 @@ export default function PreviewPanel({
               overzoomScale={overzoomScale}
             />
           ) : null}
+          </div>
+
+          {/* Stroke overlay when Fine Border finish is chosen */}
+          {isShaped && form.shapeFinish === "border" && activeShapeDef?.svgPath ? (
+            <svg
+              className="poster-shape-stroke-overlay"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path
+                d={activeShapeDef.svgPath}
+                fill="none"
+                stroke={effectiveTheme.ui.text}
+                strokeWidth="1.5"
+                strokeOpacity="0.8"
+              />
+            </svg>
+          ) : null}
+
+          {/* PosterTextOverlay rendered at poster-frame level so it is NEVER clipped by the shape */}
           <PosterTextOverlay
             city={cityLabel}
             country={countryLabel}
@@ -518,7 +556,6 @@ export default function PreviewPanel({
             showOverlay={form.overlayBottom ?? form.showMarkers}
             customDate={form.customDate}
           />
-          </div>
           <NeatlineArtwork
             selection={neatlineSelection}
             className="preview-neatline"

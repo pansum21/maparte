@@ -205,7 +205,10 @@ export default function AppShell() {
   }, [isCinemaMode, cinemaCameraStream]);
 
   useEffect(() => {
-    const resetWallPhoto = () => handleCinemaWallPhotoChange(null);
+    const resetWallPhoto = () => {
+      handleCinemaWallPhotoChange(null);
+      setCinemaPosterPlacement({ x: 0, y: 0, scale: 1 });
+    };
     window.addEventListener("maparte:reset-wall-photo", resetWallPhoto);
     return () => window.removeEventListener("maparte:reset-wall-photo", resetWallPhoto);
   }, [handleCinemaWallPhotoChange]);
