@@ -84,6 +84,8 @@ export default function SettingsPanel({
     handleNumericFieldBlur,
     handleThemeChange,
     handleLayoutChange,
+    handleShapeChange,
+    handleShapeFinishChange,
     handleColorChange,
     handleResetColors,
     handleLocationSelect,
@@ -100,13 +102,13 @@ export default function SettingsPanel({
     useCurrentLocation(flyToLocation);
 
   const [isColorEditorActive, setIsColorEditorActive] = useState(false);
-  const [openSections, setOpenSections] = useState<Set<SectionId>>(
-    new Set([((mobileTab as SectionId) || "location")]),
-  );
+  const getInitialSection = (tab?: string): SectionId => ((tab as SectionId) || "location");
+  const [openSections, setOpenSections] = useState<Set<SectionId>>(new Set([getInitialSection(mobileTab)]));
 
   useEffect(() => {
     if (!mobileTab) return;
-    setOpenSections(new Set([mobileTab as SectionId]));
+    const targetSection = (mobileTab as SectionId);
+    setOpenSections(new Set([targetSection]));
   }, [mobileTab]);
 
   const isAuxEditorActive = isColorEditorActive;
@@ -223,6 +225,8 @@ export default function SettingsPanel({
                 onNumericFieldBlur={handleNumericFieldBlur}
                 onThemeChange={handleThemeChange}
                 onLayoutChange={handleLayoutChange}
+                onShapeChange={handleShapeChange}
+                onShapeFinishChange={handleShapeFinishChange}
                 selectedTheme={selectedTheme}
                 themeOptions={themeOptions}
                 layoutGroups={layoutGroups}
@@ -262,6 +266,8 @@ export default function SettingsPanel({
                 onNumericFieldBlur={handleNumericFieldBlur}
                 onThemeChange={handleThemeChange}
                 onLayoutChange={handleLayoutChange}
+                onShapeChange={handleShapeChange}
+                onShapeFinishChange={handleShapeFinishChange}
                 selectedTheme={selectedTheme}
                 themeOptions={themeOptions}
                 layoutGroups={layoutGroups}

@@ -1,0 +1,297 @@
+/* ────── Map Shapes UI & Poster Styling ────── */
+
+/* Layout / Shape segmented switcher */
+.layout-mode-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.layout-mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.layout-mode-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.layout-mode-btn.is-active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.layout-mode-btn-icon {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+
+/* Shapes Grid */
+.map-shapes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.map-shape-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+}
+
+.map-shape-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.map-shape-card.is-active {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6, 0 6px 16px rgba(59, 130, 246, 0.25);
+}
+
+.map-shape-card-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #f59e0b;
+  color: #000000;
+}
+
+.map-shape-card-badge.badge-best-seller {
+  background: #f43f5e;
+  color: #ffffff;
+}
+
+.map-shape-card-badge.badge-trending {
+  background: #8b5cf6;
+  color: #ffffff;
+}
+
+.map-shape-card-badge.badge-popular {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.map-shape-icon-wrap {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  color: #cbd5e1;
+}
+
+.map-shape-card.is-active .map-shape-icon-wrap {
+  color: #60a5fa;
+}
+
+.map-shape-svg-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.map-shape-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-bottom: 2px;
+}
+
+.map-shape-subtitle {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.2;
+}
+
+/* Edge Finish Selector */
+.shape-finishes-section {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.shape-finishes-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+.shape-finishes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.shape-finish-card {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.07);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.shape-finish-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.shape-finish-card.is-active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.shape-finish-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.shape-finish-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.shape-finish-tag {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+.shape-finish-desc {
+  font-size: 10px;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+/* ────── Poster Preview Shaped Viewport Styling ────── */
+.poster-shaped-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* When a non-full shape is chosen, clip the map container within upper area */
+.poster-frame[data-map-shape="heart"] .poster-map-window,
+.poster-frame[data-map-shape="circle"] .poster-map-window,
+.poster-frame[data-map-shape="squircle"] .poster-map-window,
+.poster-frame[data-map-shape="arch"] .poster-map-window,
+.poster-frame[data-map-shape="star"] .poster-map-window {
+  /* Perfectly elevated in the upper frame so title & coordinates sit clean below */
+  bottom: 26% !important;
+  top: 5% !important;
+  left: 8% !important;
+  right: 8% !important;
+  border-radius: 0;
+}
+
+/* Shape Clip Paths */
+.poster-frame[data-map-shape="heart"] .poster-map-window {
+  clip-path: url(#maparte-shape-heart);
+  -webkit-clip-path: url(#maparte-shape-heart);
+}
+
+.poster-frame[data-map-shape="circle"] .poster-map-window {
+  clip-path: url(#maparte-shape-circle);
+  -webkit-clip-path: url(#maparte-shape-circle);
+}
+
+.poster-frame[data-map-shape="squircle"] .poster-map-window {
+  clip-path: url(#maparte-shape-squircle);
+  -webkit-clip-path: url(#maparte-shape-squircle);
+}
+
+.poster-frame[data-map-shape="arch"] .poster-map-window {
+  clip-path: url(#maparte-shape-arch);
+  -webkit-clip-path: url(#maparte-shape-arch);
+}
+
+.poster-frame[data-map-shape="star"] .poster-map-window {
+  clip-path: url(#maparte-shape-star);
+  -webkit-clip-path: url(#maparte-shape-star);
+}
+
+/* 3D Depth Shadow */
+.poster-frame.shape-finish-shadow[data-map-shape="heart"] .poster-map-window,
+.poster-frame.shape-finish-shadow[data-map-shape="circle"] .poster-map-window,
+.poster-frame.shape-finish-shadow[data-map-shape="squircle"] .poster-map-window,
+.poster-frame.shape-finish-shadow[data-map-shape="arch"] .poster-map-window,
+.poster-frame.shape-finish-shadow[data-map-shape="star"] .poster-map-window {
+  filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.32)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.16));
+}
+
+/* Soft Blur / Vignette Mask */
+.poster-frame.shape-finish-blur[data-map-shape="heart"] .poster-map-window,
+.poster-frame.shape-finish-blur[data-map-shape="circle"] .poster-map-window,
+.poster-frame.shape-finish-blur[data-map-shape="squircle"] .poster-map-window,
+.poster-frame.shape-finish-blur[data-map-shape="arch"] .poster-map-window,
+.poster-frame.shape-finish-blur[data-map-shape="star"] .poster-map-window {
+  mask-image: radial-gradient(ellipse at 50% 50%, #000 60%, rgba(0,0,0,0.6) 82%, transparent 98%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 60%, rgba(0,0,0,0.6) 82%, transparent 98%);
+}
+
+/* Fine Line Architectural Border */
+.poster-shape-stroke-overlay {
+  position: absolute;
+  top: 5%;
+  left: 8%;
+  right: 8%;
+  bottom: 26%;
+  width: calc(100% - 16%);
+  height: calc(100% - 31%);
+  pointer-events: none;
+  z-index: 3;
+}

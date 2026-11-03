@@ -1004,7 +1004,6 @@
 
   /* Tool panels share one side-attached drawer beside the tool rail. */
   .app-shell[data-desktop-tab="layout"] .desktop-left-panel,
-  .app-shell[data-desktop-tab="shapes"] .desktop-left-panel,
   .app-shell[data-desktop-tab="theme"] .desktop-left-panel,
   .app-shell[data-desktop-tab="frames"] .desktop-left-panel,
   .app-shell[data-desktop-tab="templates"] .desktop-left-panel,
@@ -1023,7 +1022,6 @@
   }
 
   .app-shell[data-desktop-tab="layout"] .desktop-settings-slide,
-  .app-shell[data-desktop-tab="shapes"] .desktop-settings-slide,
   .app-shell[data-desktop-tab="theme"] .desktop-settings-slide,
   .app-shell[data-desktop-tab="frames"] .desktop-settings-slide,
   .app-shell[data-desktop-tab="templates"] .desktop-settings-slide,

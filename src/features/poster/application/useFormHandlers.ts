@@ -180,6 +180,20 @@ export function useFormHandlers() {
     dispatch({ type: "RESET_COLORS" });
   }, [dispatch]);
 
+  const handleShapeChange = useCallback(
+    (shape: import("@/features/layout/domain/shapeTypes").MapShapeId) => {
+      dispatch({ type: "SET_FIELD", name: "mapShape", value: shape });
+    },
+    [dispatch],
+  );
+
+  const handleShapeFinishChange = useCallback(
+    (finish: import("@/features/layout/domain/shapeTypes").ShapeFinishId) => {
+      dispatch({ type: "SET_FIELD", name: "shapeFinish", value: finish });
+    },
+    [dispatch],
+  );
+
   const handleLocationSelect = useCallback(
     (suggestion: SearchResult) => {
       dispatch({ type: "SELECT_LOCATION", location: suggestion });
@@ -231,6 +245,8 @@ export function useFormHandlers() {
     handleNumericFieldBlur,
     handleThemeChange,
     handleLayoutChange,
+  handleShapeChange,
+  handleShapeFinishChange,
     handleColorChange,
     handleResetColors,
     handleLocationSelect,

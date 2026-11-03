@@ -176,6 +176,30 @@ export function cityPagesPlugin() {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const url = (req.url ?? '').split('?')[0];
+
+        const occasionSlugs = [
+          'where-we-met',
+          'where-we-met-map',
+          'she-said-yes',
+          'our-wedding-day',
+          'our-first-home',
+          'travel-memories',
+          'marathon-race',
+          'baby-arrival',
+          'hometown-roots',
+          'mountain-summit'
+        ];
+        const trimmed = url.replace(/^\/+|\/+$/g, '');
+        if (occasionSlugs.includes(trimmed)) {
+          const targetSlug = trimmed === 'where-we-met-map' ? 'where-we-met' : trimmed;
+          const staticFile = path.resolve(resolvedConfig.root, 'public', targetSlug, 'index.html');
+          if (fs.existsSync(staticFile)) {
+            const html = fs.readFileSync(staticFile, 'utf8');
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            return res.end(html);
+          }
+        }
+
         if (url.startsWith('/cities/')) {
           const rawSlug = url.replace('/cities/', '').replace(/\/$/, '');
           const cities = JSON.parse(fs.readFileSync(citiesPath, 'utf8'));

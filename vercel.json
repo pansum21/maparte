@@ -63,10 +63,46 @@
   "rewrites": [
     {
       "source": "/where-we-met",
-      "destination": "/where-we-met-map/index.html"
+      "destination": "/where-we-met/index.html"
     },
     {
-      "source": "/((?!api/|assets/|docs/|privacy|imprint|terms|refund|cities/|where-we-met|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|google.*|BingSiteAuth.*|favicon|icon).*)$",
+      "source": "/where-we-met-map",
+      "destination": "/where-we-met/index.html"
+    },
+    {
+      "source": "/she-said-yes",
+      "destination": "/she-said-yes/index.html"
+    },
+    {
+      "source": "/our-wedding-day",
+      "destination": "/our-wedding-day/index.html"
+    },
+    {
+      "source": "/our-first-home",
+      "destination": "/our-first-home/index.html"
+    },
+    {
+      "source": "/travel-memories",
+      "destination": "/travel-memories/index.html"
+    },
+    {
+      "source": "/marathon-race",
+      "destination": "/marathon-race/index.html"
+    },
+    {
+      "source": "/baby-arrival",
+      "destination": "/baby-arrival/index.html"
+    },
+    {
+      "source": "/hometown-roots",
+      "destination": "/hometown-roots/index.html"
+    },
+    {
+      "source": "/mountain-summit",
+      "destination": "/mountain-summit/index.html"
+    },
+    {
+      "source": "/((?!api/|assets/|docs/|privacy|imprint|terms|refund|cities/|where-we-met|she-said-yes|our-wedding-day|our-first-home|travel-memories|marathon-race|baby-arrival|hometown-roots|mountain-summit|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|google.*|BingSiteAuth.*|favicon|icon).*)$",
       "destination": "/index.html"
     }
   ]

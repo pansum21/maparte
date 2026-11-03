@@ -1,3 +1,4 @@
+import MapShapePicker from "@/features/layout/ui/MapShapePicker";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createCustomLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import {
@@ -26,6 +27,8 @@ const FALLBACK_COLOR = "#000000";
 interface MapSettingsForm {
   theme: string;
   layout: string;
+  mapShape?: import("@/features/layout/domain/shapeTypes").MapShapeId;
+  shapeFinish?: import("@/features/layout/domain/shapeTypes").ShapeFinishId;
   width: string;
   height: string;
   distance: string;
@@ -47,6 +50,8 @@ interface MapSettingsSectionProps {
   onNumericFieldBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onThemeChange: (themeId: string) => void;
   onLayoutChange: (layoutId: string) => void;
+  onShapeChange?: (shapeId: import("@/features/layout/domain/shapeTypes").MapShapeId) => void;
+  onShapeFinishChange?: (finishId: import("@/features/layout/domain/shapeTypes").ShapeFinishId) => void;
   selectedTheme: ResolvedTheme;
   themeOptions: ThemeOption[];
   layoutGroups: LayoutGroup[];
@@ -65,6 +70,8 @@ export default function MapSettingsSection({
   onNumericFieldBlur,
   onThemeChange,
   onLayoutChange,
+  onShapeChange,
+  onShapeFinishChange,
   selectedTheme,
   themeOptions,
   layoutGroups,
@@ -77,6 +84,7 @@ export default function MapSettingsSection({
 }: MapSettingsSectionProps) {
   const [isThemeEditing, setIsThemeEditing] = useState(false);
   const [isLayoutEditing, setIsLayoutEditing] = useState(false);
+  const [layoutSubTab, setLayoutSubTab] = useState<"sizes" | "shapes">("sizes");
   const defaultColorKey: ThemeColorKey = DISPLAY_PALETTE_KEYS[0] ?? "ui.bg";
   const [activeColorKey, setActiveColorKey] = useState<ThemeColorKey | null>(
     null,
@@ -375,7 +383,34 @@ export default function MapSettingsSection({
       </div>
 
       <div className="map-settings-layout-part">
-        <h2>Layout</h2>
+        <div className="layout-mode-nav">
+          <button
+            type="button"
+            className={`layout-mode-btn${layoutSubTab === "sizes" ? " is-active" : ""}`}
+            onClick={() => setLayoutSubTab("sizes")}
+          >
+            <span className="layout-mode-btn-icon">📐</span>
+            <span>Print Sizes</span>
+          </button>
+          <button
+            type="button"
+            className={`layout-mode-btn${layoutSubTab === "shapes" ? " is-active" : ""}`}
+            onClick={() => setLayoutSubTab("shapes")}
+          >
+            <span className="layout-mode-btn-icon">💠</span>
+            <span>Map Shapes</span>
+          </button>
+        </div>
+
+        {layoutSubTab === "shapes" ? (
+          <MapShapePicker
+            selectedShape={form.mapShape || "full"}
+            selectedFinish={form.shapeFinish || "shadow"}
+            onShapeChange={(shape) => onShapeChange?.(shape)}
+            onFinishChange={(finish) => onShapeFinishChange?.(finish)}
+          />
+        ) : (
+          <>
         <div className="layout-summary-head">
           <div className="layout-summary-copy">
             <p className="layout-summary-label">
@@ -443,6 +478,8 @@ export default function MapSettingsSection({
               </section>
             ))}
           </div>
+        )}
+          </>
         )}
       </div>
     </section>

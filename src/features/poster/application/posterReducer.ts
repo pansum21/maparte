@@ -55,6 +55,8 @@ export interface PosterForm {
   overlayBottom?: boolean;
   posterTextColor?: string;
   showRoutes: boolean;
+  mapShape?: import("@/features/layout/domain/shapeTypes").MapShapeId;
+  shapeFinish?: import("@/features/layout/domain/shapeTypes").ShapeFinishId;
 }
 
 /* ────── App-level state ────── */
