@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 980" width="100%" height="100%">
+  <defs>
+    <style>
+      .paper { fill: #fcfbf9; }
+      .outer-border { fill: none; stroke: #111827; stroke-width: 3.5; }
+      .inner-border { fill: none; stroke: #111827; stroke-width: 1.2; }
+      .neatline-div { stroke: #111827; stroke-width: 1.2; }
+      .map-bg { fill: #f5f3ee; }
+      .water-body { fill: #d8e5e7; }
+      .road-grid { stroke: #e2ded5; stroke-width: 0.9; }
+      .road-diag { stroke: #e2ded5; stroke-width: 1.1; stroke-dasharray: 4 3; }
+      .road-secondary { stroke: #c9c2b4; stroke-width: 1.8; fill: none; }
+      .road-primary { stroke: #8c8273; stroke-width: 3.2; fill: none; }
+      .marathon-route { stroke: #dc2626; stroke-width: 4.5; fill: none; stroke-linecap: round; stroke-dasharray: 8 4; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); }
+      .title-text { font-family: 'Playfair Display', Georgia, serif; font-size: 38px; font-weight: 700; letter-spacing: 0.18em; fill: #0f172a; text-anchor: middle; }
+      .sub-text { font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 13.5px; font-weight: 600; letter-spacing: 0.28em; fill: #57534e; text-anchor: middle; text-transform: uppercase; }
+      .headline-text { font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 14.5px; font-weight: 700; letter-spacing: 0.16em; fill: #0f172a; text-anchor: middle; text-transform: uppercase; }
+      .date-text { font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.22em; fill: #57534e; text-anchor: middle; }
+    </style>
+    <!-- Clip path for map window -->
+    <clipPath id="mapClip">
+      <rect x="44.95" y="44.95" width="610.0999999999999" height="620" />
+    </clipPath>
+  </defs>
+
+  <!-- 1. Pure Paper Canvas Background -->
+  <rect x="0" y="0" width="700" height="980" class="paper" />
+
+  <!-- 2. Outer THICK Border (Mathematical Symmetry) -->
+  <rect x="30" y="30" width="640" height="920" class="outer-border" />
+
+  <!-- 3. Inner THIN Border -->
+  <rect x="36.35" y="36.35" width="627.3" height="907.3" class="inner-border" />
+
+  <!-- 4. Pure 1.5mm WHITE MAT GAP: The space between Inner Border and Map is 8px pure paper! -->
+
+  <!-- 5. Map Artwork Window (Clean Inset inside 1.5mm White Gap) -->
+  <g clip-path="url(#mapClip)">
+    <rect x="44.95" y="44.95" width="610.0999999999999" height="620" class="map-bg" />
+    <path d="M 44.95 224.95 C 244.95 164.95, 394.95 324.95, 655.05 264.95 L 655.05 44.95 L 44.95 44.95 Z" class="water-body" /><path d="M 44.95 354.95 Q 344.95 304.95 655.05 374.95" class="road-primary" /><path d="M 224.95 44.95 Q 264.95 344.95 204.95 664.95" class="road-primary" /><path d="M 484.95 44.95 Q 454.95 364.95 524.95 664.95" class="road-primary" /><path d="M 44.95 524.95 Q 364.95 534.95 655.05 504.95" class="road-secondary" /><path d="M 44.95 194.95 L 655.05 194.95" class="road-secondary" /><line x1="84.95" y1="44.95" x2="84.95" y2="664.95" class="road-grid" /><line x1="129.95" y1="44.95" x2="129.95" y2="664.95" class="road-grid" /><line x1="174.95" y1="44.95" x2="174.95" y2="664.95" class="road-grid" /><line x1="219.95" y1="44.95" x2="219.95" y2="664.95" class="road-grid" /><line x1="264.95" y1="44.95" x2="264.95" y2="664.95" class="road-grid" /><line x1="309.95" y1="44.95" x2="309.95" y2="664.95" class="road-grid" /><line x1="354.95" y1="44.95" x2="354.95" y2="664.95" class="road-grid" /><line x1="399.95" y1="44.95" x2="399.95" y2="664.95" class="road-grid" /><line x1="444.95" y1="44.95" x2="444.95" y2="664.95" class="road-grid" /><line x1="489.95" y1="44.95" x2="489.95" y2="664.95" class="road-grid" /><line x1="534.95" y1="44.95" x2="534.95" y2="664.95" class="road-grid" /><line x1="579.95" y1="44.95" x2="579.95" y2="664.95" class="road-grid" /><line x1="624.95" y1="44.95" x2="624.95" y2="664.95" class="road-grid" /><line x1="44.95" y1="84.95" x2="655.05" y2="84.95" class="road-grid" /><line x1="44.95" y1="129.95" x2="655.05" y2="129.95" class="road-grid" /><line x1="44.95" y1="174.95" x2="655.05" y2="174.95" class="road-grid" /><line x1="44.95" y1="219.95" x2="655.05" y2="219.95" class="road-grid" /><line x1="44.95" y1="264.95" x2="655.05" y2="264.95" class="road-grid" /><line x1="44.95" y1="309.95" x2="655.05" y2="309.95" class="road-grid" /><line x1="44.95" y1="354.95" x2="655.05" y2="354.95" class="road-grid" /><line x1="44.95" y1="399.95" x2="655.05" y2="399.95" class="road-grid" /><line x1="44.95" y1="444.95" x2="655.05" y2="444.95" class="road-grid" /><line x1="44.95" y1="489.95" x2="655.05" y2="489.95" class="road-grid" /><line x1="44.95" y1="534.95" x2="655.05" y2="534.95" class="road-grid" /><line x1="44.95" y1="579.95" x2="655.05" y2="579.95" class="road-grid" /><line x1="44.95" y1="624.95" x2="655.05" y2="624.95" class="road-grid" /><line x1="44.95" y1="144.95" x2="655.05" y2="584.95" class="road-diag" /><line x1="44.95" y1="564.95" x2="655.05" y2="124.95" class="road-diag" />
+    
+      <g transform="translate(333.99999999999994, 314.15)">
+        <circle cx="16" cy="16" r="22" fill="#e11d48" fill-opacity="0.18" />
+        <circle cx="16" cy="16" r="12" fill="none" stroke="#e11d48" stroke-width="2" />
+        <polygon points="16,6 19,16 16,26 13,16" fill="#e11d48" />
+        <polygon points="6,16 16,13 26,16 16,19" fill="#e11d48" fill-opacity="0.6" />
+      </g>
+  </g>
+
+  <!-- 6. Map Window Inset Frame Line -->
+  <rect x="44.95" y="44.95" width="610.0999999999999" height="620" fill="none" stroke="#111827" stroke-width="0.8" stroke-opacity="0.65" />
+
+  <!-- 7. Horizontal Divider separating Map & Typography -->
+  <line x1="204.95" y1="792.95" x2="495.04999999999995" y2="792.95" stroke="#111827" stroke-width="0.9" stroke-opacity="0.5" />
+
+  <!-- 8. Typography Section (Tailored to Preset) -->
+  <g id="posterTypography">
+    <!-- Big City Name -->
+    <text x="350" y="726.95" class="title-text">KYOTO</text>
+
+    <!-- State / Country & Coordinates -->
+    <text x="350" y="764.95" class="sub-text">JAPAN • 35.0116° N, 135.7681° E</text>
+
+    <!-- Occasion Headline -->
+    <text x="350" y="827.95" class="headline-text">WANDERLUST ADVENTURE</text>
+
+    <!-- Tailored Date & Personal Note -->
+    <text x="350" y="857.95" class="date-text">MEMORIES ACROSS THE GLOBE • EXPEDITION</text>
+  </g>
+</svg>

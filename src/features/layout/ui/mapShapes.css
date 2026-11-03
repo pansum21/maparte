@@ -227,9 +227,10 @@
 /* When a non-full shape is chosen, clip the map container within upper area */
 .poster-frame[data-map-shape="heart"] .poster-map-window,
 .poster-frame[data-map-shape="circle"] .poster-map-window,
+.poster-frame[data-map-shape="honeycomb"] .poster-map-window,
+.poster-frame[data-map-shape="quadrilateral"] .poster-map-window,
 .poster-frame[data-map-shape="squircle"] .poster-map-window,
-.poster-frame[data-map-shape="arch"] .poster-map-window,
-.poster-frame[data-map-shape="star"] .poster-map-window {
+.poster-frame[data-map-shape="arch"] .poster-map-window {
   /* Perfectly elevated in the upper frame so title & coordinates sit clean below */
   bottom: 26% !important;
   top: 5% !important;
@@ -249,6 +250,16 @@
   -webkit-clip-path: url(#maparte-shape-circle);
 }
 
+.poster-frame[data-map-shape="honeycomb"] .poster-map-window {
+  clip-path: url(#maparte-shape-honeycomb);
+  -webkit-clip-path: url(#maparte-shape-honeycomb);
+}
+
+.poster-frame[data-map-shape="quadrilateral"] .poster-map-window {
+  clip-path: url(#maparte-shape-quadrilateral);
+  -webkit-clip-path: url(#maparte-shape-quadrilateral);
+}
+
 .poster-frame[data-map-shape="squircle"] .poster-map-window {
   clip-path: url(#maparte-shape-squircle);
   -webkit-clip-path: url(#maparte-shape-squircle);
@@ -259,26 +270,23 @@
   -webkit-clip-path: url(#maparte-shape-arch);
 }
 
-.poster-frame[data-map-shape="star"] .poster-map-window {
-  clip-path: url(#maparte-shape-star);
-  -webkit-clip-path: url(#maparte-shape-star);
-}
-
 /* 3D Depth Shadow */
 .poster-frame.shape-finish-shadow[data-map-shape="heart"] .poster-map-window,
 .poster-frame.shape-finish-shadow[data-map-shape="circle"] .poster-map-window,
+.poster-frame.shape-finish-shadow[data-map-shape="honeycomb"] .poster-map-window,
+.poster-frame.shape-finish-shadow[data-map-shape="quadrilateral"] .poster-map-window,
 .poster-frame.shape-finish-shadow[data-map-shape="squircle"] .poster-map-window,
-.poster-frame.shape-finish-shadow[data-map-shape="arch"] .poster-map-window,
-.poster-frame.shape-finish-shadow[data-map-shape="star"] .poster-map-window {
+.poster-frame.shape-finish-shadow[data-map-shape="arch"] .poster-map-window {
   filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.32)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.16));
 }
 
 /* Soft Blur / Vignette Mask */
 .poster-frame.shape-finish-blur[data-map-shape="heart"] .poster-map-window,
 .poster-frame.shape-finish-blur[data-map-shape="circle"] .poster-map-window,
+.poster-frame.shape-finish-blur[data-map-shape="honeycomb"] .poster-map-window,
+.poster-frame.shape-finish-blur[data-map-shape="quadrilateral"] .poster-map-window,
 .poster-frame.shape-finish-blur[data-map-shape="squircle"] .poster-map-window,
-.poster-frame.shape-finish-blur[data-map-shape="arch"] .poster-map-window,
-.poster-frame.shape-finish-blur[data-map-shape="star"] .poster-map-window {
+.poster-frame.shape-finish-blur[data-map-shape="arch"] .poster-map-window {
   mask-image: radial-gradient(ellipse at 50% 50%, #000 60%, rgba(0,0,0,0.6) 82%, transparent 98%);
   -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 60%, rgba(0,0,0,0.6) 82%, transparent 98%);
 }

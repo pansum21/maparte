@@ -80,6 +80,7 @@ export interface PosterState {
     city: boolean;
     country: boolean;
   };
+  showGrid?: boolean;
 }
 
 /* ────── Actions ────── */
@@ -123,6 +124,8 @@ export type PosterAction =
   | { type: "REMOVE_ROUTE"; routeId: string }
   | { type: "REPLACE_ROUTES"; routes: Route[] }
   | { type: "CLEAR_ROUTES" }
+  | { type: "TOGGLE_GRID" }
+  | { type: "SET_GRID"; visible: boolean }
   | {
       type: "SET_ROUTE_DEFAULTS";
       defaults: Partial<RouteDefaults>;
@@ -268,6 +271,12 @@ export function posterReducer(
           displayContinent: "",
         },
       };
+
+    case "TOGGLE_GRID":
+      return { ...state, showGrid: !state.showGrid };
+
+    case "SET_GRID":
+      return { ...state, showGrid: action.visible };
 
     case "SET_LOCATION_FOCUSED":
       return { ...state, isLocationFocused: action.focused };

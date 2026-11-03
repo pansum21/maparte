@@ -92,7 +92,11 @@ export default function SettingsPanel({
     handleClearLocation,
     setLocationFocused,
     handleCreditsChange,
-  } = useFormHandlers();
+} = useFormHandlers();
+
+  const handleFontChange = (fontFamily: string) => {
+    dispatch({ type: "SET_FIELD", name: "fontFamily", value: fontFamily });
+  };
   const { locationSuggestions, isLocationSearching, searchNow } = useLocationAutocomplete(
     state.form.location,
     state.isLocationFocused,
@@ -224,6 +228,7 @@ export default function SettingsPanel({
                 onChange={handleChange}
                 onNumericFieldBlur={handleNumericFieldBlur}
                 onThemeChange={handleThemeChange}
+                onFontChange={handleFontChange}
                 onLayoutChange={handleLayoutChange}
                 onShapeChange={handleShapeChange}
                 onShapeFinishChange={handleShapeFinishChange}
@@ -265,6 +270,7 @@ export default function SettingsPanel({
                 onChange={handleChange}
                 onNumericFieldBlur={handleNumericFieldBlur}
                 onThemeChange={handleThemeChange}
+                onFontChange={handleFontChange}
                 onLayoutChange={handleLayoutChange}
                 onShapeChange={handleShapeChange}
                 onShapeFinishChange={handleShapeFinishChange}

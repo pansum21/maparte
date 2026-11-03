@@ -44,5 +44,6 @@ export { FiHeart as HeartIcon, FiHome as HomeIcon, FiCompass as CompassIcon, FiA
 export { FiHome as WallIcon } from "react-icons/fi";
 export { FaScissors as ScissorsIcon } from "react-icons/fa6";
 export { FiTarget as RecenterIcon } from "react-icons/fi";
+export { FiGrid as GridIcon } from "react-icons/fi";
 
 export { FiMaximize as FullScreenIcon } from "react-icons/fi";

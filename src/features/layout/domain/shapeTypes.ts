@@ -1,4 +1,11 @@
-export type MapShapeId = "full" | "heart" | "circle" | "squircle" | "arch" | "star";
+export type MapShapeId =
+  | "full"
+  | "heart"
+  | "circle"
+  | "honeycomb"
+  | "quadrilateral"
+  | "squircle"
+  | "arch";
 
 export type ShapeFinishId = "shadow" | "blur" | "border" | "clean";
 
@@ -42,18 +49,35 @@ export const MAP_SHAPES: MapShapeDefinition[] = [
   },
   {
     id: "circle",
-    name: "Minimalist Orb",
-    subtitle: "Zen & Scandinavian",
+    name: "Classic Circle",
+    subtitle: "Pure Minimalist Orb",
     badge: "Popular",
-    description: "Classic balanced circular aperture for modern interiors.",
+    description: "Balanced circular aperture for timeless gallery aesthetics.",
     svgPath: "M 50 5 A 45 45 0 1 0 50 95 A 45 45 0 1 0 50 5 Z",
     normalizedPath: "M 0.5 0.05 A 0.45 0.45 0 1 0 0.5 0.95 A 0.45 0.45 0 1 0 0.5 0.05 Z",
+  },
+  {
+    id: "honeycomb",
+    name: "Honeycomb Triptych",
+    subtitle: "3-Cell Hexagon Cluster (1mm Gap)",
+    badge: "Trending",
+    description: "Trio of architectural honeycomb cells with a precise 1mm gallery spacing.",
+    svgPath: "M 70.35 35.44 L 50 47.19 L 29.65 35.44 L 29.65 11.94 L 50 0.19 L 70.35 11.94 Z M 49.3 71.9 L 28.95 83.65 L 8.6 71.9 L 8.6 48.4 L 28.95 36.65 L 49.3 48.4 Z M 91.4 71.9 L 71.05 83.65 L 50.7 71.9 L 50.7 48.4 L 71.05 36.65 L 91.4 48.4 Z",
+    normalizedPath: "M 0.7035 0.3544 L 0.5 0.4719 L 0.2965 0.3544 L 0.2965 0.1194 L 0.5 0.0019 L 0.7035 0.1194 Z M 0.493 0.719 L 0.2895 0.8365 L 0.086 0.719 L 0.086 0.484 L 0.2895 0.3665 L 0.493 0.484 Z M 0.914 0.719 L 0.7105 0.8365 L 0.507 0.719 L 0.507 0.484 L 0.7105 0.3665 L 0.914 0.484 Z",
+  },
+  {
+    id: "quadrilateral",
+    name: "Geometric Diamond",
+    subtitle: "Quadrilateral Polygon",
+    badge: "New",
+    description: "Striking 4-point diamond quadrilateral with razor-sharp geometric lines.",
+    svgPath: "M 50 5 L 92 50 L 50 95 L 8 50 Z",
+    normalizedPath: "M 0.50 0.05 L 0.92 0.50 L 0.50 0.95 L 0.08 0.50 Z",
   },
   {
     id: "squircle",
     name: "Soft Squircle",
     subtitle: "Apple Rounded Frame",
-    badge: "New",
     description: "Continuous curvature rounded square with softened borders.",
     svgPath: "M 25 5 L 75 5 C 92 5, 95 8, 95 25 L 95 75 C 95 92, 92 95, 75 95 L 25 95 C 8 95, 5 92, 5 75 L 5 25 C 5 8, 8 5, 25 5 Z",
     normalizedPath: "M 0.25 0.05 L 0.75 0.05 C 0.92 0.05, 0.95 0.08, 0.95 0.25 L 0.95 0.75 C 0.95 0.92, 0.92 0.95, 0.75 0.95 L 0.25 0.95 C 0.08 0.95, 0.05 0.92, 0.05 0.75 L 0.05 0.25 C 0.05 0.08, 0.08 0.05, 0.25 0.05 Z",
@@ -62,18 +86,9 @@ export const MAP_SHAPES: MapShapeDefinition[] = [
     id: "arch",
     name: "Modern Arch",
     subtitle: "Architectural Vault",
-    badge: "Trending",
     description: "Mediterranean arched dome trending in luxury editorial prints.",
     svgPath: "M 10 92 L 10 48 A 40 40 0 0 1 90 48 L 90 92 Z",
     normalizedPath: "M 0.10 0.92 L 0.10 0.48 A 0.40 0.40 0 0 1 0.90 0.48 L 0.90 0.92 Z",
-  },
-  {
-    id: "star",
-    name: "Celestial Star",
-    subtitle: "Baby Born & Milestones",
-    description: "5-pointed star mask celebrating newborn dates and summits.",
-    svgPath: "M 50 5 L 61.2 36.8 L 95 38.2 L 68.5 59.8 L 77.3 93.2 L 50 74.5 L 22.7 93.2 L 31.5 59.8 L 5 38.2 L 38.8 36.8 Z",
-    normalizedPath: "M 0.50 0.05 L 0.612 0.368 L 0.95 0.382 L 0.685 0.598 L 0.773 0.932 L 0.50 0.745 L 0.227 0.932 L 0.315 0.598 L 0.05 0.382 L 0.388 0.368 Z",
   },
 ];
 
@@ -101,7 +116,7 @@ export const SHAPE_FINISHES: ShapeFinishDefinition[] = [
   {
     id: "clean",
     name: "Clean Cut",
-    description: "Minimalist, flat edge-cut without shadows or strokes.",
+    description: "Direct precision razor cutout without surrounding effects.",
     icon: "scissors",
   },
 ];

@@ -50,6 +50,7 @@ interface MapSettingsSectionProps {
   onNumericFieldBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onThemeChange: (themeId: string) => void;
   onLayoutChange: (layoutId: string) => void;
+  onFontChange?: (font: string) => void;
   onShapeChange?: (shapeId: import("@/features/layout/domain/shapeTypes").MapShapeId) => void;
   onShapeFinishChange?: (finishId: import("@/features/layout/domain/shapeTypes").ShapeFinishId) => void;
   selectedTheme: ResolvedTheme;
@@ -70,6 +71,7 @@ export default function MapSettingsSection({
   onNumericFieldBlur,
   onThemeChange,
   onLayoutChange,
+  onFontChange,
   onShapeChange,
   onShapeFinishChange,
   selectedTheme,
@@ -378,6 +380,11 @@ export default function MapSettingsSection({
             selectedThemeOption={summaryThemeOption}
             onThemeSelect={handleThemeSelect}
             onCustomize={handleOpenThemeEditor}
+            onSelectDesign={(design) => {
+              if (onFontChange) {
+                onFontChange(design.fontFamily);
+              }
+            }}
           />
         )}
       </div>

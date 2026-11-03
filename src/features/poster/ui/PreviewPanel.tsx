@@ -21,6 +21,8 @@ import RouteOverlay from "@/features/routes/ui/RouteOverlay";
 import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
 import GradientFades from "./GradientFades";
 import PosterTextOverlay from "./PosterTextOverlay";
+import PosterGridOverlay from "./PosterGridOverlay";
+import { GridIcon } from "@/shared/ui/Icons";
 import SettingsInfo from "./SettingsInfo";
 import {
   PlusIcon,
@@ -108,6 +110,24 @@ export default function PreviewPanel({
   const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === "g" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const activeEl = document.activeElement;
+        if (
+          activeEl instanceof HTMLInputElement ||
+          activeEl instanceof HTMLTextAreaElement ||
+          (activeEl instanceof HTMLElement && activeEl.isContentEditable)
+        ) {
+          return;
+        }
+        dispatch({ type: "TOGGLE_GRID" });
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [dispatch]);
   const [mainSettingsOpen, setMainSettingsOpen] = useState(false);
   const cameraVideoRef = useRef<HTMLVideoElement | null>(null);
   const isEditing = controlledIsEditing !== undefined ? controlledIsEditing : internalIsEditing;
@@ -427,6 +447,20 @@ export default function PreviewPanel({
             </div>
           </>
         ) : null}
+
+        {!isCinemaMode ? (
+          <button
+            type="button"
+            className={`poster-grid-toggle-btn${state.showGrid ? " is-active" : ""}`}
+            onClick={() => dispatch({ type: "TOGGLE_GRID" })}
+            title={state.showGrid ? "Hide Alignment Grid (G)" : "Show Alignment Grid & Center Finder (G)"}
+            aria-label="Toggle alignment grid"
+            aria-pressed={Boolean(state.showGrid)}
+          >
+            <GridIcon className="poster-grid-toggle-icon" />
+            <span>Grid</span>
+          </button>
+        ) : null}
         <MapShapeDefs />
         <div
           ref={frameRef}
@@ -562,6 +596,12 @@ export default function PreviewPanel({
             widthCm={form.width}
             heightCm={form.height}
           />
+          {state.showGrid ? (
+            <PosterGridOverlay
+              backgroundColor={effectiveTheme.ui.bg}
+              textColor={effectiveTheme.ui.text}
+            />
+          ) : null}
         </div>
       </div>
 

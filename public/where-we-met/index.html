@@ -6,7 +6,10 @@
     <title>Where We Met Map Poster | Custom Romantic Anniversary & Wedding Gift — MAPARTE</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Create a custom 'Where We Met' map poster. Pin the exact spot your love story began with a glowing heart marker, luxury typography, architectural neatline borders, and live AR wall preview." />
+    <meta
+      name="description"
+      content="Create a custom 'Where We Met' map poster. Pin the exact spot your love story began with a glowing heart marker, luxury typography, architectural neatline borders, and live AR wall preview."
+    />
     <meta name="keywords" content="where we met map, where we met map poster, custom anniversary map, wedding location map, first date map, relationship coordinates poster" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://maparte.com/where-we-met" />
@@ -15,7 +18,10 @@
     <meta property="og:type" content="product" />
     <meta property="og:site_name" content="MAPARTE" />
     <meta property="og:title" content="Where We Met Map Poster | Custom Romantic Anniversary & Wedding Gift — MAPARTE" />
-    <meta property="og:description" content="Create a custom 'Where We Met' map poster. Pin the exact spot your love story began with a glowing heart marker, luxury typography, architectural neatline borders, and live AR wall preview." />
+    <meta
+      property="og:description"
+      content="Celebrate your love story. Pin the exact cafe, street, or city where you first met with custom heart markers, architectural borders, and instant 300 DPI exports."
+    />
     <meta property="og:url" content="https://maparte.com/where-we-met" />
     <meta property="og:image" content="https://maparte.com/assets/banner.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
@@ -23,7 +29,10 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Where We Met Map Poster | Custom Romantic Anniversary & Wedding Gift — MAPARTE" />
-    <meta name="twitter:description" content="Create a custom 'Where We Met' map poster. Pin the exact spot your love story began with a glowing heart marker, luxury typography, architectural neatline borders, and live AR wall preview." />
+    <meta
+      name="twitter:description"
+      content="Pin the exact spot where your love story began. Custom romantic map prints with heart markers, Playfair typography, and live wall camera preview."
+    />
     <meta name="twitter:image" content="https://maparte.com/assets/banner.jpg" />
 
     <!-- Favicon -->
@@ -899,7 +908,339 @@
         <nav style="display: flex; align-items: center; gap: 20px;">
           <a href="/#popular-cities" style="color: var(--text-secondary); font-size: 0.9rem;">800 Cities</a>
           <a href="/#framing-guide" style="color: var(--text-secondary); font-size: 0.9rem;">Framing Guide</a>
-          <a href="/cities/paris-map-poster?city=Paris&lat=48.85341&lon=2.3488&title=WHERE%20WE%20MET&headline=FOREVER%20%26%20ALWAYS%20%E2%80%A2%2014%20FEB&theme=' + config.themeQuery + '&font=Playfair+Display&shape=heart&shapeFinish=shadow&border=neatline-thick-thin';
+          <a href="/cities/paris-map-poster?city=Paris&lat=48.85341&lon=2.3488&title=WHERE%20WE%20MET&headline=FOREVER%20%26%20ALWAYS%20%E2%80%A2%2014%20FEB&theme=carrara&font=Playfair+Display&shape=heart&shapeFinish=shadow&border=neatline-thick-thin" class="nav-cta" id="navCta">Design Your Love Map &rarr;</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="romantic-badge"><span class="heart-pulse">💕</span> The Most Meaningful Anniversary &amp; Wedding Gift</div>
+        <h1>Where We Met<br /><span>Custom Map Art Poster</span></h1>
+        <p>The cozy coffee shop where you first laughed together. The street corner of your first kiss. The quiet beach where you said forever. Immortalize your most sacred place with a bespoke, museum-grade map print.</p>
+        <div class="hero-actions">
+          <a href="/cities/paris-map-poster?city=Paris&lat=48.85341&lon=2.3488&title=WHERE%20WE%20MET&headline=FOREVER%20%26%20ALWAYS%20%E2%80%A2%2014%20FEB&theme=carrara&font=Playfair+Display&shape=heart&shapeFinish=shadow&border=neatline-thick-thin" class="btn-romantic" id="primaryHeroCta"><span class="heart-pulse">❤️</span> Create Your Love Map (Free Preview) &rarr;</a>
+          <a href="#how-it-works" class="btn-outline">See How It Works ↓</a>
+        </div>
+      </section>
+
+      <!-- Live Real Poster Mockup Preview with Interactive Controls -->
+      <div class="mockup-container">
+        <div class="mockup-controls-cluster">
+          <!-- Theme Style Toggle -->
+          <div class="control-group">
+            <span class="control-label">STYLE:</span>
+            <div class="mockup-switcher">
+              <button type="button" class="switcher-btn is-active" id="btnThemeCarrara" onclick="setTheme('carrara')">
+                <span class="dot-carrara"></span> Classic White (Carrara)
+              </button>
+              <button type="button" class="switcher-btn" id="btnThemeMidnight" onclick="setTheme('midnight')">
+                <span class="dot-midnight"></span> Midnight Gold
+              </button>
+            </div>
+          </div>
+
+          <!-- City Location Toggle -->
+          <div class="control-group">
+            <span class="control-label">CITY:</span>
+            <div class="mockup-switcher">
+              <button type="button" class="switcher-btn is-active" id="btnCityParis" onclick="setCity('paris')">
+                🗼 Paris
+              </button>
+              <button type="button" class="switcher-btn" id="btnCityNy" onclick="setCity('newyork')">
+                🗽 New York
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mockup-frame-wrap" id="mockupFrameWrap">
+          <!-- Borderless Pure Fine-Art Print (No Black Outer Frame) -->
+          <div class="mockup-frame is-floating" id="mockupFrame">
+            <div class="mockup-glare" id="mockupGlare"></div>
+            <div class="mockup-ambient-glow" id="ambientGlow"></div>
+            <div class="mockup-real-poster-wrapper">
+              <img id="realPosterImg" src="/assets/where-we-met-paris-carrara.png" alt="Real custom Where We Met Paris map poster in Classic Carrara White with architectural neatline rendered by MAPARTE" />
+            </div>
+          </div>
+        </div>
+
+        <div class="mockup-caption" id="mockupCaption">
+          ✦ 100% Real vector artwork rendered in MAPARTE with Classic Carrara White, 3D Heart Marker &amp; Playfair Display
+        </div>
+      </div>
+
+      <!-- Emotional Occasions Grid -->
+      <section class="section-container reveal-on-scroll">
+        <div class="section-header">
+          <h2>Every Love Story Has a Geography</h2>
+          <p>Whether it happened last month or twenty years ago, frame the location that changed your lives forever.</p>
+        </div>
+
+        <div class="cards-grid">
+          <div class="card reveal-on-scroll">
+            <span class="card-icon">☕</span>
+            <h3>The First Date</h3>
+            <p>Pin the exact bistro, bar, or campus courtyard where nervous hellos turned into hours of endless conversation.</p>
+          </div>
+          <div class="card reveal-on-scroll">
+            <span class="card-icon">💍</span>
+            <h3>The Proposal Spot</h3>
+            <p>"She Said Yes" — celebrate that mountain overlook, European bridge, or holiday getaway where you bent the knee.</p>
+          </div>
+          <div class="card reveal-on-scroll">
+            <span class="card-icon">🥂</span>
+            <h3>The Wedding Venue</h3>
+            <p>Commemorate the chapel, vineyard, or coastline where you exchanged your vows in front of everyone you love.</p>
+          </div>
+          <div class="card reveal-on-scroll">
+            <span class="card-icon">🏡</span>
+            <h3>Our First Home</h3>
+            <p>The first set of keys you shared. Capture your front door and neighborhood street grid on archival-quality paper.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works -->
+      <section class="section-container" id="how-it-works">
+        <div class="section-header">
+          <h2>Three Steps to Your Finished Poster</h2>
+          <p>No design experience needed. Real-time 60FPS vector editing right in your browser.</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-item reveal-on-scroll">
+            <div class="step-num">01</div>
+            <h3>Search Your Special Place</h3>
+            <p>Type any address, city, coordinate, or landmark in the world. Drag, zoom, and center the map exactly where you want.</p>
+          </div>
+          <div class="step-item reveal-on-scroll">
+            <div class="step-num">02</div>
+            <h3>Drop Your Love Pin &amp; Text</h3>
+            <p>Choose the glowing Heart Pin (❤️), Ring (💍), or Home (🏡) marker. Personalize your names, special date, and custom message in Playfair Display serif.</p>
+          </div>
+          <div class="step-item reveal-on-scroll">
+            <div class="step-num">03</div>
+            <h3>Preview on Wall &amp; Download</h3>
+            <p>Use your phone's camera to see the framed poster live on your own wall, then download a high-definition 300 DPI file ready for any local frame shop.</p>
+          </div>
+        </div>
+
+        <div style="text-align: center;">
+          <a href="/cities/paris-map-poster?city=Paris&lat=48.85341&lon=2.3488&title=WHERE%20WE%20MET&headline=FOREVER%20%26%20ALWAYS%20%E2%80%A2%2014%20FEB&theme=midnight_blue&font=Playfair+Display&border=neatline-thick-thin" class="btn-romantic">
+            Start Designing in Real-Time &rarr;
+          </a>
+        </div>
+      </section>
+
+      <!-- Live Camera AR Spotlight -->
+      <section class="section-container">
+        <div class="ar-spotlight reveal-on-scroll">
+          <div class="ar-content">
+            <div class="badge"><span class="radar-beacon"></span> Exclusive to MAPARTE</div>
+            <h2>Preview Directly on Your Real Wall with Live Camera AR</h2>
+            <p>
+              Never guess if a 50x70cm or 30x40cm poster will look too big or too small. With MAPARTE, you can turn on your smartphone camera or upload a photo of your room to preview your custom print hanging above your bed or sofa.
+            </p>
+            <div class="ar-features-list">
+              <div class="ar-feature">
+                <span>✓</span> <strong>Real-Time Camera Stream:</strong> Projects the artwork directly onto your wall using WebRTC.
+              </div>
+              <div class="ar-feature">
+                <span>✓</span> <strong>Size &amp; Position Slider:</strong> Drag and scale the frame to match your exact wall proportions.
+              </div>
+              <div class="ar-feature">
+                <span>✓</span> <strong>64 Designer Wall Paint Tones:</strong> Test how your map contrasts with alabaster, slate, and navy paint.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <section class="section-container">
+        <div class="section-header">
+          <h2>Treasured by Couples Worldwide</h2>
+          <p>Read what our customers had to say after unwrapping their custom map prints.</p>
+        </div>
+
+        <div class="testimonials-grid">
+          <div class="testimonial-card reveal-on-scroll">
+            <div class="stars">★★★★★</div>
+            <p class="quote">"I gifted this to my husband for our 1st 'paper' wedding anniversary marking the cafe in Florence where we met. He literally teared up. The print quality is razor-sharp!"</p>
+            <div class="author">— Sophia &amp; Liam, London</div>
+          </div>
+          <div class="testimonial-card reveal-on-scroll">
+            <div class="stars">★★★★★</div>
+            <p class="quote">"The heart marker placed exactly on our Central Park proposal spot looks so luxurious. We downloaded the 300 DPI file and had it printed at our local shop in 2 hours."</p>
+            <div class="author">— Jessica M., New York</div>
+          </div>
+          <div class="testimonial-card reveal-on-scroll">
+            <div class="stars">★★★★★</div>
+            <p class="quote">"Being able to turn on my phone's camera and see the frame on our living room wall before buying was amazing. Mapiful doesn't even have this!"</p>
+            <div class="author">— David K., Sydney</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="section-container">
+        <div class="section-header">
+          <h2>Frequently Asked Questions</h2>
+          <p>Everything you need to know about creating your custom 'Where We Met' print.</p>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item reveal-on-scroll">
+            <h3 class="faq-question">How do I mark the exact location where we met?</h3>
+            <p class="faq-answer">
+              In our editor, search for any city, address, or coordinate. You can pan the map to center the street or venue. Then toggle the Markers tool and select the Heart pin (❤️) to drop it exactly on your spot.
+            </p>
+          </div>
+          <div class="faq-item reveal-on-scroll">
+            <h3 class="faq-question">Can I customize the text, names, and date?</h3>
+            <p class="faq-answer">
+              Yes! You can edit the main title (e.g. "WHERE WE MET", "OUR FIRST KISS", "MR & MRS"), customize the subtitle with your names or anniversary date, and even show or hide the exact GPS coordinates.
+            </p>
+          </div>
+          <div class="faq-item reveal-on-scroll">
+            <h3 class="faq-question">What frames does this fit?</h3>
+            <p class="faq-answer">
+              MAPARTE designs are tailored to standard universal frame sizes: 50x70cm, 30x40cm, 18x24in, 24x36in, and A1–A4. You can easily find matching frames at IKEA, Target, or Amazon.
+            </p>
+          </div>
+          <div class="faq-item reveal-on-scroll">
+            <h3 class="faq-question">How fast will I get my design?</h3>
+            <p class="faq-answer">
+              Immediately! Once you finish styling your artwork, you can export a crystal-clear 300 DPI print-ready file in seconds without waiting 2 weeks for overseas shipping.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Final Romantic Call to Action -->
+      <section class="section-container">
+        <div class="final-cta reveal-on-scroll">
+          <h2>Frame the Spot Where It All Started</h2>
+          <p>Design your custom "Where We Met" map poster now. 100% free live 4K preview with no credit card required.</p>
+          <a href="/cities/paris-map-poster?city=Paris&lat=48.85341&lon=2.3488&title=WHERE%20WE%20MET&headline=FOREVER%20%26%20ALWAYS%20%E2%80%A2%2014%20FEB&theme=carrara&font=Playfair+Display&border=neatline-thick-thin" class="btn-romantic" id="finalFooterCta" style="font-size: 1.15rem; padding: 18px 44px;">
+            <span class="heart-pulse">❤️</span> Design Your Love Map Now &rarr;
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p style="margin-bottom: 12px;">
+        &copy; 2026 MAPARTE™. All rights reserved. Fine Art Cartography &amp; Romantic Wall Art.
+      </p>
+      <p>
+        <a href="/">Home</a>
+        <a href="/where-we-met-map">Where We Met Map</a>
+        <a href="/mapiful-alternative">Mapiful Alternative</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/imprint">Imprint</a>
+      </p>
+    </footer>
+
+    <script>
+      var currentTheme = 'carrara';
+      var currentCity = 'paris';
+
+      var CITY_META = {
+        paris: {
+          slug: 'paris-map-poster',
+          cityName: 'Paris',
+          lat: '48.85341',
+          lon: '2.3488',
+          label: 'PARIS'
+        },
+        newyork: {
+          slug: 'new-york-map-poster',
+          cityName: 'New York',
+          lat: '40.7128',
+          lon: '-74.0060',
+          label: 'NEW YORK'
+        }
+      };
+
+      var POSTER_ASSETS = {
+        carrara: {
+          paris: '/assets/where-we-met-paris-carrara.png',
+          newyork: '/assets/where-we-met-newyork-carrara.png',
+          altText: 'Where We Met Classic Carrara White map poster',
+          caption: '✦ 100% Real vector artwork rendered in MAPARTE with Classic Carrara White, 3D Heart Marker & Playfair Display',
+          themeQuery: 'carrara',
+          ambientOpacity: '0.24'
+        },
+        midnight: {
+          paris: '/assets/where-we-met-paris-real.png',
+          newyork: '/assets/where-we-met-newyork-real.png',
+          altText: 'Where We Met Midnight Blue & Gold map poster',
+          caption: '✦ 100% Real vector artwork rendered in MAPARTE with Midnight Blue, 3D Gold Heart & Playfair Display',
+          themeQuery: 'midnight_blue',
+          ambientOpacity: '0.48'
+        }
+      };
+
+      function updatePosterDisplay() {
+        var img = document.getElementById('realPosterImg');
+        var ambientGlow = document.getElementById('ambientGlow');
+        var ghostCarrara = document.getElementById('ghostMapCarrara');
+        var ghostMidnight = document.getElementById('ghostMapMidnight');
+        var caption = document.getElementById('mockupCaption');
+        var ctaBtns = document.querySelectorAll('.btn-romantic, .nav-cta');
+        if (!img) return;
+
+        var config = POSTER_ASSETS[currentTheme];
+        var assetSrc = config[currentCity];
+
+        // Animate poster image transition
+        img.style.transition = 'opacity 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        img.style.opacity = '0.15';
+        img.style.transform = 'scale(0.96)';
+
+        setTimeout(function() {
+          img.src = assetSrc;
+          img.alt = config.altText;
+
+          // 1. Update Halo Glow behind frame
+          if (ambientGlow) {
+            ambientGlow.style.backgroundImage = "url('" + assetSrc + "')";
+            ambientGlow.style.opacity = config.ambientOpacity;
+          }
+
+          // 2. Update Full-Window Translucent Map Backdrop
+          var carraraAsset = POSTER_ASSETS.carrara[currentCity];
+          var midnightAsset = POSTER_ASSETS.midnight[currentCity];
+
+          if (ghostCarrara) {
+            ghostCarrara.style.backgroundImage = "url('" + carraraAsset + "')";
+            ghostCarrara.classList.toggle('is-active', currentTheme === 'carrara');
+          }
+          if (ghostMidnight) {
+            ghostMidnight.style.backgroundImage = "url('" + midnightAsset + "')";
+            ghostMidnight.classList.toggle('is-active', currentTheme === 'midnight');
+          }
+
+          // 3. Update Caption
+          if (caption) {
+            caption.textContent = config.caption;
+          }
+
+          // 4. Update CTA Links with precise city, coords, and Where We Met presets
+          var cityInfo = CITY_META[currentCity];
+          var targetUrl = '/cities/' + cityInfo.slug + 
+            '?city=' + encodeURIComponent(cityInfo.cityName) + 
+            '&lat=' + cityInfo.lat + 
+            '&lon=' + cityInfo.lon + 
+            '&title=WHERE%20WE%20MET' + 
+            '&headline=' + encodeURIComponent('FOREVER & ALWAYS • 14 FEB') + 
+            '&theme=' + config.themeQuery + 
+            '&font=Playfair+Display&shape=heart&shapeFinish=shadow&border=neatline-thick-thin';
 
           ctaBtns.forEach(function(btn) {
             btn.href = targetUrl;

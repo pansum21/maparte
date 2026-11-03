@@ -1167,3 +1167,73 @@
 .poster-viewport.is-wall-mockup .poster-frame.is-full-bleed {
   background: transparent;
 }
+
+/* ── Floating Poster Grid & Center Finder Toggle ── */
+.poster-grid-toggle-btn {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 9999px;
+  background: rgba(12, 26, 40, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.38);
+  color: #e2e8f0;
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.poster-grid-toggle-btn:hover {
+  background: rgba(18, 38, 58, 0.88);
+  border-color: rgba(56, 189, 248, 0.55);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.poster-grid-toggle-btn.is-active {
+  background: rgba(2, 132, 199, 0.88);
+  border-color: rgba(56, 189, 248, 0.95);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.5), 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.poster-grid-toggle-icon {
+  width: 14px;
+  height: 14px;
+  display: block;
+  stroke-width: 2.2;
+}
+
+@media (max-width: 768px) {
+  .poster-grid-toggle-btn {
+    top: 10px;
+    right: 12px;
+    height: 28px;
+    padding: 0 9px;
+    font-size: 0.72rem;
+  }
+  .poster-grid-toggle-icon {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.edit-map-action-pill.is-active {
+  background: rgba(2, 132, 199, 0.45);
+  border-color: rgba(56, 189, 248, 0.85);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}

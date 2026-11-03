@@ -157,6 +157,7 @@ function getInitialState(readUrlState = true): PosterState {
     isLocationFocused: false,
     selectedLocation,
     userLocation: null,
+    showGrid: false,
     displayNameOverrides: {
       city: Boolean(readUrlState && typeof window !== "undefined" && parsePosterStateFromUrl(window.location.search).displayCity),
       country: false,
