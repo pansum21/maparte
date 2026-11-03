@@ -324,29 +324,47 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
   }
   [data-mobile-tab="frames"] .neatline-card-name,
   [data-mobile-tab="frames"] .neatline-option-name {
-    font-size: 0.54rem !important;
-    font-weight: 700 !important;
+    font-size: 0.61rem !important;
+    font-weight: 800 !important;
     line-height: 1.15 !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    white-space: normal !important;
+    text-transform: uppercase !important;
+    color: #f1f7fc !important;
     width: 100% !important;
     max-width: 100% !important;
     text-align: center !important;
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
     margin: 0 !important;
-    letter-spacing: 0.01em !important;
+    letter-spacing: 0.02em !important;
+    gap: 1px !important;
+  }
+  [data-mobile-tab="frames"] .neatline-name-line {
+    font-size: 0.61rem !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+    letter-spacing: 0.02em !important;
+    text-transform: uppercase !important;
+    color: #f1f7fc !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+    max-width: 100% !important;
+    width: 100% !important;
   }
   [data-mobile-tab="frames"] .neatline-swatch {
     width: 100% !important;
     flex: 1 1 auto !important;
-    min-height: 32px !important;
-    max-height: 46px !important;
-    height: 38px !important;
+    min-height: 28px !important;
+    max-height: 38px !important;
+    height: 35px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    margin: 0 auto !important;
+    margin: 2px auto 0 !important;
     padding: 0 !important;
   }
   [data-mobile-tab="frames"] .neatline-swatch-artwork,

@@ -119,6 +119,31 @@ export const lineStyles: LineStyle[] = [
 ];
 export const NEATLINE_STYLES = lineStyles;
 
+export function getBorderDisplayLines(rawName: string): [string, string] {
+  const clean = rawName.replace(/^(Classic|Vintage|Designer|Ornate)\s+/i, "").trim();
+  const lower = clean.toLowerCase();
+
+  if (lower === "single line") return ["Single", "Line"];
+  if (lower === "double line") return ["Double", "Line"];
+  if (lower === "thick-thin") return ["Thick", "Thin"];
+  if (lower === "thin-thick") return ["Thin", "Thick"];
+  if (lower === "modern dashed") return ["Modern", "Dashed"];
+  if (lower === "fine dotted") return ["Fine", "Dotted"];
+  if (lower === "dash-dot") return ["Dash", "Dot"];
+  if (lower === "corner crosshairs") return ["Corner", "Crosshairs"];
+  if (lower === "wide gallery") return ["Wide", "Gallery"];
+  if (lower === "triple line") return ["Triple", "Line"];
+  if (lower === "thin-thick-thin") return ["Thin-Thick", "Thin"];
+  if (lower === "line-dash-dot") return ["Line", "Dash-Dot"];
+  if (lower === "dot-dash-line") return ["Dot-Dash", "Line"];
+
+  const parts = clean.split(/[\s-]+/);
+  if (parts.length === 2) return [parts[0], parts[1]];
+  if (parts.length > 2) return [parts.slice(0, -1).join("-"), parts[parts.length - 1]];
+  return [clean, ""];
+}
+
+
 export const DEFAULT_LINE_WIDTHS_CM: Record<LinePattern, number[]> = {
   single: [0.10],
   double: [0.10, 0.06],
@@ -1674,9 +1699,15 @@ export function NeatlinePicker({
               onClick={() => selectStyle(style)}
             >
               <div className="neatline-card-copy">
-                <span className="neatline-card-name">
-                  {style.name.replace(/^(Classic|Vintage|Designer|Ornate)\s+/i, "")}
-                </span>
+                {(() => {
+                  const [line1, line2] = getBorderDisplayLines(style.name);
+                  return (
+                    <span className="neatline-card-name" title={style.name}>
+                      <span className="neatline-name-line">{line1}</span>
+                      {line2 ? <span className="neatline-name-line">{line2}</span> : null}
+                    </span>
+                  );
+                })()}
               </div>
               <NeatlineSwatch style={style} selection={swatchSelection(style)} />
             </button>

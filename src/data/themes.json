@@ -1,5 +1,135 @@
 {
   "themes": {
+    "pencil_sketch": {
+      "name": "Pencil Sketch",
+      "description": "Hand-drawn graphite pencil strokes on textured ivory sketchbook paper",
+      "ui": {
+        "bg": "#F5F2EB",
+        "text": "#2B2B2B"
+      },
+      "map": {
+        "land": "#F5F2EB",
+        "landcover": "#ECE8DF",
+        "water": "#DDD8CD",
+        "waterway": "#DDD8CD",
+        "parks": "#E8E4DA",
+        "buildings": "#DFDAD0",
+        "aeroway": "#D8D3C8",
+        "rail": "#2B2B2B",
+        "roads": {
+          "major": "#262626",
+          "minor_high": "#4A4A4A",
+          "minor_mid": "#6D6D6D",
+          "minor_low": "#99948D",
+          "path": "#B5B0A8",
+          "outline": "#F5F2EB"
+        }
+      }
+    },
+    "crayon_art": {
+      "name": "Crayon Art",
+      "description": "Vibrant wax crayon drawing with playful bright hues on drawing paper",
+      "ui": {
+        "bg": "#FFFDF7",
+        "text": "#2D3436"
+      },
+      "map": {
+        "land": "#FFFDF7",
+        "landcover": "#F4F9F4",
+        "water": "#38B6FF",
+        "waterway": "#38B6FF",
+        "parks": "#52B788",
+        "buildings": "#FFEAA7",
+        "aeroway": "#DFE6E9",
+        "rail": "#2D3436",
+        "roads": {
+          "major": "#FF4757",
+          "minor_high": "#FF9F43",
+          "minor_mid": "#FDCB6E",
+          "minor_low": "#A29BFE",
+          "path": "#00CEC9",
+          "outline": "#FFFDF7"
+        }
+      }
+    },
+    "comic_pop": {
+      "name": "Pop Art",
+      "description": "Bold vintage comic book aesthetic with high-voltage ink outlines",
+      "ui": {
+        "bg": "#FFF8E7",
+        "text": "#111111"
+      },
+      "map": {
+        "land": "#FFF8E7",
+        "landcover": "#FFF1CC",
+        "water": "#00B4D8",
+        "waterway": "#0096C7",
+        "parks": "#90E0EF",
+        "buildings": "#FFD166",
+        "aeroway": "#E0E0E0",
+        "rail": "#111111",
+        "roads": {
+          "major": "#111111",
+          "minor_high": "#E63946",
+          "minor_mid": "#F4A261",
+          "minor_low": "#2A9D8F",
+          "path": "#4A4E69",
+          "outline": "#FFF8E7"
+        }
+      }
+    },
+    "watercolor_wash": {
+      "name": "Watercolor Wash",
+      "description": "Delicate watercolor pigments bleeding softly on textured cold-press paper",
+      "ui": {
+        "bg": "#FAF7F2",
+        "text": "#2C3E50"
+      },
+      "map": {
+        "land": "#FAF7F2",
+        "landcover": "#F2EFE8",
+        "water": "#8EC5D6",
+        "waterway": "#7AB8CC",
+        "parks": "#B8D8BA",
+        "buildings": "#E8DDD7",
+        "aeroway": "#DCE4E8",
+        "rail": "#2C3E50",
+        "roads": {
+          "major": "#3D5A80",
+          "minor_high": "#5E7E9E",
+          "minor_mid": "#8EA4B8",
+          "minor_low": "#B4C5D4",
+          "path": "#D0DCE5",
+          "outline": "#FAF7F2"
+        }
+      }
+    },
+    "chalkboard": {
+      "name": "Chalkboard Cafe",
+      "description": "Handmade schoolroom chalkboard with dusty white and vibrant pastel chalks",
+      "ui": {
+        "bg": "#1E252B",
+        "text": "#F1F3F5"
+      },
+      "map": {
+        "land": "#1E252B",
+        "landcover": "#252E36",
+        "water": "#141A1F",
+        "waterway": "#182026",
+        "parks": "#26362E",
+        "buildings": "#2C3742",
+        "aeroway": "#2D3944",
+        "rail": "#E9ECEF",
+        "roads": {
+          "major": "#F8F9FA",
+          "minor_high": "#FFE066",
+          "minor_mid": "#74C0FC",
+          "minor_low": "#B197FC",
+          "path": "#63E6BE",
+          "outline": "#1E252B"
+        }
+      }
+    },
     "carrara": {
       "name": "Carrara",
       "description": "White marble — pale stone with soft charcoal veining",

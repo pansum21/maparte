@@ -499,18 +499,28 @@
   [data-mobile-tab="frames"] .neatline-card,
   [data-mobile-tab="frames"] .neatline-option {
     aspect-ratio: 1 / 1;
-    padding: 3px;
-    border-radius: 7px;
+    padding: 6px 3px 5px !important;
+    border-radius: 8px;
+    justify-content: space-between !important;
   }
 
   [data-mobile-tab="frames"] .neatline-card-name,
   [data-mobile-tab="frames"] .neatline-option-name {
-    font-size: 0.49rem;
-    letter-spacing: 0;
+    font-size: 0.61rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  [data-mobile-tab="frames"] .neatline-name-line {
+    font-size: 0.61rem !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
   }
 
   [data-mobile-tab="frames"] .neatline-swatch {
-    height: 27px;
+    height: 35px !important;
+    max-height: 38px !important;
+    min-height: 28px !important;
   }
 
   [data-mobile-tab="frames"] .neatline-adjust-box .neatline-color-subblock {
@@ -609,14 +619,25 @@
 .neatline-option-name {
   margin: 0;
   font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-weight: 800;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   color: #e7f2fb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 1px;
+}
+
+.neatline-name-line {
+  display: block;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: block;
+  line-height: 1.15;
 }
 
 .neatline-card-meta {

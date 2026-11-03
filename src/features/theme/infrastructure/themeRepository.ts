@@ -108,6 +108,11 @@ const referenceAliases: Record<string, string> = {
 
 const preferredThemeOrder = [
   "midnight_blue",
+  "pencil_sketch",
+  "crayon_art",
+  "comic_pop",
+  "watercolor_wash",
+  "chalkboard",
   "carrara",
   "noir",
   "terracotta",
