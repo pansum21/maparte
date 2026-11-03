@@ -296,13 +296,66 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     height: auto !important;
     max-height: min(46dvh, 320px) !important;
+    grid-auto-rows: max-content !important;
     overflow-y: auto !important;
     padding-bottom: 6px !important;
   }
-  [data-mobile-tab="frames"] .neatline-borders-box .neatline-option {
+  [data-mobile-tab="frames"] .neatline-borders-box .neatline-option,
+  [data-mobile-tab="frames"] .neatline-card,
+  [data-mobile-tab="frames"] .neatline-option {
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 5px 3px 5px !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+  }
+  [data-mobile-tab="frames"] .neatline-card-copy {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex-shrink: 0 !important;
+    margin: 0 0 2px 0 !important;
+  }
+  [data-mobile-tab="frames"] .neatline-card-name,
+  [data-mobile-tab="frames"] .neatline-option-name {
+    font-size: 0.54rem !important;
+    font-weight: 700 !important;
+    line-height: 1.15 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    display: block !important;
+    margin: 0 !important;
+    letter-spacing: 0.01em !important;
+  }
+  [data-mobile-tab="frames"] .neatline-swatch {
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    min-height: 32px !important;
+    max-height: 46px !important;
+    height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+  [data-mobile-tab="frames"] .neatline-swatch-artwork,
+  [data-mobile-tab="frames"] .neatline-swatch svg {
+    width: 100% !important;
     height: 100% !important;
-    aspect-ratio: auto !important;
-    align-self: stretch !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
   }
   [data-mobile-tab="frames"] .neatline-picker:not(.has-selected-border) .neatline-borders-box .neatline-options,
   [data-mobile-tab="frames"] .neatline-picker.has-selected-border .neatline-borders-box .neatline-options {

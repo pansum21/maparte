@@ -354,6 +354,7 @@
   }
   .neatline-picker .neatline-borders-box .neatline-options {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-auto-rows: max-content !important;
     gap: 7px !important;
   }
 
@@ -488,6 +489,7 @@
   [data-mobile-tab="frames"] .neatline-borders-box .neatline-options {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     gap: 4px !important;
+    grid-auto-rows: max-content !important;
     max-height: none !important;
     min-height: 0 !important;
     height: auto;
