@@ -498,10 +498,11 @@
 
   [data-mobile-tab="frames"] .neatline-card,
   [data-mobile-tab="frames"] .neatline-option {
-    aspect-ratio: 1 / 1;
-    padding: 6px 3px 5px !important;
+    aspect-ratio: auto !important;
+    height: auto !important;
+    padding: 5px 3px 5px !important;
     border-radius: 8px;
-    justify-content: space-between !important;
+    justify-content: flex-start !important;
   }
 
   [data-mobile-tab="frames"] .neatline-card-name,
@@ -518,9 +519,10 @@
   }
 
   [data-mobile-tab="frames"] .neatline-swatch {
-    height: 35px !important;
-    max-height: 38px !important;
-    min-height: 28px !important;
+    height: 28px !important;
+    max-height: 30px !important;
+    min-height: 26px !important;
+    margin: 2mm 0 0 0 !important;
   }
 
   [data-mobile-tab="frames"] .neatline-adjust-box .neatline-color-subblock {

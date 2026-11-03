@@ -307,11 +307,11 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     min-width: 0 !important;
     width: 100% !important;
     height: auto !important;
-    aspect-ratio: 1 / 1 !important;
+    aspect-ratio: auto !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: space-between !important;
+    justify-content: flex-start !important;
     padding: 5px 3px 5px !important;
     overflow: hidden !important;
     border-radius: 8px !important;
@@ -320,7 +320,7 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     width: 100% !important;
     min-width: 0 !important;
     flex-shrink: 0 !important;
-    margin: 0 0 2px 0 !important;
+    margin: 0 !important;
   }
   [data-mobile-tab="frames"] .neatline-card-name,
   [data-mobile-tab="frames"] .neatline-option-name {
@@ -357,14 +357,14 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
   }
   [data-mobile-tab="frames"] .neatline-swatch {
     width: 100% !important;
-    flex: 1 1 auto !important;
-    min-height: 28px !important;
-    max-height: 38px !important;
-    height: 35px !important;
+    flex: 0 0 auto !important;
+    min-height: 26px !important;
+    max-height: 30px !important;
+    height: 28px !important;
     display: flex !important;
-    align-items: center !important;
+    align-items: flex-start !important;
     justify-content: center !important;
-    margin: 2px auto 0 !important;
+    margin: 2mm 0 0 0 !important;
     padding: 0 !important;
   }
   [data-mobile-tab="frames"] .neatline-swatch-artwork,
@@ -373,6 +373,8 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     height: 100% !important;
     max-height: 100% !important;
     object-fit: contain !important;
+    object-position: top center !important;
+    margin-top: -3px !important;
     display: block !important;
   }
   [data-mobile-tab="frames"] .neatline-picker:not(.has-selected-border) .neatline-borders-box .neatline-options,
