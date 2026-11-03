@@ -97,6 +97,7 @@ interface MapPreviewProps {
   onMove?: (center: [number, number], zoom: number) => void;
   containerStyle?: CSSProperties;
   overzoomScale?: number;
+  onMapReady?: (map: maplibregl.Map) => void;
 }
 
 /**
@@ -119,6 +120,7 @@ export default function MapPreview({
   onMove,
   containerStyle,
   overzoomScale = 1,
+  onMapReady,
 }: MapPreviewProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [mapUnavailable, setMapUnavailable] = useState(false);
@@ -159,6 +161,7 @@ export default function MapPreview({
     }
 
     mapRef.current = map;
+    onMapReady?.(map);
 
     map.on("moveend", () => {
       if (isSyncing.current) return;

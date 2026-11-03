@@ -269,10 +269,7 @@ export function getPosterBorderMetrics(
 
   // Automatically activate white mat behind border when any border is selected.
   // When no border ("none"), full bleed without white mat.
-  const showWhiteMat =
-    typeof showWhiteMatParam === "boolean"
-      ? showWhiteMatParam
-      : hasBorder;
+  const showWhiteMat = Boolean(hasBorder && showWhiteMatParam === true);
 
   // Default gap is 0.1cm (1.0 mm between map and innermost thin line).
   const gapCm =
@@ -506,7 +503,7 @@ function lineCount(pattern: LinePattern): number {
 }
 
 function isLineId(value: string): boolean {
-  return value === "none" || lineStyles.some((style) => style.id === value);
+  return Boolean(value && value !== "none" && lineStyles.some((style) => style.id === value));
 }
 
 function readThicknesses(): Record<string, number[]> {
@@ -566,7 +563,7 @@ function readSelection(): NeatlineSelection {
       } else if (parsed.lineId && isLineId(parsed.lineId)) {
         lineId = parsed.lineId;
       }
-      const showWhiteMat = lineId !== "none";
+      const showWhiteMat = false;
 
       return {
         ...empty,
@@ -597,15 +594,15 @@ function readSelection(): NeatlineSelection {
     }
     if (urlBorder && isLineId(urlBorder)) {
       empty.lineId = urlBorder;
-      empty.showWhiteMat = true;
+      empty.showWhiteMat = false;
       empty.mapGapCm = 0.1;
       empty.singleColor = defaultColor;
       return empty;
     }
-    const legacy = window.localStorage.getItem(LEGACY_STYLE_KEY) || "none";
-    if (isLineId(legacy)) {
+    const legacy = window.localStorage.getItem(LEGACY_STYLE_KEY);
+    if (legacy && legacy !== "none" && isLineId(legacy)) {
       empty.lineId = legacy;
-      empty.showWhiteMat = true;
+      empty.showWhiteMat = false;
       empty.mapGapCm = 0.1;
     }
     return empty;
@@ -1578,7 +1575,7 @@ export function NeatlinePicker({
       lineId: style.id,
       cornerId: "none",
       frameId: "none",
-      showWhiteMat: true,
+      showWhiteMat: false,
     }));
   };
 

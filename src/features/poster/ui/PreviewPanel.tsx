@@ -108,6 +108,7 @@ export default function PreviewPanel({
   const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
+  const [mapInstance, setMapInstance] = useState<any>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -220,7 +221,7 @@ export default function PreviewPanel({
   }, [form.fontFamily, form.showPosterText]);
 
   useEffect(() => {
-    const map = mapRef.current;
+    const map = mapInstance || mapRef.current;
     if (!map) return;
 
     const syncBearing = () => {
@@ -231,20 +232,18 @@ export default function PreviewPanel({
     return () => {
       map.off("rotate", syncBearing);
     };
-  }, [mapRef]);
+  }, [mapInstance, mapRef]);
 
   useEffect(() => {
-    const map = mapRef.current;
-    // The blurred desktop backdrop is hidden in cinema mode and on phones.
-    // Avoid copying the full-resolution WebGL canvas there; that work
-    // competes directly with touch and mouse panning.
-    if (!map || isCinemaMode || isMobileViewport) return;
+    const map = mapInstance || mapRef.current;
+    if (!map) return;
 
+    let rafId: number | null = null;
     const syncGhostCanvas = () => {
       const ghost = ghostCanvasRef.current;
       if (!ghost) return;
       const src = map.getCanvas();
-      if (!src) return;
+      if (!src || src.width === 0 || src.height === 0) return;
 
       if (ghost.width !== src.width || ghost.height !== src.height) {
         ghost.width = src.width;
@@ -256,13 +255,27 @@ export default function PreviewPanel({
       ctx.drawImage(src, 0, 0);
     };
 
-    // Refresh the backdrop after the map settles instead of doing a costly
-    // WebGL-to-2D copy for every animation frame while the map is moving.
-    map.on("idle", syncGhostCanvas);
-    return () => {
-      map.off("idle", syncGhostCanvas);
+    const scheduleSync = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        syncGhostCanvas();
+      });
     };
-  }, [mapRef, isCinemaMode, isMobileViewport]);
+
+    syncGhostCanvas();
+
+    map.on("render", scheduleSync);
+    map.on("idle", syncGhostCanvas);
+    map.on("moveend", syncGhostCanvas);
+
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      map.off("render", scheduleSync);
+      map.off("idle", syncGhostCanvas);
+      map.off("moveend", syncGhostCanvas);
+    };
+  }, [mapInstance, mapRef]);
 
   useEffect(() => {
     if (!isMarkerEditorActive) {
@@ -429,19 +442,17 @@ export default function PreviewPanel({
           />
         ) : null}
         {cameraStream && isCinemaMode ? <video ref={cameraVideoRef} className="cinema-live-camera-backdrop" autoPlay muted playsInline aria-hidden="true" /> : null}
-        {/* Desktop ghost layer: canvas clone of the main map at reduced opacity (hidden in cinema mode) */}
+        {/* Ambient ghost map layer: canvas clone of the main map blurred behind the poster */}
+        <div className="poster-ghost-layer" aria-hidden="true">
+          <canvas
+            ref={ghostCanvasRef}
+            className="poster-ghost-canvas"
+          />
+        </div>
         {!isCinemaMode ? (
-          <>
-            <div className="poster-ghost-layer" aria-hidden="true">
-              <canvas
-                ref={ghostCanvasRef}
-                className="poster-ghost-canvas"
-              />
-            </div>
-            <div className="desktop-layout-label" aria-hidden="true">
-              {layoutLabel}
-            </div>
-          </>
+          <div className="desktop-layout-label" aria-hidden="true">
+            {layoutLabel}
+          </div>
         ) : null}
 
         {!isCinemaMode ? (
@@ -459,7 +470,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat ? " has-white-mat" : " is-full-bleed"}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
             posterDragRef.current = {
@@ -521,6 +532,7 @@ export default function PreviewPanel({
               overzoomScale={overzoomScale}
               onMove={handleMove}
               onMoveEnd={handleMoveEnd}
+              onMapReady={setMapInstance}
             />
           </Suspense>
           <GradientFades color={effectiveTheme.ui.bg} top={form.overlayTop ?? form.showMarkers} bottom={form.overlayBottom ?? form.showMarkers} />

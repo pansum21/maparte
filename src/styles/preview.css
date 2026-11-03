@@ -114,9 +114,15 @@
 }
 
 .poster-viewport.is-wall-mockup .poster-ghost-layer {
-  opacity: 0 !important;
+  display: block !important;
+  position: absolute;
+  inset: -12% -12%;
+  opacity: 0.35 !important;
+  filter: blur(28px) saturate(1.1) brightness(0.95) !important;
+  transform: none !important;
   pointer-events: none;
   transition: opacity 0.35s ease;
+  z-index: 1;
 }
 
 .poster-viewport.is-wall-mockup .desktop-layout-label {
@@ -1116,9 +1122,7 @@
   background: var(--poster-bg, transparent);
 }
 
-.poster-frame.has-white-mat {
-  background: #ffffff;
-}
+/* .poster-frame.has-white-mat disabled */
 
 .poster-map-window {
   position: absolute;
@@ -1134,9 +1138,7 @@
   background: transparent;
 }
 
-.poster-frame.has-white-mat .poster-map-window {
-  background: #ffffff;
-}
+/* .poster-frame.has-white-mat .poster-map-window disabled */
 
 .poster-map-window > .map-container,
 .poster-map-window > .poster-text-overlay,
@@ -1158,10 +1160,6 @@
   width: auto;
   height: auto;
   pointer-events: none;
-}
-
-.poster-viewport.is-wall-mockup .poster-frame.has-white-mat {
-  background: #ffffff;
 }
 
 .poster-viewport.is-wall-mockup .poster-frame.is-full-bleed {
