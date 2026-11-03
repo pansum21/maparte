@@ -30,11 +30,10 @@ function isLightColor(hex?: string): boolean {
 }
 
 /**
- * Precision alignment grid and center-finder overlay for the poster canvas.
- * Renders:
+ * Clean precision alignment grid and center-finder overlay for the poster canvas.
+ * Renders pure intersecting lines with NO circles/bullseyes:
  *  - Corner-to-corner diagonal "X" lines intersecting at exact geometric center (50%, 50%)
- *  - Precision center bullseye reticle with coordinates indicator
- *  - Subtle vertical and horizontal center crosshairs
+ *  - Subtle vertical and horizontal center crosshairs (50% axes)
  *  - Rule-of-thirds dashed guidelines
  *  - Adaptive high-contrast coloring for white/light themes (e.g. Carrara) vs dark themes
  */
@@ -46,10 +45,9 @@ export default function PosterGridOverlay({
   // High-contrast adaptive palette:
   // On light/white themes (Carrara, Nordic White): deep slate/cyan lines with light shadow
   // On dark themes (Noir, Midnight): luminous cyan-white lines with dark shadow
-  const mainLineColor = isLight ? "rgba(15, 23, 42, 0.42)" : "rgba(255, 255, 255, 0.45)";
+  const mainLineColor = isLight ? "rgba(15, 23, 42, 0.45)" : "rgba(255, 255, 255, 0.5)";
   const centerCrossColor = isLight ? "rgba(2, 132, 199, 0.75)" : "rgba(56, 189, 248, 0.75)";
   const thirdLineColor = isLight ? "rgba(15, 23, 42, 0.2)" : "rgba(255, 255, 255, 0.22)";
-  const reticleColor = isLight ? "#0284c7" : "#38bdf8";
   const dropShadow = isLight
     ? "drop-shadow(0 0 1px rgba(255, 255, 255, 0.85))"
     : "drop-shadow(0 0 1px rgba(0, 0, 0, 0.9))";
@@ -76,13 +74,6 @@ export default function PosterGridOverlay({
           filter: dropShadow,
         }}
       >
-        <defs>
-          {/* Subtle micro glow for center target */}
-          <filter id="centerReticleGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="0" stdDeviation="1.5" floodColor={reticleColor} floodOpacity="0.6" />
-          </filter>
-        </defs>
-
         {/* ── 1. RULE-OF-THIRDS GUIDELINES (Subtle Dashed) ── */}
         <line x1="333.33" y1="0" x2="333.33" y2="1000" stroke={thirdLineColor} strokeWidth="0.75" strokeDasharray="3 5" vectorEffect="non-scaling-stroke" />
         <line x1="666.67" y1="0" x2="666.67" y2="1000" stroke={thirdLineColor} strokeWidth="0.75" strokeDasharray="3 5" vectorEffect="non-scaling-stroke" />
@@ -98,46 +89,7 @@ export default function PosterGridOverlay({
         <line x1="0" y1="0" x2="1000" y2="1000" stroke={mainLineColor} strokeWidth="0.9" vectorEffect="non-scaling-stroke" />
         {/* Top-Right to Bottom-Left */}
         <line x1="1000" y1="0" x2="0" y2="1000" stroke={mainLineColor} strokeWidth="0.9" vectorEffect="non-scaling-stroke" />
-
-        {/* ── 4. CENTER TARGET RETICLE (Bullseye) ── */}
-        <g filter="url(#centerReticleGlow)">
-          {/* Outer Ring */}
-          <circle cx="500" cy="500" r="15" fill="none" stroke={reticleColor} strokeWidth="1" strokeDasharray="3 2" vectorEffect="non-scaling-stroke" />
-          {/* Inner Ring */}
-          <circle cx="500" cy="500" r="6" fill="none" stroke={reticleColor} strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
-          {/* Center Dot */}
-          <circle cx="500" cy="500" r="2" fill={reticleColor} />
-        </g>
       </svg>
-
-      {/* Floating Center Coordinates Badge */}
-      <div
-        className="poster-grid-center-badge"
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "calc(50% + 22px)",
-          transform: "translateX(-50%)",
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "4px",
-          padding: "2px 7px",
-          borderRadius: "4px",
-          background: isLight ? "rgba(15, 23, 42, 0.78)" : "rgba(12, 26, 40, 0.85)",
-          border: `1px solid ${isLight ? "rgba(255, 255, 255, 0.25)" : "rgba(56, 189, 248, 0.4)"}`,
-          color: isLight ? "#f8fafc" : "#38bdf8",
-          fontFamily: "'Space Grotesk', -apple-system, sans-serif",
-          fontSize: "10px",
-          fontWeight: 600,
-          letterSpacing: "0.05em",
-          lineHeight: "1.2",
-          whiteSpace: "nowrap",
-          userSelect: "none",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.35)",
-        }}
-      >
-        <span>CENTER (50%, 50%)</span>
-      </div>
     </div>
   );
 }
