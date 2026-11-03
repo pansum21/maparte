@@ -222,80 +222,101 @@
   background-color: #ffffff !important;
 }
 
-.poster-shaped-wrapper {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+/* Ensure map window is layered above shadow caster and text overlay is above both */
+.poster-frame[data-map-shape]:not([data-map-shape="full"]) .poster-map-window {
+  z-index: 2 !important;
+  border-radius: 0 !important;
 }
 
-/* When a non-full shape is chosen, clip the map container within upper area */
+/* Unified Exact Geometry for Heart & Circle */
 .poster-frame[data-map-shape="heart"] .poster-map-window,
-.poster-frame[data-map-shape="circle"] .poster-map-window {
-  bottom: 25% !important;
+.poster-frame[data-map-shape="circle"] .poster-map-window,
+.poster-frame[data-map-shape="heart"] .poster-shape-shadow-caster,
+.poster-frame[data-map-shape="circle"] .poster-shape-shadow-caster,
+.poster-frame[data-map-shape="heart"] .poster-shape-stroke-overlay,
+.poster-frame[data-map-shape="circle"] .poster-shape-stroke-overlay {
   top: 5% !important;
   left: 7% !important;
   right: 7% !important;
-  border-radius: 0;
+  bottom: 25% !important;
+  width: calc(100% - 14%) !important;
+  height: calc(100% - 30%) !important;
 }
 
+/* Unified Exact Geometry for Squircle & Arch */
 .poster-frame[data-map-shape="squircle"] .poster-map-window,
-.poster-frame[data-map-shape="arch"] .poster-map-window {
-  bottom: 26% !important;
+.poster-frame[data-map-shape="arch"] .poster-map-window,
+.poster-frame[data-map-shape="squircle"] .poster-shape-shadow-caster,
+.poster-frame[data-map-shape="arch"] .poster-shape-shadow-caster,
+.poster-frame[data-map-shape="squircle"] .poster-shape-stroke-overlay,
+.poster-frame[data-map-shape="arch"] .poster-shape-stroke-overlay {
   top: 5% !important;
   left: 6% !important;
   right: 6% !important;
-  border-radius: 0;
+  bottom: 26% !important;
+  width: calc(100% - 12%) !important;
+  height: calc(100% - 31%) !important;
 }
 
-/* Shape Clip Paths */
-.poster-frame[data-map-shape="heart"] .poster-map-window {
+/* Default Sharp Clip Paths (for Clean Cut, 3D Shadow, Fine Border) */
+.poster-frame:not(.shape-finish-blur)[data-map-shape="heart"] .poster-map-window {
   clip-path: url(#maparte-shape-heart);
   -webkit-clip-path: url(#maparte-shape-heart);
 }
 
-.poster-frame[data-map-shape="circle"] .poster-map-window {
+.poster-frame:not(.shape-finish-blur)[data-map-shape="circle"] .poster-map-window {
   clip-path: url(#maparte-shape-circle);
   -webkit-clip-path: url(#maparte-shape-circle);
 }
 
-.poster-frame[data-map-shape="squircle"] .poster-map-window {
+.poster-frame:not(.shape-finish-blur)[data-map-shape="squircle"] .poster-map-window {
   clip-path: url(#maparte-shape-squircle);
   -webkit-clip-path: url(#maparte-shape-squircle);
 }
 
-.poster-frame[data-map-shape="arch"] .poster-map-window {
+.poster-frame:not(.shape-finish-blur)[data-map-shape="arch"] .poster-map-window {
   clip-path: url(#maparte-shape-arch);
   -webkit-clip-path: url(#maparte-shape-arch);
 }
 
-/* 3D Depth Shadow */
-.poster-frame.shape-finish-shadow[data-map-shape="heart"] .poster-map-window,
-.poster-frame.shape-finish-shadow[data-map-shape="circle"] .poster-map-window,
-.poster-frame.shape-finish-shadow[data-map-shape="squircle"] .poster-map-window,
-.poster-frame.shape-finish-shadow[data-map-shape="arch"] .poster-map-window {
-  filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.32)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.16));
+/* 1. 3D Depth Shadow Caster (Layered behind the map window) */
+.poster-shape-shadow-caster {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible !important;
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.42)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.22));
 }
 
-/* Soft Blur / Vignette Mask */
-.poster-frame.shape-finish-blur[data-map-shape="heart"] .poster-map-window,
-.poster-frame.shape-finish-blur[data-map-shape="circle"] .poster-map-window,
-.poster-frame.shape-finish-blur[data-map-shape="squircle"] .poster-map-window,
+/* 2. Soft Blur (Feathered edge dissolving seamlessly into paper without hard clip) */
+.poster-frame.shape-finish-blur .poster-map-window {
+  clip-path: none !important;
+  -webkit-clip-path: none !important;
+}
+
+.poster-frame.shape-finish-blur[data-map-shape="heart"] .poster-map-window {
+  mask-image: url(#maparte-blur-heart);
+  -webkit-mask-image: url(#maparte-blur-heart);
+}
+
+.poster-frame.shape-finish-blur[data-map-shape="circle"] .poster-map-window {
+  mask-image: url(#maparte-blur-circle);
+  -webkit-mask-image: url(#maparte-blur-circle);
+}
+
+.poster-frame.shape-finish-blur[data-map-shape="squircle"] .poster-map-window {
+  mask-image: url(#maparte-blur-squircle);
+  -webkit-mask-image: url(#maparte-blur-squircle);
+}
+
 .poster-frame.shape-finish-blur[data-map-shape="arch"] .poster-map-window {
-  mask-image: radial-gradient(ellipse at 50% 50%, #000 60%, rgba(0,0,0,0.6) 82%, transparent 98%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 60%, rgba(0,0,0,0.6) 82%, transparent 98%);
+  mask-image: url(#maparte-blur-arch);
+  -webkit-mask-image: url(#maparte-blur-arch);
 }
 
-/* Fine Line Architectural Border */
+/* 3. Ultra-delicate 0.05 mm Hairline Fine Border (Layered above map) */
 .poster-shape-stroke-overlay {
   position: absolute;
-  top: 5%;
-  left: 8%;
-  right: 8%;
-  bottom: 26%;
-  width: calc(100% - 16%);
-  height: calc(100% - 31%);
   pointer-events: none;
-  z-index: 3;
+  z-index: 4;
 }

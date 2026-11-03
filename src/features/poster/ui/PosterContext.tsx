@@ -19,6 +19,9 @@ import { applyThemeColorOverrides } from "@/features/theme/domain/colorPaths";
 import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
 import type { StyleSpecification } from "maplibre-gl";
 import type { MapInstanceRef } from "@/features/map/domain/types";
+import type { MarkerItem } from "@/features/markers/domain/types";
+import type { Route } from "@/features/routes/domain/types";
+import type { Coordinate } from "@/shared/geo/types";
 import { createDefaultMarkerSettings } from "@/features/markers/infrastructure/helpers";
 import {
   loadCustomMarkerIcons,
@@ -136,10 +139,115 @@ function getInitialState(readUrlState = true): PosterState {
     }
   }
 
+  const initialMarkers: MarkerItem[] = [];
+  const initialRoutes: Route[] = [];
+
+  if (readUrlState && typeof window !== "undefined") {
+    const urlParams = new URLSearchParams(window.location.search);
+    const markerParam = urlParams.get("marker");
+    const routeParam = urlParams.get("route");
+    const markerColor = urlParams.get("markerColor");
+
+    if (markerParam) {
+      const lat = Number(form.latitude) || 0;
+      const lon = Number(form.longitude) || 0;
+      const resolvedColor =
+        markerColor ||
+        (markerParam === "heart"
+          ? "#e11d48"
+          : markerParam === "ring"
+            ? "#d97706"
+            : markerParam === "runner"
+              ? "#0284c7"
+              : markerParam === "home"
+                ? "#059669"
+                : markerParam === "hospital"
+                  ? "#ec4899"
+                  : markerParam === "mountain"
+                    ? "#4f46e5"
+                    : markerParam === "plane"
+                      ? "#d97706"
+                      : "#e11d48");
+
+      initialMarkers.push({
+        id: "preset-marker-spot",
+        lat,
+        lon,
+        iconId: markerParam,
+        size: 38,
+        color: resolvedColor,
+      });
+      form.showMarkers = true;
+    }
+
+    if (routeParam) {
+      let coords: Coordinate[] = [];
+      if (routeParam === "marathon") {
+        coords = [
+          { lon: -71.1800, lat: 42.3300 },
+          { lon: -71.1550, lat: 42.3360 },
+          { lon: -71.1350, lat: 42.3420 },
+          { lon: -71.1100, lat: 42.3460 },
+          { lon: -71.0920, lat: 42.3485 },
+          { lon: -71.0825, lat: 42.3496 },
+        ];
+      } else if (routeParam === "travel" || routeParam === "kyoto") {
+        coords = [
+          { lon: 135.7350, lat: 35.0350 },
+          { lon: 135.7520, lat: 35.0220 },
+          { lon: 135.7681, lat: 35.0116 },
+          { lon: 135.7760, lat: 34.9980 },
+          { lon: 135.7720, lat: 34.9780 },
+        ];
+      } else if (routeParam === "hometown" || routeParam === "dehradun") {
+        coords = [
+          { lon: 78.0200, lat: 30.3050 },
+          { lon: 78.0320, lat: 30.3160 },
+          { lon: 78.0437, lat: 30.3256 },
+          { lon: 78.0580, lat: 30.3420 },
+          { lon: 78.0720, lat: 30.3650 },
+        ];
+      } else if (routeParam === "summit" || routeParam === "mountain") {
+        coords = [
+          { lon: 6.8694, lat: 45.9237 },
+          { lon: 6.8580, lat: 45.9020 },
+          { lon: 6.8450, lat: 45.8750 },
+          { lon: 6.8520, lat: 45.8500 },
+          { lon: 6.8643, lat: 45.8326 },
+        ];
+      }
+      if (coords.length > 0) {
+        initialRoutes.push({
+          id: "preset-route-line",
+          label: "Preset Route",
+          source: "manual",
+          segments: [coords],
+          color:
+            markerColor ||
+            (routeParam === "marathon"
+              ? "#0284c7"
+              : routeParam === "travel" || routeParam === "kyoto"
+                ? "#d97706"
+                : routeParam === "hometown" || routeParam === "dehradun"
+                  ? "#ea580c"
+                  : "#4f46e5"),
+          strokeWidth: 4,
+          opacity: 0.95,
+          lineStyle: "solid",
+          visible: true,
+          showEndpoints: true,
+          startMarker: { iconId: "circle", color: "#ffffff", size: 14 },
+          finishMarker: { iconId: "flag", color: "#e11d48", size: 18 },
+        });
+        form.showRoutes = true;
+      }
+    }
+  }
+
   return {
     form,
     customColors: {},
-    markers: [],
+    markers: initialMarkers,
     customMarkerIcons: [],
     markerDefaults: {
       ...createDefaultMarkerSettings(),
@@ -147,7 +255,7 @@ function getInitialState(readUrlState = true): PosterState {
     },
     isMarkerEditorActive: false,
     activeMarkerId: null,
-    routes: [],
+    routes: initialRoutes,
     routeDefaults: {
       ...createDefaultRouteSettings(),
       color: getTheme(defaultThemeName).ui.text,

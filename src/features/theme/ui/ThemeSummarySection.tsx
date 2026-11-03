@@ -1,9 +1,6 @@
 import type { RefObject } from "react";
 import ThemeCard from "./ThemeCard";
-import { EditIcon } from "@/shared/ui/Icons";
 import type { ThemeOption } from "../domain/types";
-import PopularDesignsGrid from "./PopularDesignsGrid";
-import type { PopularDesign } from "../domain/popularDesigns";
 
 interface ThemeSummarySectionProps {
   listRef?: RefObject<HTMLDivElement>;
@@ -11,8 +8,8 @@ interface ThemeSummarySectionProps {
   selectedThemeId: string;
   selectedThemeOption: ThemeOption;
   onThemeSelect: (themeId: string) => void;
-  onCustomize: () => void;
-  onSelectDesign?: (design: PopularDesign) => void;
+  onCustomize?: () => void;
+  onSelectDesign?: (design: any) => void;
 }
 
 export default function ThemeSummarySection({
@@ -21,27 +18,13 @@ export default function ThemeSummarySection({
   selectedThemeId,
   selectedThemeOption,
   onThemeSelect,
-  onCustomize,
-  onSelectDesign,
 }: ThemeSummarySectionProps) {
   const description =
     selectedThemeOption.description?.trim() || "No description available.";
 
-  const handlePopularDesignSelect = (design: PopularDesign) => {
-    onThemeSelect(design.themeId);
-    onSelectDesign?.(design);
-  };
-
   return (
     <div className="theme-summary-view">
-      {/* 1. Most Popular Designs (1-Click Curated Style Combos) */}
-      <PopularDesignsGrid
-        selectedThemeId={selectedThemeId}
-        onSelectDesign={handlePopularDesignSelect}
-        onOpenColorPalette={onCustomize}
-      />
-
-      {/* 2. All Color Themes Section */}
+      {/* Clean Theme Summary Header */}
       <div className="theme-summary-head">
         <div className="theme-summary-copy">
           <p className="theme-summary-label">
@@ -49,19 +32,9 @@ export default function ThemeSummarySection({
           </p>
           <p className="theme-card-description">{description}</p>
         </div>
-        <button
-          type="button"
-          className="theme-customize-btn theme-customize-btn--pill"
-          onClick={onCustomize}
-          aria-label={`Customize ${selectedThemeOption.name} colors`}
-        >
-          <span className="theme-customize-icon" aria-hidden="true">
-            <EditIcon />
-          </span>
-          <span className="theme-customize-text">Customize Colors</span>
-        </button>
       </div>
 
+      {/* Curated Theme Options with Top Popular Designs First */}
       <div
         className="theme-card-list card-scroll-list"
         role="list"

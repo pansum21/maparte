@@ -15,29 +15,34 @@ export default function MapShapeDefs() {
       aria-hidden="true"
     >
       <defs>
+        {/* Soft Blur Filter for feathering outward into the paper */}
+        <filter id="maparte-blur-feather" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="0.035" />
+        </filter>
+
         {MAP_SHAPES.map((shape) => {
           if (shape.id === "full" || !shape.normalizedPath) return null;
           return (
-            <clipPath
-              key={`clip-${shape.id}`}
-              id={`maparte-shape-${shape.id}`}
-              clipPathUnits="objectBoundingBox"
-            >
-              <path d={shape.normalizedPath} />
-            </clipPath>
+            <g key={"defs-" + shape.id}>
+              {/* Clean razor cut & 3D shadow clip-path */}
+              <clipPath
+                id={"maparte-shape-" + shape.id}
+                clipPathUnits="objectBoundingBox"
+              >
+                <path d={shape.normalizedPath} />
+              </clipPath>
+
+              {/* Soft blur mask: inner shape is 100% solid & prominent, outer edge feathers out into white mat */}
+              <mask
+                id={"maparte-blur-" + shape.id}
+                maskContentUnits="objectBoundingBox"
+              >
+                <path d={shape.normalizedPath} fill="white" filter="url(#maparte-blur-feather)" />
+                <path d={shape.normalizedPath} fill="white" />
+              </mask>
+            </g>
           );
         })}
-
-        {/* 3D Embossed Fine-Art Drop Shadow */}
-        <filter id="maparte-3d-shadow" x="-20%" y="-20%" width="150%" height="150%">
-          <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#000000" floodOpacity="0.28" />
-          <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000000" floodOpacity="0.14" />
-        </filter>
-
-        {/* Soft Vignette Feather Mask for Shapes */}
-        <filter id="maparte-soft-feather" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="2.5" />
-        </filter>
       </defs>
     </svg>
   );

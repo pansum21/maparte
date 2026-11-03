@@ -23,6 +23,12 @@ import {
   FaChampagneGlasses,
   FaCakeCandles,
   FaGift,
+  FaPersonRunning,
+  FaHospital,
+  FaBaby,
+  FaCar,
+  FaPlane,
+  FaMountain,
 } from "react-icons/fa6";
 import { IoMdFlower } from "react-icons/io";
 import { SlTarget } from "react-icons/sl";
@@ -96,6 +102,12 @@ export const predefinedMarkerIcons: MarkerIconDefinition[] = [
   createSvgIcon("flower", "Flower", IoMdFlower),
   createSvgIcon("tree", "Tree", FaTree),
   createSvgIcon("flag", "Flag", FaFlag),
+  createSvgIcon("runner", "Runner", FaPersonRunning),
+  createSvgIcon("hospital", "Hospital", FaHospital),
+  createSvgIcon("baby", "Baby", FaBaby),
+  createSvgIcon("car", "Car", FaCar),
+  createSvgIcon("plane", "Plane", FaPlane),
+  createSvgIcon("mountain", "Mountain", FaMountain),
 ];
 
 export const featuredMarkerIcons = predefinedMarkerIcons.slice(

@@ -506,6 +506,29 @@ export default function PreviewPanel({
             } as CSSProperties
           }
         >
+          {/* 3D Depth Shadow Caster rendered behind the map window */}
+
+          {isShaped && form.shapeFinish === "shadow" && activeShapeDef?.svgPath ? (
+
+            <svg
+
+              className="poster-shape-shadow-caster"
+
+              viewBox="0 0 100 100"
+
+              preserveAspectRatio="none"
+
+              aria-hidden="true"
+
+            >
+
+              <path d={activeShapeDef.svgPath} fill={effectiveTheme.ui.text || "#0f172a"} />
+
+            </svg>
+
+          ) : null}
+
+
           <div ref={mapWindowRef} className="poster-map-window">
           <Suspense
             fallback={
@@ -571,8 +594,9 @@ export default function PreviewPanel({
                 d={activeShapeDef.svgPath}
                 fill="none"
                 stroke={posterTextColor}
-                strokeWidth="1.5"
-                strokeOpacity="0.8"
+                strokeWidth="0.5"
+                vectorEffect="non-scaling-stroke"
+                strokeOpacity="0.85"
               />
             </svg>
           ) : null}
