@@ -1551,8 +1551,9 @@ body.has-custom-backdrop .poster-ghost-layer {
 }
 
 .app-shell.is-cinema-mode .poster-ghost-layer {
-  opacity: 0.10 !important;
-  filter: blur(24px) !important;
+  display: block !important;
+  opacity: 0.35 !important;
+  filter: blur(28px) saturate(1.1) brightness(0.95) !important;
 }
 
 /* ── Cinema Overlay Controls ── */
