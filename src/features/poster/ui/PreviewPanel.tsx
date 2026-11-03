@@ -88,6 +88,8 @@ export default function PreviewPanel({
     [state.form.mapShape],
   );
   const isShaped = Boolean(state.form.mapShape && state.form.mapShape !== "full");
+  const posterBg = isShaped ? "#ffffff" : effectiveTheme.ui.bg;
+  const posterTextColor = isShaped ? "#0f172a" : effectiveTheme.ui.text;
   const {
     form,
     isMarkerEditorActive,
@@ -493,7 +495,7 @@ export default function PreviewPanel({
           style={
             {
               "--poster-aspect": `${aspect}`,
-              "--poster-bg": effectiveTheme.ui.bg,
+              "--poster-bg": posterBg,
               "--map-inset-x": borderMetrics.mapInsetX,
               "--map-inset-y": borderMetrics.mapInsetY,
               "--mat-inset-x": borderMetrics.matInsetX,
@@ -527,8 +529,8 @@ export default function PreviewPanel({
             />
           </Suspense>
           <GradientFades color={effectiveTheme.ui.bg}
-            top={form.overlayTop ?? form.showMarkers}
-            bottom={form.overlayBottom ?? form.showMarkers} />
+            top={isShaped ? false : (form.overlayTop ?? form.showMarkers)}
+            bottom={isShaped ? false : (form.overlayBottom ?? form.showMarkers)} />
           <RouteOverlay
             routes={state.routes}
             mapRef={mapRef}
@@ -568,7 +570,7 @@ export default function PreviewPanel({
               <path
                 d={activeShapeDef.svgPath}
                 fill="none"
-                stroke={effectiveTheme.ui.text}
+                stroke={posterTextColor}
                 strokeWidth="1.5"
                 strokeOpacity="0.8"
               />
@@ -583,11 +585,11 @@ export default function PreviewPanel({
             lon={formLon}
             fontFamily={form.fontFamily}
             fontSize={Number(form.fontSize) || 16}
-            textColor={effectiveTheme.ui.text}
-            landColor={effectiveTheme.map.land}
+            textColor={posterTextColor}
+            landColor={isShaped ? "#475569" : effectiveTheme.map.land}
             showPosterText={form.showPosterText}
             includeCredits={form.includeCredits}
-            showOverlay={form.overlayBottom ?? form.showMarkers}
+            showOverlay={isShaped ? false : (form.overlayBottom ?? form.showMarkers)}
             customDate={form.customDate}
           />
           <NeatlineArtwork
@@ -598,8 +600,8 @@ export default function PreviewPanel({
           />
           {state.showGrid ? (
             <PosterGridOverlay
-              backgroundColor={effectiveTheme.ui.bg}
-              textColor={effectiveTheme.ui.text}
+              backgroundColor={posterBg}
+              textColor={posterTextColor}
             />
           ) : null}
         </div>

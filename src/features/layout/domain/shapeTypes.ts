@@ -2,8 +2,6 @@ export type MapShapeId =
   | "full"
   | "heart"
   | "circle"
-  | "honeycomb"
-  | "quadrilateral"
   | "squircle"
   | "arch";
 
@@ -43,52 +41,34 @@ export const MAP_SHAPES: MapShapeDefinition[] = [
     name: "Romantic Heart",
     subtitle: "Where We Met & Love",
     badge: "Best Seller",
-    description: "Elegant cubic-bezier heart cutout with dimensional depth.",
-    svgPath: "M 50 80 C 20 56, 5 40, 5 24 C 5 10, 16 2, 31 2 C 40 2, 47 6, 50 13 C 53 6, 60 2, 69 2 C 84 2, 95 10, 95 24 C 95 40, 80 56, 50 80 Z",
-    normalizedPath: "M 0.50 0.80 C 0.20 0.56, 0.05 0.40, 0.05 0.24 C 0.05 0.10, 0.16 0.02, 0.31 0.02 C 0.40 0.02, 0.47 0.06, 0.50 0.13 C 0.53 0.06, 0.60 0.02, 0.69 0.02 C 0.84 0.02, 0.95 0.10, 0.95 0.24 C 0.95 0.40, 0.80 0.56, 0.50 0.80 Z",
+    description: "Symmetrical fine-art heart aperture with elegant top lobes and sharp bottom tip.",
+    svgPath: "M 50 94 C 42 84, 18 66, 8 46 C 3 36, 4 24, 10 16 C 17 7, 29 4, 39 8 C 45 10, 48 14, 50 20 C 52 14, 55 10, 61 8 C 71 4, 83 7, 90 16 C 96 24, 97 36, 92 46 C 82 66, 58 84, 50 94 Z",
+    normalizedPath: "M 0.50 0.94 C 0.42 0.84, 0.18 0.66, 0.08 0.46 C 0.03 0.36, 0.04 0.24, 0.10 0.16 C 0.17 0.07, 0.29 0.04, 0.39 0.08 C 0.45 0.10, 0.48 0.14, 0.50 0.20 C 0.52 0.14, 0.55 0.10, 0.61 0.08 C 0.71 0.04, 0.83 0.07, 0.90 0.16 C 0.96 0.24, 0.97 0.36, 0.92 0.46 C 0.82 0.66, 0.58 0.84, 0.50 0.94 Z",
   },
   {
     id: "circle",
-    name: "Classic Circle",
-    subtitle: "Pure Minimalist Orb",
+    name: "Minimalist Orb",
+    subtitle: "Egg / Oval Curvature",
     badge: "Popular",
-    description: "Balanced circular aperture for timeless gallery aesthetics.",
-    svgPath: "M 50 5 A 45 45 0 1 0 50 95 A 45 45 0 1 0 50 5 Z",
-    normalizedPath: "M 0.5 0.05 A 0.45 0.45 0 1 0 0.5 0.95 A 0.45 0.45 0 1 0 0.5 0.05 Z",
-  },
-  {
-    id: "honeycomb",
-    name: "Honeycomb Triptych",
-    subtitle: "3-Cell Hexagon Cluster (1mm Gap)",
-    badge: "Trending",
-    description: "Trio of architectural honeycomb cells with a precise 1mm gallery spacing.",
-    svgPath: "M 70.35 35.44 L 50 47.19 L 29.65 35.44 L 29.65 11.94 L 50 0.19 L 70.35 11.94 Z M 49.3 71.9 L 28.95 83.65 L 8.6 71.9 L 8.6 48.4 L 28.95 36.65 L 49.3 48.4 Z M 91.4 71.9 L 71.05 83.65 L 50.7 71.9 L 50.7 48.4 L 71.05 36.65 L 91.4 48.4 Z",
-    normalizedPath: "M 0.7035 0.3544 L 0.5 0.4719 L 0.2965 0.3544 L 0.2965 0.1194 L 0.5 0.0019 L 0.7035 0.1194 Z M 0.493 0.719 L 0.2895 0.8365 L 0.086 0.719 L 0.086 0.484 L 0.2895 0.3665 L 0.493 0.484 Z M 0.914 0.719 L 0.7105 0.8365 L 0.507 0.719 L 0.507 0.484 L 0.7105 0.3665 L 0.914 0.484 Z",
-  },
-  {
-    id: "quadrilateral",
-    name: "Geometric Diamond",
-    subtitle: "Quadrilateral Polygon",
-    badge: "New",
-    description: "Striking 4-point diamond quadrilateral with razor-sharp geometric lines.",
-    svgPath: "M 50 5 L 92 50 L 50 95 L 8 50 Z",
-    normalizedPath: "M 0.50 0.05 L 0.92 0.50 L 0.50 0.95 L 0.08 0.50 Z",
+    description: "Continuous-curvature egg/oval aperture tailored for gallery fine-art prints.",
+    svgPath: "M 50 4 A 46 46 0 1 0 50 96 A 46 46 0 1 0 50 4 Z",
+    normalizedPath: "M 0.5 0.04 A 0.46 0.46 0 1 0 0.5 0.96 A 0.46 0.46 0 1 0 0.5 0.04 Z",
   },
   {
     id: "squircle",
-    name: "Soft Squircle",
-    subtitle: "Apple Rounded Frame",
-    description: "Continuous curvature rounded square with softened borders.",
-    svgPath: "M 25 5 L 75 5 C 92 5, 95 8, 95 25 L 95 75 C 95 92, 92 95, 75 95 L 25 95 C 8 95, 5 92, 5 75 L 5 25 C 5 8, 8 5, 25 5 Z",
-    normalizedPath: "M 0.25 0.05 L 0.75 0.05 C 0.92 0.05, 0.95 0.08, 0.95 0.25 L 0.95 0.75 C 0.95 0.92, 0.92 0.95, 0.75 0.95 L 0.25 0.95 C 0.08 0.95, 0.05 0.92, 0.05 0.75 L 0.05 0.25 C 0.05 0.08, 0.08 0.05, 0.25 0.05 Z",
+    name: "Gallery Square",
+    subtitle: "Expanded Soft Squircle",
+    description: "Expanded continuous-curvature rounded square covering maximum canvas area.",
+    svgPath: "M 18 2 L 82 2 C 95 2, 98 5, 98 18 L 98 82 C 98 95, 95 98, 82 98 L 18 98 C 5 98, 2 95, 2 82 L 2 18 C 2 5, 5 2, 18 2 Z",
+    normalizedPath: "M 0.18 0.02 L 0.82 0.02 C 0.95 0.02, 0.98 0.05, 0.98 0.18 L 0.98 0.82 C 0.98 0.95, 0.95 0.98, 0.82 0.98 L 0.18 0.98 C 0.05 0.98, 0.02 0.95, 0.02 0.82 L 0.02 0.18 C 0.02 0.05, 0.05 0.02, 0.18 0.02 Z",
   },
   {
     id: "arch",
     name: "Modern Arch",
     subtitle: "Architectural Vault",
     description: "Mediterranean arched dome trending in luxury editorial prints.",
-    svgPath: "M 10 92 L 10 48 A 40 40 0 0 1 90 48 L 90 92 Z",
-    normalizedPath: "M 0.10 0.92 L 0.10 0.48 A 0.40 0.40 0 0 1 0.90 0.48 L 0.90 0.92 Z",
+    svgPath: "M 6 96 L 6 46 A 44 44 0 0 1 94 46 L 94 96 Z",
+    normalizedPath: "M 0.06 0.96 L 0.06 0.46 A 0.44 0.44 0 0 1 0.94 0.46 L 0.94 0.96 Z",
   },
 ];
 
