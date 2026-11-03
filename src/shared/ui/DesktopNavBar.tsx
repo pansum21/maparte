@@ -16,7 +16,6 @@ import {
   WallIcon,
   ScissorsIcon,
   RotateIcon,
-  GridIcon,
   FullScreenIcon,
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
@@ -241,17 +240,6 @@ export default function DesktopNavBar({
                   >
                     <span className="edit-map-action-glyph">⛶</span>
                     <span>Recenter</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`edit-map-action-pill edit-map-action-pill--grid${state.showGrid ? " is-active" : ""}`}
-                    onClick={() => dispatch({ type: "TOGGLE_GRID" })}
-                    title="Toggle alignment grid & center crosshair"
-                    aria-pressed={Boolean(state.showGrid)}
-                  >
-                    <GridIcon className="edit-map-action-icon" />
-                    <span>Grid</span>
                   </button>
 
                   <div className="edit-map-zoom-group" aria-label="Map zoom controls">
