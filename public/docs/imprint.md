@@ -7,9 +7,9 @@
 ## Service Provider
 
 **MAPARTE Project**  
-Website: [https://maparte.app](https://maparte.app)  
+Website: [https://maparte.com](https://maparte.com)  
 GitHub: [https://github.com/pansum21/maparte](https://github.com/pansum21/maparte)  
-Email: [support@maparte.app](mailto:support@maparte.app)
+Email: [support@maparte.com](mailto:support@maparte.com)
 
 ---
 

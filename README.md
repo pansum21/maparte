@@ -53,13 +53,13 @@ The hosted MAPARTE service includes attribution and branding as part of the user
 
 If you deploy or modify this software, you are responsible for complying with the AGPL-3.0 license, including preserving license and copyright notices.
 
-For access to the hosted version with additional features and support, see MAPARTE Business or contact: [business@maparte.app](mailto:business@maparte.app).
+For access to the hosted version with additional features and support, see MAPARTE Business or contact: [business@maparte.com](mailto:business@maparte.com).
 
 ## Trademark
 
 MAPARTE™ is a trademark of Yousuf Amanuel. An application for registration has been filed with the German Patent and Trade Mark Office (DPMA). This filing establishes priority rights under the Paris Convention, allowing international trademark registration to be pursued within six months of the original filing date. The MAPARTE logo, visual identity, and branding assets are copyright © 2026 Yousuf Amanuel. All rights reserved.
 
-Unauthorized use of the MAPARTE name in connection with similar software, map services, or related commercial products may be restricted. For licensing inquiries, contact [business@maparte.app](mailto:business@maparte.app).
+Unauthorized use of the MAPARTE name in connection with similar software, map services, or related commercial products may be restricted. For licensing inquiries, contact [business@maparte.com](mailto:business@maparte.com).
 
 See [TRADEMARK.md](./TRADEMARK.md) for details.
 

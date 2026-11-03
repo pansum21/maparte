@@ -54,7 +54,7 @@ export const AD_SLOT_SIDEBAR = import.meta.env.VITE_AD_SLOT_SIDEBAR ?? "";
 
 export const REPO_URL = import.meta.env.VITE_REPO_URL ?? "";
 export const REPO_API_URL = import.meta.env.VITE_REPO_API_URL ?? "";
-export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL ?? "";
+export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || "support@maparte.com";
 /* Raw markdown URLs (e.g. raw.githubusercontent.com) for the in-app legal
    modal — imprint and privacy docs pulled from the meta repo. */
 export const LEGAL_NOTICE_URL = import.meta.env.VITE_LEGAL_NOTICE_URL ?? "";
@@ -70,7 +70,7 @@ export const DEVELOPER_NAME = import.meta.env.VITE_DEVELOPER_NAME ?? "";
 export const DEVELOPER_PROFILE_URL =
   import.meta.env.VITE_DEVELOPER_PROFILE_URL ?? "";
 export const APP_CREDIT_URL =
-  import.meta.env.VITE_APP_CREDIT_URL ?? "maparte.app";
+  import.meta.env.VITE_APP_CREDIT_URL || "maparte.com";
 export const APP_VERSION = String(
   import.meta.env.VITE_APP_VERSION ?? "0.0.0",
 ).trim();
