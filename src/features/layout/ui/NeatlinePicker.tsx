@@ -706,6 +706,7 @@ export function NeatlineArtwork({
     selection.showWhiteMat,
   );
   const { innerW, innerH, edgeInset, offInner } = metrics;
+  const designScale = selection.designScale ?? 1.0;
   const widths = widthsFor(line.id, selection.thicknesses);
   const layerOffsets = getBorderLayerOffsets(
     line.pattern,
@@ -876,6 +877,12 @@ export function NeatlineArtwork({
     case "dashed": {
       const off0 = edgeInset;
       const off1 = offInner;
+      const w0 = widths[0];
+      const visualDash = Math.max(12 * designScale, w0 * 3.2);
+      const visualGap = Math.max(8 * designScale, w0 * 1.8);
+      const segLen = Math.max(0.1, visualDash - w0);
+      const gapLen = visualGap + w0;
+      const dashArray = `${segLen.toFixed(2)} ${gapLen.toFixed(2)}`;
       return (
         <svg
           className={`neatline-artwork ${className}`}
@@ -892,7 +899,7 @@ export function NeatlineArtwork({
             fill="none"
             stroke={primaryColor}
             strokeWidth={widths[0]}
-            strokeDasharray="14 8"
+            strokeDasharray={dashArray}
             strokeLinecap="round"
           />
           <rect
@@ -912,6 +919,10 @@ export function NeatlineArtwork({
     case "dotted": {
       const off0 = edgeInset;
       const off1 = offInner;
+      const w1 = widths[1];
+      const visualGap = Math.max(7 * designScale, w1 * 1.6);
+      const gapLen = w1 + visualGap;
+      const dotArray = `0.01 ${gapLen.toFixed(2)}`;
       return (
         <svg
           className={`neatline-artwork ${className}`}
@@ -937,7 +948,7 @@ export function NeatlineArtwork({
             fill="none"
             stroke={secondaryColor}
             strokeWidth={widths[1]}
-            strokeDasharray="1 8"
+            strokeDasharray={dotArray}
             strokeLinecap="round"
           />
         </svg>
@@ -947,6 +958,13 @@ export function NeatlineArtwork({
     case "dash-dot": {
       const off0 = edgeInset;
       const off1 = offInner;
+      const w0 = widths[0];
+      const visualDash = Math.max(14 * designScale, w0 * 3.5);
+      const visualGap = Math.max(7 * designScale, w0 * 1.6);
+      const dotLen = 0.01;
+      const segLen = Math.max(0.1, visualDash - w0);
+      const gapLen = visualGap + w0;
+      const dashDotArray = `${segLen.toFixed(2)} ${gapLen.toFixed(2)} ${dotLen} ${gapLen.toFixed(2)}`;
       return (
         <svg
           className={`neatline-artwork ${className}`}
@@ -963,8 +981,8 @@ export function NeatlineArtwork({
             fill="none"
             stroke={primaryColor}
             strokeWidth={widths[0]}
-            strokeDasharray="16 6 4 6"
-            strokeLinecap="square"
+            strokeDasharray={dashDotArray}
+            strokeLinecap="round"
           />
           <rect
             x={off1}
@@ -984,6 +1002,10 @@ export function NeatlineArtwork({
       const off0 = layerOffsets[0] ?? edgeInset;
       const off1 = layerOffsets[1] ?? (edgeInset + offInner) / 2;
       const off2 = layerOffsets[2] ?? offInner;
+      const w1 = widths[1];
+      const w2 = widths[2];
+      const dashArray = `${Math.max(0.1, Math.max(12 * designScale, w1 * 3.2) - w1).toFixed(2)} ${(Math.max(8 * designScale, w1 * 1.8) + w1).toFixed(2)}`;
+      const dotArray = `0.01 ${(w2 + Math.max(7 * designScale, w2 * 1.6)).toFixed(2)}`;
       return (
         <svg
           className={`neatline-artwork ${className}`}
@@ -1009,7 +1031,7 @@ export function NeatlineArtwork({
             fill="none"
             stroke={secondaryColor}
             strokeWidth={widths[1]}
-            strokeDasharray="14 8"
+            strokeDasharray={dashArray}
             strokeLinecap="round"
           />
           <rect
@@ -1020,7 +1042,7 @@ export function NeatlineArtwork({
             fill="none"
             stroke={primaryColor}
             strokeWidth={widths[2]}
-            strokeDasharray="1 8"
+            strokeDasharray={dotArray}
             strokeLinecap="round"
           />
         </svg>
@@ -1031,6 +1053,10 @@ export function NeatlineArtwork({
       const off0 = layerOffsets[0] ?? edgeInset;
       const off1 = layerOffsets[1] ?? (edgeInset + offInner) / 2;
       const off2 = layerOffsets[2] ?? offInner;
+      const w0 = widths[0];
+      const w1 = widths[1];
+      const dotArray = `0.01 ${(w0 + Math.max(7 * designScale, w0 * 1.6)).toFixed(2)}`;
+      const dashArray = `${Math.max(0.1, Math.max(12 * designScale, w1 * 3.2) - w1).toFixed(2)} ${(Math.max(8 * designScale, w1 * 1.8) + w1).toFixed(2)}`;
       return (
         <svg
           className={`neatline-artwork ${className}`}
@@ -1047,7 +1073,7 @@ export function NeatlineArtwork({
             fill="none"
             stroke={primaryColor}
             strokeWidth={widths[0]}
-            strokeDasharray="1 8"
+            strokeDasharray={dotArray}
             strokeLinecap="round"
           />
           <rect
@@ -1058,7 +1084,7 @@ export function NeatlineArtwork({
             fill="none"
             stroke={secondaryColor}
             strokeWidth={widths[1]}
-            strokeDasharray="14 8"
+            strokeDasharray={dashArray}
             strokeLinecap="round"
           />
           <rect
@@ -1077,7 +1103,23 @@ export function NeatlineArtwork({
     case "corner-crosshairs": {
       const off0 = edgeInset;
       const off1 = offInner;
-      const tickArm = Math.max(6, Math.min(16, (off1 - off0) * 0.8));
+      const gap = off1 - off0;
+      const w0 = widths[0];
+      const w1 = widths[1];
+      const crosshairWidth = Math.max(
+        1.5 * designScale,
+        Math.min(Math.max(2.2 * designScale, w0 * 0.5), 4.5 * designScale)
+      );
+      const maxOuterArm = Math.max(4 * designScale, gap - w0 / 2 - 2.5 * designScale);
+      const tickArm = Math.max(
+        6 * designScale,
+        Math.min(maxOuterArm, Math.max(crosshairWidth * 3.5, gap * 0.75))
+      );
+      const innerDash = Math.max(8 * designScale, w1 * 3.2 * designScale);
+      const innerGap = Math.max(6 * designScale, w1 * 2.0 * designScale);
+      const innerDashArray = `${innerDash.toFixed(2)} ${innerGap.toFixed(2)}`;
+      const cornerOffset = (innerGap / 2).toFixed(2);
+
       return (
         <svg
           className={`neatline-artwork ${className}`}
@@ -1094,7 +1136,7 @@ export function NeatlineArtwork({
             height={innerH - off0 * 2}
             fill="none"
             stroke={primaryColor}
-            strokeWidth={widths[0]}
+            strokeWidth={w0}
           />
           <rect
             data-edge="inner"
@@ -1104,8 +1146,10 @@ export function NeatlineArtwork({
             height={innerH - off1 * 2}
             fill="none"
             stroke={secondaryColor}
-            strokeWidth={widths[1]}
-            strokeDasharray="4 4"
+            strokeWidth={w1}
+            strokeDasharray={innerDashArray}
+            strokeLinecap="butt"
+            strokeDashoffset={cornerOffset}
           />
           <line
             x1={off1 - tickArm}
@@ -1113,8 +1157,8 @@ export function NeatlineArtwork({
             x2={off1 + tickArm}
             y2={off1}
             stroke={primaryColor}
-            strokeWidth={widths[0]}
-            strokeLinecap="round"
+            strokeWidth={crosshairWidth}
+            strokeLinecap="butt"
           />
           <line
             x1={off1}
@@ -1122,8 +1166,8 @@ export function NeatlineArtwork({
             x2={off1}
             y2={off1 + tickArm}
             stroke={primaryColor}
-            strokeWidth={widths[0]}
-            strokeLinecap="round"
+            strokeWidth={crosshairWidth}
+            strokeLinecap="butt"
           />
           <line
             x1={innerW - off1 - tickArm}
@@ -1131,8 +1175,8 @@ export function NeatlineArtwork({
             x2={innerW - off1 + tickArm}
             y2={off1}
             stroke={primaryColor}
-            strokeWidth={widths[0]}
-            strokeLinecap="round"
+            strokeWidth={crosshairWidth}
+            strokeLinecap="butt"
           />
           <line
             x1={innerW - off1}
@@ -1140,8 +1184,8 @@ export function NeatlineArtwork({
             x2={innerW - off1}
             y2={off1 + tickArm}
             stroke={primaryColor}
-            strokeWidth={widths[0]}
-            strokeLinecap="round"
+            strokeWidth={crosshairWidth}
+            strokeLinecap="butt"
           />
           <line
             x1={off1 - tickArm}
@@ -1149,8 +1193,8 @@ export function NeatlineArtwork({
             x2={off1 + tickArm}
             y2={innerH - off1}
             stroke={primaryColor}
-            strokeWidth={widths[0]}
-            strokeLinecap="round"
+            strokeWidth={crosshairWidth}
+            strokeLinecap="butt"
           />
           <line
             x1={off1}
@@ -1158,8 +1202,8 @@ export function NeatlineArtwork({
             x2={off1}
             y2={innerH - off1 + tickArm}
             stroke={primaryColor}
-            strokeWidth={widths[0]}
-            strokeLinecap="round"
+            strokeWidth={crosshairWidth}
+            strokeLinecap="butt"
           />
           <line
             x1={innerW - off1 - tickArm}
@@ -1167,8 +1211,8 @@ export function NeatlineArtwork({
             x2={innerW - off1 + tickArm}
             y2={innerH - off1}
             stroke={primaryColor}
-            strokeWidth={widths[0]}
-            strokeLinecap="round"
+            strokeWidth={crosshairWidth}
+            strokeLinecap="butt"
           />
           <line
             x1={innerW - off1}
@@ -1176,8 +1220,8 @@ export function NeatlineArtwork({
             x2={innerW - off1}
             y2={innerH - off1 + tickArm}
             stroke={primaryColor}
-            strokeWidth={widths[0]}
-            strokeLinecap="round"
+            strokeWidth={crosshairWidth}
+            strokeLinecap="butt"
           />
         </svg>
       );
