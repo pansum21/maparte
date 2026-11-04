@@ -62,10 +62,6 @@
   ],
   "rewrites": [
     {
-      "source": "/create",
-      "destination": "/index.html"
-    },
-    {
       "source": "/where-we-met",
       "destination": "/where-we-met/index.html"
     },
