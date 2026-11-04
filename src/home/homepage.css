@@ -188,3 +188,11 @@
   .home-globe-section{gap:clamp(16px,2vw,26px)}
   .home-globe{width:min(100%,400px)}
 }
+
+
+/* Keep the homepage on the document scroll; hidden overflow traps touch and wheel scrolling. */
+.maparte-home{overflow-x:clip;overflow-y:visible}
+
+/* Show the digital map artwork itself, without a white mock paper sheet around it. */
+.home-hero__poster{height:auto;aspect-ratio:704 / 994;padding:0;background:transparent;border:0;box-shadow:none}
+.home-hero__poster img{display:block;width:100%;height:100%;object-fit:contain}
