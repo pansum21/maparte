@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#06101e" />
+  <title>MAPARTE — Real Globe Preview</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.css" />
+  <style>
+    :root{color-scheme:dark;--ink:#f1f5ff;--muted:#a8b5cb;--sea:#153b59;--land:#63cdbb;--space:#060a16;--sky:#102b43;--glow:#62d6d0;--nebula:#524998;--line:rgba(198,218,255,.15)}
+    *{box-sizing:border-box}html,body{min-height:100%;margin:0}body{overflow-x:hidden;background:var(--space);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;transition:background .5s}
+    body:before,body:after{content:"";position:fixed;inset:-18%;pointer-events:none;z-index:-2}
+    body:before{background:radial-gradient(ellipse 45% 17% at 65% 45%,color-mix(in srgb,var(--nebula) 43%,transparent),transparent 74%),radial-gradient(ellipse 36% 18% at 24% 74%,color-mix(in srgb,var(--glow) 17%,transparent),transparent 75%);filter:blur(28px);transform:rotate(-22deg)}
+    body:after{z-index:-1;opacity:.56;background-image:radial-gradient(1px 1px at 9% 16%,#fff 98%,transparent),radial-gradient(1.5px 1.5px at 20% 76%,#dbe6ff 98%,transparent),radial-gradient(1px 1px at 38% 33%,#fff 98%,transparent),radial-gradient(1px 1px at 55% 87%,#cfdbff 98%,transparent),radial-gradient(1px 1px at 67% 12%,#fff 98%,transparent),radial-gradient(1.5px 1.5px at 81% 55%,#e7efff 98%,transparent),radial-gradient(1px 1px at 93% 27%,#fff 98%,transparent);background-size:420px 330px;animation:starDrift 55s linear infinite}
+    @keyframes starDrift{to{background-position:420px 330px}}@keyframes float{50%{transform:translateY(-7px)}}@keyframes pulse{50%{opacity:.45;transform:scale(.84)}}
+    .shell{width:min(1240px,calc(100% - 56px));margin:auto}header{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(204,220,255,.08)}
+    .brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.17em;font-size:14px}.brand-mark{width:30px;height:30px;display:grid;place-items:center;border-radius:10px;color:#061119;background:linear-gradient(145deg,#6ce0ce,#39a9b8);font-size:16px}
+    .head-actions{display:flex;align-items:center;gap:10px}select,.ghost,.primary{font:inherit;color:var(--ink);border-radius:999px;border:1px solid var(--line);background:rgba(10,17,33,.78);padding:11px 15px}select{cursor:pointer}.ghost{font-size:13px;color:#d4dcef;text-decoration:none}.primary{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border:0;text-decoration:none;font-size:14px;font-weight:750;color:#06101c;background:linear-gradient(115deg,#58d5c6,#bfe6a0);box-shadow:0 8px 28px color-mix(in srgb,var(--glow) 27%,transparent);cursor:pointer;white-space:nowrap;transition:transform .2s,filter .2s}.primary:hover{transform:translateY(-2px);filter:brightness(1.08)}
+    .hero{min-height:calc(100svh - 82px);display:grid;grid-template-columns:.92fr 1.08fr;align-items:center;gap:20px;padding:35px 0 48px}.copy{position:relative;z-index:3;padding:20px 0}.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:8px 12px;margin-bottom:22px;border:1px solid rgba(109,220,212,.22);border-radius:999px;color:#9ce7df;background:rgba(24,71,85,.25);font-size:10px;letter-spacing:.13em;font-weight:700;text-transform:uppercase}.pulse{width:7px;height:7px;border-radius:50%;background:var(--glow);box-shadow:0 0 12px var(--glow);animation:pulse 2s infinite}h1{max-width:590px;margin:0;font-size:clamp(44px,5.1vw,72px);line-height:.99;letter-spacing:-.055em;font-weight:760}h1 span{color:#72dcd0}.lead{max-width:455px;margin:21px 0 27px;color:var(--muted);font-size:16px;line-height:1.75}.search{display:flex;align-items:center;gap:10px;max-width:475px;padding:8px;border:1px solid rgba(210,224,255,.18);border-radius:16px;background:rgba(15,26,46,.86);box-shadow:0 15px 45px rgba(0,0,0,.2)}.search-icon{padding-left:8px;font-size:19px;color:#9db1ca}.search input{width:100%;min-width:0;color:#fff;background:transparent;border:0;outline:0;font:inherit;font-size:14px}.search input::placeholder{color:#8594ad}.search .primary{min-height:45px;padding:0 17px;font-size:13px}.cta{display:flex;flex-wrap:wrap;gap:11px;align-items:center;margin-top:14px}.note{margin:10px 0 0;font-size:11px;color:#8f9ab0}.benefits{display:flex;flex-wrap:wrap;gap:16px;margin-top:28px;color:#c0cbdd;font-size:12px}.benefits span{display:flex;align-items:center;gap:7px}.check{color:#70d9ce;font-size:15px}
+    .stage{position:relative;min-height:590px;display:grid;place-items:center;isolation:isolate}.orbit{position:absolute;width:min(96%,620px);aspect-ratio:1;border:1px solid rgba(143,177,230,.11);border-radius:50%;transform:rotate(-22deg) scaleY(.38);box-shadow:0 0 0 42px rgba(100,131,194,.022),0 0 0 100px rgba(100,131,194,.015);pointer-events:none}.orbit:before,.orbit:after{content:"";position:absolute;inset:8%;border:1px solid rgba(143,177,230,.07);border-radius:50%}.orbit:after{inset:-6%;transform:rotate(45deg) scaleY(.7);border-color:rgba(86,209,207,.09)}
+    .globe-shell{position:relative;width:min(78vw,545px);max-width:90%;aspect-ratio:1;border-radius:50%;animation:float 8s ease-in-out infinite;filter:drop-shadow(0 28px 34px rgba(0,0,0,.35))}.globe-halo{position:absolute;inset:-10%;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--glow) 15%,transparent),transparent 69%);filter:blur(16px);pointer-events:none}.globe-map{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:transparent}.globe-map .maplibregl-canvas{border-radius:50%;outline:none}.globe-map .maplibregl-ctrl-bottom-right{right:19px;bottom:20px}.globe-map .maplibregl-ctrl-attrib{max-width:150px;font-size:9px;opacity:.72}.globe-map .maplibregl-ctrl-attrib a{color:#cbd7e9}
+    .country-pill{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(215,233,255,.2);border-radius:11px;background:rgba(8,17,32,.9);color:#f5f8ff;box-shadow:0 8px 22px rgba(0,0,0,.28);font-size:11px;font-weight:700;white-space:nowrap;backdrop-filter:blur(10px);transition:opacity .35s,transform .35s}.country-pill small{color:#acb9cb;font-size:9px;font-weight:500}.country-pill i{width:7px;height:7px;border-radius:50%;background:var(--glow);box-shadow:0 0 10px var(--glow)}.country-pill.is-hidden{opacity:0;pointer-events:none;transform:translateY(5px)}
+    .caption{position:absolute;bottom:0;display:flex;align-items:center;gap:8px;color:#9eabc0;font-size:11px;letter-spacing:.03em;pointer-events:none}.caption b{color:#e8d098}.load-error{position:absolute;inset:35% 8% auto;text-align:center;color:#e1e7f2;font-size:13px;text-shadow:0 2px 8px #000;display:none;z-index:2}.footer{padding:17px 0 24px;border-top:1px solid rgba(204,220,255,.08);display:flex;align-items:center;justify-content:space-between;color:#8390a6;font-size:10px}.footer strong{color:#aab6cb;font-weight:600}.footer a{color:#a7e7de;text-decoration:none}
+    @media(max-width:900px){.shell{width:min(100% - 36px,700px)}header{height:70px}.hero{grid-template-columns:1fr;gap:0;padding:16px 0 45px}.copy{padding:10px 0 0}h1{font-size:clamp(44px,10vw,68px);max-width:650px}.lead{margin:16px 0 22px}.stage{min-height:455px;grid-row:1}.globe-shell{width:min(66vw,390px)}.orbit{width:min(92%,520px)}}
+    @media(max-width:520px){.shell{width:calc(100% - 28px)}header{height:64px}.brand{font-size:12px;gap:8px}.brand-mark{width:27px;height:27px}select{padding:9px 27px 9px 11px;max-width:120px;font-size:11px}.head-actions .ghost{display:none}.hero{padding:4px 0 27px}.stage{min-height:360px;margin:0 -5px}.globe-shell{width:min(76vw,320px)}.orbit{width:92%}.eyebrow{margin:8px 0 17px;font-size:9px}.lead{font-size:14px}.search{padding:7px;border-radius:14px}.search input{font-size:12px}.search .primary{min-height:42px;padding:0 12px;font-size:12px}.cta .primary{min-height:46px;flex:1}.cta .ghost{display:block}.benefits{gap:10px 13px;font-size:10px;margin-top:21px}.footer{align-items:flex-start;flex-direction:column;gap:7px;line-height:1.5}.caption{bottom:0;font-size:10px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header><div class="brand"><span class="brand-mark">M</span><span>MAPARTE</span></div>
+      <div class="head-actions"><select id="theme" aria-label="Change globe theme"><option value="midnight">Midnight Blue</option><option value="ocean">Ocean</option><option value="rose">Rose</option><option value="paper">Warm Paper</option></select><a class="ghost" href="https://maparte.com/" target="_blank" rel="noopener">Open MAPARTE ↗</a></div>
+    </header>
+    <main class="hero">
+      <section class="copy" aria-label="Create a map poster"><div class="eyebrow"><span class="pulse"></span> A place becomes map art</div><h1>Find your place.<br><span>Make it yours.</span></h1>
+        <p class="lead">Choose a place anywhere on Earth. Turn its streets, memories and milestones into a map poster or phone wallpaper.</p>
+        <form class="search" id="searchForm"><span class="search-icon" aria-hidden="true">⌕</span><input id="place" type="search" placeholder="Search a city, town or coordinates" aria-label="Search a city, town or coordinates"/><button class="primary" type="submit">Find place</button></form>
+        <div class="cta"><a class="primary" href="https://maparte.com/" target="_blank" rel="noopener">Create Map Art ↗</a><a class="ghost" href="https://maparte.vercel.app/" target="_blank" rel="noopener">Open current site</a></div>
+        <p class="note">This preview is isolated; it does not modify the MAPARTE editor.</p><div class="benefits"><span><b class="check">✓</b> Posters &amp; phone wallpapers</span><span><b class="check">✓</b> Your place, your style</span></div>
+      </section>
+      <section class="stage" aria-label="Interactive three-dimensional Earth globe">
+        <div class="orbit" aria-hidden="true"></div><div class="globe-shell"><div class="globe-halo" aria-hidden="true"></div><div class="globe-map" id="globeMap"></div><div class="load-error" id="loadError">The live globe could not load. Check your connection and refresh this preview.</div></div>
+        <div class="caption"><b>✦</b> Real Earth · drag to turn · choose a place to create</div>
+      </section>
+    </main>
+    <footer class="footer"><span><strong>MAPARTE · WebGL globe concept</strong> — isolated preview branch</span><span>Map rendering: MapLibre GL JS · © OpenStreetMap contributors</span></footer>
+  </div>
+  <script type="module">
+    import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.mjs';
+
+    const palettes={
+      midnight:{sea:'#153b59',land:'#63cdbb',road:'#b4d5d5',label:'#f0f5ff',space:'#060a16',sky:'#264d68',nebula:'#524998',glow:'#62d6d0'},
+      ocean:{sea:'#0d5062',land:'#9ce4c2',road:'#c7e1d3',label:'#effbf6',space:'#03141b',sky:'#16728a',nebula:'#125a79',glow:'#53dfcc'},
+      rose:{sea:'#49334f',land:'#f1a8b9',road:'#e5c2d0',label:'#fff2f5',space:'#130b19',sky:'#754769',nebula:'#844e91',glow:'#f28fb1'},
+      paper:{sea:'#5b554b',land:'#d9bd7b',road:'#e5d5ac',label:'#fff8e7',space:'#15100d',sky:'#9b7959',nebula:'#776254',glow:'#e5bd79'}
+    };
+    const map=new maplibregl.Map({
+      container:'globeMap',style:'https://demotiles.maplibre.org/globe.json',
+      center:[18,18],zoom:1.45,projection:{type:'globe'},
+      attributionControl:false,renderWorldCopies:false,
+      dragRotate:true, touchPitch:false, maxPitch:0,
+      canvasContextAttributes:{antialias:true}
+    });
+    map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-right');
+    map.addControl(new maplibregl.NavigationControl({showCompass:true,showZoom:false,visualizePitch:false}),'top-right');
+    const stops=[
+      {name:'India',region:'Asia',coords:[78.9629,22.5937]},
+      {name:'France',region:'Europe',coords:[2.2137,46.2276]},
+      {name:'Japan',region:'Asia',coords:[138.2529,36.2048]},
+      {name:'Brazil',region:'South America',coords:[-51.9253,-14.2350]},
+      {name:'United States',region:'North America',coords:[-98.5795,39.8283]},
+      {name:'New Zealand',region:'Oceania',coords:[174.8860,-40.9006]}
+    ];
+    const pins=[];
+    for(const place of stops){
+      const el=document.createElement('div');el.className='country-pill';el.innerHTML=`<i></i><span>${place.name} <small>· ${place.region}</small></span>`;
+      const marker=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat(place.coords).addTo(map);
+      pins.push({marker,el,place});
+    }
+    let pauseUntil=0;
+    for(const event of ['dragstart','zoomstart','rotatestart','touchstart','wheel'])map.on(event,()=>pauseUntil=Date.now()+6000);
+    function updatePins(){
+      const c=map.getCenter();
+      for(const p of pins){
+        let d=((p.place.coords[0]-c.lng+540)%360)-180;
+        const front=Math.cos(p.place.coords[1]*Math.PI/180)*Math.cos(d*Math.PI/180)>.16;
+        p.el.classList.toggle('is-hidden',!front);
+      }
+    }
+    function themeGlobe(name){
+      const p=palettes[name];
+      for(const [key,val] of Object.entries({sea:p.sea,land:p.land,space:p.space,sky:p.sky,nebula:p.nebula,glow:p.glow}))document.documentElement.style.setProperty('--'+key,val);
+      if(!map.isStyleLoaded())return;
+      try{
+        map.setSky({'sky-color':p.space,'sky-horizon-blend':.55,'horizon-color':p.sky,'horizon-fog-blend':.35,'fog-color':p.sky,'fog-ground-blend':.15});
+        map.setFog({'color':p.space,'high-color':p.sky,'space-color':p.space,'star-intensity':.6});
+      }catch{}
+      for(const layer of map.getStyle().layers||[]){
+        try{
+          const id=layer.id.toLowerCase();
+          if(layer.type==='background'&&layer.paint?.['background-color']!==undefined)map.setPaintProperty(layer.id,'background-color',p.space);
+          if(layer.type==='fill'&&layer.paint?.['fill-color']!==undefined){
+            const water=/water|ocean|lake|river/.test(id);const park=/park|grass|wood|forest|landcover/.test(id);
+            map.setPaintProperty(layer.id,'fill-color',water?p.sea:park?`color-mix(in srgb, ${p.land} 74%, ${p.sea})`:p.land);
+          }
+          if(layer.type==='line'&&layer.paint?.['line-color']!==undefined)map.setPaintProperty(layer.id,'line-color',p.road);
+          if(layer.type==='symbol'&&layer.paint?.['text-color']!==undefined){map.setPaintProperty(layer.id,'text-color',p.label);if(layer.paint?.['text-halo-color']!==undefined)map.setPaintProperty(layer.id,'text-halo-color',p.space);}
+        }catch{}
+      }
+    }
+    map.on('style.load',()=>themeGlobe(document.getElementById('theme').value));
+    map.on('load',()=>{map.setProjection({type:'globe'});themeGlobe(document.getElementById('theme').value);updatePins();});
+    map.on('move',updatePins);
+    let previous=performance.now();
+    function spin(now){const dt=Math.min(48,now-previous);previous=now;if(document.visibilityState==='visible'&&Date.now()>pauseUntil){const c=map.getCenter();map.setCenter([c.lng+dt*.0035,c.lat]);}requestAnimationFrame(spin)}requestAnimationFrame(spin);
+    document.getElementById('theme').addEventListener('change',e=>themeGlobe(e.target.value));
+    document.getElementById('searchForm').addEventListener('submit',e=>{
+      e.preventDefault();const value=document.getElementById('place').value.trim();if(!value){document.getElementById('place').focus();return;}
+      const place=stops.find(s=>s.name.toLowerCase().includes(value.toLowerCase()));
+      if(place)map.flyTo({center:place.coords,zoom:2.4,duration:1700});
+      else{const url=new URL('https://maparte.com/');url.searchParams.set('city',value);window.open(url.toString(),'_blank','noopener');}
+    });
+    map.on('error',()=>{document.getElementById('loadError').style.display='block';});
+    if(!window.WebGLRenderingContext)document.getElementById('loadError').style.display='block';
+  </script>
+</body>
+</html>
+
