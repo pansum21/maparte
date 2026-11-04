@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import maplibregl from "maplibre-gl";
+import { Map as MapLibreMap, AttributionControl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./homepage.css";
 
@@ -38,14 +38,14 @@ function HomepageGlobe() {
   useEffect(() => {
     const host = container.current;
     if (!host) return;
-    let map: maplibregl.Map | null = null;
+    let map: MapLibreMap | null = null;
     let frame = 0;
     let disposed = false;
     let pauseUntil = 0;
 
     const observer = new IntersectionObserver((entries) => {
       if (!entries.some((entry) => entry.isIntersecting) || map || disposed) return;
-      map = new maplibregl.Map({
+      map = new MapLibreMap({
         container: host,
         style: "https://demotiles.maplibre.org/globe.json",
         center: [78, 24],
@@ -57,7 +57,7 @@ function HomepageGlobe() {
         touchPitch: false,
         maxPitch: 0,
       });
-      map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
+      map.addControl(new AttributionControl({ compact: true }), "bottom-right");
       map.on("load", () => {
         if (!map) return;
         map.setProjection({ type: "globe" });
