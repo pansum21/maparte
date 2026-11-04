@@ -99,7 +99,7 @@ export const POPULAR_DESIGNS: PopularDesign[] = [
     id: "ocean",
     name: "Ocean",
     subtitle: "Deep Cobalt Maritime",
-    themeId: "monochrome_blue",
+    themeId: "ocean",
     fontFamily: "Montserrat",
     description: "Nordic fjord blues and oceanic depth for modern coastal living.",
     bgPreview: "#E8F0F7",
