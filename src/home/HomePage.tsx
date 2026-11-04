@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Map as MapLibreMap, AttributionControl, Marker, setWorkerUrl } from "maplibre-gl";
+import { Map as MapLibreMap, AttributionControl, NavigationControl, Marker, setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./homepage.css";
@@ -37,11 +37,15 @@ function EditorLink({ children, className = "" }: { children: React.ReactNode; c
 
 type GlobeTheme = "Carrara" | "Midnight Blue";
 const globePlaces: Array<{ name: string; region: string; coords: [number, number]; zoom: number }> = [
+  { name: "Paris", region: "Europe", coords: [2.3522, 48.8566], zoom: 3.2 },
+  { name: "New York", region: "North America", coords: [-74.006, 40.7128], zoom: 3.2 },
+  { name: "Tokyo", region: "Asia", coords: [139.6917, 35.6895], zoom: 3.2 },
+  { name: "London", region: "Europe", coords: [-0.1276, 51.5072], zoom: 3.2 },
+  { name: "Mumbai", region: "Asia", coords: [72.8777, 19.076], zoom: 3.2 },
+  { name: "Rome", region: "Europe", coords: [12.4964, 41.9028], zoom: 3.2 },
   { name: "India", region: "Asia", coords: [78.9629, 22.5937], zoom: 2.5 },
   { name: "France", region: "Europe", coords: [2.2137, 46.2276], zoom: 2.8 },
   { name: "Japan", region: "Asia", coords: [138.2529, 36.2048], zoom: 2.8 },
-  { name: "New York", region: "North America", coords: [-74.006, 40.7128], zoom: 3.1 },
-  { name: "Brazil", region: "South America", coords: [-51.9253, -14.235], zoom: 2.6 },
 ];
 const globePalettes = {
   Carrara: { sea: "#aebbb5", land: "#efe6d9", park: "#c5c2aa", road: "#687f75", label: "#273833", space: "#101a22", sky: "#667c80" },
@@ -92,8 +96,8 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
       map = new MapLibreMap({
         container: host,
         style: "https://demotiles.maplibre.org/globe.json",
-        center: [26, 21],
-        zoom: 1.8,
+        center: [18, 18],
+        zoom: 1.55,
         projection: { type: "globe" },
         attributionControl: false,
         renderWorldCopies: false,
@@ -104,6 +108,7 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
       });
       mapRef.current = map;
       map.addControl(new AttributionControl({ compact: true }), "bottom-right");
+      map.addControl(new NavigationControl({ showCompass: true, showZoom: true, visualizePitch: false }), "top-right");
       map.on("error", (event) => console.error("Homepage globe data error", event.error));
       map.on("style.load", () => { if (map) applyHomepageGlobeTheme(map, themeRef.current); });
       map.on("load", () => {
@@ -371,7 +376,8 @@ export default function HomePage() {
           <EditorLink className="home-primary-cta">Create a map in your browser <span aria-hidden="true">↗</span></EditorLink>
         </section>
 
-        <section className="home-globe-section">
+        <section className="home-globe-section" data-globe-theme={styleChoice}>
+          <span className="home-globe-cartography" aria-hidden="true" />
           <div className="home-globe-section__copy">
             <span className="home-kicker">EXPLORE BEFORE YOU DESIGN</span>
             <h2>Start with the world.<br /><em>Zoom into your story.</em></h2>
