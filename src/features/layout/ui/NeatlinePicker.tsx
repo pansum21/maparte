@@ -1162,11 +1162,10 @@ export function NeatlineArtwork({
         1.5 * designScale,
         Math.min(Math.max(2.2 * designScale, w0 * 0.5), 4.5 * designScale)
       );
-      const maxOuterArm = Math.max(4 * designScale, gap - w0 / 2 - 2.5 * designScale);
-      const tickArm = Math.max(
-        6 * designScale,
-        Math.min(maxOuterArm, Math.max(crosshairWidth * 3.5, gap * 0.75))
-      );
+      // Short crosshair arms meet at the outer frame corner, project 4 mm out,
+      // and stop well before the inner dashed line so the gap stays visible.
+      const outwardArm = 4 * designScale;
+      const inwardArm = Math.max(0, Math.min(2 * designScale, gap - outwardArm - w1 / 2));
       const innerDash = Math.max(8 * designScale, w1 * 3.2 * designScale);
       const innerGap = Math.max(6 * designScale, w1 * 2.0 * designScale);
       const innerDashArray = `${innerDash.toFixed(2)} ${innerGap.toFixed(2)}`;
@@ -1203,78 +1202,14 @@ export function NeatlineArtwork({
             strokeLinecap="butt"
             strokeDashoffset={cornerOffset}
           />
-          <line
-            x1={off1 - tickArm}
-            y1={off1}
-            x2={off1 + tickArm}
-            y2={off1}
-            stroke={primaryColor}
-            strokeWidth={crosshairWidth}
-            strokeLinecap="butt"
-          />
-          <line
-            x1={off1}
-            y1={off1 - tickArm}
-            x2={off1}
-            y2={off1 + tickArm}
-            stroke={primaryColor}
-            strokeWidth={crosshairWidth}
-            strokeLinecap="butt"
-          />
-          <line
-            x1={innerW - off1 - tickArm}
-            y1={off1}
-            x2={innerW - off1 + tickArm}
-            y2={off1}
-            stroke={primaryColor}
-            strokeWidth={crosshairWidth}
-            strokeLinecap="butt"
-          />
-          <line
-            x1={innerW - off1}
-            y1={off1 - tickArm}
-            x2={innerW - off1}
-            y2={off1 + tickArm}
-            stroke={primaryColor}
-            strokeWidth={crosshairWidth}
-            strokeLinecap="butt"
-          />
-          <line
-            x1={off1 - tickArm}
-            y1={innerH - off1}
-            x2={off1 + tickArm}
-            y2={innerH - off1}
-            stroke={primaryColor}
-            strokeWidth={crosshairWidth}
-            strokeLinecap="butt"
-          />
-          <line
-            x1={off1}
-            y1={innerH - off1 - tickArm}
-            x2={off1}
-            y2={innerH - off1 + tickArm}
-            stroke={primaryColor}
-            strokeWidth={crosshairWidth}
-            strokeLinecap="butt"
-          />
-          <line
-            x1={innerW - off1 - tickArm}
-            y1={innerH - off1}
-            x2={innerW - off1 + tickArm}
-            y2={innerH - off1}
-            stroke={primaryColor}
-            strokeWidth={crosshairWidth}
-            strokeLinecap="butt"
-          />
-          <line
-            x1={innerW - off1}
-            y1={innerH - off1 - tickArm}
-            x2={innerW - off1}
-            y2={innerH - off1 + tickArm}
-            stroke={primaryColor}
-            strokeWidth={crosshairWidth}
-            strokeLinecap="butt"
-          />
+          <line x1={off0 - outwardArm} y1={off0} x2={off0 + inwardArm} y2={off0} stroke={primaryColor} strokeWidth={crosshairWidth} strokeLinecap="butt" />
+          <line x1={off0} y1={off0 - outwardArm} x2={off0} y2={off0 + inwardArm} stroke={primaryColor} strokeWidth={crosshairWidth} strokeLinecap="butt" />
+          <line x1={innerW - off0 - inwardArm} y1={off0} x2={innerW - off0 + outwardArm} y2={off0} stroke={primaryColor} strokeWidth={crosshairWidth} strokeLinecap="butt" />
+          <line x1={innerW - off0} y1={off0 - outwardArm} x2={innerW - off0} y2={off0 + inwardArm} stroke={primaryColor} strokeWidth={crosshairWidth} strokeLinecap="butt" />
+          <line x1={off0 - outwardArm} y1={innerH - off0} x2={off0 + inwardArm} y2={innerH - off0} stroke={primaryColor} strokeWidth={crosshairWidth} strokeLinecap="butt" />
+          <line x1={off0} y1={innerH - off0 - inwardArm} x2={off0} y2={innerH - off0 + outwardArm} stroke={primaryColor} strokeWidth={crosshairWidth} strokeLinecap="butt" />
+          <line x1={innerW - off0 - inwardArm} y1={innerH - off0} x2={innerW - off0 + outwardArm} y2={innerH - off0} stroke={primaryColor} strokeWidth={crosshairWidth} strokeLinecap="butt" />
+          <line x1={innerW - off0} y1={innerH - off0 - inwardArm} x2={innerW - off0} y2={innerH - off0 + outwardArm} stroke={primaryColor} strokeWidth={crosshairWidth} strokeLinecap="butt" />
         </svg>
       );
     }
