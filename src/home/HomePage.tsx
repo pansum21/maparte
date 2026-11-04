@@ -29,7 +29,7 @@ const samples: MapSample[] = [
 const filters = ["All maps", "Milestones", "Places", "Journeys", "Outdoors"];
 
 function EditorLink({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <a className={className} href="/create">{children}</a>;
+  return <a className={className} href="/?dist=4491">{children}</a>;
 }
 
 function HomepageGlobe() {
@@ -122,7 +122,7 @@ export default function HomePage() {
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const value = query.trim();
-    window.location.href = value ? "/create?city=" + encodeURIComponent(value) : "/create";
+    window.location.href = value ? "/?city=" + encodeURIComponent(value) : "/?dist=4491";
   };
 
   return (
