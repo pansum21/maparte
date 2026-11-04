@@ -119,28 +119,40 @@
 .home-globe-section::before,.home-globe-section::after{content:"";position:absolute;inset:-20%;z-index:-1;pointer-events:none}
 .home-globe-section::before{background:radial-gradient(ellipse 44% 36% at 73% 50%,rgba(214,174,108,.2),transparent 72%),radial-gradient(ellipse 28% 38% at 24% 76%,rgba(61,110,141,.18),transparent 70%),radial-gradient(ellipse 30% 24% at 60% 15%,rgba(125,73,96,.13),transparent 75%);filter:blur(22px)}
 .home-globe-section::after{opacity:.5;background-image:radial-gradient(1px 1px at 8% 14%,#fff 98%,transparent),radial-gradient(1.5px 1.5px at 19% 74%,#dbe6ff 98%,transparent),radial-gradient(1px 1px at 37% 32%,#fff 98%,transparent),radial-gradient(1px 1px at 54% 86%,#cfdbff 98%,transparent),radial-gradient(1.2px 1.2px at 66% 11%,#fff 98%,transparent),radial-gradient(1.8px 1.8px at 80% 54%,#fff2db 98%,transparent);background-size:420px 330px;animation:homeStarDrift 70s linear infinite}
+.home-globe-section[data-globe-theme="Carrara"]::before{background:radial-gradient(ellipse 44% 36% at 73% 50%,rgba(229,201,144,.19),transparent 72%),radial-gradient(ellipse 28% 38% at 24% 76%,rgba(133,142,129,.18),transparent 70%),radial-gradient(ellipse 30% 24% at 60% 15%,rgba(170,185,174,.13),transparent 75%)}
+.home-globe-section[data-globe-theme="Midnight Blue"]::before{background:radial-gradient(ellipse 44% 36% at 73% 50%,rgba(231,189,131,.22),transparent 72%),radial-gradient(ellipse 28% 38% at 24% 76%,rgba(88,57,84,.2),transparent 70%),radial-gradient(ellipse 30% 24% at 60% 15%,rgba(27,45,87,.18),transparent 75%)}
+.home-globe-cartography{position:absolute;inset:-10%;z-index:-1;pointer-events:none;background:url("/assets/ambient-world-map.svg") 0 50%/1920px 1080px repeat-x;filter:blur(10px) brightness(.78) contrast(1.08);opacity:.2;mix-blend-mode:screen;transform:translateZ(0);animation:homeMapPan 110s linear infinite}
+
 .home-globe-section__copy{position:relative;z-index:2}
 .home-globe-section__copy .home-kicker{color:#d9b77b}
 .home-globe-section h2{color:#f7f2e9}
 .home-globe-section h2 em{color:#d9b77b}
 .home-globe-section__copy p{max-width:385px;color:#a9b3c1;font-size:12px;line-height:1.8;margin:0 0 21px}
 .home-globe-section .home-primary-cta{background:#d2a85f;color:#111a25!important;box-shadow:0 9px 22px rgba(210,168,95,.22)}
-.home-globe-stage{position:relative;width:min(100%,570px);min-height:500px;aspect-ratio:1.08;display:grid;place-items:center;justify-self:center;isolation:isolate}
-.home-globe-shell{position:relative;width:min(82%,460px);aspect-ratio:1;border-radius:50%;animation:homeGlobeFloat 8s ease-in-out infinite;filter:drop-shadow(0 28px 38px rgba(0,0,0,.5));z-index:1}
+.home-globe-stage{position:relative;width:min(100%,630px);min-height:590px;aspect-ratio:1;display:grid;place-items:center;justify-self:center;isolation:isolate}
+.home-globe-shell{position:relative;width:min(78%,545px);aspect-ratio:1;border-radius:50%;animation:homeGlobeFloat 8s ease-in-out infinite;filter:drop-shadow(0 28px 38px rgba(0,0,0,.5));z-index:1}
 .home-globe-halo{position:absolute;inset:-13%;z-index:-1;border-radius:50%;background:radial-gradient(circle,rgba(216,176,106,.22),rgba(64,95,132,.14) 43%,transparent 72%);filter:blur(22px);animation:homeHaloBreath 6s ease-in-out infinite}
 .home-globe{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;overflow:hidden;border:1px solid rgba(237,218,183,.28);background:#0b1423;box-shadow:inset 0 0 0 8px rgba(255,255,255,.035),inset 0 -24px 45px rgba(3,8,17,.35)}
 .home-globe .maplibregl-canvas{border-radius:50%;outline:none}
-.home-globe .maplibregl-ctrl-bottom-right{right:14px;bottom:13px}
+.home-globe .maplibregl-ctrl-bottom-right{right:19px;bottom:20px}
+.home-globe .maplibregl-ctrl-top-right{right:13px;top:13px}
+.home-globe .maplibregl-ctrl-group{overflow:hidden;border:1px solid rgba(231,203,160,.24);border-radius:9px;background:rgba(11,17,36,.88);box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.home-globe .maplibregl-ctrl-group button{width:29px;height:29px;background-color:transparent}
+.home-globe .maplibregl-ctrl-group button:hover{background-color:rgba(231,203,160,.13)}
+.home-globe .maplibregl-ctrl button .maplibregl-ctrl-icon{filter:invert(.88) sepia(.18) saturate(.55)}
 .home-globe .maplibregl-ctrl-attrib{max-width:145px;font-size:7px;opacity:.66;color:#dbe1e8}
 .home-globe .maplibregl-ctrl-attrib a{color:#e4c789}
 .home-globe-marker{display:flex;align-items:center;gap:6px;padding:6px 9px;border:1px solid rgba(235,207,158,.42);border-radius:11px;background:rgba(10,17,30,.93);color:#fff8ef;box-shadow:0 8px 22px rgba(0,0,0,.38);font:600 10px/1.1 "DM Sans",system-ui,sans-serif;white-space:nowrap;backdrop-filter:blur(10px);cursor:pointer;transition:opacity .25s,transform .25s,border-color .2s,background .2s}
 .home-globe-marker:hover{transform:translateY(-2px) scale(1.04);border-color:#e2bd7a;background:rgba(22,31,48,.97)}
 .home-globe-marker i{font-style:normal;color:#e2bd7a;font-size:12px}
-.home-globe-marker small{display:block;margin-top:3px;color:#b8c1ce;font-size:7px;font-weight:500}
+.home-globe-marker small{display:inline;margin-left:3px;color:#b8c1ce;font-size:8px;font-weight:500}
+.home-globe-marker small::before{content:"•";margin-right:3px;color:#e2bd7a}
 .home-globe-marker.is-hidden{opacity:0;pointer-events:none;transform:translateY(6px)}
 .home-globe-orbit{position:absolute;inset:12%;z-index:0;border:1px solid rgba(197,168,119,.14);border-radius:50%;pointer-events:none}
 .home-globe-orbit--one{transform:rotate(-22deg) scaleY(.39);box-shadow:0 0 0 34px rgba(100,131,194,.025),0 0 0 80px rgba(100,131,194,.018);animation:homeOrbitTurn 34s linear infinite}
 .home-globe-orbit--two{inset:4%;transform:rotate(27deg) scaleY(.58);border-color:rgba(98,214,208,.12);animation:homeOrbitTurn 47s linear infinite reverse}
+.home-globe-orbit::before,.home-globe-orbit::after{content:"";position:absolute;inset:8%;border:1px solid rgba(143,177,230,.08);border-radius:50%;pointer-events:none}
+.home-globe-orbit::after{inset:-6%;transform:rotate(45deg) scaleY(.7);border-color:rgba(98,214,208,.12)}
 .home-globe-tag{position:absolute;right:max(calc((100% - 1110px)/2),28px);bottom:20px;padding:8px 11px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(13,24,39,.76);color:#e8dfcf;font-size:8px;z-index:2}
 .home-faq-list{max-width:830px;margin:auto;border-top:1px solid #ded9d0}
 .home-faq-list details{padding:17px 3px;border-bottom:1px solid #ded9d0}
@@ -239,6 +251,7 @@ body:has(.maparte-home) #root{
 @keyframes homeHaloBreath{0%,100%{opacity:.68;transform:scale(.96)}50%{opacity:1;transform:scale(1.04)}}
 @keyframes homeOrbitTurn{to{rotate:360deg}}
 @keyframes homeStarDrift{to{background-position:420px 330px}}
+@keyframes homeMapPan{from{background-position:0 50%}to{background-position:1920px 50%}}
 @keyframes homeFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes homeNotePulse{50%{box-shadow:0 0 0 7px rgba(249,223,227,.44)}}
 .home-hero__copy{animation:homeFadeUp .72s cubic-bezier(.2,.7,.2,1) both}
@@ -250,10 +263,11 @@ body:has(.maparte-home) #root{
  .home-hero__visual{min-height:470px}
  .home-hero__note{width:min(76%,310px)}
  .home-globe-section{min-height:0;grid-template-columns:1fr;gap:4px;padding:48px 20px 58px}
+ .home-globe-cartography{background-size:1200px auto}
  .home-globe-section__copy{text-align:center}
  .home-globe-section__copy p{margin-inline:auto}
- .home-globe-stage{width:min(100%,500px);min-height:370px;margin-top:12px}
- .home-globe-shell{width:min(78%,360px)}
+ .home-globe-stage{width:min(100%,520px);min-height:430px;margin-top:12px}
+ .home-globe-shell{width:min(78%,390px)}
  .home-globe-tag{right:50%;transform:translateX(50%);bottom:17px;white-space:nowrap}
 }
 @media(max-width:390px){
@@ -261,7 +275,7 @@ body:has(.maparte-home) #root{
  .home-globe-stage{min-height:320px}
 }
 @media(prefers-reduced-motion:reduce){
- .home-hero__copy,.home-hero__visual,.home-hero__poster,.home-hero__stamp,.home-hero__note .home-note-dot,.home-globe-section::after,.home-globe-shell,.home-globe-halo,.home-globe-orbit{animation:none!important}
+ .home-hero__copy,.home-hero__visual,.home-hero__poster,.home-hero__stamp,.home-hero__note .home-note-dot,.home-globe-section::after,.home-globe-cartography,.home-globe-shell,.home-globe-halo,.home-globe-orbit{animation:none!important}
  .maparte-home .home-motion{opacity:1;transform:none;transition:none}
 }
 /* Keep the hero's place caption readable where it floats over the map art. */
