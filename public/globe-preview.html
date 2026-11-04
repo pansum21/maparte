@@ -113,6 +113,58 @@
     @media(prefers-reduced-motion:reduce){body:after{animation:none}}
 
     @media(max-width:380px){.shell{width:calc(100% - 24px)}header{gap:6px}.brand{font-size:10px;gap:6px;letter-spacing:.07em}.brand-mark{width:25px;height:25px}.head-actions{gap:5px}.head-actions select{max-width:100px;padding:8px 22px 8px 8px;font-size:10px}.head-actions .primary{min-height:38px;max-width:82px;padding:0 7px;font-size:10px}}
+
+    .map-showcase{padding:88px 0 82px;border-top:1px solid rgba(28,41,64,.1)}
+    .map-showcase .section-head{max-width:760px;margin-bottom:38px}
+    .map-showcase .section-head p{max-width:610px;margin:0 auto;color:#6b7585;line-height:1.7}
+    .map-showcase-grid{display:grid;grid-template-columns:minmax(290px,.86fr) minmax(0,1.14fr);gap:clamp(28px,6vw,78px);align-items:center;max-width:1080px;margin:0 auto}
+    .poster-lab{padding:20px 24px 14px;border:1px solid rgba(28,41,64,.11);border-radius:27px;background:rgba(255,255,255,.79);box-shadow:0 18px 45px rgba(48,49,45,.09)}
+    .poster-sheet{--poster-bg:#f4f1ea;--poster-ink:#33302b;--poster-water:#c7cdd0;--poster-road:#3a3631;position:relative;isolation:isolate;overflow:hidden;width:min(100%,360px);aspect-ratio:4/5;margin:0 auto;border:8px solid #fff;border-radius:3px;background:var(--poster-bg);box-shadow:0 8px 23px rgba(28,41,64,.18),0 0 0 1px rgba(28,41,64,.16);transition:background .35s,border-color .35s}
+    .poster-sheet:before{content:"";position:absolute;inset:8px;z-index:4;border:1px solid color-mix(in srgb,var(--poster-ink) 72%,transparent);pointer-events:none}
+    .poster-sheet:after{content:"";position:absolute;inset:14px;z-index:4;border:1px solid color-mix(in srgb,var(--poster-ink) 22%,transparent);pointer-events:none}
+    .poster-map{position:absolute;inset:0 0 25%;background:var(--poster-bg);overflow:hidden}
+    .poster-map .maplibregl-canvas{outline:none}
+    .poster-map .maplibregl-ctrl-attrib{font-size:8px;opacity:.65}
+    .poster-map .maplibregl-ctrl-attrib a{color:var(--poster-ink)}
+    .poster-map .maplibregl-ctrl-bottom-right{right:13px;bottom:13px}
+    .poster-map-wash{position:absolute;z-index:1;inset:51% 0 24%;background:linear-gradient(180deg,transparent, color-mix(in srgb,var(--poster-bg) 93%,transparent) 85%,var(--poster-bg));pointer-events:none}
+    .poster-pin{position:absolute;z-index:3;left:50%;top:40%;width:23px;height:23px;display:grid;place-items:center;border:2px solid #fff;border-radius:50% 50% 50% 2px;background:#d52450;box-shadow:0 3px 12px rgba(28,41,64,.28);transform:translate(-50%,-50%) rotate(-45deg)}
+    .poster-pin span{width:6px;height:6px;border-radius:50%;background:#fff}
+    .poster-caption{position:absolute;z-index:2;left:16px;right:16px;bottom:23px;text-align:center;color:var(--poster-ink)}
+    .poster-eyebrow{font-size:8px;font-weight:800;letter-spacing:.26em}
+    .poster-caption h3{margin:8px 0 6px;font-family:"Playfair Display",Georgia,serif;font-size:clamp(19px,2vw,27px);letter-spacing:.18em}
+    .poster-caption p{margin:0;font-size:9px;letter-spacing:.2em;font-weight:700}
+    .poster-coordinates{display:block;margin-top:6px;font-size:8px;letter-spacing:.08em;opacity:.7}
+    .poster-credit{position:absolute;z-index:5;left:15px;bottom:10px;font-size:6px;letter-spacing:.1em;color:var(--poster-ink);opacity:.6}
+    .poster-sheet[data-palette="midnight"]{--poster-bg:#0a1628;--poster-ink:#e8d9b4;--poster-water:#061020;--poster-road:#c99c37}
+    .poster-sheet[data-palette="blueprint"]{--poster-bg:#1a3a5c;--poster-ink:#f3f8ff;--poster-water:#0e2740;--poster-road:#d8eefa}
+    .poster-sheet[data-palette="ink"]{--poster-bg:#faf8f5;--poster-ink:#3b332e;--poster-water:#e8e4e0;--poster-road:#8b2500}
+    .poster-lab-foot{display:flex;justify-content:space-between;gap:8px;margin:14px auto 0;max-width:360px;color:#778192;font-size:10px}
+    .map-showcase-copy .kicker{color:#b92348}
+    .map-showcase-copy h3{max-width:500px;margin:12px 0;font-family:"Playfair Display",Georgia,serif;font-size:clamp(27px,3.3vw,40px);line-height:1.08;letter-spacing:-.03em;color:#1d2b43}
+    .map-showcase-copy>p{max-width:510px;margin:0 0 21px;color:#687487;font-size:14px;line-height:1.8}
+    .map-place-picks{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:20px 0}
+    .place-pick{min-width:0;padding:12px 13px;text-align:left;border:1px solid rgba(28,41,64,.12);border-radius:13px;background:#fff;color:#28364d;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s}
+    .place-pick:hover{transform:translateY(-2px)}
+    .place-pick.is-active{border-color:#ca2b50;box-shadow:0 0 0 2px rgba(202,43,80,.1)}
+    .place-pick strong,.place-pick span{display:block}
+    .place-pick strong{font-size:13px}.place-pick span{margin-top:4px;color:#7b8491;font-size:10px}
+    .poster-theme-picks{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:19px 0 22px}
+    .poster-theme-picks>span{width:100%;margin-bottom:1px;color:#596579;font-size:11px;font-weight:750}
+    .poster-theme{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border:1px solid rgba(28,41,64,.11);border-radius:999px;background:#fff;color:#4b576a;font:inherit;font-size:10px;cursor:pointer}
+    .poster-theme.is-active{border-color:#b92348;color:#a81d41;background:#fff7f8}
+    .poster-theme i{width:12px;height:12px;border:1px solid rgba(28,41,64,.16);border-radius:50%;background:var(--swatch)}
+    .map-capabilities{display:grid;gap:9px;margin:20px 0 22px;color:#48566b;font-size:12px}
+    .map-capabilities span{display:flex;align-items:center;gap:10px}
+    .map-capabilities b{color:#bd244a;font-size:10px;letter-spacing:.08em}
+    .map-showcase-cta{min-height:46px;padding:0 18px}
+    .map-digital-note{display:block;margin-top:11px;color:#737e8d;font-size:10px}
+    .story-row{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;max-width:1080px;margin:38px auto 0}
+    .story-card{display:flex;gap:13px;align-items:flex-start;padding:18px;border:1px solid rgba(28,41,64,.09);border-radius:17px;background:rgba(255,255,255,.79)}
+    .story-icon{flex:none;display:grid;place-items:center;width:31px;height:31px;border-radius:10px;background:#fff0f2;color:#c3244b;font-size:16px}
+    .story-card strong{display:block;color:#26344b;font-size:12px}.story-card p{margin:5px 0 0;color:#738091;font-size:11px;line-height:1.55}
+    @media(max-width:850px){.map-showcase{padding:65px 0}.map-showcase-grid{grid-template-columns:1fr;gap:28px;max-width:620px}.poster-lab{max-width:450px;width:100%;margin:auto}.poster-sheet{width:min(100%,340px)}.map-showcase-copy{padding:0 6px}.story-row{grid-template-columns:1fr;max-width:620px;margin-top:28px}.story-card{padding:15px}}
+    @media(max-width:520px){.map-showcase{padding:54px 0}.map-showcase .section-head{margin-bottom:26px}.poster-lab{padding:14px 13px 12px;border-radius:21px}.poster-sheet{width:min(100%,300px);border-width:6px}.poster-caption{left:12px;right:12px;bottom:20px}.poster-caption h3{font-size:19px}.poster-place-picks{gap:6px}.place-pick{padding:10px 8px}.place-pick strong{font-size:12px}.place-pick span{font-size:9px}.poster-theme-picks{gap:6px}.poster-theme{font-size:9px;padding:7px 8px}}
 </style>
 </head>
 <body>
@@ -135,6 +187,55 @@
     </main>
     <div class="digital-note"><span>●</span> Digital map designs and downloads · no physical print service</div>
     <section class="theme-strip" id="styles" aria-label="Globe color themes"><div class="theme-intro"><strong>Find a look that feels like yours</strong><span>Choose a color mood for the globe</span></div><div class="theme-swatches"><button class="theme-chip" data-theme="midnight" aria-pressed="true" style="--chip:#62d6d0;--chip2:#153b59"><i></i>Midnight</button><button class="theme-chip" data-theme="nordic" aria-pressed="false" style="--chip:#f0e6d4;--chip2:#6d9b89"><i></i>Nordic</button><button class="theme-chip" data-theme="blueprint" aria-pressed="false" style="--chip:#83b9ff;--chip2:#153c75"><i></i>Blueprint</button><button class="theme-chip" data-theme="mono" aria-pressed="false" style="--chip:#f1f1eb;--chip2:#535b61"><i></i>Mono</button><button class="theme-chip" data-theme="emerald" aria-pressed="false" style="--chip:#8be0ad;--chip2:#125247"><i></i>Emerald</button><button class="theme-chip" data-theme="paper" aria-pressed="false" style="--chip:#f0cd86;--chip2:#725438"><i></i>Warm paper</button></div></section>
+
+    <section class="section map-showcase" id="map-art">
+      <div class="section-head"><span class="kicker">The map is the main event</span><h2>See a real place become your map.</h2><p>The globe helps you find somewhere. Then shape a detailed street map with your own title, location, style and marker.</p></div>
+      <div class="map-showcase-grid">
+        <div class="poster-lab">
+          <div class="poster-sheet" id="posterSheet" data-palette="carrara">
+            <div class="poster-map" id="posterMap" aria-label="Real street map preview"></div>
+            <div class="poster-map-wash"></div>
+            <div class="poster-pin" aria-hidden="true"><span></span></div>
+            <div class="poster-caption">
+              <span class="poster-eyebrow">A PLACE THAT MATTERS</span>
+              <h3 id="posterTitle">WHERE WE MET</h3>
+              <p id="posterPlace">PARIS · FRANCE</p>
+              <span class="poster-coordinates" id="posterCoords">48.8534° N · 2.3488° E</span>
+            </div>
+            <span class="poster-credit">DIGITAL MAP PREVIEW</span>
+          </div>
+          <div class="poster-lab-foot"><span>Live map preview</span><span>OpenStreetMap data</span></div>
+        </div>
+        <div class="map-showcase-copy">
+          <span class="kicker">Your location. Your composition.</span>
+          <h3>A personal map design starts with the details.</h3>
+          <p>Move between places and map looks. The sample uses real street data; the title, border, map extent, labels and markers are the parts you make your own in the editor.</p>
+          <div class="map-place-picks" role="group" aria-label="Preview a map of another city">
+            <button class="place-pick is-active" data-place="paris" aria-pressed="true"><strong>Paris</strong><span>Where we met</span></button>
+            <button class="place-pick" data-place="delhi" aria-pressed="false"><strong>Delhi</strong><span>Hometown roots</span></button>
+            <button class="place-pick" data-place="tokyo" aria-pressed="false"><strong>Tokyo</strong><span>A trip to remember</span></button>
+          </div>
+          <div class="poster-theme-picks" role="group" aria-label="Preview map colour themes">
+            <span>Try a map theme</span>
+            <button class="poster-theme is-active" data-poster-theme="carrara" aria-pressed="true"><i style="--swatch:#e7e3da"></i>Carrara</button>
+            <button class="poster-theme" data-poster-theme="midnight" aria-pressed="false"><i style="--swatch:#10203a"></i>Midnight Blue</button>
+            <button class="poster-theme" data-poster-theme="blueprint" aria-pressed="false"><i style="--swatch:#234b70"></i>Blueprint</button>
+            <button class="poster-theme" data-poster-theme="ink" aria-pressed="false"><i style="--swatch:#faf8f5"></i>Japanese Ink</button>
+          </div>
+          <div class="map-capabilities">
+            <span><b>01</b> Choose the place and map view</span><span><b>02</b> Add text, labels and markers</span><span><b>03</b> Set a layout, then download digitally</span>
+          </div>
+          <a class="primary map-showcase-cta" href="https://maparte.vercel.app/" target="_blank" rel="noopener">Create your own map ↗</a>
+          <small class="map-digital-note">MAPARTE provides a digital file. No print or shipping service.</small>
+        </div>
+      </div>
+      <div class="story-row">
+        <article class="story-card"><span class="story-icon">⌖</span><div><strong>One exact place</strong><p>A street, a town, a trailhead, or the corner where a story began.</p></div></article>
+        <article class="story-card"><span class="story-icon">✳</span><div><strong>More than a pin</strong><p>Personalize the map with your own text, borders, marker and route details.</p></div></article>
+        <article class="story-card"><span class="story-icon">▣</span><div><strong>Made for your screen</strong><p>Preview a poster-style map or phone wallpaper, then download the available digital file.</p></div></article>
+      </div>
+    </section>
+
     <section class="section" id="features"><div class="section-head"><span class="kicker">Everything to make a place personal</span><h2>Your map. Every detail, your way.</h2><p>Start with a real place, then shape its map into a personal digital design.</p></div><div class="feature-grid"><article class="feature"><span class="feature-icon">⌕</span><h3>Find a place</h3><p>Search for a city, town, village, address or coordinates. Pan, zoom, rotate and recenter to choose the area.</p></article><article class="feature"><span class="feature-icon">◈</span><h3>Choose a map theme</h3><p>Explore the available colour themes and map layers, then tune the look to suit your design.</p></article><article class="feature"><span class="feature-icon">▧</span><h3>Set the layout and border</h3><p>Choose a preset or custom dimensions, then frame your map with line and decorative border styles.</p></article><article class="feature"><span class="feature-icon">T</span><h3>Add your words</h3><p>Set town or village, city, state and country labels. Add a date or tagline, then tune font, size and color.</p></article><article class="feature"><span class="feature-icon">⌖</span><h3>Mark places and routes</h3><p>Add supported markers or import a GPX route, with start and finish details.</p></article><article class="feature"><span class="feature-icon">▣</span><h3>Design for screens</h3><p>Preview a poster-style layout or phone wallpaper, then download the available digital map file.</p></article></div></section>
     <section class="section" id="how"><div class="section-head"><span class="kicker">A simple way to begin</span><h2>From place to map art in three steps.</h2><p>No design software needed. Start in the editor and shape it as you go.</p></div><div class="steps"><article class="step"><span class="step-num">01</span><h3>Search your place</h3><p>Find a city, town, address or coordinates, then choose the map area you want.</p></article><article class="step"><span class="step-num">02</span><h3>Personalize the design</h3><p>Choose a theme and layout. Adjust borders, add text, markers or a route.</p></article><article class="step"><span class="step-num">03</span><h3>Preview and download</h3><p>Check your digital design, then download the available map file for your device.</p></article></div><div class="cta"><a class="primary" href="https://maparte.vercel.app/" target="_blank" rel="noopener">Start designing ↗</a></div></section>
     <section class="section" id="gallery">
@@ -162,6 +263,69 @@
     <footer class="footer"><span><strong>MAPARTE</strong> · Map it. Make it yours.</span><nav><a href="#features">Features</a><a href="#how">How it works</a><a href="#styles">Map styles</a><a href="#faq">FAQ</a><a href="https://maparte.vercel.app/" target="_blank" rel="noopener">Create Map</a></nav><span>Digital map files only · © MAPARTE · © OpenStreetMap contributors</span></footer>
   </div>
   <script type="module">
+    const posterPlaces={
+      paris:{name:'Paris',country:'France',title:'WHERE WE MET',coords:'48.8534° N · 2.3488° E',center:[2.3488,48.8534],zoom:12.1},
+      delhi:{name:'Delhi',country:'India',title:'HOMETOWN ROOTS',coords:'28.6519° N · 77.2315° E',center:[77.23149,28.65195],zoom:11.7},
+      tokyo:{name:'Tokyo',country:'Japan',title:'TRAVEL MEMORIES',coords:'35.6895° N · 139.6917° E',center:[139.69171,35.6895],zoom:11.7}
+    };
+    const posterThemes={
+      carrara:{land:'#F4F1EA',water:'#C7CDD0',park:'#E6E4D9',building:'#DED9CE',major:'#3A3631',minor:'#89847A',text:'#38342F'},
+      midnight:{land:'#0A1628',water:'#061020',park:'#13243A',building:'#192B42',major:'#C99C37',minor:'#53637A',text:'#F1E7D3'},
+      blueprint:{land:'#1A3A5C',water:'#0E2740',park:'#234A6D',building:'#285276',major:'#D8EEFA',minor:'#82A6C4',text:'#F3F8FF'},
+      ink:{land:'#FAF8F5',water:'#E8E4E0',park:'#EDF0E9',building:'#E8E3DE',major:'#8B2500',minor:'#8C8179',text:'#3B332E'}
+    };
+    let sampleMap=null,sampleMarker=null,sampleMapReady=false;
+    function applyPosterTheme(name){
+      const p=posterThemes[name];const sheet=document.getElementById('posterSheet');sheet.dataset.palette=name;
+      if(!sampleMap||!sampleMapReady)return;
+      for(const layer of sampleMap.getStyle().layers||[]){
+        const id=layer.id.toLowerCase();
+        try{
+          if(layer.type==='background'&&layer.paint?.['background-color']!==undefined)sampleMap.setPaintProperty(layer.id,'background-color',p.land);
+          if(layer.type==='fill'&&layer.paint?.['fill-color']!==undefined){
+            const color=/water|ocean|lake/.test(id)?p.water:/park|grass|wood|forest|landcover/.test(id)?p.park:/building/.test(id)?p.building:p.land;
+            sampleMap.setPaintProperty(layer.id,'fill-color',color);
+          }
+          if(layer.type==='line'&&layer.paint?.['line-color']!==undefined){
+            const color=/motorway|trunk|primary|highway/.test(id)?p.major:/waterway|river|canal/.test(id)?p.water:p.minor;
+            sampleMap.setPaintProperty(layer.id,'line-color',color);
+          }
+          if(layer.type==='symbol'&&layer.paint?.['text-color']!==undefined){
+            sampleMap.setPaintProperty(layer.id,'text-color',p.text);
+            if(layer.paint?.['text-halo-color']!==undefined)sampleMap.setPaintProperty(layer.id,'text-halo-color',p.land);
+          }
+        }catch{}
+      }
+    }
+    function setPosterPlace(key){
+      const place=posterPlaces[key];if(!place)return;
+      document.getElementById('posterTitle').textContent=place.title;
+      document.getElementById('posterPlace').textContent=(place.name+' · '+place.country).toUpperCase();
+      document.getElementById('posterCoords').textContent=place.coords;
+      document.querySelectorAll('.place-pick').forEach(button=>{const active=button.dataset.place===key;button.classList.toggle('is-active',active);button.setAttribute('aria-pressed',String(active));});
+      if(sampleMap){sampleMap.flyTo({center:place.center,zoom:place.zoom,duration:1150});if(sampleMarker)sampleMarker.setLngLat(place.center);}
+    }
+    function initPosterMap(){
+      if(sampleMap)return;
+      sampleMap=new maplibregl.Map({container:'posterMap',style:'https://tiles.openfreemap.org/styles/positron',center:posterPlaces.paris.center,zoom:posterPlaces.paris.zoom,interactive:false,attributionControl:false,renderWorldCopies:false,fadeDuration:0});
+      sampleMap.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-right');
+      sampleMap.on('load',()=>{
+        sampleMapReady=true;
+        const pin=document.createElement('div');pin.className='poster-map-pin';pin.setAttribute('aria-hidden','true');
+        sampleMarker=new maplibregl.Marker({element:pin,anchor:'bottom'}).setLngLat(posterPlaces.paris.center).addTo(sampleMap);
+        applyPosterTheme(document.querySelector('.poster-theme.is-active')?.dataset.posterTheme||'carrara');
+        sampleMap.resize();
+      });
+      sampleMap.on('error',()=>{document.getElementById('posterMap').classList.add('map-failed');});
+    }
+    const posterObserver=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){initPosterMap();posterObserver.disconnect();}},{rootMargin:'240px'});
+    posterObserver.observe(document.querySelector('.map-showcase'));
+    document.querySelectorAll('.place-pick').forEach(button=>button.addEventListener('click',()=>setPosterPlace(button.dataset.place)));
+    document.querySelectorAll('.poster-theme').forEach(button=>button.addEventListener('click',()=>{
+      document.querySelectorAll('.poster-theme').forEach(item=>{const active=item===button;item.classList.toggle('is-active',active);item.setAttribute('aria-pressed',String(active));});
+      applyPosterTheme(button.dataset.posterTheme);
+    }));
+
     import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.mjs';
 
     const palettes={
