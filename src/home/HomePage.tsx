@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Map as MapLibreMap, AttributionControl, setWorkerUrl } from "maplibre-gl";
+import { Map as MapLibreMap, AttributionControl, Marker, setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./homepage.css";
@@ -35,66 +35,144 @@ function EditorLink({ children, className = "" }: { children: React.ReactNode; c
   return <a className={className} href="/?dist=4491">{children}</a>;
 }
 
-function HomepageGlobe() {
+type GlobeTheme = "Carrara" | "Midnight Blue";
+const globePlaces: Array<{ name: string; region: string; coords: [number, number]; zoom: number }> = [
+  { name: "India", region: "Asia", coords: [78.9629, 22.5937], zoom: 2.5 },
+  { name: "France", region: "Europe", coords: [2.2137, 46.2276], zoom: 2.8 },
+  { name: "Japan", region: "Asia", coords: [138.2529, 36.2048], zoom: 2.8 },
+  { name: "New York", region: "North America", coords: [-74.006, 40.7128], zoom: 3.1 },
+  { name: "Brazil", region: "South America", coords: [-51.9253, -14.235], zoom: 2.6 },
+];
+const globePalettes = {
+  Carrara: { sea: "#aebbb5", land: "#efe6d9", park: "#c5c2aa", road: "#687f75", label: "#273833", space: "#101a22", sky: "#667c80" },
+  "Midnight Blue": { sea: "#101d3b", land: "#8191b5", park: "#55688f", road: "#dec9a7", label: "#fff6eb", space: "#070d1d", sky: "#1b2d57" },
+};
+function applyHomepageGlobeTheme(map: MapLibreMap, theme: GlobeTheme) {
+  const palette = globePalettes[theme];
+  if (!map.isStyleLoaded()) return;
+  try { map.setFog({ color: palette.space, highColor: palette.sky, spaceColor: palette.space, starIntensity: theme === "Midnight Blue" ? 0.7 : 0.48 }); } catch { /* Keep the globe usable if fog is unavailable. */ }
+  for (const layer of map.getStyle().layers || []) {
+    try {
+      const id = layer.id.toLowerCase();
+      if (layer.type === "background" && layer.paint?.["background-color"] !== undefined) map.setPaintProperty(layer.id, "background-color", palette.space);
+      if (layer.type === "fill" && layer.paint?.["fill-color"] !== undefined) {
+        const water = /water|ocean|lake|river/.test(id);
+        const park = /park|grass|wood|forest|landcover/.test(id);
+        map.setPaintProperty(layer.id, "fill-color", water ? palette.sea : park ? palette.park : palette.land);
+      }
+      if (layer.type === "line" && layer.paint?.["line-color"] !== undefined) map.setPaintProperty(layer.id, "line-color", palette.road);
+      if (layer.type === "symbol" && layer.paint?.["text-color"] !== undefined) {
+        map.setPaintProperty(layer.id, "text-color", palette.label);
+        if (layer.paint?.["text-halo-color"] !== undefined) map.setPaintProperty(layer.id, "text-halo-color", palette.space);
+      }
+    } catch { /* Some style layers do not allow color overrides. */ }
+  }
+}
+function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
   const container = useRef<HTMLDivElement>(null);
-
+  const mapRef = useRef<MapLibreMap | null>(null);
+  const themeRef = useRef(theme);
+  useEffect(() => {
+    themeRef.current = theme;
+    if (mapRef.current) applyHomepageGlobeTheme(mapRef.current, theme);
+  }, [theme]);
   useEffect(() => {
     const host = container.current;
     if (!host) return;
     let map: MapLibreMap | null = null;
     let frame = 0;
     let disposed = false;
+    let isVisible = false;
     let pauseUntil = 0;
-
+    let previous = performance.now();
+    const markers: Marker[] = [];
     const observer = new IntersectionObserver((entries) => {
-      if (!entries.some((entry) => entry.isIntersecting) || map || disposed) return;
+      isVisible = entries.some((entry) => entry.isIntersecting);
+      if (!isVisible || map || disposed) return;
       map = new MapLibreMap({
         container: host,
         style: "https://demotiles.maplibre.org/globe.json",
-        center: [78, 24],
-        zoom: 2,
+        center: [26, 21],
+        zoom: 1.8,
         projection: { type: "globe" },
         attributionControl: false,
         renderWorldCopies: false,
         dragRotate: true,
         touchPitch: false,
         maxPitch: 0,
+        canvasContextAttributes: { antialias: true },
       });
+      mapRef.current = map;
       map.addControl(new AttributionControl({ compact: true }), "bottom-right");
       map.on("error", (event) => console.error("Homepage globe data error", event.error));
+      map.on("style.load", () => { if (map) applyHomepageGlobeTheme(map, themeRef.current); });
       map.on("load", () => {
         if (!map) return;
-        try {
-          map.setFog({ color: "#e9e2d5", highColor: "#b3c5ca", spaceColor: "#f7f3eb", starIntensity: 0 });
-        } catch { /* Keep the basemap if the browser does not support fog. */ }
+        try { map.setProjection({ type: "globe" }); } catch { /* Already set at creation. */ }
+        applyHomepageGlobeTheme(map, themeRef.current);
+        for (const place of globePlaces) {
+          const el = document.createElement("button");
+          el.type = "button";
+          el.className = "home-globe-marker";
+          el.setAttribute("aria-label", "Explore " + place.name + ", " + place.region);
+          el.innerHTML = '<i aria-hidden="true">✦</i><span>' + place.name + '<small>' + place.region + '</small></span>';
+          el.addEventListener("click", (event) => {
+            event.stopPropagation();
+            pauseUntil = Date.now() + 4500;
+            map?.flyTo({ center: place.coords, zoom: place.zoom, duration: 1500 });
+          });
+          markers.push(new Marker({ element: el, anchor: "bottom" }).setLngLat(place.coords).addTo(map));
+        }
+        updateMarkers();
       });
-      const pause = () => { pauseUntil = Date.now() + 4500; };
-      map.on("dragstart", pause);
-      map.on("zoomstart", pause);
-      map.on("rotatestart", pause);
-      const spin = () => {
+      function updateMarkers() {
+        if (!map) return;
+        const center = map.getCenter();
+        markers.forEach((marker, index) => {
+          const place = globePlaces[index];
+          const delta = ((place.coords[0] - center.lng + 540) % 360) - 180;
+          const facingViewer = Math.cos(place.coords[1] * Math.PI / 180) * Math.cos(delta * Math.PI / 180) > 0.12;
+          marker.getElement().classList.toggle("is-hidden", !facingViewer);
+        });
+      }
+      map.on("move", updateMarkers);
+      const pauseSpin = () => { pauseUntil = Date.now() + 4500; };
+      map.on("dragstart", pauseSpin);
+      map.on("zoomstart", pauseSpin);
+      map.on("rotatestart", pauseSpin);
+      const spin = (now: number) => {
         if (disposed || !map) return;
-        if (document.visibilityState === "visible" && Date.now() > pauseUntil) {
+        const delta = Math.min(48, now - previous);
+        previous = now;
+        if (isVisible && document.visibilityState === "visible" && Date.now() > pauseUntil) {
           const center = map.getCenter();
-          map.setCenter([center.lng + 0.025, center.lat]);
+          map.setCenter([center.lng + delta * 0.0035, center.lat]);
         }
         frame = window.requestAnimationFrame(spin);
       };
       frame = window.requestAnimationFrame(spin);
-    }, { rootMargin: "240px" });
-
+    }, { rootMargin: "180px" });
     observer.observe(host);
     return () => {
       disposed = true;
       observer.disconnect();
       window.cancelAnimationFrame(frame);
+      markers.forEach((marker) => marker.remove());
       map?.remove();
+      mapRef.current = null;
     };
   }, []);
-
-  return <div className="home-globe" ref={container} aria-label="Interactive 3D globe. Drag to explore." role="img" />;
+  return (
+    <div className="home-globe-stage" aria-label="Interactive 3D globe">
+      <span className="home-globe-orbit home-globe-orbit--one" aria-hidden="true" />
+      <span className="home-globe-orbit home-globe-orbit--two" aria-hidden="true" />
+      <div className="home-globe-shell">
+        <span className="home-globe-halo" aria-hidden="true" />
+        <div className="home-globe" ref={container} aria-label="Interactive 3D globe. Drag to explore or select a place." role="img" />
+      </div>
+    </div>
+  );
 }
-
 function MapCard({ sample }: { sample: MapSample }) {
   return (
     <article className="home-map-card">
@@ -127,6 +205,30 @@ export default function HomePage() {
     const value = query.trim();
     window.location.href = value ? "/?city=" + encodeURIComponent(value) : "/?dist=4491";
   };
+
+  useEffect(() => {
+    const root = document.querySelector(".maparte-home");
+    if (!root) return;
+    const targets = root.querySelectorAll<HTMLElement>(
+      ".home-trust-row, .home-gallery, .home-style-showcase, .home-features, .home-story-band, .home-how, .home-globe-section, .home-faq, .home-final-cta",
+    );
+    if (!("IntersectionObserver" in window)) {
+      targets.forEach((target) => target.classList.add("home-motion-visible"));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("home-motion-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -4% 0px" });
+    targets.forEach((target) => {
+      target.classList.add("home-motion");
+      observer.observe(target);
+    });
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="maparte-home">
@@ -276,7 +378,7 @@ export default function HomePage() {
             <p>Spin the globe, explore places, then open the editor to build your map from real street data.</p>
             <EditorLink className="home-primary-cta">Explore MAPARTE <span aria-hidden="true">↗</span></EditorLink>
           </div>
-          <HomepageGlobe />
+          <HomepageGlobe theme={styleChoice} />
           <span className="home-globe-tag">A real interactive 3D globe</span>
         </section>
 
