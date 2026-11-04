@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Map as MapLibreMap, AttributionControl } from "maplibre-gl";
+import { Map as MapLibreMap, AttributionControl, setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./homepage.css";
+
+setWorkerUrl(workerUrl);
 
 type MapSample = {
   title: string;
