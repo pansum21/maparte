@@ -376,7 +376,8 @@ export default function HomePage() {
           <EditorLink className="home-primary-cta">Create a map in your browser <span aria-hidden="true">↗</span></EditorLink>
         </section>
 
-        <section className="home-globe-section" data-globe-theme={styleChoice}>\n          <span className="home-globe-cartography" aria-hidden="true" />
+        <section className="home-globe-section" data-globe-theme={styleChoice}>
+          <span className="home-globe-cartography" aria-hidden="true" />
           <div className="home-globe-section__copy">
             <span className="home-kicker">EXPLORE BEFORE YOU DESIGN</span>
             <h2>Start with the world.<br /><em>Zoom into your story.</em></h2>
