@@ -264,3 +264,5 @@ body:has(.maparte-home) #root{
  .home-hero__copy,.home-hero__visual,.home-hero__poster,.home-hero__stamp,.home-hero__note .home-note-dot,.home-globe-section::after,.home-globe-shell,.home-globe-halo,.home-globe-orbit{animation:none!important}
  .maparte-home .home-motion{opacity:1;transform:none;transition:none}
 }
+/* Keep the hero's place caption readable where it floats over the map art. */
+.home-hero__caption{z-index:3;max-width:min(280px,calc(100% - 18px))}
