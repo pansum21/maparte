@@ -311,7 +311,7 @@
     }
     function initPosterMap(){
       if(sampleMap)return;
-      sampleMap=new maplibregl.Map({container:'posterMap',style:'https://tiles.openfreemap.org/styles/positron',center:posterPlaces.paris.center,zoom:posterPlaces.paris.zoom,interactive:false,attributionControl:false,renderWorldCopies:false,fadeDuration:0});
+      sampleMap=new maplibregl.Map({container:'posterMap',style:'https://demotiles.maplibre.org/style.json',center:posterPlaces.paris.center,zoom:posterPlaces.paris.zoom,interactive:false,attributionControl:false,renderWorldCopies:false,fadeDuration:0});
       sampleMap.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-right');
       sampleMap.on('load',()=>{
         sampleMapReady=true;
