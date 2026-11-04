@@ -61,6 +61,7 @@ function HomepageGlobe() {
         maxPitch: 0,
       });
       map.addControl(new AttributionControl({ compact: true }), "bottom-right");
+      map.on("error", (event) => console.error("Homepage globe data error", event.error));
       map.on("load", () => {
         if (!map) return;
         map.setProjection({ type: "globe" });
