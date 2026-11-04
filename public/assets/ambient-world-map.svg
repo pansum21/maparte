@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" fill="none">
+  <!-- Deep Cartographic Graticules -->
+  <g stroke="rgba(164, 195, 219, 0.15)" stroke-width="1" stroke-dasharray="4,8">
+    <line x1="0" y1="90" x2="1920" y2="90" />
+    <line x1="0" y1="180" x2="1920" y2="180" />
+    <line x1="0" y1="270" x2="1920" y2="270" />
+    <line x1="0" y1="360" x2="1920" y2="360" />
+    <line x1="0" y1="450" x2="1920" y2="450" />
+    <line x1="0" y1="540" x2="1920" y2="540" />
+    <line x1="0" y1="630" x2="1920" y2="630" />
+    <line x1="0" y1="720" x2="1920" y2="720" />
+    <line x1="0" y1="810" x2="1920" y2="810" />
+    <line x1="0" y1="900" x2="1920" y2="900" />
+    <line x1="0" y1="990" x2="1920" y2="990" />
+    <line x1="0" y1="0" x2="0" y2="1080" />
+    <line x1="120" y1="0" x2="120" y2="1080" />
+    <line x1="240" y1="0" x2="240" y2="1080" />
+    <line x1="360" y1="0" x2="360" y2="1080" />
+    <line x1="480" y1="0" x2="480" y2="1080" />
+    <line x1="600" y1="0" x2="600" y2="1080" />
+    <line x1="720" y1="0" x2="720" y2="1080" />
+    <line x1="840" y1="0" x2="840" y2="1080" />
+    <line x1="960" y1="0" x2="960" y2="1080" />
+    <line x1="1080" y1="0" x2="1080" y2="1080" />
+    <line x1="1200" y1="0" x2="1200" y2="1080" />
+    <line x1="1320" y1="0" x2="1320" y2="1080" />
+    <line x1="1440" y1="0" x2="1440" y2="1080" />
+    <line x1="1560" y1="0" x2="1560" y2="1080" />
+    <line x1="1680" y1="0" x2="1680" y2="1080" />
+    <line x1="1800" y1="0" x2="1800" y2="1080" />
+    <line x1="1920" y1="0" x2="1920" y2="1080" />
+  </g>
+
+  <!-- Equator & Coordinates Axis -->
+  <g stroke="rgba(223, 186, 115, 0.28)" stroke-width="1.5">
+    <line x1="0" y1="540" x2="1920" y2="540" />
+    <line x1="960" y1="0" x2="960" y2="1080" stroke-dasharray="6,6" />
+    <line x1="0" y1="270" x2="1920" y2="270" stroke-dasharray="2,6" stroke="rgba(223, 186, 115, 0.15)" />
+    <line x1="0" y1="810" x2="1920" y2="810" stroke-dasharray="2,6" stroke="rgba(223, 186, 115, 0.15)" />
+  </g>
+
+  <!-- Continental Landmasses (Stylized Topographic Silhouettes) -->
+  <g fill="rgba(129, 145, 181, 0.3)" stroke="rgba(223, 186, 115, 0.4)" stroke-width="1.5" stroke-linejoin="round">
+    <!-- North America -->
+    <path d="M180,180 Q260,140 380,170 T480,240 Q460,330 420,380 T320,440 Q280,480 260,540 L230,520 Q200,420 160,360 T140,260 Z" />
+    <path d="M2100,180 Q2180,140 2300,170 T2400,240 Q2380,330 2340,380 T2240,440 Q2200,480 2180,540 L2150,520 Q2120,420 2080,360 T2060,260 Z" />
+    <!-- Greenland -->
+    <path d="M510,120 Q560,110 600,140 T580,200 Q540,220 510,180 Z" />
+    <!-- South America -->
+    <path d="M290,560 Q360,570 410,630 T420,740 Q390,840 350,910 T310,950 Q290,890 280,780 T270,640 Z" />
+    <path d="M2210,560 Q2280,570 2330,630 T2340,740 Q2310,840 2270,910 T2230,950 Q2210,890 2200,780 T2190,640 Z" />
+    <!-- Europe -->
+    <path d="M880,220 Q940,200 1020,220 T1050,300 Q990,340 940,350 T880,310 Q850,260 880,220 Z" />
+    <!-- UK & Scandinavia -->
+    <path d="M840,230 Q860,220 870,250 T850,280 Z" />
+    <path d="M940,140 Q980,130 990,190 T950,220 Z" />
+    <!-- Africa -->
+    <path d="M860,380 Q970,360 1040,410 T1070,520 Q1050,650 990,750 T930,830 Q880,780 860,670 T830,520 Q820,440 860,380 Z" />
+    <!-- Asia -->
+    <path d="M1040,200 Q1200,160 1420,190 T1580,280 Q1590,380 1520,440 T1380,490 Q1310,480 1250,560 T1180,540 Q1120,480 1060,400 T1040,200 Z" />
+    <!-- India Subcontinent -->
+    <path d="M1240,460 Q1300,470 1320,530 T1280,620 Q1240,560 1230,500 Z" />
+    <!-- East Asia Islands / Japan -->
+    <path d="M1600,320 Q1620,310 1640,360 T1610,410 Z" />
+    <!-- Australia & Oceania -->
+    <path d="M1440,680 Q1540,660 1620,710 T1630,800 Q1580,860 1500,860 T1420,790 Q1400,730 1440,680 Z" />
+    <path d="M1650,830 Q1670,810 1680,850 T1660,880 Z" />
+  </g>
+
+  <!-- Flight paths & Geodesic Navigation Arcs -->
+  <g stroke="rgba(98, 214, 208, 0.3)" stroke-width="1.4" stroke-dasharray="6,8" fill="none">
+    <path d="M340,340 Q620,180 920,290 T1480,340" />
+    <path d="M920,290 Q1100,380 1260,530" />
+    <path d="M920,290 Q920,520 940,780" />
+    <path d="M380,660 Q620,680 900,480" />
+    <path d="M1260,530 Q1360,620 1500,780" />
+    <!-- Wrapped repeat -->
+    <path d="M2260,340 Q2540,180 2840,290" />
+  </g>
+
+  <!-- Glowing City Hubs & Geodetic Anchors -->
+  <g fill="rgba(223, 186, 115, 0.85)">
+    <circle cx="340" cy="340" r="4.5" />
+    <circle cx="340" cy="340" r="14" fill="none" stroke="rgba(223, 186, 115, 0.35)" stroke-width="1" />
+    <circle cx="920" cy="290" r="5" />
+    <circle cx="920" cy="290" r="16" fill="none" stroke="rgba(223, 186, 115, 0.4)" stroke-width="1" />
+    <circle cx="1260" cy="530" r="4.5" />
+    <circle cx="1260" cy="530" r="14" fill="none" stroke="rgba(223, 186, 115, 0.35)" stroke-width="1" />
+    <circle cx="1500" cy="780" r="4" />
+    <circle cx="940" cy="780" r="4" />
+    <circle cx="380" cy="660" r="4" />
+    <!-- Wrapped repeat -->
+    <circle cx="2260" cy="340" r="4.5" />
+    <circle cx="2260" cy="340" r="14" fill="none" stroke="rgba(223, 186, 115, 0.35)" stroke-width="1" />
+  </g>
+</svg>
