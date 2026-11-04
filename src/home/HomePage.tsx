@@ -52,7 +52,7 @@ function HomepageGlobe() {
         container: host,
         style: "https://demotiles.maplibre.org/globe.json",
         center: [78, 24],
-        zoom: 1.18,
+        zoom: 2,
         projection: { type: "globe" },
         attributionControl: false,
         renderWorldCopies: false,
@@ -64,7 +64,6 @@ function HomepageGlobe() {
       map.on("error", (event) => console.error("Homepage globe data error", event.error));
       map.on("load", () => {
         if (!map) return;
-        map.setProjection({ type: "globe" });
         try {
           map.setFog({ color: "#e9e2d5", highColor: "#b3c5ca", spaceColor: "#f7f3eb", starIntensity: 0 });
         } catch { /* Keep the basemap if the browser does not support fog. */ }
