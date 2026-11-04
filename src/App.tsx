@@ -13,7 +13,7 @@ export default function App() {
 
   const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
   const search = new URLSearchParams(window.location.search);
-  const editorQueryKeys = ["dist", "city", "country", "lat", "lng", "lon", "zoom", "theme", "payment", "checkout", "status", "order", "success"];
+  const editorQueryKeys = ["editor", "dist", "city", "country", "lat", "lng", "lon", "zoom", "theme", "payment", "checkout", "status", "order", "success"];
   const hasEditorQuery = editorQueryKeys.some((key) => search.has(key));
   const isHomepage = pathname === "/" && !hasEditorQuery;
 
