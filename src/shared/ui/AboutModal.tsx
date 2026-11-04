@@ -127,7 +127,7 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                 <span className="guide-pill-badge">MAPARTE · Custom map design studio</span>
                 <h2 className="guide-hero-title">Turn a place that matters into map art</h2>
                 <p className="guide-hero-desc">
-                  Choose a location, shape the map, add your own typography and markers, then preview a poster or wallpaper design in the editor.
+                  Choose a place and map area, then design a poster or phone wallpaper with custom text, 13 border styles, markers, and routes. Preview the result in the editor or against a room wall photo.
                 </p>
               </div>
 
@@ -150,7 +150,7 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🖼️</div>
                     <h4>Build your layout</h4>
-                    <p>Choose a preset or enter custom dimensions, then frame the map with cartographic line border styles and custom spacing.</p>
+                    <p>Choose a poster or wallpaper size and one of 13 border styles. Adjust line thickness and map spacing, then choose a solid color or gradient.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">📐</div>
@@ -165,7 +165,7 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🛋️</div>
                     <h4>Preview the design</h4>
-                    <p>Review the poster on the canvas or use the room preview to compare background and frame treatments before exporting.</p>
+                    <p>In Special Full Screen, upload a wall photo and use Adjust Poster and Layout to position the preview. On supported phones, Open Camera can show a live room view after you grant camera permission.</p>
                   </div>
                 </div>
               </section>
@@ -181,7 +181,7 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                     <ul>
                       <li>Search by place name or coordinates</li>
                       <li>Choose a map extent and layout</li>
-                      <li>Adjust map layers, colors, and borders</li>
+                      <li>Adjust map layers, 13 border styles, colors, gradients, and spacing</li>
                       <li>Set dimensions for a poster or wallpaper</li>
                     </ul>
                   </div>
@@ -191,7 +191,7 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                     <ul>
                       <li>Add labels, a date, or a tagline</li>
                       <li>Place markers or import a GPX route</li>
-                      <li>Review the canvas and optional room preview</li>
+                      <li>Upload a wall photo or use the supported mobile camera preview</li>
                       <li>Check current output choices in Download</li>
                     </ul>
                   </div>
@@ -368,12 +368,12 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🖼️</div>
                     <h4>Border styles and spacing</h4>
-                    <p>Choose among the 11 cartographic line patterns, adjust line thickness, map spacing, and design size with responsive preview controls.</p>
+                    <p>Choose among 13 border styles, including Corner Crosshairs and Wide Gallery Inset. Tap the selected style again to turn the border off; adjust line thickness, spacing, and solid or gradient color.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">💧</div>
                     <h4>Map themes and colors</h4>
-                    <p>Pick a map theme, then edit supported palette colors. Theme controls affect the map appearance; poster text has its own color setting.</p>
+                    <p>Pick a map theme and edit supported palette colors. Preset themes show a soft map reflection behind the poster; a custom wall color or uploaded wall photo replaces it. Poster text has its own color setting.</p>
                   </div>
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">📍</div>
@@ -383,7 +383,7 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                   <div className="guide-feature-card">
                     <div className="feature-card-icon">🛋️</div>
                     <h4>Room preview</h4>
-                    <p>Open the room preview to compare the artwork against the available wall colors and frame treatments.</p>
+                    <p>In Special Full Screen, upload your own wall photo and use Adjust Poster and Layout to check placement and size. On supported phones, Open Camera starts a live preview after you grant camera permission; tap Close Camera to return.</p>
                   </div>
                 </div>
               </section>
@@ -488,7 +488,15 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                   </details>
                   <details className="guide-faq-item">
                     <summary className="guide-faq-question">What can I customize?</summary>
-                    <p className="guide-faq-answer">Use the editor to choose a theme and layout, change supported map layers, adjust borders, add location labels and a tagline, and tune text styling.</p>
+                    <p className="guide-faq-answer">Choose a theme and layout, change supported map layers, select from 13 border styles, adjust line thickness and spacing, choose solid or gradient colors, add location labels and a tagline, and tune text styling.</p>
+                  </details>
+                  <details className="guide-faq-item">
+                    <summary className="guide-faq-question">How can I preview my design on a wall?</summary>
+                    <p className="guide-faq-answer">Open Special Full Screen and choose Upload Wall Photo. Use Adjust Poster and Layout to position the preview. On supported phones, Open Camera requires camera permission for this site.</p>
+                  </details>
+                  <details className="guide-faq-item">
+                    <summary className="guide-faq-question">What do Reset Poster to Defaults and Clear Search History do?</summary>
+                    <p className="guide-faq-answer">Reset Poster to Defaults restores the poster, including borders, preview artwork, map camera, and saved design settings. Clear Search History removes recent place searches only. Each action asks you to confirm.</p>
                   </details>
                   <details className="guide-faq-item">
                     <summary className="guide-faq-question">Can I add my own markers or a walking route?</summary>
