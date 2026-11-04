@@ -1,5 +1,6 @@
 import type { RefObject } from "react";
 import ThemeCard from "./ThemeCard";
+import { EditIcon } from "@/shared/ui/Icons";
 import type { ThemeOption } from "../domain/types";
 
 interface ThemeSummarySectionProps {
@@ -18,13 +19,14 @@ export default function ThemeSummarySection({
   selectedThemeId,
   selectedThemeOption,
   onThemeSelect,
+  onCustomize,
 }: ThemeSummarySectionProps) {
   const description =
     selectedThemeOption.description?.trim() || "No description available.";
 
   return (
     <div className="theme-summary-view">
-      {/* Clean Theme Summary Header */}
+      {/* Clean Theme Summary Header with Customize Button */}
       <div className="theme-summary-head">
         <div className="theme-summary-copy">
           <p className="theme-summary-label">
@@ -32,6 +34,19 @@ export default function ThemeSummarySection({
           </p>
           <p className="theme-card-description">{description}</p>
         </div>
+        {onCustomize && (
+          <button
+            type="button"
+            className="theme-customize-btn theme-customize-btn--pill"
+            onClick={onCustomize}
+            aria-label={`Customize ${selectedThemeOption.name} colors`}
+          >
+            <span className="theme-customize-icon" aria-hidden="true">
+              <EditIcon />
+            </span>
+            <span className="theme-customize-text">Customize Colors</span>
+          </button>
+        )}
       </div>
 
       {/* Curated Theme Options with Top Popular Designs First */}
