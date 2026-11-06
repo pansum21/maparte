@@ -62,6 +62,10 @@
   ],
   "rewrites": [
     {
+      "source": "/homepage-preview",
+      "destination": "/index.html"
+    },
+    {
       "source": "/((?!api/|assets/|docs/|privacy|imprint|terms|refund|cities/|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|favicon|icon).*)$",
       "destination": "/index.html"
     }
