@@ -389,6 +389,10 @@ export default defineConfig({
     // single chunk even with manual chunking.
     chunkSizeWarningLimit: 1100,
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+        homepagePreview: path.resolve(__dirname, "homepage-preview.html"),
+      },
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
