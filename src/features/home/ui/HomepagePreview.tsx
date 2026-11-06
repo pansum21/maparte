@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import * as maplibregl from "maplibre-gl";
+import "@/features/map/infrastructure/maplibreWorker";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@fontsource/dm-sans/400.css";
 import "@fontsource/dm-sans/500.css";
