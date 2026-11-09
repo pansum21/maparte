@@ -158,14 +158,17 @@ function createHomepageMapStyle(theme: ResolvedTheme) {
 function MapGlobe({
   theme,
   layerVisibility,
+  focusPlace,
   onMapReady,
 }: {
   theme: ResolvedTheme;
   layerVisibility: { roads: boolean; water: boolean; landDetail: boolean };
+  focusPlace: CitySample | null;
   onMapReady: (map: MaplibreMap | null) => void;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MaplibreMap | null>(null);
+  const focusMarkerRef = useRef<maplibregl.Marker | null>(null);
   const style = useMemo(() => generateMapStyle(theme), [theme]);
 
   useEffect(() => {
@@ -276,6 +279,25 @@ function MapGlobe({
 
   useEffect(() => {
     const map = mapRef.current;
+    focusMarkerRef.current?.remove();
+    focusMarkerRef.current = null;
+    if (!map || !focusPlace) return;
+    const marker = document.createElement("span");
+    marker.className = "home-globe-focus-marker";
+    marker.innerHTML = '<i aria-hidden="true"></i><span></span>';
+    const label = marker.querySelector("span");
+    if (label) label.textContent = `${focusPlace.city} · ${focusPlace.country}`;
+    focusMarkerRef.current = new maplibregl.Marker({ element: marker, anchor: "bottom" })
+      .setLngLat(focusPlace.center)
+      .addTo(map);
+    return () => {
+      focusMarkerRef.current?.remove();
+      focusMarkerRef.current = null;
+    };
+  }, [focusPlace]);
+
+  useEffect(() => {
+    const map = mapRef.current;
     if (!map || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let frame = 0;
     let last = 0;
@@ -289,6 +311,7 @@ function MapGlobe({
     map.on("rotatestart", pause);
     map.on("touchstart", pause);
     map.on("wheel", pause);
+    map.on("movestart", pause);
     const spin = (time: number) => {
       if (time - last > 32 && Date.now() > pausedUntil && globeVisible && !document.hidden && map.loaded()) {
         const center = map.getCenter();
@@ -306,6 +329,7 @@ function MapGlobe({
       map.off("rotatestart", pause);
       map.off("touchstart", pause);
       map.off("wheel", pause);
+      map.off("movestart", pause);
     };
   }, []);
 
@@ -560,6 +584,7 @@ export default function HomepagePreview() {
   const [themeId, setThemeId] = useState("midnight_blue");
   const [cityQuery, setCityQuery] = useState("");
   const [searchFeedback, setSearchFeedback] = useState("");
+  const [focusPlace, setFocusPlace] = useState<CitySample | null>(null);
   const [headline, setHeadline] = useState("made into map art.");
   const [galleryView, setGalleryView] = useState<"maps" | "posters" | "layouts" | "borders">("maps");
   const [selectedSample, setSelectedSample] = useState<CitySample | null>(null);
@@ -627,11 +652,19 @@ export default function HomepagePreview() {
     const city = citySamples.find((sample) => sample.city.toLowerCase() === term || sample.id === term.split(" ").join("-"));
     if (city && globeRef.current) {
       setSearchFeedback("");
-      globeRef.current.flyTo({ center: city.center, zoom: 2.5, duration: 1800 });
+      setFocusPlace(city);
+      globeRef.current.flyTo({ center: city.center, zoom: 4.15, duration: 1850, essential: true });
     } else if (term) {
       setSearchFeedback("This preview keeps you here. Try one of the featured cities above.");
     }
   }, [cityQuery]);
+
+  const focusCity = useCallback((city: CitySample) => {
+    setCityQuery(city.city);
+    setSearchFeedback("");
+    setFocusPlace(city);
+    globeRef.current?.flyTo({ center: city.center, zoom: 4.15, duration: 1850, essential: true });
+  }, []);
 
   const openSample = useCallback((sample: CitySample) => setSelectedSample(sample), []);
   const closeDialog = useCallback(() => setSelectedSample(null), []);
@@ -661,7 +694,7 @@ export default function HomepagePreview() {
         <div className="home-hero__ambient" aria-hidden="true" />
         <div className="home-hero__inner">
           <div className="home-hero__globe-column">
-          <div className="home-globe-stage"><div className="home-globe-frame"><MapGlobe theme={activeTheme} layerVisibility={layerVisibility} onMapReady={(map) => { globeRef.current = map; }} /></div><div className={`home-globe-layers${globeLayersOpen ? " is-open" : ""}`}><button className="home-globe-layers__toggle" type="button" aria-expanded={globeLayersOpen} onClick={() => setGlobeLayersOpen((open) => !open)}><span aria-hidden="true">▤</span> Map layers <span aria-hidden="true">{globeLayersOpen ? "−" : "+"}</span></button>{globeLayersOpen ? <div className="home-globe-layers__panel"><div className="home-globe-layers__heading"><strong>MAP LAYERS</strong><span>LIVE</span></div><label><input type="checkbox" checked={layerVisibility.roads} onChange={(event) => setLayerVisibility((current) => ({ ...current, roads: event.target.checked }))} />Roads & transit</label><label><input type="checkbox" checked={layerVisibility.water} onChange={(event) => setLayerVisibility((current) => ({ ...current, water: event.target.checked }))} />Waterways</label><label><input type="checkbox" checked={layerVisibility.landDetail} onChange={(event) => setLayerVisibility((current) => ({ ...current, landDetail: event.target.checked }))} />Terrain details</label><div className="home-globe-camera"><span>CAMERA ALTITUDE</span><div><button type="button" onClick={() => globeRef.current?.flyTo({ center: [78.0322, 24], zoom: 2.15, duration: 1000 })}>🌍 Globe</button><button type="button" onClick={() => globeRef.current?.flyTo({ center: [79, 22], zoom: 2.45, duration: 1000 })}>📍 India</button></div></div></div> : null}</div><span className="home-globe-caption"><i /> A real, interactive 3D globe</span></div>
+          <div className="home-globe-stage"><div className="home-globe-frame"><MapGlobe theme={activeTheme} layerVisibility={layerVisibility} focusPlace={focusPlace} onMapReady={(map) => { globeRef.current = map; }} /></div><div className={`home-globe-layers${globeLayersOpen ? " is-open" : ""}`}><button className="home-globe-layers__toggle" type="button" aria-expanded={globeLayersOpen} onClick={() => setGlobeLayersOpen((open) => !open)}><span aria-hidden="true">▤</span> Map layers <span aria-hidden="true">{globeLayersOpen ? "−" : "+"}</span></button>{globeLayersOpen ? <div className="home-globe-layers__panel"><div className="home-globe-layers__heading"><strong>MAP LAYERS</strong><span>LIVE</span></div><label><input type="checkbox" checked={layerVisibility.roads} onChange={(event) => setLayerVisibility((current) => ({ ...current, roads: event.target.checked }))} />Roads & transit</label><label><input type="checkbox" checked={layerVisibility.water} onChange={(event) => setLayerVisibility((current) => ({ ...current, water: event.target.checked }))} />Waterways</label><label><input type="checkbox" checked={layerVisibility.landDetail} onChange={(event) => setLayerVisibility((current) => ({ ...current, landDetail: event.target.checked }))} />Terrain details</label><div className="home-globe-camera"><span>CAMERA ALTITUDE</span><div><button type="button" onClick={() => { setFocusPlace(null); globeRef.current?.flyTo({ center: [78.0322, 24], zoom: 2.15, duration: 1300, essential: true }); }}>🌍 Globe</button><button type="button" onClick={() => focusCity(citySamples.find((city) => city.id === "delhi") ?? citySamples[0])}>📍 India</button></div></div></div> : null}</div><span className="home-globe-caption"><i /> A real, interactive 3D globe</span></div>
             <div className="home-theme-picker" id="theme-preview">
               <div className="home-theme-picker__heading"><strong>Pick a map mood</strong><span>Tap a theme to recolor the globe</span></div>
               <div className="home-theme-swatches">
@@ -679,7 +712,7 @@ export default function HomepagePreview() {
               </div>
             </div>
           </div>
-          <div className="home-hero__copy"><span className="home-eyebrow"><i /> MAPARTE · YOUR PLACE, YOUR MAP</span><h1>A place you love,<br /><em className="home-hero-headline" aria-live="polite" key={headline}>{headline}</em></h1><p>Explore the globe, choose a map style, and create a digital map you can make your own.</p><form className="home-place-search" onSubmit={goToPlace}><span className="home-search-pin" aria-hidden="true">⌖</span><input aria-label="Search a city or place" list="home-city-list" placeholder="Try Paris, Tokyo, or London" value={cityQuery} onChange={(event) => { setCityQuery(event.target.value); setSearchFeedback(""); }} /><datalist id="home-city-list">{citySamples.map((city) => <option key={city.id} value={city.city} />)}</datalist><button type="submit" aria-label="Find place">→</button></form>{searchFeedback ? <p className="home-search-feedback" role="status">{searchFeedback}</p> : null}<div className="home-hero__actions"><a className="home-primary" href="#map-gallery">Explore city maps <span aria-hidden="true">↓</span></a><a className="home-text-link" href="#map-gallery">See map styles <span aria-hidden="true">↓</span></a></div><div className="home-hero__facts"><span><b>20</b> featured cities</span><span><b>8</b> hand-picked themes</span><span><b>PNG</b> high-resolution download</span></div><p className="home-hero__current-theme">Globe theme: <strong>{selectedOption?.name ?? activeTheme.name}</strong></p></div>
+          <div className="home-hero__copy"><span className="home-eyebrow"><i /> MAPARTE · YOUR PLACE, YOUR MAP</span><h1>A place you love,<br /><em className="home-hero-headline" aria-live="polite" key={headline}>{headline}</em></h1><p>Explore the globe, choose a map style, and create a digital map you can make your own.</p><form className="home-place-search" onSubmit={goToPlace}><span className="home-search-pin" aria-hidden="true">⌖</span><input aria-label="Search a city or place" list="home-city-list" placeholder="Try Paris, Tokyo, or London" value={cityQuery} onChange={(event) => { setCityQuery(event.target.value); setSearchFeedback(""); }} /><datalist id="home-city-list">{citySamples.map((city) => <option key={city.id} value={city.city} />)}</datalist><button type="submit" aria-label="Find place">→</button></form><div className="home-quick-cities" aria-label="Quick globe destinations"><span>QUICK EXPLORE</span>{["paris", "tokyo", "new-york"].map((id) => { const city = citySamples.find((sample) => sample.id === id)!; return <button key={id} type="button" className={focusPlace?.id === id ? "is-active" : ""} onClick={() => focusCity(city)} aria-pressed={focusPlace?.id === id}>{city.city}<i aria-hidden="true">↗</i></button>; })}</div>{searchFeedback ? <p className="home-search-feedback" role="status">{searchFeedback}</p> : null}<div className="home-hero__actions"><a className="home-primary" href="#map-gallery">Explore city maps <span aria-hidden="true">↓</span></a><a className="home-text-link" href="#map-gallery">See map styles <span aria-hidden="true">↓</span></a></div><div className="home-hero__facts"><span><b>20</b> featured cities</span><span><b>8</b> hand-picked themes</span><span><b>PNG</b> high-resolution download</span></div><p className="home-hero__current-theme">Globe theme: <strong>{selectedOption?.name ?? activeTheme.name}</strong></p></div>
         </div>
         <div className="home-hero__bottom-note"><span>MOVE THE GLOBE</span><span className="home-scroll-mark" aria-hidden="true">↓</span><span>FIND YOUR PLACE</span></div>
       </section>
@@ -719,3 +752,4 @@ export default function HomepagePreview() {
     </main>
   );
 }
+
