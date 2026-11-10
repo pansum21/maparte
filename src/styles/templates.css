@@ -83,10 +83,21 @@
 
 .occasion-card-heading {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
   gap: 6px;
   min-width: 0;
+}
+
+.occasion-card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.occasion-card-meta-row .occasion-card-palette {
+  margin-left: 0;
 }
 
 .occasion-card-badge {
