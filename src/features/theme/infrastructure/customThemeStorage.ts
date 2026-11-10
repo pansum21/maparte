@@ -6,6 +6,7 @@ const STORAGE_KEY = "maparte.customThemes.v1";
 export interface SavedCustomTheme extends ThemeOption {
   baseThemeId: string;
   colors: Partial<Record<ThemeColorKey, string>>;
+  originalColors: Partial<Record<ThemeColorKey, string>>;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -20,11 +21,16 @@ function normalizeSavedTheme(value: unknown): SavedCustomTheme | null {
   if (!id.startsWith("custom-theme-") || !name || !baseThemeId || !isRecord(value.colors)) return null;
 
   const colors: Partial<Record<ThemeColorKey, string>> = {};
+  const originalColors: Partial<Record<ThemeColorKey, string>> = {};
   for (const key of DISPLAY_PALETTE_KEYS) {
     const color = normalizeHexColor(String(value.colors[key] ?? ""));
     if (color) colors[key] = color;
+    const original = normalizeHexColor(String((isRecord(value.originalColors) ? value.originalColors[key] : "") ?? ""));
+    // Older saved themes did not store a baseline. Their current palette becomes
+    // the reset point so existing user themes remain intact after the upgrade.
+    originalColors[key] = original || color || "";
   }
-  if (DISPLAY_PALETTE_KEYS.some((key) => !colors[key])) return null;
+  if (DISPLAY_PALETTE_KEYS.some((key) => !colors[key] || !originalColors[key])) return null;
 
   return {
     id,
@@ -32,6 +38,7 @@ function normalizeSavedTheme(value: unknown): SavedCustomTheme | null {
     description: typeof value.description === "string" ? value.description : "Your saved map color palette.",
     baseThemeId,
     colors,
+    originalColors,
     palette: DISPLAY_PALETTE_KEYS.map((key) => colors[key] as string),
   };
 }
@@ -58,3 +65,4 @@ export function saveCustomThemes(themes: SavedCustomTheme[]): void {
     // Keep editing usable when browser storage is disabled or full.
   }
 }
+
