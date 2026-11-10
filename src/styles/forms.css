@@ -3111,6 +3111,17 @@ button.location-clear-btn:focus-visible {
     flex-direction: row;
   }
 
+  .theme-summary-head {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .theme-summary-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
   .card-scroll-list {
     display: flex;
     flex-wrap: nowrap;
