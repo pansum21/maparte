@@ -80,7 +80,7 @@ export default function MapSettingsSection({
 }: MapSettingsSectionProps) {
   const [isThemeEditing, setIsThemeEditing] = useState(false);
   const [savedCustomThemes, setSavedCustomThemes] = useState<SavedCustomTheme[]>(loadCustomThemes);
-  const [activeThemeOptionId, setActiveThemeOptionId] = useState<string | null>(form.theme);
+  const [activeThemeOptionId, setActiveThemeOptionId] = useState<string | null>(null);
   const lastFormThemeRef = useRef(form.theme);
   const [isLayoutEditing, setIsLayoutEditing] = useState(false);
   const defaultColorKey: ThemeColorKey = DISPLAY_PALETTE_KEYS[0] ?? "ui.bg";
