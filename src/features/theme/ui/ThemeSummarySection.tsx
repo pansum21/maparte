@@ -9,7 +9,6 @@ interface ThemeSummarySectionProps {
   selectedThemeId: string;
   selectedThemeOption: ThemeOption;
   onThemeSelect: (themeId: string) => void;
-  onCustomize?: () => void;
   onCreateCustomTheme?: () => void;
   onSelectDesign?: (design: any) => void;
 }
@@ -20,7 +19,6 @@ export default function ThemeSummarySection({
   selectedThemeId,
   selectedThemeOption,
   onThemeSelect,
-  onCustomize,
   onCreateCustomTheme,
 }: ThemeSummarySectionProps) {
   const description =
@@ -44,21 +42,11 @@ export default function ThemeSummarySection({
               onClick={onCreateCustomTheme}
               aria-label="Create a new custom map theme"
             >
-              <span className="theme-customize-text">Create new</span>
+              <span className="theme-customize-icon" aria-hidden="true">
+                <EditIcon />
+              </span>
+              <span className="theme-customize-text">Create New Theme</span>
             </button>
-          )}
-          {onCustomize && (
-          <button
-            type="button"
-            className="theme-customize-btn theme-customize-btn--pill"
-            onClick={onCustomize}
-            aria-label={`Customize ${selectedThemeOption.name} colors`}
-          >
-            <span className="theme-customize-icon" aria-hidden="true">
-              <EditIcon />
-            </span>
-            <span className="theme-customize-text">Customize Colors</span>
-          </button>
           )}
         </div>
       </div>
