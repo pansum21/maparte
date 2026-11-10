@@ -126,6 +126,7 @@ export default function TemplatesSection({
             >
               <div className="occasion-card-heading">
                 <h3 className="occasion-card-title">{tmpl.title}</h3>
+                <div className="occasion-card-meta-row">
                 <span className="occasion-card-badge">{tmpl.badge}</span>
                 <div
                   className="occasion-card-palette"
@@ -164,6 +165,7 @@ export default function TemplatesSection({
                 >
                   <InfoIcon aria-hidden="true" />
                 </button>
+                </div>
               </div>
 
               {openInfoId === tmpl.id ? (
