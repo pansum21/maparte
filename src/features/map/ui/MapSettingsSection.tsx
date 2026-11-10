@@ -20,6 +20,11 @@ import ThemeSummarySection from "@/features/theme/ui/ThemeSummarySection";
 import { CheckIcon, EditIcon } from "@/shared/ui/Icons";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import type { LayoutGroup } from "@/features/layout/domain/types";
+import {
+  loadCustomThemes,
+  saveCustomThemes,
+  type SavedCustomTheme,
+} from "@/features/theme/infrastructure/customThemeStorage";
 
 const FALLBACK_COLOR = "#000000";
 
@@ -78,6 +83,8 @@ export default function MapSettingsSection({
   onColorEditorActiveChange,
 }: MapSettingsSectionProps) {
   const [isThemeEditing, setIsThemeEditing] = useState(false);
+  const [savedCustomThemes, setSavedCustomThemes] = useState<SavedCustomTheme[]>(loadCustomThemes);
+  const [activeThemeOptionId, setActiveThemeOptionId] = useState(form.theme);
   const [isLayoutEditing, setIsLayoutEditing] = useState(false);
   const defaultColorKey: ThemeColorKey = DISPLAY_PALETTE_KEYS[0] ?? "ui.bg";
   const [activeColorKey, setActiveColorKey] = useState<ThemeColorKey | null>(
@@ -90,6 +97,25 @@ export default function MapSettingsSection({
   } | null>(null);
   const themeListRef = useRef<HTMLDivElement | null>(null);
   const layoutGroupsRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    saveCustomThemes(savedCustomThemes);
+  }, [savedCustomThemes]);
+
+  const activeCustomTheme = savedCustomThemes.find(
+    (customTheme) => customTheme.id === activeThemeOptionId,
+  ) ?? null;
+
+  useEffect(() => {
+    if (activeCustomTheme && activeCustomTheme.baseThemeId === form.theme) return;
+    if (!activeCustomTheme && activeThemeOptionId === form.theme) return;
+    setActiveThemeOptionId(form.theme);
+  }, [activeCustomTheme, activeThemeOptionId, form.theme]);
+
+  const availableThemeOptions = useMemo(
+    () => [...themeOptions, ...savedCustomThemes],
+    [savedCustomThemes, themeOptions],
+  );
 
   const selectedThemeOption = useMemo(() => {
     const matchingOption = themeOptions.find((t) => t.id === form.theme);
@@ -107,10 +133,15 @@ export default function MapSettingsSection({
     [customColors, selectedTheme],
   );
 
-  const summaryThemeOption = useMemo(
-    () => ({ ...selectedThemeOption, palette: currentThemePalette }),
-    [currentThemePalette, selectedThemeOption],
-  );
+  const summaryThemeOption = useMemo(() => {
+    const customOption = savedCustomThemes.find(
+      (customTheme) => customTheme.id === activeThemeOptionId,
+    );
+    return {
+      ...(customOption ?? selectedThemeOption),
+      palette: currentThemePalette,
+    };
+  }, [activeThemeOptionId, currentThemePalette, savedCustomThemes, selectedThemeOption]);
 
   const activeColorChoices = useMemo(() => {
     if (!activeColorKey) return { suggestedColors: [], moreColors: [] };
@@ -177,8 +208,61 @@ export default function MapSettingsSection({
   }
 
   function handleThemeSelect(themeId: string) {
-    onThemeChange(themeId);
+    const customTheme = savedCustomThemes.find((item) => item.id === themeId);
+    if (customTheme) {
+      onThemeChange(customTheme.baseThemeId);
+      for (const key of DISPLAY_PALETTE_KEYS) {
+        const color = customTheme.colors[key];
+        if (color) onColorChange(key, color);
+      }
+    } else {
+      onThemeChange(themeId);
+    }
+    setActiveThemeOptionId(themeId);
     clearColorPickerState();
+  }
+
+  function handleCreateCustomTheme() {
+    const nextNumber = savedCustomThemes.length + 1;
+    const colors = Object.fromEntries(
+      DISPLAY_PALETTE_KEYS.map((key, index) => [key, currentThemePalette[index] ?? FALLBACK_COLOR]),
+    ) as SavedCustomTheme["colors"];
+    const customTheme: SavedCustomTheme = {
+      id: `custom-theme-${Date.now()}`,
+      name: `My Custom Theme ${nextNumber}`,
+      description: "Your saved map color palette.",
+      baseThemeId: activeCustomTheme?.baseThemeId ?? form.theme,
+      palette: [...currentThemePalette],
+      colors,
+    };
+
+    setSavedCustomThemes((current) => [...current, customTheme]);
+    onThemeChange(customTheme.baseThemeId);
+    for (const [key, color] of Object.entries(customTheme.colors)) {
+      if (color) onColorChange(key, color);
+    }
+    setActiveThemeOptionId(customTheme.id);
+    setIsThemeEditing(true);
+    clearColorPickerState();
+  }
+
+  function handleThemeColorChange(key: string, color: string) {
+    onColorChange(key, color);
+    if (!activeCustomTheme || !(key in activeCustomTheme.colors)) return;
+    setSavedCustomThemes((current) =>
+      current.map((customTheme) =>
+        customTheme.id === activeCustomTheme.id
+          ? {
+              ...customTheme,
+              colors: { ...customTheme.colors, [key]: color },
+              palette: DISPLAY_PALETTE_KEYS.map(
+                (paletteKey) =>
+                  paletteKey === key ? color : customTheme.colors[paletteKey] ?? FALLBACK_COLOR,
+              ),
+            }
+          : customTheme,
+      ),
+    );
   }
 
   function handleLayoutSelectInline(layoutId: string) {
@@ -219,6 +303,25 @@ export default function MapSettingsSection({
 
   function handleResetThemeColors() {
     onResetColors();
+    if (activeCustomTheme) {
+      const resetColors = Object.fromEntries(
+        DISPLAY_PALETTE_KEYS.map((key) => [
+          key,
+          normalizeHexColor(getThemeColorByPath(selectedTheme, key)) || FALLBACK_COLOR,
+        ]),
+      ) as SavedCustomTheme["colors"];
+      setSavedCustomThemes((current) =>
+        current.map((customTheme) =>
+          customTheme.id === activeCustomTheme.id
+            ? {
+                ...customTheme,
+                colors: resetColors,
+                palette: DISPLAY_PALETTE_KEYS.map((key) => resetColors[key] ?? FALLBACK_COLOR),
+              }
+            : customTheme,
+        ),
+      );
+    }
     if (!isThemeEditing) {
       clearColorPickerState();
       return;
@@ -246,7 +349,7 @@ export default function MapSettingsSection({
       normalizeHexColor(currentThemePalette[0]) ||
       "";
     if (!originalColor) return;
-    onColorChange(key, originalColor);
+    handleThemeColorChange(key, originalColor);
   }
 
   const hasCustomColors = useMemo(
@@ -349,7 +452,7 @@ export default function MapSettingsSection({
                 currentColor={editorColor}
                 suggestedColors={editorChoices.suggestedColors}
                 moreColors={editorChoices.moreColors}
-                onChange={(color: string) => onColorChange(editorKey, color)}
+                onChange={(color: string) => handleThemeColorChange(editorKey, color)}
                 onResetColor={() => handleResetSingleColor(editorKey)}
                 canResetColor={canResetEditorColor}
               />
@@ -367,11 +470,12 @@ export default function MapSettingsSection({
         ) : (
           <ThemeSummarySection
             listRef={themeListRef}
-            themeOptions={themeOptions}
-            selectedThemeId={form.theme}
+            themeOptions={availableThemeOptions}
+            selectedThemeId={activeThemeOptionId}
             selectedThemeOption={summaryThemeOption}
             onThemeSelect={handleThemeSelect}
             onCustomize={handleOpenThemeEditor}
+            onCreateCustomTheme={handleCreateCustomTheme}
             onSelectDesign={(design) => {
               if (onFontChange) {
                 onFontChange(design.fontFamily);
@@ -454,3 +558,4 @@ export default function MapSettingsSection({
     </section>
   );
 }
+
