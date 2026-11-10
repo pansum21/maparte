@@ -267,11 +267,6 @@ export default function MapSettingsSection({
     });
   }
 
-  function handleOpenThemeEditor() {
-    setIsThemeEditing(true);
-    clearColorPickerState();
-  }
-
   function handleDoneThemeEditor() {
     setIsThemeEditing(false);
     clearColorPickerState();
@@ -451,7 +446,6 @@ export default function MapSettingsSection({
             selectedThemeId={activeThemeOptionId}
             selectedThemeOption={summaryThemeOption}
             onThemeSelect={handleThemeSelect}
-            onCustomize={handleOpenThemeEditor}
             onCreateCustomTheme={handleCreateCustomTheme}
             onSelectDesign={(design) => {
               if (onFontChange) {
