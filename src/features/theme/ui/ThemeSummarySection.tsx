@@ -48,17 +48,17 @@ export default function ThemeSummarySection({
             </button>
           )}
           {onCustomize && (
-            <button
-              type="button"
-              className="theme-customize-btn theme-customize-btn--pill"
-              onClick={onCustomize}
-              aria-label={`Customize ${selectedThemeOption.name} colors`}
-            >
-              <span className="theme-customize-icon" aria-hidden="true">
-                <EditIcon />
-              </span>
-              <span className="theme-customize-text">Customize Colors</span>
-            </button>
+          <button
+            type="button"
+            className="theme-customize-btn theme-customize-btn--pill"
+            onClick={onCustomize}
+            aria-label={`Customize ${selectedThemeOption.name} colors`}
+          >
+            <span className="theme-customize-icon" aria-hidden="true">
+              <EditIcon />
+            </span>
+            <span className="theme-customize-text">Customize Colors</span>
+          </button>
           )}
         </div>
       </div>
@@ -82,4 +82,3 @@ export default function ThemeSummarySection({
     </div>
   );
 }
-
