@@ -34,6 +34,7 @@ export default function LayersSection({
   return (
     <section className="panel-block">
       <p className="section-summary-label">LAYERS</p>
+      <div className="layer-toggle-grid">
       <label className="toggle-field">
         <span>Show landcover</span>
         <span className="theme-switch">
@@ -118,6 +119,7 @@ export default function LayersSection({
           <span className="theme-switch-track" aria-hidden="true" />
         </span>
       </label>
+      </div>
 
       <div className="map-details-section">
         <h3 className="map-details-subtitle">Map Details</h3>
