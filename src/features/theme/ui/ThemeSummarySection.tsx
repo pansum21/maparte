@@ -9,8 +9,7 @@ interface ThemeSummarySectionProps {
   selectedThemeId: string;
   selectedThemeOption: ThemeOption;
   onThemeSelect: (themeId: string) => void;
-  onThemeAction?: () => void;
-  actionLabel: "Create New Theme" | "Customize Colors";
+  onThemeAction?: (group: "maparte" | "yours") => void;
   onDeleteCustomTheme?: (themeId: string) => void;
 }
 
@@ -21,7 +20,6 @@ export default function ThemeSummarySection({
   selectedThemeOption,
   onThemeSelect,
   onThemeAction,
-  actionLabel,
   onDeleteCustomTheme,
 }: ThemeSummarySectionProps) {
   const [activeGroup, setActiveGroup] = useState<"maparte" | "yours">("maparte");
@@ -49,11 +47,11 @@ export default function ThemeSummarySection({
             <button
               type="button"
               className="theme-customize-btn theme-customize-btn--pill theme-create-btn"
-              onClick={onThemeAction}
-              aria-label={actionLabel}
+              onClick={() => onThemeAction(activeGroup)}
+              aria-label={activeGroup === "maparte" ? "Customize Colors" : "Create Theme"}
             >
               <span className="theme-customize-icon" aria-hidden="true"><EditIcon /></span>
-              <span className="theme-customize-text">{actionLabel}</span>
+              <span className="theme-customize-text">{activeGroup === "maparte" ? "Customize Colors" : "Create Theme"}</span>
             </button>
           )}
         </div>

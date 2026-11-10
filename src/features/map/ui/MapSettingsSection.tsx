@@ -198,11 +198,6 @@ export default function MapSettingsSection({
   }
 
   function handleThemeSelect(themeId: string) {
-    if (activeThemeOptionId === themeId) {
-      setActiveThemeOptionId(null);
-      clearColorPickerState();
-      return;
-    }
     const customTheme = savedCustomThemes.find((item) => item.id === themeId);
     if (customTheme) {
       lastFormThemeRef.current = customTheme.baseThemeId;
@@ -217,6 +212,24 @@ export default function MapSettingsSection({
       onResetColors();
     }
     setActiveThemeOptionId(themeId);
+    clearColorPickerState();
+  }
+
+  function handleThemeAction(group: "maparte" | "yours") {
+    if (group === "yours") {
+      handleCreateCustomTheme();
+      return;
+    }
+
+    const selectedBuiltInId =
+      activeThemeOptionId && !activeCustomTheme ? activeThemeOptionId : form.theme;
+    if (activeCustomTheme) {
+      lastFormThemeRef.current = activeCustomTheme.baseThemeId;
+      onThemeChange(activeCustomTheme.baseThemeId);
+      onResetColors();
+    }
+    setActiveThemeOptionId(selectedBuiltInId);
+    setIsThemeEditing(true);
     clearColorPickerState();
   }
 
@@ -481,8 +494,7 @@ export default function MapSettingsSection({
             selectedThemeId={activeThemeOptionId ?? ""}
             selectedThemeOption={summaryThemeOption}
             onThemeSelect={handleThemeSelect}
-            onThemeAction={activeThemeOptionId ? () => setIsThemeEditing(true) : handleCreateCustomTheme}
-            actionLabel={activeThemeOptionId ? "Customize Colors" : "Create New Theme"}
+            onThemeAction={handleThemeAction}
             onDeleteCustomTheme={handleDeleteCustomTheme}
             onSelectDesign={(design) => {
               if (onFontChange) {
