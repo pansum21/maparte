@@ -2257,3 +2257,53 @@ button.marker-picker__option--upload-tile {
     pointer-events: none;
   }
 }
+
+/* Mobile layers use a plain two-column layout, with no card treatment. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .layer-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 10px;
+    row-gap: 8px;
+  }
+
+  .layer-toggle-grid > .toggle-field {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .layer-toggle-grid > .toggle-field > span:first-child {
+    min-width: 0;
+    flex: 1 1 auto;
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
+
+  .layer-toggle-grid > .toggle-field > .theme-switch,
+  .layer-toggle-grid > .toggle-field > .theme-switch .theme-switch-track {
+    width: 48px;
+    height: 28px;
+    flex: 0 0 48px;
+  }
+
+  .layer-toggle-grid > .toggle-field > .theme-switch .theme-switch-track::after {
+    top: 4px;
+    left: 4px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .layer-toggle-grid > .toggle-field > .theme-switch input:checked + .theme-switch-track::after {
+    transform: translateX(20px);
+  }
+
+  .layer-toggle-grid > .toggle-field:last-child {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc((100% - 10px) / 2);
+  }
+}
