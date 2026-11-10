@@ -2302,8 +2302,8 @@ button.marker-picker__option--upload-tile {
   }
 
   .layer-toggle-grid > .toggle-field:last-child {
-    grid-column: 1 / -1;
-    justify-self: center;
-    width: calc((100% - 10px) / 2);
+    grid-column: auto;
+    justify-self: stretch;
+    width: 100%;
   }
 }
