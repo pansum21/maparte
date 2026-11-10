@@ -14,13 +14,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function normalizeSavedTheme(value: unknown): SavedCustomTheme | null {
   if (!isRecord(value)) return null;
-
   const id = typeof value.id === "string" ? value.id : "";
   const name = typeof value.name === "string" ? value.name.trim() : "";
   const baseThemeId = typeof value.baseThemeId === "string" ? value.baseThemeId : "";
-  if (!id.startsWith("custom-theme-") || !name || !baseThemeId || !isRecord(value.colors)) {
-    return null;
-  }
+  if (!id.startsWith("custom-theme-") || !name || !baseThemeId || !isRecord(value.colors)) return null;
 
   const colors: Partial<Record<ThemeColorKey, string>> = {};
   for (const key of DISPLAY_PALETTE_KEYS) {
@@ -32,8 +29,7 @@ function normalizeSavedTheme(value: unknown): SavedCustomTheme | null {
   return {
     id,
     name,
-    description:
-      typeof value.description === "string" ? value.description : "Your saved map color palette.",
+    description: typeof value.description === "string" ? value.description : "Your saved map color palette.",
     baseThemeId,
     colors,
     palette: DISPLAY_PALETTE_KEYS.map((key) => colors[key] as string),
@@ -62,4 +58,3 @@ export function saveCustomThemes(themes: SavedCustomTheme[]): void {
     // Keep editing usable when browser storage is disabled or full.
   }
 }
-
