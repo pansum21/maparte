@@ -989,7 +989,7 @@
 
   .desktop-left-panel {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 124px;
     left: 82px; /* 64px nav + 18px gap */
     width: 356px;
