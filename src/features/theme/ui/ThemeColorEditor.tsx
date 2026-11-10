@@ -37,7 +37,7 @@ export default function ThemeColorEditor({
             onClick={onResetAllColors}
             disabled={!hasCustomColors}
           >
-            Reset All Colors
+            Reset
           </button>
           <button
             type="button"
@@ -70,3 +70,4 @@ export default function ThemeColorEditor({
     </section>
   );
 }
+
