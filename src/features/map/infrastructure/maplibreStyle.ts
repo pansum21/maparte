@@ -496,7 +496,7 @@ export function generateMapStyle(
             : 0,
         },
         layout: {
-          visibility: includeRoads ? ("visible" as const) : ("none" as const),
+          visibility: includeRoadPath ? ("visible" as const) : ("none" as const),
           "line-cap": "round" as const,
           "line-join": "round" as const,
         },
@@ -521,7 +521,7 @@ export function generateMapStyle(
             : 0,
         },
         layout: {
-          visibility: includeRoads ? ("visible" as const) : ("none" as const),
+          visibility: includeRoadPath ? ("visible" as const) : ("none" as const),
           "line-cap": "round" as const,
           "line-join": "round" as const,
         },
@@ -611,7 +611,7 @@ export function generateMapStyle(
             : 0,
         },
         layout: {
-          visibility: includeRoads ? ("visible" as const) : ("none" as const),
+          visibility: includeRoadPath ? ("visible" as const) : ("none" as const),
           "line-cap": "round" as const,
           "line-join": "round" as const,
         },
