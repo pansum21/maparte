@@ -1,4 +1,10 @@
 /* Match the city picker panel bounds and width to the wall color and tool panels. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell .all-cities-modal {
+    position: absolute;
+  }
+}
+
 .app-shell .all-cities-modal {
   top: 62px;
   bottom: 45px;
