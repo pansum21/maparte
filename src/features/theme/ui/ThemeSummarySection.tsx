@@ -10,6 +10,7 @@ interface ThemeSummarySectionProps {
   selectedThemeOption: ThemeOption;
   onThemeSelect: (themeId: string) => void;
   onCustomize?: () => void;
+  onCreateCustomTheme?: () => void;
   onSelectDesign?: (design: any) => void;
 }
 
@@ -20,6 +21,7 @@ export default function ThemeSummarySection({
   selectedThemeOption,
   onThemeSelect,
   onCustomize,
+  onCreateCustomTheme,
 }: ThemeSummarySectionProps) {
   const description =
     selectedThemeOption.description?.trim() || "No description available.";
@@ -34,19 +36,31 @@ export default function ThemeSummarySection({
           </p>
           <p className="theme-card-description">{description}</p>
         </div>
-        {onCustomize && (
-          <button
-            type="button"
-            className="theme-customize-btn theme-customize-btn--pill"
-            onClick={onCustomize}
-            aria-label={`Customize ${selectedThemeOption.name} colors`}
-          >
-            <span className="theme-customize-icon" aria-hidden="true">
-              <EditIcon />
-            </span>
-            <span className="theme-customize-text">Customize Colors</span>
-          </button>
-        )}
+        <div className="theme-summary-actions">
+          {onCreateCustomTheme && (
+            <button
+              type="button"
+              className="theme-customize-btn theme-customize-btn--pill theme-create-btn"
+              onClick={onCreateCustomTheme}
+              aria-label="Create a new custom map theme"
+            >
+              <span className="theme-customize-text">Create new</span>
+            </button>
+          )}
+          {onCustomize && (
+            <button
+              type="button"
+              className="theme-customize-btn theme-customize-btn--pill"
+              onClick={onCustomize}
+              aria-label={`Customize ${selectedThemeOption.name} colors`}
+            >
+              <span className="theme-customize-icon" aria-hidden="true">
+                <EditIcon />
+              </span>
+              <span className="theme-customize-text">Customize Colors</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Curated Theme Options with Top Popular Designs First */}
@@ -68,3 +82,4 @@ export default function ThemeSummarySection({
     </div>
   );
 }
+
