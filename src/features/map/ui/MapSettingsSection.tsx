@@ -80,7 +80,8 @@ export default function MapSettingsSection({
 }: MapSettingsSectionProps) {
   const [isThemeEditing, setIsThemeEditing] = useState(false);
   const [savedCustomThemes, setSavedCustomThemes] = useState<SavedCustomTheme[]>(loadCustomThemes);
-  const [activeThemeOptionId, setActiveThemeOptionId] = useState(form.theme);
+  const [activeThemeOptionId, setActiveThemeOptionId] = useState<string | null>(form.theme);
+  const lastFormThemeRef = useRef(form.theme);
   const [isLayoutEditing, setIsLayoutEditing] = useState(false);
   const defaultColorKey: ThemeColorKey = DISPLAY_PALETTE_KEYS[0] ?? "ui.bg";
   const [activeColorKey, setActiveColorKey] = useState<ThemeColorKey | null>(
@@ -101,10 +102,10 @@ export default function MapSettingsSection({
   const activeCustomTheme = savedCustomThemes.find((item) => item.id === activeThemeOptionId) ?? null;
 
   useEffect(() => {
-    if (activeCustomTheme && activeCustomTheme.baseThemeId === form.theme) return;
-    if (!activeCustomTheme && activeThemeOptionId === form.theme) return;
+    if (lastFormThemeRef.current === form.theme) return;
+    lastFormThemeRef.current = form.theme;
     setActiveThemeOptionId(form.theme);
-  }, [activeCustomTheme, activeThemeOptionId, form.theme]);
+  }, [form.theme]);
 
   const availableThemeOptions = useMemo(
     () => [...themeOptions, ...savedCustomThemes],
@@ -197,15 +198,23 @@ export default function MapSettingsSection({
   }
 
   function handleThemeSelect(themeId: string) {
+    if (activeThemeOptionId === themeId) {
+      setActiveThemeOptionId(null);
+      clearColorPickerState();
+      return;
+    }
     const customTheme = savedCustomThemes.find((item) => item.id === themeId);
     if (customTheme) {
+      lastFormThemeRef.current = customTheme.baseThemeId;
       onThemeChange(customTheme.baseThemeId);
       for (const key of DISPLAY_PALETTE_KEYS) {
         const color = customTheme.colors[key];
         if (color) onColorChange(key, color);
       }
     } else {
+      lastFormThemeRef.current = themeId;
       onThemeChange(themeId);
+      onResetColors();
     }
     setActiveThemeOptionId(themeId);
     clearColorPickerState();
@@ -215,16 +224,22 @@ export default function MapSettingsSection({
     const colors = Object.fromEntries(
       DISPLAY_PALETTE_KEYS.map((key, index) => [key, currentThemePalette[index] ?? FALLBACK_COLOR]),
     ) as SavedCustomTheme["colors"];
+    const usedNumbers = savedCustomThemes
+      .map((theme) => Number(theme.name.match(/^New Theme (\d+)$/)?.[1] ?? 0))
+      .filter(Number.isFinite);
+    const nextNumber = Math.max(0, ...usedNumbers) + 1;
     const customTheme: SavedCustomTheme = {
       id: `custom-theme-${Date.now()}`,
-      name: `My Custom Theme ${savedCustomThemes.length + 1}`,
+      name: `New Theme ${nextNumber}`,
       description: "Your saved map color palette.",
       baseThemeId: activeCustomTheme?.baseThemeId ?? form.theme,
       palette: [...currentThemePalette],
       colors,
+      originalColors: { ...colors },
     };
 
     setSavedCustomThemes((current) => [...current, customTheme]);
+    lastFormThemeRef.current = customTheme.baseThemeId;
     onThemeChange(customTheme.baseThemeId);
     for (const [key, color] of Object.entries(customTheme.colors)) {
       if (color) onColorChange(key, color);
@@ -232,6 +247,20 @@ export default function MapSettingsSection({
     setActiveThemeOptionId(customTheme.id);
     setIsThemeEditing(true);
     clearColorPickerState();
+  }
+
+  function handleDeleteCustomTheme(themeId: string) {
+    const themeToDelete = savedCustomThemes.find((theme) => theme.id === themeId);
+    if (!themeToDelete) return;
+    setSavedCustomThemes((current) => current.filter((theme) => theme.id !== themeId));
+    if (activeThemeOptionId === themeId) {
+      lastFormThemeRef.current = themeToDelete.baseThemeId;
+      onThemeChange(themeToDelete.baseThemeId);
+      onResetColors();
+      setActiveThemeOptionId(null);
+      setIsThemeEditing(false);
+      clearColorPickerState();
+    }
   }
 
   function handleThemeColorChange(key: string, color: string) {
@@ -282,12 +311,17 @@ export default function MapSettingsSection({
   }
 
   function handleResetThemeColors() {
-    onResetColors();
+    const resetColors = activeCustomTheme?.originalColors;
+    if (activeCustomTheme && resetColors) {
+      for (const key of DISPLAY_PALETTE_KEYS) {
+        const color = resetColors[key];
+        if (color) onColorChange(key, color);
+      }
+    } else {
+      onResetColors();
+    }
     if (activeCustomTheme) {
-      const colors = Object.fromEntries(DISPLAY_PALETTE_KEYS.map((key) => [
-        key,
-        normalizeHexColor(getThemeColorByPath(selectedTheme, key)) || FALLBACK_COLOR,
-      ])) as SavedCustomTheme["colors"];
+      const colors = { ...activeCustomTheme.originalColors };
       setSavedCustomThemes((current) => current.map((customTheme) =>
         customTheme.id === activeCustomTheme.id
           ? { ...customTheme, colors, palette: DISPLAY_PALETTE_KEYS.map((key) => colors[key] ?? FALLBACK_COLOR) }
@@ -299,11 +333,10 @@ export default function MapSettingsSection({
       return;
     }
     const activeKey = activeColorKey || defaultColorKey;
-    const seedPalette = DISPLAY_PALETTE_KEYS.map(
-      (key) =>
-        normalizeHexColor(getThemeColorByPath(selectedTheme, key)) ||
-        normalizeHexColor(currentThemePalette[0]) ||
-        "",
+    const seedPalette = DISPLAY_PALETTE_KEYS.map((key) =>
+      normalizeHexColor(activeCustomTheme?.originalColors[key]) ||
+      normalizeHexColor(getThemeColorByPath(selectedTheme, key)) ||
+      normalizeHexColor(currentThemePalette[0]) || "",
     );
     setActiveColorSession({
       key: activeKey,
@@ -317,6 +350,7 @@ export default function MapSettingsSection({
 
   function handleResetSingleColor(key: ThemeColorKey) {
     const originalColor =
+      normalizeHexColor(activeCustomTheme?.originalColors[key]) ||
       normalizeHexColor(getThemeColorByPath(selectedTheme, key)) ||
       normalizeHexColor(currentThemePalette[0]) ||
       "";
@@ -329,10 +363,10 @@ export default function MapSettingsSection({
       DISPLAY_PALETTE_KEYS.some((key) => {
         const override = normalizeHexColor(customColors[key]);
         if (!override) return false;
-        const original = normalizeHexColor(getThemeColorByPath(selectedTheme, key));
+        const original = normalizeHexColor(activeCustomTheme?.originalColors[key]) || normalizeHexColor(getThemeColorByPath(selectedTheme, key));
         return override !== original;
       }),
-    [customColors, selectedTheme],
+    [activeCustomTheme, customColors, selectedTheme],
   );
   const activeColorLabel = activeColorKey
     ? (PALETTE_COLOR_LABELS[activeColorKey] ?? "Color")
@@ -388,6 +422,7 @@ export default function MapSettingsSection({
     customColors[editorKey] ??
     (getThemeColorByPath(selectedTheme, editorKey) || currentThemePalette[0] || "");
   const originalEditorColor =
+    normalizeHexColor(activeCustomTheme?.originalColors[editorKey]) ||
     normalizeHexColor(getThemeColorByPath(selectedTheme, editorKey)) ||
     normalizeHexColor(currentThemePalette[0]) ||
     "";
@@ -443,10 +478,12 @@ export default function MapSettingsSection({
           <ThemeSummarySection
             listRef={themeListRef}
             themeOptions={availableThemeOptions}
-            selectedThemeId={activeThemeOptionId}
+            selectedThemeId={activeThemeOptionId ?? ""}
             selectedThemeOption={summaryThemeOption}
             onThemeSelect={handleThemeSelect}
-            onCreateCustomTheme={handleCreateCustomTheme}
+            onThemeAction={activeThemeOptionId ? () => setIsThemeEditing(true) : handleCreateCustomTheme}
+            actionLabel={activeThemeOptionId ? "Customize Colors" : "Create New Theme"}
+            onDeleteCustomTheme={handleDeleteCustomTheme}
             onSelectDesign={(design) => {
               if (onFontChange) {
                 onFontChange(design.fontFamily);
@@ -529,3 +566,4 @@ export default function MapSettingsSection({
     </section>
   );
 }
+
