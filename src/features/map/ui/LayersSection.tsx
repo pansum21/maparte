@@ -119,6 +119,18 @@ export default function LayersSection({
           <span className="theme-switch-track" aria-hidden="true" />
         </span>
       </label>
+      <label className="toggle-field">
+        <span>Show paths &amp; trails</span>
+        <span className="theme-switch">
+          <input
+            type="checkbox"
+            name="includeRoadPath"
+            checked={Boolean(form.includeRoadPath)}
+            onChange={onChange}
+          />
+          <span className="theme-switch-track" aria-hidden="true" />
+        </span>
+      </label>
       </div>
 
       <div className="map-details-section">
