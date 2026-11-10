@@ -121,8 +121,7 @@ export default function LayersSection({
 
       <div className="map-details-section">
         <h3 className="map-details-subtitle">Map Details</h3>
-        <div className="map-details-card">
-          <MapDimensionFields
+        <MapDimensionFields
             form={form}
             minPosterCm={minPosterCm}
             maxPosterCm={maxPosterCm}
@@ -130,7 +129,6 @@ export default function LayersSection({
             onNumericFieldBlur={onNumericFieldBlur}
             showSizeFields={false}
           />
-        </div>
       </div>
     </section>
   );
