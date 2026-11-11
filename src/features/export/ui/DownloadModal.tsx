@@ -6,6 +6,8 @@ import { CloseIcon, DownloadIcon, LoaderIcon } from "@/shared/ui/Icons";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { getLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
+import { OCCASION_TEMPLATES } from "@/features/poster/domain/occasionTemplates";
+import { lineStyles, readNeatlineSelection } from "@/features/layout/ui/NeatlinePicker";
 
 interface DownloadModalProps {
   isOpen: boolean;
@@ -13,7 +15,7 @@ interface DownloadModalProps {
   defaultFormat?: ExportFormat;
 }
 
-export type SelectedTier = "png" | "jpg" | "duo" | "pdf" | "svg" | "combo";
+export type SelectedTier = "png" | "jpg" | "tiff" | "duo" | "pdf" | "svg" | "combo";
 
 interface TierConfig {
   id: SelectedTier;
@@ -61,6 +63,22 @@ const TIERS: TierConfig[] = [
       "No lossless PNG file included",
       "No PDF print file for commercial print shops",
       "No raw mathematical SVG vector source code",
+    ],
+  },
+  {
+    id: "tiff",
+    format: "tiff",
+    label: "TIFF Image",
+    price: "Free",
+    desc: "Uncompressed RGB with PPI metadata",
+    included: [
+      "Uncompressed RGB pixels for dependable print workflows",
+      "PPI metadata is written into the TIFF file",
+      "Exact file size follows the pixel dimensions shown above",
+      "Permanent MapArte studio signature branding",
+    ],
+    notIncluded: [
+      "Not included in the Master ZIP; download TIFF separately",
     ],
   },
   {
@@ -134,7 +152,7 @@ export default function DownloadModal({
   defaultFormat = "zip",
 }: DownloadModalProps) {
   const { isExporting, exportPoster } = useExport();
-  const { state } = usePosterContext();
+  const { state, effectiveTheme } = usePosterContext();
   const { form } = state;
   const widthCm = Number(form.width) || 21;
   const heightCm = Number(form.height) || 29.7;
@@ -144,8 +162,34 @@ export default function DownloadModal({
   const megapixels = ((canvasSize.width * canvasSize.height) / 1e6).toFixed(1);
   const layoutOption = getLayoutOption(form.layout);
   const layoutName = layoutOption ? layoutOption.name : `${widthCm} × ${heightCm} cm`;
+  const matchingPreset = OCCASION_TEMPLATES.find((template) =>
+    template.themeId === form.theme &&
+    template.fontFamily === form.fontFamily &&
+    template.cityText === form.displayCity &&
+    template.countryText === form.displayCountry
+  );
+  const borderSelection = readNeatlineSelection();
+  const borderName = lineStyles.find((line) => line.id === borderSelection.lineId)?.name || "No Border";
+  const stripRows = Math.min(128, canvasSize.height);
+  const stripCount = Math.ceil(canvasSize.height / stripRows);
+  const tiffBytes = canvasSize.width * canvasSize.height * 3 +
+    (stripCount > 1 ? 192 + stripCount * 8 : 192);
+  const outputPixels = canvasSize.width * canvasSize.height;
+  const formatSizeLabel = (fmt: ExportFormat) => {
+    const mb = (bytes: number) => `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    const range = (minBpp: number, maxBpp: number, overhead = 12_000) =>
+      `लगभग ${mb(outputPixels * minBpp + overhead)}–${mb(outputPixels * maxBpp + overhead)}`;
+    if (fmt === "tiff") return `${mb(tiffBytes)} (अनुमानित exact)`;
+    if (fmt === "png") return `${range(0.04, 0.45)}*`;
+    if (fmt === "jpg") return `${range(0.035, 0.18)}*`;
+    if (fmt === "pdf") return `${range(0.035, 0.18, 18_000)}*`;
+    if (fmt === "image_bundle") return `${range(0.075, 0.63, 24_000)}*`;
+    if (fmt === "zip") return `${range(0.11, 0.9, 48_000)}* + SVG का बदलता आकार`;
+    return "मैप के vector paths पर निर्भर; export के बाद exact size";
+  };
   const resolveInitialTier = (fmt: ExportFormat): SelectedTier => {
     if (fmt === "jpg") return "jpg";
+    if (fmt === "tiff") return "tiff";
     if (fmt === "image_bundle") return "duo";
     if (fmt === "pdf") return "pdf";
     if (fmt === "svg") return "svg";
@@ -155,6 +199,7 @@ export default function DownloadModal({
 
   const resolveInitialFormat = (fmt: ExportFormat): ExportFormat => {
     if (fmt === "jpg") return "jpg";
+    if (fmt === "tiff") return "tiff";
     if (fmt === "image_bundle") return "image_bundle";
     if (fmt === "pdf") return "pdf";
     if (fmt === "svg") return "svg";
@@ -229,7 +274,7 @@ export default function DownloadModal({
             </div>
             <h3 id="download-modal-title">Download Custom Map Art</h3>
             <p className="download-modal-subtitle">
-              Choose a free format. The Master ZIP includes PNG, JPG, PDF, and SVG; checkout is off.
+              Choose a free format. The Master ZIP includes PNG, JPG, PDF, and SVG; TIFF is available separately.
             </p>
           </div>
           <button
@@ -251,9 +296,9 @@ export default function DownloadModal({
         </div>
 
         {/* Live File Specifications for Currently Selected Poster */}
-        <div className="selected-spec-box" role="region" aria-label="Exact File Specifications">
+        <div className="selected-spec-box" role="region" aria-label="Download Specifications">
           <div className="selected-spec-header">
-            <span className="spec-badge">📍 Exact File Specifications</span>
+            <span className="spec-badge">📍 Download Specifications</span>
             <span className="spec-layout-tag">{layoutName}</span>
           </div>
           <div className="selected-spec-grid">
@@ -267,19 +312,39 @@ export default function DownloadModal({
             </div>
             <div className="spec-item">
               <span className="spec-label">Effective Density</span>
-              <strong className="spec-value">{canvasSize.effectiveDpi} PPI</strong>
+              <strong className="spec-value">
+                {selectedFormat === "svg" ? "Vector — fixed PPI नहीं" : `${canvasSize.effectiveDpi} PPI target`}
+              </strong>
             </div>
             <div className="spec-item">
-              <span className="spec-label">Print Quality Standard</span>
+              <span className="spec-label">Theme</span>
+              <strong className="spec-value">{effectiveTheme.name}{Object.keys(state.customColors).length ? " · Custom colors" : ""}</strong>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Preset</span>
+              <strong className="spec-value">{matchingPreset?.title || "None applied"}</strong>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Border</span>
+              <strong className="spec-value">{borderName}</strong>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Selected file size</span>
+              <strong className="spec-value">{formatSizeLabel(selectedFormat)}</strong>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Output quality</span>
               <strong className="spec-value">
-                {canvasSize.effectiveDpi >= 300
-                  ? "✓ Exceeds 300 DPI Lab Standard"
-                  : "✓ Optimized for Large Wall Viewing"}
+                {selectedFormat === "svg"
+                  ? "Scalable vector artwork"
+                  : canvasSize.effectiveDpi >= 300
+                    ? "300 PPI target; final density is embedded in raster files"
+                    : "Optimized for large wall viewing"}
               </strong>
             </div>
           </div>
           <div className="spec-disclaimer">
-            <span>🛡️ <strong>100% Calibrated Reality:</strong> File downloads contain these exact rendered pixel dimensions and embedded physical density metadata (PNG pHYs / JPG JFIF / PDF MediaBox). Scalable vector SVG contains mathematical paths.</span>
+            <span>ℹ️ Pixel dimensions and PPI above are the export target; the downloaded raster’s embedded density can be slightly lower if the device’s graphics limit reduces the rendered canvas. TIFF size is calculated from its uncompressed encoder; other sizes are estimates* and the browser shows the exact size after download. SVG is vector and has no fixed PPI.</span>
           </div>
         </div>
 
@@ -372,6 +437,14 @@ export default function DownloadModal({
               </button>
               <button
                 type="button"
+                className={`unlocked-format-chip ${selectedFormat === "tiff" ? "is-active" : ""}`}
+                onClick={() => handleFormatSelect("tiff")}
+                title="Uncompressed RGB TIFF with embedded PPI metadata"
+              >
+                TIFF
+              </button>
+              <button
+                type="button"
                 className={`unlocked-format-chip combo-zip-chip ${
                   selectedTier === "duo" || selectedFormat === "image_bundle"
                     ? "is-active"
@@ -410,7 +483,7 @@ export default function DownloadModal({
                     : ""
                 }`}
                 onClick={() => handleFormatSelect("zip")}
-                title="All 4 Formats in 1 Master Bundle ZIP"
+                title="PNG, JPG, PDF and SVG in 1 Master Bundle ZIP"
               >
                 📦 ALL 4 IN 1 (.ZIP)
               </button>
