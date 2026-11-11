@@ -1535,3 +1535,16 @@
   font-family: "Spline Sans Mono", monospace;
 }
 
+/* Keep selected export formats on the MapArte blue palette. */
+.unlocked-format-chip.is-active {
+  background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 50%, #2563eb 100%);
+  color: #071521;
+  border-color: rgba(186, 230, 253, 0.95);
+  box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.85), 0 6px 20px rgba(56, 189, 248, 0.42), 0 0 18px rgba(56, 189, 248, 0.36);
+}
+.unlocked-format-chip.combo-zip-chip.is-active {
+  background: linear-gradient(135deg, #bae6fd 0%, #38bdf8 50%, #2563eb 100%);
+  color: #071521;
+  border-color: #bae6fd;
+  box-shadow: inset 0 2px 3px #ffffff, 0 8px 24px rgba(56, 189, 248, 0.52), 0 0 22px rgba(56, 189, 248, 0.42);
+}
