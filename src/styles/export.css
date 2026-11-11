@@ -287,6 +287,8 @@
   width: min(100%, 680px);
   max-height: 90vh;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding: 24px 26px;
   background: linear-gradient(
     165deg,
@@ -303,6 +305,10 @@
     inset 0 -1.5px 3px rgba(0, 0, 0, 0.35),
     0 28px 70px rgba(0, 0, 0, 0.6),
     0 0 36px rgba(56, 189, 248, 0.2);
+}
+
+.export-modal.download-paywall-modal::-webkit-scrollbar {
+  display: none;
 }
 
 .download-modal-subtitle {
@@ -1261,59 +1267,59 @@
 .unlocked-format-chip.is-active {
   background: linear-gradient(
     135deg,
-    #fef3c7 0%,
-    #dfba73 50%,
-    #c49d56 100%
+    #7dd3fc 0%,
+    #38bdf8 50%,
+    #2563eb 100%
   );
-  color: #081420;
+  color: #071521;
   border: 1px solid rgba(255, 255, 255, 0.85);
   box-shadow:
     inset 0 1.5px 2px rgba(255, 255, 255, 0.85),
     inset 0 -1px 2px rgba(0, 0, 0, 0.2),
-    0 6px 20px rgba(223, 186, 115, 0.45),
-    0 0 18px rgba(223, 186, 115, 0.4);
+    0 6px 20px rgba(56, 189, 248, 0.42),
+    0 0 18px rgba(56, 189, 248, 0.36);
   transform: translateY(-1px) scale(1.02);
 }
 
 .unlocked-format-chip.combo-zip-chip {
   background: linear-gradient(
     135deg,
-    rgba(245, 214, 140, 0.2) 0%,
-    rgba(223, 186, 115, 0.1) 100%
+    rgba(56, 189, 248, 0.16) 0%,
+    rgba(37, 99, 235, 0.12) 100%
   );
-  border-color: rgba(245, 214, 140, 0.45);
-  color: #f7dfa5;
+  border-color: rgba(56, 189, 248, 0.38);
+  color: #bae6fd;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
   letter-spacing: 0.03em;
 }
 
-.unlocked-format-chip.combo-zip-chip:hover {
+.unlocked-format-chip.combo-zip-chip:hover:not(.is-active) {
   background: linear-gradient(
     135deg,
-    rgba(245, 214, 140, 0.32) 0%,
-    rgba(223, 186, 115, 0.18) 100%
+    rgba(56, 189, 248, 0.28) 0%,
+    rgba(37, 99, 235, 0.24) 100%
   );
-  border-color: rgba(245, 214, 140, 0.75);
+  border-color: rgba(56, 189, 248, 0.72);
   color: #ffffff;
   transform: translateY(-2px) scale(1.04);
   box-shadow:
     inset 0 1.5px 1px rgba(255, 255, 255, 0.35),
-    0 6px 18px rgba(223, 186, 115, 0.3);
+    0 6px 18px rgba(56, 189, 248, 0.3);
 }
 
 .unlocked-format-chip.combo-zip-chip.is-active {
   background: linear-gradient(
     135deg,
-    #ffffff 0%,
-    #f7dfa5 40%,
-    #dfba73 100%
+    #bae6fd 0%,
+    #38bdf8 40%,
+    #2563eb 100%
   );
   border: 1px solid #ffffff;
-  color: #081420;
+  color: #071521;
   box-shadow:
     inset 0 2px 3px #ffffff,
-    0 8px 24px rgba(223, 186, 115, 0.6),
-    0 0 22px rgba(223, 186, 115, 0.5);
+    0 8px 24px rgba(56, 189, 248, 0.52),
+    0 0 22px rgba(56, 189, 248, 0.42);
 }
 
 /* Free Clean Screen Wallpaper Box */
@@ -1535,16 +1541,3 @@
   font-family: "Spline Sans Mono", monospace;
 }
 
-/* Keep selected export formats on the MapArte blue palette. */
-.unlocked-format-chip.is-active {
-  background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 50%, #2563eb 100%);
-  color: #071521;
-  border-color: rgba(186, 230, 253, 0.95);
-  box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.85), 0 6px 20px rgba(56, 189, 248, 0.42), 0 0 18px rgba(56, 189, 248, 0.36);
-}
-.unlocked-format-chip.combo-zip-chip.is-active {
-  background: linear-gradient(135deg, #bae6fd 0%, #38bdf8 50%, #2563eb 100%);
-  color: #071521;
-  border-color: #bae6fd;
-  box-shadow: inset 0 2px 3px #ffffff, 0 8px 24px rgba(56, 189, 248, 0.52), 0 0 22px rgba(56, 189, 248, 0.42);
-}
