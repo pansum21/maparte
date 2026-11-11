@@ -31,10 +31,10 @@ const TIERS: TierConfig[] = [
     id: "png",
     format: "png",
     label: "PNG Image",
-    price: "Unavailable",
+    price: "Free",
     desc: "Best for Phone & 4K/8K Wallpapers",
     included: [
-      "Up to 500 PPI at supported print sizes; exact file resolution depends on size and device",
+      "Up to 300 PPI; exact file resolution depends on poster size and device limits",
       "Lossless pixel-perfect lines & crisp street fonts",
       "PNG pixel dimensions are sized for the selected print format",
       "Permanent MapArte studio signature branding",
@@ -49,10 +49,10 @@ const TIERS: TierConfig[] = [
     id: "jpg",
     format: "jpg",
     label: "JPG Image",
-    price: "Unavailable",
+    price: "Free",
     desc: "Compact & Light for Social Sharing",
     included: [
-      "Up to 500 PPI at supported print sizes; actual density is embedded in the JPG",
+      "Up to 300 PPI; actual density is embedded in the JPG",
       "Easy to share on WhatsApp, Instagram & digital frames",
       "Compatible with legacy photo printing labs",
       "Permanent MapArte studio signature branding",
@@ -67,11 +67,11 @@ const TIERS: TierConfig[] = [
     id: "duo",
     format: "image_bundle",
     label: "PNG + JPG Duo Pack",
-    price: "Unavailable",
+    price: "Free",
     badge: "TWO FORMATS",
     desc: "Both Image Formats (PNG + JPG) in 1 Pack",
     included: [
-      "PNG + JPG exports with actual pixel-density metadata for the selected print size",
+      "PNG + JPG exports with actual pixel-density metadata, up to 300 PPI",
       "Use the lossless PNG for editing and JPG for smaller sharing files",
       "Two image formats in one package",
       "Permanent MapArte studio signature branding",
@@ -85,10 +85,10 @@ const TIERS: TierConfig[] = [
     id: "pdf",
     format: "pdf",
     label: "PDF Document",
-    price: "Unavailable",
+    price: "Free",
     desc: "Best for Home & Print Shops",
     included: [
-      "Print-sized PDF; effective PPI follows the embedded image pixels and selected size",
+      "PDF at the selected physical size; sharpness follows the embedded image resolution, up to 300 PPI",
       "Standard A4/A3/A2 framing ready with razor-sharp typography",
       "Ideal for local printers (FedEx, Staples, Printo) & fine art paper",
       "Permanent MapArte studio signature branding",
@@ -101,7 +101,7 @@ const TIERS: TierConfig[] = [
     id: "svg",
     format: "svg",
     label: "SVG Vector",
-    price: "Unavailable",
+    price: "Free",
     desc: "Scalable Vector SVG",
     included: [
       "Vector map paths and typography scale without raster pixelation",
@@ -117,7 +117,7 @@ const TIERS: TierConfig[] = [
     id: "combo",
     format: "zip",
     label: "All-in-One Master Bundle",
-    price: "Unavailable",
+    price: "Free",
     desc: "All Formats (PNG+JPG+PDF+SVG)",
     included: [
       "PNG/JPG with actual density metadata, print-sized PDF and vector SVG in one ZIP",
@@ -131,7 +131,7 @@ const TIERS: TierConfig[] = [
 export default function DownloadModal({
   isOpen,
   onClose,
-  defaultFormat = "png",
+  defaultFormat = "zip",
 }: DownloadModalProps) {
   const { isExporting, exportPoster } = useExport();
   const { state } = usePosterContext();
@@ -140,7 +140,7 @@ export default function DownloadModal({
   const heightCm = Number(form.height) || 29.7;
   const widthInches = widthCm / 2.54;
   const heightInches = heightCm / 2.54;
-  const canvasSize = resolveCanvasSize(widthInches, heightInches, 500);
+  const canvasSize = resolveCanvasSize(widthInches, heightInches, 300);
   const megapixels = ((canvasSize.width * canvasSize.height) / 1e6).toFixed(1);
   const layoutOption = getLayoutOption(form.layout);
   const layoutName = layoutOption ? layoutOption.name : `${widthCm} × ${heightCm} cm`;
@@ -189,6 +189,10 @@ export default function DownloadModal({
     onClose();
   };
 
+  const handleSelectedDownload = () => {
+    void exportPoster(selectedFormat, { asPro: false, targetDpi: 300 });
+  };
+
   const handleTierSelect = (tier: TierConfig) => {
     setSelectedTier(tier.id);
     setSelectedFormat(tier.format);
@@ -225,7 +229,7 @@ export default function DownloadModal({
             </div>
             <h3 id="download-modal-title">Download Custom Map Art</h3>
             <p className="download-modal-subtitle">
-              Select a format to preview its details. Paid file downloads are temporarily unavailable.
+              Choose a free format. The Master ZIP includes PNG, JPG, PDF, and SVG; checkout is off.
             </p>
           </div>
           <button
@@ -311,7 +315,7 @@ export default function DownloadModal({
               <span className="active-tier-price">{activeTier.price}</span>
             </div>
             {activeTier.id === "combo" && (
-              <span className="combo-savings-tag">Paid downloads temporarily unavailable</span>
+              <span className="combo-savings-tag">Free master bundle</span>
             )}
           </div>
 
@@ -415,8 +419,17 @@ export default function DownloadModal({
 
           <div className="tier-purchase-action-wrap" role="status">
             <p className="tier-upgrade-notice">
-              Paid downloads and checkout are temporarily unavailable. You can still download the free phone wallpaper below.
+              Free exports are enabled at up to 300 PPI. Checkout is off; no payment will be charged.
             </p>
+            <button
+              type="button"
+              className="tier-btn tier-btn--download"
+              disabled={isExporting}
+              onClick={handleSelectedDownload}
+            >
+              {isExporting ? <LoaderIcon className="is-spinning" /> : <DownloadIcon />}
+              <span>{isExporting ? "Preparing download…" : `Download ${activeTier.label}${selectedFormat === "zip" || selectedFormat === "image_bundle" ? "" : " (Free)"}`}</span>
+            </button>
           </div>
         </div>
 
@@ -449,10 +462,11 @@ export default function DownloadModal({
 
         <div className="download-modal-footer">
           <p>
-            Paid downloads and checkout are currently unavailable.
+            Checkout is disabled. Downloads are free; raster resolution is capped at 300 PPI and may be lower for very large layouts.
           </p>
         </div>
       </div>
     </div>
   );
 }
+

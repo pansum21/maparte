@@ -934,12 +934,12 @@
     rgba(45, 75, 108, 0.88) 0%,
     rgba(22, 44, 68, 0.94) 100%
   );
-  border-color: #f7dfa5;
+  border-color: #38bdf8;
   box-shadow:
     inset 0 2px 2px rgba(255, 255, 255, 0.45),
     inset 0 -1px 3px rgba(0, 0, 0, 0.25),
     0 12px 36px rgba(0, 0, 0, 0.5),
-    0 0 24px rgba(223, 186, 115, 0.45);
+    0 0 24px rgba(56, 189, 248, 0.42);
   transform: translateY(-2px);
 }
 
@@ -949,7 +949,7 @@
     rgba(42, 68, 98, 0.82) 0%,
     rgba(22, 42, 62, 0.92) 100%
   );
-  border-color: rgba(223, 186, 115, 0.5);
+  border-color: rgba(56, 189, 248, 0.48);
 }
 
 .pricing-tab-card.is-combo-tab.is-selected {
@@ -957,15 +957,15 @@
   box-shadow:
     inset 0 2px 2.5px rgba(255, 255, 255, 0.55),
     0 14px 40px rgba(0, 0, 0, 0.6),
-    0 0 30px rgba(223, 186, 115, 0.55);
+    0 0 30px rgba(56, 189, 248, 0.5);
 }
 
 .tab-pill-badge {
   position: absolute;
   top: -8px;
   right: 6px;
-  background: linear-gradient(90deg, #dfba73, #f5d697);
-  color: #0c1824;
+  background: linear-gradient(90deg, #38bdf8, #7dd3fc);
+  color: #071521;
   font-family: "Spline Sans Mono", monospace;
   font-size: 0.55rem;
   font-weight: 800;
@@ -992,7 +992,7 @@
   font-family: "Spline Sans Mono", monospace;
   font-size: 0.95rem;
   font-weight: 800;
-  color: #dfba73;
+  color: #7dd3fc;
 }
 
 .tab-desc-text {
@@ -1012,12 +1012,12 @@
   );
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(223, 186, 115, 0.4);
+  border: 1px solid rgba(56, 189, 248, 0.38);
   border-radius: 16px;
   box-shadow:
     inset 0 1.5px 1px rgba(255, 255, 255, 0.22),
     0 12px 32px rgba(0, 0, 0, 0.4),
-    0 0 20px rgba(223, 186, 115, 0.15);
+    0 0 20px rgba(56, 189, 248, 0.14);
   margin-bottom: 14px;
 }
 
@@ -1041,7 +1041,7 @@
   font-family: "Spline Sans Mono", monospace;
   font-size: 1.35rem;
   font-weight: 800;
-  color: #dfba73;
+  color: #7dd3fc;
 }
 
 .combo-savings-tag {
@@ -1373,6 +1373,31 @@
   color: #ffffff;
 }
 
+.tier-btn--download {
+  padding: 10px 16px;
+  min-height: 42px;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #168bd2, #2563eb);
+  border: 1px solid rgba(125, 211, 252, 0.8);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-family: "Spline Sans Mono", monospace;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28);
+}
+
+.tier-btn--download:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0ea5e9, #1d4ed8);
+  box-shadow: 0 10px 26px rgba(56, 189, 248, 0.38);
+}
+
+.tier-btn--download:disabled {
+  opacity: 0.68;
+  cursor: wait;
+}
+
 /* Quality Comparison Section */
 .quality-comparison-section {
   margin: 12px 0 6px;
@@ -1509,3 +1534,4 @@
   font-weight: 600;
   font-family: "Spline Sans Mono", monospace;
 }
+
