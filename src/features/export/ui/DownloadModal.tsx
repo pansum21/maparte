@@ -179,7 +179,7 @@ export default function DownloadModal({
     const mb = (bytes: number) => `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
     const range = (minBpp: number, maxBpp: number, overhead = 12_000) =>
       `लगभग ${mb(outputPixels * minBpp + overhead)}–${mb(outputPixels * maxBpp + overhead)}`;
-    if (fmt === "tiff") return `${mb(tiffBytes)} (अनुमानित exact)`;
+    if (fmt === "tiff") return `${mb(tiffBytes)} · ${tiffBytes.toLocaleString()} bytes (exact)`;
     if (fmt === "png") return `${range(0.04, 0.45)}*`;
     if (fmt === "jpg") return `${range(0.035, 0.18)}*`;
     if (fmt === "pdf") return `${range(0.035, 0.18, 18_000)}*`;
@@ -344,7 +344,7 @@ export default function DownloadModal({
             </div>
           </div>
           <div className="spec-disclaimer">
-            <span>ℹ️ Pixel dimensions and PPI above are the export target; the downloaded raster’s embedded density can be slightly lower if the device’s graphics limit reduces the rendered canvas. TIFF size is calculated from its uncompressed encoder; other sizes are estimates* and the browser shows the exact size after download. SVG is vector and has no fixed PPI.</span>
+            <span>ℹ️ Pixel dimensions and PPI above are the export target; the downloaded raster’s embedded density can be slightly lower if the device’s graphics limit reduces the rendered canvas. TIFF size is exact because it is uncompressed; other sizes are estimates* and the downloaded file properties show the actual size. SVG is vector and has no fixed PPI.</span>
           </div>
         </div>
 
