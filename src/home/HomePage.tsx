@@ -305,9 +305,8 @@ export default function HomePage() {
 
   return (
     <div className="maparte-home">
-      <video className="home-galaxy-video" autoPlay muted loop playsInline preload="metadata" poster="https://svs.gsfc.nasa.gov/vis/a010000/a013100/a013155/milky_way_still.png" aria-hidden="true">
-        <source src="/assets/milky_way_nasa_loop.webm" type="video/webm" />
-        <source src="/assets/milky_way_nasa_loop.mp4" type="video/mp4" />
+      <video className="home-galaxy-video" autoPlay muted loop playsInline preload="metadata" poster="/assets/space_journey_poster.jpg" aria-hidden="true">
+        <source src="/assets/space_journey_loop.mp4" type="video/mp4" />
       </video>
       <header className="home-header">
         <a className="home-brand" href="/" aria-label="MAPARTE home">
@@ -483,7 +482,7 @@ export default function HomePage() {
       <footer className="home-footer">
         <div className="home-footer__brand"><strong>MAPARTE</strong><span>Map it. Make it yours.</span></div>
         <nav aria-label="Footer navigation"><a href="#maps">Map gallery</a><a href="#features">Features</a><a href="#how">How it works</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refund</a></nav>
-        <small>Digital map designs · Map data © OpenStreetMap contributors · Space visualization: <a href="https://svs.gsfc.nasa.gov/13155/" target="_blank" rel="noreferrer">NASA / Goddard Space Flight Center</a></small>
+        <small>Digital map designs · Map data © OpenStreetMap contributors · Space visuals: <a href="https://svs.gsfc.nasa.gov/13155/" target="_blank" rel="noreferrer">NASA Milky Way</a>, <a href="https://svs.gsfc.nasa.gov/20391/" target="_blank" rel="noreferrer">Solar System</a>, <a href="https://svs.gsfc.nasa.gov/5039/" target="_blank" rel="noreferrer">Moon-to-Earth</a> and <a href="https://svs.gsfc.nasa.gov/20402/" target="_blank" rel="noreferrer">Lucy asteroid flyby</a>.</small>
       </footer>
     </div>
   );
