@@ -391,7 +391,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, "index.html"),
-        homepagePreview: path.resolve(__dirname, "homepage-preview.html"),
       },
       output: {
         manualChunks(id) {
