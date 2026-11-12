@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Map as MapLibreMap, AttributionControl, NavigationControl, Marker, setWorkerUrl } from "maplibre-gl";
+import { Map as MapLibreMap, AttributionControl, setWorkerUrl } from "maplibre-gl";
 import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
 import { getTheme } from "@/features/theme/infrastructure/themeRepository";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./homepage.css";
+import cityDirectory from "@/data/cityDirectory.json";
 
 setWorkerUrl(workerUrl);
 
@@ -37,20 +38,22 @@ function EditorLink({ children, className = "" }: { children: React.ReactNode; c
   return <a className={className} href="/?dist=4491">{children}</a>;
 }
 
-type GlobeTheme = "Carrara" | "Midnight Blue";
-const globePlaces: Array<{ name: string; region: string; coords: [number, number]; zoom: number }> = [
-  { name: "Paris", region: "Europe", coords: [2.3522, 48.8566], zoom: 3.2 },
-  { name: "New York", region: "North America", coords: [-74.006, 40.7128], zoom: 3.2 },
-  { name: "Tokyo", region: "Asia", coords: [139.6917, 35.6895], zoom: 3.2 },
-  { name: "London", region: "Europe", coords: [-0.1276, 51.5072], zoom: 3.2 },
-  { name: "Mumbai", region: "Asia", coords: [72.8777, 19.076], zoom: 3.2 },
-  { name: "Rome", region: "Europe", coords: [12.4964, 41.9028], zoom: 3.2 },
-  { name: "India", region: "Asia", coords: [78.9629, 22.5937], zoom: 2.5 },
-  { name: "France", region: "Europe", coords: [2.2137, 46.2276], zoom: 2.8 },
-  { name: "Japan", region: "Asia", coords: [138.2529, 36.2048], zoom: 2.8 },
+type GlobeTheme = string;
+type HomepageCity = { city: string; country: string; lat: number; lon: number; slug?: string };
+const homepageCities = Object.values(cityDirectory) as HomepageCity[];
+const featuredGlobeThemes = [
+  { id: "midnight_blue", label: "Midnight Blue" },
+  { id: "carrara", label: "Carrara" },
+  { id: "blue_water", label: "Blue Water" },
+  { id: "golden_dusk", label: "Golden Dusk" },
+  { id: "pale_dawn", label: "Pale Dawn" },
+  { id: "subtle_grayscale", label: "Soft Gray" },
+  { id: "retro_vintage", label: "Retro" },
+  { id: "midnight_commander", label: "Commander" },
 ];
+
 function homepageGlobeStyle(theme: GlobeTheme) {
-  return generateMapStyle(getTheme(theme === "Carrara" ? "carrara" : "midnight_blue"));
+  return generateMapStyle(getTheme(theme));
 }
 
 function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
@@ -72,30 +75,32 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
     let isVisible = false;
     let pauseUntil = 0;
     let previous = performance.now();
-    const markers: Marker[] = [];
+
     const observer = new IntersectionObserver((entries) => {
       isVisible = entries.some((entry) => entry.isIntersecting);
       if (!isVisible || map || disposed) return;
       map = new MapLibreMap({
         container: host,
         style: homepageGlobeStyle(themeRef.current),
-        center: [78.0322, 24],
-        zoom: 1.55,
+        center: [15, 18],
+        zoom: 1.25,
         projection: { type: "globe" },
         attributionControl: false,
         renderWorldCopies: false,
         dragRotate: true,
+        scrollZoom: false,
         touchPitch: false,
         maxPitch: 0,
         canvasContextAttributes: { antialias: true },
       });
       mapRef.current = map;
       map.addControl(new AttributionControl({ compact: true }), "bottom-right");
-      map.addControl(new NavigationControl({ showCompass: true, showZoom: true, visualizePitch: false }), "top-right");
 
       const addCountryOutlines = () => {
         if (!map || !map.isStyleLoaded() || !map.getSource("openfreemap")) return;
+        const outlineColor = themeRef.current === "midnight_blue" ? "#a8b5ff" : "#9de1ff";
         if (!map.getLayer("homepage-country-outline")) {
+          const firstSymbol = map.getStyle().layers.find((layer) => layer.type === "symbol")?.id;
           map.addLayer({
             id: "homepage-country-outline",
             type: "line",
@@ -104,60 +109,32 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
             minzoom: 0,
             filter: ["==", ["to-number", ["get", "admin_level"]], 2],
             paint: {
-              "line-color": themeRef.current === "Midnight Blue" ? "#D6B352" : "#687f75",
+              "line-color": outlineColor,
               "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.8, 3, 1.1, 6, 1.45],
-              "line-opacity": 0.92,
+              "line-opacity": 0.94,
             },
-          });
+          }, firstSymbol);
         } else {
-          map.setPaintProperty("homepage-country-outline", "line-color", themeRef.current === "Midnight Blue" ? "#D6B352" : "#687f75");
+          map.setPaintProperty("homepage-country-outline", "line-color", outlineColor);
         }
         try {
           map.setFog({
-            color: themeRef.current === "Midnight Blue" ? "#070d1d" : "#101a22",
-            highColor: themeRef.current === "Midnight Blue" ? "#1b2d57" : "#667c80",
-            spaceColor: themeRef.current === "Midnight Blue" ? "#070d1d" : "#101a22",
-            starIntensity: themeRef.current === "Midnight Blue" ? 0.7 : 0.48,
+            color: "#080b1f",
+            highColor: themeRef.current === "midnight_blue" ? "#24204b" : "#172b54",
+            spaceColor: "#050817",
+            starIntensity: 0.72,
           });
-        } catch { /* Preserve a working globe if fog is unavailable. */ }
+        } catch { /* Keep the globe visible where fog is unsupported. */ }
       };
 
       map.on("error", (event) => console.error("Homepage globe data error", event.error));
       map.on("style.load", () => {
         if (!map) return;
-        try { map.setProjection({ type: "globe" }); } catch { /* The projection is already active. */ }
+        try { map.setProjection({ type: "globe" }); } catch { /* The globe projection is already active. */ }
         addCountryOutlines();
       });
-      map.on("load", () => {
-        if (!map) return;
-        addCountryOutlines();
-        for (const place of globePlaces) {
-          const el = document.createElement("button");
-          el.type = "button";
-          el.className = "home-globe-marker";
-          el.setAttribute("aria-label", "Explore " + place.name + ", " + place.region);
-          el.innerHTML = '<i aria-hidden="true">✦</i><span>' + place.name + '<small>' + place.region + '</small></span>';
-          el.addEventListener("click", (event) => {
-            event.stopPropagation();
-            pauseUntil = Date.now() + 4500;
-            map?.flyTo({ center: place.coords, zoom: place.zoom, duration: 1500 });
-          });
-          markers.push(new Marker({ element: el, anchor: "bottom" }).setLngLat(place.coords).addTo(map));
-        }
-        updateMarkers();
-      });
+      map.once("load", addCountryOutlines);
 
-      function updateMarkers() {
-        if (!map) return;
-        const center = map.getCenter();
-        markers.forEach((marker, index) => {
-          const place = globePlaces[index];
-          const delta = ((place.coords[0] - center.lng + 540) % 360) - 180;
-          const facingViewer = Math.cos(place.coords[1] * Math.PI / 180) * Math.cos(delta * Math.PI / 180) > 0.12;
-          marker.getElement().classList.toggle("is-hidden", !facingViewer);
-        });
-      }
-      map.on("move", updateMarkers);
       const pauseSpin = () => { pauseUntil = Date.now() + 4500; };
       map.on("dragstart", pauseSpin);
       map.on("zoomstart", pauseSpin);
@@ -168,32 +145,72 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
         previous = now;
         if (isVisible && document.visibilityState === "visible" && Date.now() > pauseUntil) {
           const center = map.getCenter();
-          map.setCenter([center.lng + delta * 0.0035, center.lat]);
+          map.setCenter([center.lng + delta * 0.0012, center.lat]);
         }
         frame = window.requestAnimationFrame(spin);
       };
       frame = window.requestAnimationFrame(spin);
-    }, { rootMargin: "180px" });
+    }, { rootMargin: "220px" });
     observer.observe(host);
     return () => {
       disposed = true;
       observer.disconnect();
       window.cancelAnimationFrame(frame);
-      markers.forEach((marker) => marker.remove());
       map?.remove();
       mapRef.current = null;
     };
   }, []);
 
   return (
-    <div className="home-globe-stage" aria-label="Interactive 3D globe">
+    <div className="home-globe-stage" aria-label="Slowly rotating 3D world map with country borders">
       <div className="home-globe-shell">
         <span className="home-globe-halo" aria-hidden="true" />
-        <div className="home-globe" ref={container} aria-label="Interactive 3D globe with country borders. Drag to explore or select a place." role="img" />
+        <div className="home-globe" ref={container} aria-label="Interactive world map globe with country borders. No pins or markers." role="img" />
       </div>
     </div>
   );
 }
+
+function CityMapSpotlight({ city, theme }: { city: HomepageCity; theme: GlobeTheme }) {
+  const container = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MapLibreMap | null>(null);
+  const cityRef = useRef(city);
+  const themeRef = useRef(theme);
+
+  useEffect(() => {
+    cityRef.current = city;
+    mapRef.current?.flyTo({ center: [city.lon, city.lat], zoom: 9.2, duration: 1450, essential: true });
+  }, [city.slug, city.city]);
+
+  useEffect(() => {
+    themeRef.current = theme;
+    mapRef.current?.setStyle(homepageGlobeStyle(theme));
+  }, [theme]);
+
+  useEffect(() => {
+    const host = container.current;
+    if (!host) return;
+    const map = new MapLibreMap({
+      container: host,
+      style: homepageGlobeStyle(themeRef.current),
+      center: [cityRef.current.lon, cityRef.current.lat],
+      zoom: 9.2,
+      interactive: false,
+      attributionControl: false,
+      canvasContextAttributes: { antialias: true },
+    });
+    mapRef.current = map;
+    map.addControl(new AttributionControl({ compact: true }), "bottom-right");
+    map.on("error", (event) => console.error("Homepage city map data error", event.error));
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  return <div className="home-city-map-canvas" ref={container} role="img" aria-label={city.city + ", " + city.country + " street map preview"} />;
+}
+
 function MapCard({ sample }: { sample: MapSample }) {
   return (
     <article className="home-map-card">
@@ -214,7 +231,18 @@ function MapCard({ sample }: { sample: MapSample }) {
 export default function HomePage() {
   const [activeFilter, setActiveFilter] = useState("All maps");
   const [styleChoice, setStyleChoice] = useState<"Carrara" | "Midnight Blue">("Carrara");
+  const [globeTheme, setGlobeTheme] = useState("midnight_blue");
+  const [activeCityIndex, setActiveCityIndex] = useState(0);
   const [query, setQuery] = useState("");
+
+  const activeCity = homepageCities[activeCityIndex % homepageCities.length] ?? homepageCities[0];
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveCityIndex((index) => (index + 1) % homepageCities.length);
+    }, 5200);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const visibleSamples = useMemo(
     () => activeFilter === "All maps" ? samples : samples.filter((sample) => sample.category === activeFilter),
@@ -231,7 +259,7 @@ export default function HomePage() {
     const root = document.querySelector(".maparte-home");
     if (!root) return;
     const targets = root.querySelectorAll<HTMLElement>(
-      ".home-trust-row, .home-gallery, .home-style-showcase, .home-features, .home-story-band, .home-how, .home-globe-section, .home-faq, .home-final-cta",
+      ".home-trust-row, .home-gallery, .home-style-showcase, .home-features, .home-story-band, .home-how, .home-faq, .home-final-cta",
     );
     if (!("IntersectionObserver" in window)) {
       targets.forEach((target) => target.classList.add("home-motion-visible"));
@@ -269,7 +297,15 @@ export default function HomePage() {
       </header>
 
       <main>
-        <section className="home-hero">
+        <section className="home-hero" data-globe-theme={globeTheme}>
+          <div className="home-hero__globe-bg" aria-hidden="true">
+            <HomepageGlobe theme={globeTheme} />
+            <div className="home-globe-city-label" key={activeCity.slug ?? activeCityIndex}>
+              <span>MAPARTE · {homepageCities.length} CITIES</span>
+              <strong>{activeCity.city}</strong>
+              <small>{activeCity.country}</small>
+            </div>
+          </div>
           <div className="home-hero__copy">
             <span className="home-eyebrow"><i /> CUSTOM DIGITAL MAP ART</span>
             <h1>Your place.<br /><em>Your map.<br />Your story.</em></h1>
@@ -279,6 +315,10 @@ export default function HomePage() {
               <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search a city, town, village or place" aria-label="Search for a place to map" />
               <button type="submit">Start with a place <span aria-hidden="true">→</span></button>
             </form>
+            <div className="home-globe-theme-picker" role="group" aria-label="Choose a globe map theme">
+              <span>GLOBE THEMES</span>
+              <div>{featuredGlobeThemes.map((theme) => <button key={theme.id} type="button" className={globeTheme === theme.id ? "is-active" : ""} aria-pressed={globeTheme === theme.id} onClick={() => setGlobeTheme(theme.id)}>{theme.label}</button>)}</div>
+            </div>
             <div className="home-hero__actions">
               <a href="#maps" className="home-secondary-cta">Explore real map designs</a>
               <span>Design in your browser · Download a digital file</span>
@@ -290,12 +330,16 @@ export default function HomePage() {
             </ul>
           </div>
           <div className="home-hero__visual">
-            <div className="home-hero__note"><span className="home-note-dot" /> MADE FROM A REAL PLACE <b>01 / 09</b></div>
-            <a className="home-hero__poster" href="/hometown-roots" aria-label="View the Hometown Roots map example">
-              <img src="/assets/presets/real-hometown-roots-carrara.png" alt="Actual MAPARTE Hometown Roots map artwork showing Dehradun to Mussoorie, India" fetchPriority="high" />
-            </a>
-            <div className="home-hero__caption"><span>HOMETOWN ROOTS</span><strong>Dehradun → Mussoorie</strong><small>Carrara theme · route markers · custom labels</small></div>
-            <div className="home-hero__stamp">A place<br />you carry<br /><em>with you.</em></div>
+            <div className="home-hero__note"><span className="home-note-dot" /> LIVE MAP PREVIEW <b>01 / {homepageCities.length}</b></div>
+            <div className="home-city-map-frame">
+              <CityMapSpotlight city={activeCity} theme={globeTheme} />
+              <div className="home-city-map-overlay" key={activeCity.slug ?? activeCityIndex}>
+                <span>{featuredGlobeThemes.find((item) => item.id === globeTheme)?.label ?? "Maparte theme"}</span>
+                <strong>{activeCity.city}</strong>
+                <small>{activeCity.country} · City map</small>
+              </div>
+            </div>
+            <div className="home-hero__caption"><span>800 CITIES · LIVE MAP DATA</span><strong>{activeCity.city}, {activeCity.country}</strong><small>Real streets · changing themes · clean map borders</small></div>
           </div>
         </section>
 
@@ -332,7 +376,7 @@ export default function HomePage() {
             <h2>Choose a style.<br /><em>Set the feeling.</em></h2>
             <p>See the same Hometown Roots map in two MAPARTE themes. Switch the sample to compare the real map artwork.</p>
             <div className="home-style-switch" role="group" aria-label="Choose a map theme">
-              {(["Carrara", "Midnight Blue"] as const).map((style) => <button key={style} type="button" aria-pressed={styleChoice === style} onClick={() => setStyleChoice(style)}><i className={"swatch swatch--" + (style === "Carrara" ? "carrara" : "midnight")} />{style}</button>)}
+              {(["Carrara", "Midnight Blue"] as const).map((style) => <button key={style} type="button" aria-pressed={styleChoice === style} onClick={() => { setStyleChoice(style); setGlobeTheme(style === "Carrara" ? "carrara" : "midnight_blue"); }}><i className={"swatch swatch--" + (style === "Carrara" ? "carrara" : "midnight")} />{style}</button>)}
             </div>
             <div className="home-style-note"><b>{styleChoice}</b><span>{styleChoice === "Carrara" ? "Warm stone, fine charcoal roads, pale water." : "Deep navy, gold roads, a quiet atlas mood."}</span></div>
             <EditorLink className="home-primary-cta">Explore map styles <span aria-hidden="true">↗</span></EditorLink>
@@ -392,17 +436,7 @@ export default function HomePage() {
           <EditorLink className="home-primary-cta">Create a map in your browser <span aria-hidden="true">↗</span></EditorLink>
         </section>
 
-        <section className="home-globe-section" data-globe-theme={styleChoice}>
-          <span className="home-globe-cartography" aria-hidden="true" />
-          <div className="home-globe-section__copy">
-            <span className="home-kicker">EXPLORE BEFORE YOU DESIGN</span>
-            <h2>Start with the world.<br /><em>Zoom into your story.</em></h2>
-            <p>Spin the globe, explore places, then open the editor to build your map from real street data.</p>
-            <EditorLink className="home-primary-cta">Explore MAPARTE <span aria-hidden="true">↗</span></EditorLink>
-          </div>
-          <HomepageGlobe theme={styleChoice} />
-          <span className="home-globe-tag">A real interactive 3D globe</span>
-        </section>
+
 
         <section className="home-faq home-section" id="faq">
           <div className="home-section__heading home-section__heading--center">
