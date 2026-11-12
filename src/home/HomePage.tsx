@@ -258,6 +258,7 @@ export default function HomePage() {
   const [globeTheme, setGlobeTheme] = useState("midnight_blue");
   const [activeCityIndex, setActiveCityIndex] = useState(0);
   const [query, setQuery] = useState("");
+  const [usePortraitSpaceVideo, setUsePortraitSpaceVideo] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 650px)").matches);
 
   const activeCity = homepageCities[activeCityIndex % homepageCities.length] ?? homepageCities[0];
 
@@ -266,6 +267,13 @@ export default function HomePage() {
       setActiveCityIndex((index) => (index + 1) % homepageCities.length);
     }, 8000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const viewport = window.matchMedia("(max-width: 650px)");
+    const syncVideo = () => setUsePortraitSpaceVideo(viewport.matches);
+    viewport.addEventListener("change", syncVideo);
+    return () => viewport.removeEventListener("change", syncVideo);
   }, []);
 
   const visibleSamples = useMemo(
@@ -305,8 +313,7 @@ export default function HomePage() {
 
   return (
     <div className="maparte-home">
-      <video className="home-galaxy-video" autoPlay muted loop playsInline preload="metadata" poster="/assets/space_journey_poster.jpg" aria-hidden="true">
-        <source src="/assets/space_journey_loop.mp4" type="video/mp4" />
+      <video key={usePortraitSpaceVideo ? "portrait-space" : "wide-space"} className="home-galaxy-video" src={usePortraitSpaceVideo ? "/assets/space_journey_mobile.mp4" : "/assets/space_journey_loop.mp4"} autoPlay muted loop playsInline preload="metadata" poster={usePortraitSpaceVideo ? "/assets/space_journey_mobile_poster.jpg" : "/assets/space_journey_poster.jpg"} aria-hidden="true">
       </video>
       <header className="home-header">
         <a className="home-brand" href="/" aria-label="MAPARTE home">
