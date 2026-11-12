@@ -56,15 +56,30 @@ function homepageGlobeStyle(theme: GlobeTheme) {
   return generateMapStyle(getTheme(theme));
 }
 
-function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
+function HomepageGlobe({ theme, city }: { theme: GlobeTheme; city: HomepageCity }) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const themeRef = useRef(theme);
+  const cityRef = useRef(city);
+  const cityZoomTimer = useRef<number | null>(null);
 
   useEffect(() => {
     themeRef.current = theme;
     mapRef.current?.setStyle(homepageGlobeStyle(theme));
   }, [theme]);
+
+  useEffect(() => {
+    cityRef.current = city;
+    const map = mapRef.current;
+    if (!map) return;
+    if (cityZoomTimer.current !== null) window.clearTimeout(cityZoomTimer.current);
+    map.stop();
+    map.flyTo({ center: [city.lon, city.lat], zoom: 5.2, duration: 1650, essential: true });
+    cityZoomTimer.current = window.setTimeout(() => {
+      if (!mapRef.current) return;
+      mapRef.current.flyTo({ center: [15, 18], zoom: 1.25, duration: 1900, essential: true });
+    }, 2700);
+  }, [city.slug, city.city]);
 
   useEffect(() => {
     const host = container.current;
@@ -133,7 +148,15 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
         try { map.setProjection({ type: "globe" }); } catch { /* The globe projection is already active. */ }
         addCountryOutlines();
       });
-      map.once("load", addCountryOutlines);
+      map.once("load", () => {
+        addCountryOutlines();
+        const firstCity = cityRef.current;
+        map?.flyTo({ center: [firstCity.lon, firstCity.lat], zoom: 5.2, duration: 1650, essential: true });
+        cityZoomTimer.current = window.setTimeout(() => {
+          if (!mapRef.current) return;
+          mapRef.current.flyTo({ center: [15, 18], zoom: 1.25, duration: 1900, essential: true });
+        }, 2700);
+      });
 
       const pauseSpin = () => { pauseUntil = Date.now() + 4500; };
       map.on("dragstart", pauseSpin);
@@ -156,6 +179,7 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
       disposed = true;
       observer.disconnect();
       window.cancelAnimationFrame(frame);
+      if (cityZoomTimer.current !== null) window.clearTimeout(cityZoomTimer.current);
       map?.remove();
       mapRef.current = null;
     };
@@ -281,6 +305,10 @@ export default function HomePage() {
 
   return (
     <div className="maparte-home">
+      <video className="home-galaxy-video" autoPlay muted loop playsInline preload="metadata" poster="https://svs.gsfc.nasa.gov/vis/a010000/a013100/a013155/milky_way_still.png" aria-hidden="true">
+        <source src="https://svs.gsfc.nasa.gov/vis/a010000/a013100/a013155/milky_way_prores.webm" type="video/webm" />
+        <source src="https://svs.gsfc.nasa.gov/vis/a010000/a013100/a013155/milky_way_HQ.mp4" type="video/mp4" />
+      </video>
       <header className="home-header">
         <a className="home-brand" href="/" aria-label="MAPARTE home">
           <img src="/assets/icon-192.png" alt="" width="38" height="38" />
@@ -298,14 +326,7 @@ export default function HomePage() {
 
       <main>
         <section className="home-hero" data-globe-theme={globeTheme}>
-          <div className="home-hero__globe-bg" aria-hidden="true">
-            <HomepageGlobe theme={globeTheme} />
-            <div className="home-globe-city-label" key={activeCity.slug ?? activeCityIndex}>
-              <span>MAPARTE · {homepageCities.length} CITIES</span>
-              <strong>{activeCity.city}</strong>
-              <small>{activeCity.country}</small>
-            </div>
-          </div>
+          <div className="home-hero__globe-bg" aria-hidden="true" />
           <div className="home-hero__copy">
             <span className="home-eyebrow"><i /> CUSTOM DIGITAL MAP ART</span>
             <h1>Your place.<br /><em>Your map.<br />Your story.</em></h1>
@@ -331,12 +352,12 @@ export default function HomePage() {
           </div>
           <div className="home-hero__visual">
             <div className="home-hero__note"><span className="home-note-dot" /> LIVE MAP PREVIEW <b>01 / {homepageCities.length}</b></div>
-            <div className="home-city-map-frame">
-              <CityMapSpotlight city={activeCity} theme={globeTheme} />
+            <div className="home-city-globe-frame" key="home-city-globe">
+              <HomepageGlobe theme={globeTheme} city={activeCity} />
               <div className="home-city-map-overlay" key={activeCity.slug ?? activeCityIndex}>
                 <span>{featuredGlobeThemes.find((item) => item.id === globeTheme)?.label ?? "Maparte theme"}</span>
                 <strong>{activeCity.city}</strong>
-                <small>{activeCity.country} · City map</small>
+                <small>{activeCity.country} · Globe focus</small>
               </div>
             </div>
             <div className="home-hero__caption"><span>800 CITIES · LIVE MAP DATA</span><strong>{activeCity.city}, {activeCity.country}</strong><small>Real streets · changing themes · clean map borders</small></div>
@@ -462,7 +483,7 @@ export default function HomePage() {
       <footer className="home-footer">
         <div className="home-footer__brand"><strong>MAPARTE</strong><span>Map it. Make it yours.</span></div>
         <nav aria-label="Footer navigation"><a href="#maps">Map gallery</a><a href="#features">Features</a><a href="#how">How it works</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refund</a></nav>
-        <small>Digital map designs · Map data © OpenStreetMap contributors</small>
+        <small>Digital map designs · Map data © OpenStreetMap contributors · Space visual: <a href="https://svs.gsfc.nasa.gov/13155/" target="_blank" rel="noreferrer">NASA / Goddard Space Flight Center</a></small>
       </footer>
     </div>
   );
