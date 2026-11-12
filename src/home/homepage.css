@@ -612,3 +612,26 @@ html:has(.maparte-home),body:has(.maparte-home),body:has(.maparte-home) #root{ba
 @media(prefers-reduced-motion:reduce){
   .home-galaxy-video{display:none}
 }
+
+
+/* Keep the real galaxy video visible under the glass UI; prevent globe labels colliding. */
+.home-galaxy-video{z-index:0;opacity:.5;filter:brightness(.94) saturate(1.12)}
+.maparte-home::before{z-index:1}
+.maparte-home::after{z-index:1;opacity:.34}
+.maparte-home>header,.maparte-home>main,.maparte-home>footer{z-index:2}
+.home-hero__visual{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;min-height:620px;
+}
+.home-hero__visual .home-hero__note{
+  position:relative;top:auto;left:auto;right:auto;transform:none;
+  width:max-content;max-width:100%;margin:0 auto 4px;
+}
+.home-hero__caption{
+  position:relative;right:auto;bottom:auto;width:min(100%,440px);
+  margin:0 auto;text-align:left;
+}
+@media(max-width:650px){
+  .home-hero__visual{min-height:unset;gap:10px}
+  .home-hero__caption{width:min(82vw,370px);margin:0 auto}
+}
