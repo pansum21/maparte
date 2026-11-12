@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Map as MapLibreMap, AttributionControl, NavigationControl, Marker, setWorkerUrl } from "maplibre-gl";
+import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
+import { getTheme } from "@/features/theme/infrastructure/themeRepository";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./homepage.css";
@@ -47,39 +49,20 @@ const globePlaces: Array<{ name: string; region: string; coords: [number, number
   { name: "France", region: "Europe", coords: [2.2137, 46.2276], zoom: 2.8 },
   { name: "Japan", region: "Asia", coords: [138.2529, 36.2048], zoom: 2.8 },
 ];
-const globePalettes = {
-  Carrara: { sea: "#aebbb5", land: "#efe6d9", park: "#c5c2aa", road: "#687f75", label: "#273833", space: "#101a22", sky: "#667c80" },
-  "Midnight Blue": { sea: "#101d3b", land: "#8191b5", park: "#55688f", road: "#dec9a7", label: "#fff6eb", space: "#070d1d", sky: "#1b2d57" },
-};
-function applyHomepageGlobeTheme(map: MapLibreMap, theme: GlobeTheme) {
-  const palette = globePalettes[theme];
-  if (!map.isStyleLoaded()) return;
-  try { map.setFog({ color: palette.space, highColor: palette.sky, spaceColor: palette.space, starIntensity: theme === "Midnight Blue" ? 0.7 : 0.48 }); } catch { /* Keep the globe usable if fog is unavailable. */ }
-  for (const layer of map.getStyle().layers || []) {
-    try {
-      const id = layer.id.toLowerCase();
-      if (layer.type === "background" && layer.paint?.["background-color"] !== undefined) map.setPaintProperty(layer.id, "background-color", palette.space);
-      if (layer.type === "fill" && layer.paint?.["fill-color"] !== undefined) {
-        const water = /water|ocean|lake|river/.test(id);
-        const park = /park|grass|wood|forest|landcover/.test(id);
-        map.setPaintProperty(layer.id, "fill-color", water ? palette.sea : park ? palette.park : palette.land);
-      }
-      if (layer.type === "line" && layer.paint?.["line-color"] !== undefined) map.setPaintProperty(layer.id, "line-color", palette.road);
-      if (layer.type === "symbol" && layer.paint?.["text-color"] !== undefined) {
-        map.setPaintProperty(layer.id, "text-color", palette.label);
-        if (layer.paint?.["text-halo-color"] !== undefined) map.setPaintProperty(layer.id, "text-halo-color", palette.space);
-      }
-    } catch { /* Some style layers do not allow color overrides. */ }
-  }
+function homepageGlobeStyle(theme: GlobeTheme) {
+  return generateMapStyle(getTheme(theme === "Carrara" ? "carrara" : "midnight_blue"));
 }
+
 function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const themeRef = useRef(theme);
+
   useEffect(() => {
     themeRef.current = theme;
-    if (mapRef.current) applyHomepageGlobeTheme(mapRef.current, theme);
+    mapRef.current?.setStyle(homepageGlobeStyle(theme));
   }, [theme]);
+
   useEffect(() => {
     const host = container.current;
     if (!host) return;
@@ -95,8 +78,8 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
       if (!isVisible || map || disposed) return;
       map = new MapLibreMap({
         container: host,
-        style: "https://demotiles.maplibre.org/globe.json",
-        center: [18, 18],
+        style: homepageGlobeStyle(themeRef.current),
+        center: [78.0322, 24],
         zoom: 1.55,
         projection: { type: "globe" },
         attributionControl: false,
@@ -109,12 +92,45 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
       mapRef.current = map;
       map.addControl(new AttributionControl({ compact: true }), "bottom-right");
       map.addControl(new NavigationControl({ showCompass: true, showZoom: true, visualizePitch: false }), "top-right");
+
+      const addCountryOutlines = () => {
+        if (!map || !map.isStyleLoaded() || !map.getSource("openfreemap")) return;
+        if (!map.getLayer("homepage-country-outline")) {
+          map.addLayer({
+            id: "homepage-country-outline",
+            type: "line",
+            source: "openfreemap",
+            "source-layer": "boundary",
+            minzoom: 0,
+            filter: ["==", ["to-number", ["get", "admin_level"]], 2],
+            paint: {
+              "line-color": themeRef.current === "Midnight Blue" ? "#D6B352" : "#687f75",
+              "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.8, 3, 1.1, 6, 1.45],
+              "line-opacity": 0.92,
+            },
+          });
+        } else {
+          map.setPaintProperty("homepage-country-outline", "line-color", themeRef.current === "Midnight Blue" ? "#D6B352" : "#687f75");
+        }
+        try {
+          map.setFog({
+            color: themeRef.current === "Midnight Blue" ? "#070d1d" : "#101a22",
+            highColor: themeRef.current === "Midnight Blue" ? "#1b2d57" : "#667c80",
+            spaceColor: themeRef.current === "Midnight Blue" ? "#070d1d" : "#101a22",
+            starIntensity: themeRef.current === "Midnight Blue" ? 0.7 : 0.48,
+          });
+        } catch { /* Preserve a working globe if fog is unavailable. */ }
+      };
+
       map.on("error", (event) => console.error("Homepage globe data error", event.error));
-      map.on("style.load", () => { if (map) applyHomepageGlobeTheme(map, themeRef.current); });
+      map.on("style.load", () => {
+        if (!map) return;
+        try { map.setProjection({ type: "globe" }); } catch { /* The projection is already active. */ }
+        addCountryOutlines();
+      });
       map.on("load", () => {
         if (!map) return;
-        try { map.setProjection({ type: "globe" }); } catch { /* Already set at creation. */ }
-        applyHomepageGlobeTheme(map, themeRef.current);
+        addCountryOutlines();
         for (const place of globePlaces) {
           const el = document.createElement("button");
           el.type = "button";
@@ -130,6 +146,7 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
         }
         updateMarkers();
       });
+
       function updateMarkers() {
         if (!map) return;
         const center = map.getCenter();
@@ -167,13 +184,12 @@ function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
       mapRef.current = null;
     };
   }, []);
+
   return (
     <div className="home-globe-stage" aria-label="Interactive 3D globe">
-      <span className="home-globe-orbit home-globe-orbit--one" aria-hidden="true" />
-      <span className="home-globe-orbit home-globe-orbit--two" aria-hidden="true" />
       <div className="home-globe-shell">
         <span className="home-globe-halo" aria-hidden="true" />
-        <div className="home-globe" ref={container} aria-label="Interactive 3D globe. Drag to explore or select a place." role="img" />
+        <div className="home-globe" ref={container} aria-label="Interactive 3D globe with country borders. Drag to explore or select a place." role="img" />
       </div>
     </div>
   );
