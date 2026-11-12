@@ -683,3 +683,75 @@ html:has(.maparte-home),body:has(.maparte-home),body:has(.maparte-home) #root{ba
 }
 .home-map-card__copy{background:transparent!important}
 .home-map-card__art{background:transparent!important;backdrop-filter:none!important}
+
+
+/* Explicit final correction: a true square globe viewport, with no frame ring,
+   and no panel behind the hero headline. */
+.home-hero__copy{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+.home-city-globe-frame{
+  flex:0 0 auto;
+  width:min(36vw,420px)!important;
+  height:min(36vw,420px)!important;
+  min-height:0!important;
+  aspect-ratio:1/1!important;
+  border:0!important;
+  border-radius:50%!important;
+  outline:0!important;
+  overflow:hidden!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+.home-city-globe-frame .home-globe-stage{
+  position:absolute!important;
+  inset:0!important;
+  display:grid!important;
+  place-items:center!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  aspect-ratio:1/1!important;
+}
+.home-city-globe-frame .home-globe-shell{
+  position:relative!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  aspect-ratio:1/1!important;
+  border-radius:50%!important;
+  animation:none!important;
+  filter:none!important;
+}
+.home-city-globe-frame .home-globe{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  aspect-ratio:1/1!important;
+  border:0!important;
+  border-radius:50%!important;
+  outline:0!important;
+  overflow:hidden!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+.home-city-globe-frame .maplibregl-canvas{
+  width:100%!important;
+  height:100%!important;
+  border-radius:50%!important;
+  outline:0!important;
+}
+@media(max-width:650px){
+  .home-city-globe-frame{
+    width:min(78vw,370px)!important;
+    height:min(78vw,370px)!important;
+  }
+}
