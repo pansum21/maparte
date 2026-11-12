@@ -644,3 +644,10 @@ html:has(.maparte-home),body:has(.maparte-home),body:has(.maparte-home) #root{ba
 }
 .home-city-globe-frame{filter:drop-shadow(0 0 34px rgba(112,145,255,.18))}
 .home-city-globe-frame .home-globe-halo{display:none}
+
+
+/* The globe itself is the only circle; do not draw an extra outer ring. */
+.home-city-globe-frame{filter:none}
+.home-city-globe-frame .home-globe{
+  border:0!important;background:transparent!important;box-shadow:none!important;
+}
