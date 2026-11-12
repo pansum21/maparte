@@ -74,11 +74,11 @@ function HomepageGlobe({ theme, city }: { theme: GlobeTheme; city: HomepageCity 
     if (!map) return;
     if (cityZoomTimer.current !== null) window.clearTimeout(cityZoomTimer.current);
     map.stop();
-    map.flyTo({ center: [city.lon, city.lat], zoom: 5.2, duration: 1650, essential: true });
+    map.flyTo({ center: [city.lon, city.lat], zoom: 3.35, duration: 2500, essential: true });
     cityZoomTimer.current = window.setTimeout(() => {
       if (!mapRef.current) return;
-      mapRef.current.flyTo({ center: [15, 18], zoom: 1.25, duration: 1900, essential: true });
-    }, 2700);
+      mapRef.current.flyTo({ center: [15, 18], zoom: 1.25, duration: 2400, essential: true });
+    }, 4300);
   }, [city.slug, city.city]);
 
   useEffect(() => {
@@ -151,11 +151,11 @@ function HomepageGlobe({ theme, city }: { theme: GlobeTheme; city: HomepageCity 
       map.once("load", () => {
         addCountryOutlines();
         const firstCity = cityRef.current;
-        map?.flyTo({ center: [firstCity.lon, firstCity.lat], zoom: 5.2, duration: 1650, essential: true });
+        map?.flyTo({ center: [firstCity.lon, firstCity.lat], zoom: 3.35, duration: 2500, essential: true });
         cityZoomTimer.current = window.setTimeout(() => {
           if (!mapRef.current) return;
-          mapRef.current.flyTo({ center: [15, 18], zoom: 1.25, duration: 1900, essential: true });
-        }, 2700);
+          mapRef.current.flyTo({ center: [15, 18], zoom: 1.25, duration: 2400, essential: true });
+        }, 4300);
       });
 
       const pauseSpin = () => { pauseUntil = Date.now() + 4500; };
@@ -264,7 +264,7 @@ export default function HomePage() {
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveCityIndex((index) => (index + 1) % homepageCities.length);
-    }, 5200);
+    }, 8000);
     return () => window.clearInterval(timer);
   }, []);
 
@@ -306,8 +306,8 @@ export default function HomePage() {
   return (
     <div className="maparte-home">
       <video className="home-galaxy-video" autoPlay muted loop playsInline preload="metadata" poster="https://svs.gsfc.nasa.gov/vis/a010000/a013100/a013155/milky_way_still.png" aria-hidden="true">
-        <source src="/assets/milky_way_nasa.webm" type="video/webm" />
-        <source src="https://svs.gsfc.nasa.gov/vis/a010000/a013100/a013155/milky_way_HQ.mp4" type="video/mp4" />
+        <source src="/assets/milky_way_nasa_loop.webm" type="video/webm" />
+        <source src="/assets/milky_way_nasa_loop.mp4" type="video/mp4" />
       </video>
       <header className="home-header">
         <a className="home-brand" href="/" aria-label="MAPARTE home">
