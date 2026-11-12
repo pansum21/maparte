@@ -306,7 +306,7 @@ export default function HomePage() {
   return (
     <div className="maparte-home">
       <video className="home-galaxy-video" autoPlay muted loop playsInline preload="metadata" poster="https://svs.gsfc.nasa.gov/vis/a010000/a013100/a013155/milky_way_still.png" aria-hidden="true">
-        <source src="https://svs.gsfc.nasa.gov/vis/a010000/a013100/a013155/milky_way_prores.webm" type="video/webm" />
+        <source src="/assets/milky_way_nasa.webm" type="video/webm" />
         <source src="https://svs.gsfc.nasa.gov/vis/a010000/a013100/a013155/milky_way_HQ.mp4" type="video/mp4" />
       </video>
       <header className="home-header">
@@ -483,7 +483,7 @@ export default function HomePage() {
       <footer className="home-footer">
         <div className="home-footer__brand"><strong>MAPARTE</strong><span>Map it. Make it yours.</span></div>
         <nav aria-label="Footer navigation"><a href="#maps">Map gallery</a><a href="#features">Features</a><a href="#how">How it works</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refund</a></nav>
-        <small>Digital map designs · Map data © OpenStreetMap contributors · Space visual: <a href="https://svs.gsfc.nasa.gov/13155/" target="_blank" rel="noreferrer">NASA / Goddard Space Flight Center</a></small>
+        <small>Digital map designs · Map data © OpenStreetMap contributors · Space visualization: <a href="https://svs.gsfc.nasa.gov/13155/" target="_blank" rel="noreferrer">NASA / Goddard Space Flight Center</a></small>
       </footer>
     </div>
   );
