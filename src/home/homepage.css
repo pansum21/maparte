@@ -538,3 +538,34 @@ html:has(.maparte-home),body:has(.maparte-home),body:has(.maparte-home) #root{ba
   .home-hero__globe-bg .home-globe-shell{width:min(142vw,94vh);max-width:none}
   .home-hero__copy{background:rgba(8,12,34,.19)!important}
 }
+
+
+/* Final live-globe visibility and brighter glass controls */
+.home-hero__globe-bg::after{
+  background:linear-gradient(90deg,rgba(7,10,27,.18),transparent 28%,transparent 72%,rgba(7,10,27,.14)),
+    linear-gradient(180deg,rgba(7,10,27,.12),transparent 24%,rgba(7,10,27,.2));
+}
+.home-hero__globe-bg .home-globe-shell{
+  filter:brightness(1.55) saturate(1.42) contrast(1.12) drop-shadow(0 0 86px rgba(111,132,255,.4));
+}
+.home-hero__globe-bg .home-globe{filter:brightness(1.35) saturate(1.35) contrast(1.12)}
+.home-hero__copy{background:rgba(8,12,34,.14)!important}
+.home-header{background:rgba(8,12,31,.2)}
+.home-header-cta,.home-primary-cta,.home-outline-cta,.home-search button{
+  background:linear-gradient(125deg,rgba(93,190,255,.42),rgba(167,119,255,.42))!important;
+  border-color:rgba(190,215,255,.58)!important;
+  box-shadow:0 0 30px rgba(119,153,255,.22),inset 0 1px rgba(255,255,255,.28)!important;
+}
+.home-globe-theme-picker button{background:rgba(112,168,255,.16)}
+.home-globe-theme-picker button.is-active{background:linear-gradient(120deg,rgba(104,194,255,.42),rgba(178,132,255,.44))}
+.home-search,.home-hero__note,.home-hero__caption,.home-globe-city-label,
+.home-style-note,.home-faq-list details,.home-steps article,.home-map-card,
+.home-feature-grid article,.home-style-showcase,.home-final-cta{
+  background:rgba(11,16,39,.24)!important;
+}
+@media(max-width:650px){
+  .home-hero__globe-bg::after{
+    background:linear-gradient(180deg,rgba(7,10,27,.08),transparent 32%,rgba(7,10,27,.18));
+  }
+  .home-hero__copy{background:rgba(8,12,34,.12)!important}
+}
