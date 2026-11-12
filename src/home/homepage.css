@@ -569,3 +569,46 @@ html:has(.maparte-home),body:has(.maparte-home),body:has(.maparte-home) #root{ba
   }
   .home-hero__copy{background:rgba(8,12,34,.12)!important}
 }
+
+
+/* NASA galaxy backdrop with the living city globe in the hero frame */
+.home-galaxy-video{
+  position:absolute;inset:0;z-index:-1;width:100%;height:100%;object-fit:cover;
+  opacity:.34;filter:brightness(.78) saturate(1.08);pointer-events:none;
+}
+.home-hero__globe-bg{display:none!important}
+.home-city-globe-frame{
+  position:relative;width:min(40vw,440px);aspect-ratio:1;overflow:hidden;border-radius:50%;
+  background:rgba(7,11,28,.18);isolation:isolate;
+  filter:drop-shadow(0 0 56px rgba(112,145,255,.25));
+}
+.home-city-globe-frame .home-globe-stage{position:absolute;inset:0;display:grid;place-items:center}
+.home-city-globe-frame .home-globe-shell{
+  width:100%;max-width:none;aspect-ratio:1;animation:none;filter:none;
+}
+.home-city-globe-frame .home-globe-halo{
+  inset:-10%;background:radial-gradient(circle,rgba(88,161,255,.2),rgba(164,118,255,.12) 46%,transparent 74%);filter:blur(26px)
+}
+.home-city-globe-frame .home-globe{
+  width:100%;height:100%;border-radius:50%!important;
+  border:1px solid rgba(175,204,255,.38)!important;
+  background:rgba(7,11,28,.08);
+  box-shadow:inset 0 0 26px rgba(153,180,255,.14),0 0 42px rgba(107,131,255,.16)!important;
+}
+.home-city-globe-frame .maplibregl-canvas{border-radius:50%;outline:none}
+.home-city-globe-frame .maplibregl-ctrl-bottom-right{right:12px;bottom:12px;opacity:.55;transform:scale(.62);transform-origin:bottom right}
+.home-city-globe-frame .maplibregl-ctrl-attrib{background:rgba(7,10,27,.4);color:#cbd4f1}
+.home-city-globe-frame .maplibregl-ctrl-attrib a{color:#a9dfff}
+.home-city-globe-frame .home-city-map-overlay{left:50%;bottom:16px;transform:translateX(-50%);width:max-content;max-width:82%;text-align:center;backdrop-filter:blur(14px)}
+.home-city-globe-frame .home-city-map-overlay strong{font-size:16px}
+.home-hero__visual{z-index:2}
+@media(max-width:900px){
+  .home-city-globe-frame{width:min(48vw,390px)}
+}
+@media(max-width:650px){
+  .home-galaxy-video{opacity:.24;object-position:center}
+  .home-city-globe-frame{width:min(78vw,370px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .home-galaxy-video{display:none}
+}
