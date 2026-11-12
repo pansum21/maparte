@@ -635,3 +635,12 @@ html:has(.maparte-home),body:has(.maparte-home),body:has(.maparte-home) #root{ba
   .home-hero__visual{min-height:unset;gap:10px}
   .home-hero__caption{width:min(82vw,370px);margin:0 auto}
 }
+
+
+/* Use the galaxy as a viewport-sized scene across the full scrolling page. */
+.home-galaxy-video{
+  position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;object-position:center;
+  z-index:0;opacity:.66;filter:brightness(1.02) saturate(1.12);pointer-events:none;
+}
+.home-city-globe-frame{filter:drop-shadow(0 0 34px rgba(112,145,255,.18))}
+.home-city-globe-frame .home-globe-halo{display:none}
