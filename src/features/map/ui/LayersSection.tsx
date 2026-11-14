@@ -1,9 +1,4 @@
-import MapDimensionFields from "./MapDimensionFields";
-
 interface LayerForm {
-  width: string;
-  height: string;
-  distance: string;
   includeLandcover: boolean;
   includeBuildings: boolean;
   includeWater: boolean;
@@ -19,17 +14,11 @@ interface LayerForm {
 interface LayersSectionProps {
   form: LayerForm;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  minPosterCm: number;
-  maxPosterCm: number;
-  onNumericFieldBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 export default function LayersSection({
   form,
   onChange,
-  minPosterCm,
-  maxPosterCm,
-  onNumericFieldBlur,
 }: LayersSectionProps) {
   return (
     <section className="panel-block">
@@ -133,17 +122,6 @@ export default function LayersSection({
       </label>
       </div>
 
-      <div className="map-details-section">
-        <h3 className="map-details-subtitle">Map Details</h3>
-        <MapDimensionFields
-            form={form}
-            minPosterCm={minPosterCm}
-            maxPosterCm={maxPosterCm}
-            onChange={onChange}
-            onNumericFieldBlur={onNumericFieldBlur}
-            showSizeFields={false}
-          />
-      </div>
     </section>
   );
 }

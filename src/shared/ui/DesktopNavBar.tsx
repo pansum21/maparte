@@ -1,7 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useMapSync } from "@/features/map/application/useMapSync";
-import { DEFAULT_DISTANCE_METERS } from "@/core/config";
+import {
+  DEFAULT_DISTANCE_METERS,
+  MAX_DISTANCE_METERS,
+  MAX_MAP_ZOOM,
+  MIN_DISTANCE_METERS,
+  MIN_MAP_ZOOM,
+} from "@/core/config";
 import {
   LocationIcon,
   ThemeIcon,
@@ -55,6 +61,7 @@ export default function DesktopNavBar({
   const { flyToLocation } = useMapSync(state, dispatch, mapRef);
 
   const [bearing, setBearing] = useState(0);
+  const [zoom, setZoom] = useState(MIN_MAP_ZOOM);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   interface SearchedLocationInfo {
     lat: number;
@@ -96,10 +103,15 @@ export default function DesktopNavBar({
       setBearing((prev) => (prev === 360 && norm === 0 ? 360 : norm));
     };
 
+    const syncZoom = () => setZoom(map.getZoom());
+
     syncBearing();
+    syncZoom();
     map.on("rotate", syncBearing);
+    map.on("zoom", syncZoom);
     return () => {
       map.off("rotate", syncBearing);
+      map.off("zoom", syncZoom);
     };
   }, [mapRef, isEditing]);
 
@@ -119,14 +131,6 @@ export default function DesktopNavBar({
     }
   };
 
-  const handleSnap360 = () => {
-    const map = mapRef.current;
-    setBearing(360);
-    if (map) {
-      map.setBearing(0);
-    }
-  };
-
   const handleResetRotation = () => {
     const map = mapRef.current;
     setBearing(0);
@@ -137,13 +141,43 @@ export default function DesktopNavBar({
 
   const handleZoomIn = () => {
     const map = mapRef.current;
-    if (map) map.zoomTo(map.getZoom() + 0.5, { duration: 250 });
+    if (map) map.zoomTo(Math.min(MAX_MAP_ZOOM, map.getZoom() + 0.5), { duration: 250 });
   };
 
   const handleZoomOut = () => {
     const map = mapRef.current;
-    if (map) map.zoomTo(map.getZoom() - 0.5, { duration: 250 });
+    if (map) map.zoomTo(Math.max(MIN_MAP_ZOOM, map.getZoom() - 0.5), { duration: 250 });
   };
+
+  const handleZoomSliderChange = (value: number) => {
+    const map = mapRef.current;
+    if (map) map.zoomTo(value, { duration: 150 });
+  };
+
+  const distanceMeters = Math.max(
+    MIN_DISTANCE_METERS,
+    Math.min(MAX_DISTANCE_METERS, Number(state.form.distance) || DEFAULT_DISTANCE_METERS),
+  );
+  const distanceSliderValue = Math.round(
+    ((Math.log(distanceMeters) - Math.log(MIN_DISTANCE_METERS)) /
+      (Math.log(MAX_DISTANCE_METERS) - Math.log(MIN_DISTANCE_METERS))) * 1000,
+  );
+  const handleDistanceSliderChange = (value: number) => {
+    const ratio = value / 1000;
+    const nextDistance = Math.round(
+      Math.exp(
+        Math.log(MIN_DISTANCE_METERS) +
+          ratio * (Math.log(MAX_DISTANCE_METERS) - Math.log(MIN_DISTANCE_METERS)),
+      ),
+    );
+    dispatch({ type: "SET_FIELD", name: "distance", value: String(nextDistance) });
+  };
+  const formatDistance = (meters: number) =>
+    meters >= 1_000_000
+      ? `${Number((meters / 1_000_000).toFixed(1))}M m`
+      : meters >= 100_000
+        ? `${Number((meters / 1_000).toFixed(1))}K m`
+        : `${Math.round(meters).toLocaleString()} m`;
 
   const handleRecenter = () => {
     const defaultDist = Number.parseFloat(state.form.distance) || DEFAULT_DISTANCE_METERS;
@@ -215,86 +249,41 @@ export default function DesktopNavBar({
           <div
             className="desktop-nav-companion desktop-companion-edit-map"
             role="toolbar"
-            aria-label="Map editing and rotation controls"
+            aria-label="Vertical map editing controls"
           >
             <div className="edit-map-companion-panel">
-              <div className="edit-map-top-row">
-                <span className="edit-map-title">ROTATION</span>
-
-                <div className="edit-map-top-actions">
-                  <button
-                    type="button"
-                    className="edit-map-action-pill edit-map-action-pill--reset"
-                    onClick={handleResetRotation}
-                    title="Reset rotation to North (0°)"
-                  >
-                    <RotateIcon className="edit-map-action-icon" />
-                    <span>Reset 0°</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="edit-map-action-pill edit-map-action-pill--recenter"
-                    onClick={handleRecenter}
-                    title="Recenter map to city coordinates"
-                  >
-                    <span className="edit-map-action-glyph">⛶</span>
-                    <span>Recenter</span>
-                  </button>
-
-                  <div className="edit-map-zoom-group" aria-label="Map zoom controls">
-                    <button
-                      type="button"
-                      className="edit-map-zoom-btn"
-                      onClick={handleZoomIn}
-                      title="Zoom in"
-                      aria-label="Zoom in"
-                    >
-                      ➕
-                    </button>
-                    <button
-                      type="button"
-                      className="edit-map-zoom-btn"
-                      onClick={handleZoomOut}
-                      title="Zoom out"
-                      aria-label="Zoom out"
-                    >
-                      ➖
-                    </button>
-                  </div>
+              <section className="edit-map-control-section" aria-label="Zoom">
+                <span className="edit-map-title">ZOOM</span>
+                <button type="button" className="edit-map-vertical-button" onClick={handleZoomIn} title="Zoom in" aria-label="Zoom in">+</button>
+                <div className="edit-map-vertical-range-row">
+                  <input type="range" className="edit-map-vertical-slider" min={MIN_MAP_ZOOM} max={MAX_MAP_ZOOM} step="0.1" value={zoom} onChange={(event) => handleZoomSliderChange(Number(event.target.value))} aria-label="Map zoom level" />
+                  <output className="edit-map-value-box" aria-live="off">{zoom.toFixed(1)}</output>
                 </div>
-              </div>
+                <button type="button" className="edit-map-vertical-button" onClick={handleZoomOut} title="Zoom out" aria-label="Zoom out">−</button>
+              </section>
 
-              <div className="edit-map-slider-row">
-                <button
-                  type="button"
-                  className="edit-map-angle-box edit-map-angle-box--left"
-                  onClick={handleSnap0}
-                  title="Click to reset rotation to 0°"
-                  aria-label={`Current map rotation: ${bearing} degrees (click to reset to 0)`}
-                >
-                  {bearing}°
+              <section className="edit-map-control-section" aria-label="Distance">
+                <span className="edit-map-title">DISTANCE</span>
+                <div className="edit-map-vertical-range-row edit-map-vertical-range-row--distance">
+                  <input type="range" className="edit-map-vertical-slider" min="0" max="1000" step="1" value={distanceSliderValue} onChange={(event) => handleDistanceSliderChange(Number(event.target.value))} aria-label="Map distance" />
+                  <output className="edit-map-value-box edit-map-value-box--distance">{formatDistance(distanceMeters)}</output>
+                </div>
+              </section>
+
+              <section className="edit-map-control-section" aria-label="Rotation">
+                <span className="edit-map-title">ROTATION</span>
+                <div className="edit-map-vertical-range-row edit-map-vertical-range-row--rotation">
+                  <input type="range" className="edit-map-vertical-slider" min="0" max="360" step="1" value={bearing} onChange={(event) => handleBearingChange(Number(event.target.value))} aria-label="Map rotation angle" />
+                  <button type="button" className="edit-map-value-box edit-map-value-box--button" onClick={handleSnap0} title="Reset rotation to north" aria-label={`Rotation ${bearing} degrees; click to reset`}>{bearing}°</button>
+                </div>
+              </section>
+
+              <div className="edit-map-bottom-actions">
+                <button type="button" className="edit-map-action-pill edit-map-action-pill--recenter" onClick={handleRecenter} title="Recenter map to the selected place">
+                  <span className="edit-map-action-glyph">⛶</span><span>Re-center</span>
                 </button>
-
-                <input
-                  type="range"
-                  className="edit-map-rotation-slider"
-                  min="0"
-                  max="360"
-                  step="1"
-                  value={bearing}
-                  onChange={(e) => handleBearingChange(Number(e.target.value))}
-                  aria-label="Map rotation slider"
-                />
-
-                <button
-                  type="button"
-                  className="edit-map-angle-box edit-map-angle-box--right"
-                  onClick={handleSnap360}
-                  title="Click to snap to 360°"
-                  aria-label={`Remaining rotation angle: ${360 - bearing} degrees (click to snap to 360)`}
-                >
-                  {360 - bearing}°
+                <button type="button" className="edit-map-action-pill edit-map-action-pill--reset" onClick={handleResetRotation} title="Reset rotation to north">
+                  <RotateIcon className="edit-map-action-icon" /><span>Reset</span>
                 </button>
               </div>
             </div>
