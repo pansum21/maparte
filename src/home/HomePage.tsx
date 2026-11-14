@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Map as MapLibreMap, AttributionControl, setWorkerUrl } from "maplibre-gl";
-import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
-import { getTheme } from "@/features/theme/infrastructure/themeRepository";
+import { Map as MapLibreMap, AttributionControl, NavigationControl, setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
+import { getTheme } from "@/features/theme/infrastructure/themeRepository";
 import "./homepage.css";
-import cityDirectory from "@/data/cityDirectory.json";
 
 setWorkerUrl(workerUrl);
 
@@ -21,15 +20,15 @@ type MapSample = {
 };
 
 const samples: MapSample[] = [
-  { title: "Where We Met", place: "Paris, France", story: "A favorite corner, made personal", theme: "Carrara", category: "Milestones", image: "real-where-we-met-carrara.png", landing: "/where-we-met", accent: "#c72c50" },
-  { title: "Hometown Roots", place: "Dehradun to Mussoorie, India", story: "The roads that raised you", theme: "Carrara", category: "Places", image: "real-hometown-roots-carrara.png", landing: "/hometown-roots", accent: "#7b7a45" },
-  { title: "Travel Memories", place: "Tokyo, Japan", story: "A journey worth keeping", theme: "Midnight Blue", category: "Journeys", image: "real-travel-memories-midnight.png", landing: "/travel-memories", accent: "#c69a42" },
-  { title: "Our Wedding Day", place: "Florence, Italy", story: "The place where your story changed", theme: "Carrara", category: "Milestones", image: "real-our-wedding-day-carrara.png", landing: "/our-wedding-day", accent: "#b87b55" },
-  { title: "42.195 KM Finisher", place: "Boston, USA", story: "A route you earned, mile by mile", theme: "Midnight Blue", category: "Journeys", image: "real-marathon-race-midnight.png", landing: "/marathon-race", accent: "#4c8e9a" },
-  { title: "Peak & Trail Summit", place: "Mont Blanc, France", story: "A summit with a story behind it", theme: "Carrara", category: "Outdoors", image: "real-mountain-summit-carrara.png", landing: "/mountain-summit", accent: "#648b73" },
-  { title: "Our First Home", place: "Brooklyn, New York", story: "The first place that felt like yours", theme: "Carrara", category: "Places", image: "real-our-first-home-carrara.png", landing: "/our-first-home", accent: "#547a8f" },
-  { title: "The Day You Were Born", place: "London, United Kingdom", story: "A new beginning, marked on the map", theme: "Midnight Blue", category: "Milestones", image: "real-baby-arrival-midnight.png", landing: "/baby-arrival", accent: "#9b718b" },
-  { title: "She Said Yes", place: "Amalfi Coast, Italy", story: "Remember the exact place you asked", theme: "Carrara", category: "Milestones", image: "real-she-said-yes-carrara.png", landing: "/she-said-yes", accent: "#c28e3b" },
+  { title: "Where We Met", place: "Paris, France", story: "A favorite corner, made personal", theme: "Carrara", category: "Milestones", image: "where-we-met.png", landing: "/where-we-met", accent: "#c72c50" },
+  { title: "Hometown Roots", place: "Dehradun to Mussoorie, India", story: "The roads that raised you", theme: "Carrara", category: "Places", image: "hometown-roots.png", landing: "/hometown-roots", accent: "#7b7a45" },
+  { title: "Travel Memories", place: "Tokyo, Japan", story: "A journey worth keeping", theme: "Carrara", category: "Journeys", image: "travel-memories.png", landing: "/travel-memories", accent: "#c69a42" },
+  { title: "Our Wedding Day", place: "Florence, Italy", story: "The place where your story changed", theme: "Carrara", category: "Milestones", image: "wedding-day.png", landing: "/our-wedding-day", accent: "#b87b55" },
+  { title: "42.195 KM Finisher", place: "Boston, USA", story: "A route you earned, mile by mile", theme: "Carrara", category: "Journeys", image: "marathon-race.png", landing: "/marathon-race", accent: "#4c8e9a" },
+  { title: "Peak & Trail Summit", place: "Mont Blanc, France", story: "A summit with a story behind it", theme: "Carrara", category: "Outdoors", image: "mountain-summit.png", landing: "/mountain-summit", accent: "#648b73" },
+  { title: "Our First Home", place: "Brooklyn, New York", story: "The first place that felt like yours", theme: "Carrara", category: "Places", image: "first-home.png", landing: "/our-first-home", accent: "#547a8f" },
+  { title: "The Day You Were Born", place: "London, United Kingdom", story: "A new beginning, marked on the map", theme: "Carrara", category: "Milestones", image: "baby-arrival.png", landing: "/baby-arrival", accent: "#9b718b" },
+  { title: "She Said Yes", place: "Amalfi Coast, Italy", story: "Remember the exact place you asked", theme: "Carrara", category: "Milestones", image: "she-said-yes.png", landing: "/she-said-yes", accent: "#c28e3b" },
 ];
 
 const filters = ["All maps", "Milestones", "Places", "Journeys", "Outdoors"];
@@ -38,49 +37,108 @@ function EditorLink({ children, className = "" }: { children: React.ReactNode; c
   return <a className={className} href="/?dist=4491">{children}</a>;
 }
 
-type GlobeTheme = string;
-type HomepageCity = { city: string; country: string; lat: number; lon: number; slug?: string };
-const homepageCities = Object.values(cityDirectory) as HomepageCity[];
-const featuredGlobeThemes = [
-  { id: "midnight_blue", label: "Midnight Blue" },
-  { id: "carrara", label: "Carrara" },
-  { id: "blue_water", label: "Blue Water" },
-  { id: "golden_dusk", label: "Golden Dusk" },
-  { id: "pale_dawn", label: "Pale Dawn" },
-  { id: "subtle_grayscale", label: "Soft Gray" },
-  { id: "retro_vintage", label: "Retro" },
-  { id: "midnight_commander", label: "Commander" },
-];
+const globeThemeOptions = ["Midnight Blue", "Carrara", "Blue Water", "Golden Dusk", "Pale Dawn", "Soft Gray", "Retro", "Commander"] as const;
+type GlobeTheme = typeof globeThemeOptions[number];
+const globePalettes = {
+  Carrara: { sea: "#aebbb5", land: "#efe6d9", park: "#c5c2aa", road: "#687f75", label: "#273833", space: "#101a22", sky: "#667c80" },
+  "Midnight Blue": { sea: "#101d3b", land: "#8191b5", park: "#55688f", road: "#dec9a7", label: "#fff6eb", space: "#070d1d", sky: "#1b2d57" },
+  "Blue Water": { sea: "#46bcec", land: "#f2f2f2", park: "#dcece8", road: "#4a5568", label: "#222222", space: "#09213a", sky: "#168dc2" },
+  "Golden Dusk": { sea: "#20313a", land: "#5a4b3b", park: "#59604c", road: "#e3b76c", label: "#fff0d7", space: "#10191e", sky: "#b8844e" },
+  "Pale Dawn": { sea: "#b9d0d8", land: "#f2ebdf", park: "#d9ded2", road: "#887b75", label: "#32363a", space: "#152534", sky: "#829fad" },
+  "Soft Gray": { sea: "#aeb8bc", land: "#dfe2e1", park: "#cbd2ce", road: "#626b70", label: "#283238", space: "#11191d", sky: "#718188" },
+  Retro: { sea: "#8eaa9a", land: "#d8c9a5", park: "#aeb28d", road: "#a45c3c", label: "#443530", space: "#1b201d", sky: "#9c7954" },
+  Commander: { sea: "#30473c", land: "#79836a", park: "#53674f", road: "#d0bb84", label: "#f5eedb", space: "#111a16", sky: "#607960" },
+};
+const homepageGlobeWidthsScaled = new WeakSet<MapLibreMap>();
 
-function homepageGlobeStyle(theme: GlobeTheme) {
-  return generateMapStyle(getTheme(theme));
+function applyHomepageGlobeTheme(map: MapLibreMap, theme: GlobeTheme) {
+  const palette = globePalettes[theme];
+  const fogCapableMap = map as MapLibreMap & { setFog?: (options: Record<string, unknown>) => void };
+  try { fogCapableMap.setFog?.({ color: palette.space, highColor: palette.sky, spaceColor: palette.space, starIntensity: theme === "Midnight Blue" ? 0.7 : 0.48 }); } catch { /* Keep the globe usable if fog is unavailable. */ }
+
+  const styleLayers = map.getStyle().layers || [];
+  const beforeRoads = styleLayers.find((layer) => layer.id.startsWith("road-"))?.id;
+  if (!map.getLayer("homepage-country-boundary")) {
+    map.addLayer({
+      id: "homepage-country-boundary",
+      type: "line",
+      source: "openfreemap",
+      "source-layer": "boundary",
+      filter: ["==", "admin_level", 2],
+      paint: {
+        "line-color": "#c5d6ff",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.58, 3, 0.82, 6, 0.98],
+        "line-opacity": 0.86,
+      },
+    }, beforeRoads);
+  }
+  if (!map.getLayer("homepage-state-boundary")) {
+    map.addLayer({
+      id: "homepage-state-boundary",
+      type: "line",
+      source: "openfreemap",
+      "source-layer": "boundary",
+      minzoom: 4.5,
+      filter: ["==", "admin_level", 4],
+      paint: {
+        "line-color": "#9fc0ff",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 4.5, 0.48, 6, 0.62, 9, 0.78],
+        "line-opacity": 0.78,
+      },
+    }, beforeRoads);
+  }
+
+  if (!homepageGlobeWidthsScaled.has(map)) {
+    for (const layer of map.getStyle().layers || []) {
+      if (!layer.id.startsWith("road-") || layer.type !== "line") continue;
+      const width = map.getPaintProperty(layer.id, "line-width");
+      if (width !== undefined && width !== null) {
+        // Scale each zoom stop in place. MapLibre requires the zoom expression to
+        // stay at the top level, so wrapping this expression in multiplication fails.
+        if (Array.isArray(width) && width[0] === "interpolate" && width[2]?.[0] === "zoom") {
+          const scaledWidth = width.map((part, index) =>
+            index >= 4 && index % 2 === 0 && typeof part === "number" ? part * 0.08 : part,
+          );
+          map.setPaintProperty(layer.id, "line-width", scaledWidth as any);
+        }
+      }
+    }
+    homepageGlobeWidthsScaled.add(map);
+  }
+
+  for (const layer of map.getStyle().layers || []) {
+    try {
+      const id = layer.id.toLowerCase();
+      if (id === "homepage-country-boundary") {
+        map.setPaintProperty(layer.id, "line-color", theme === "Midnight Blue" ? "#c5d6ff" : palette.road);
+        continue;
+      }
+      if (id === "homepage-state-boundary") {
+        map.setPaintProperty(layer.id, "line-color", theme === "Midnight Blue" ? "#9fc0ff" : palette.road);
+        continue;
+      }
+      if (layer.type === "background" && layer.paint?.["background-color"] !== undefined) map.setPaintProperty(layer.id, "background-color", palette.space);
+      if (layer.type === "fill" && layer.paint?.["fill-color"] !== undefined) {
+        const water = /water|ocean|lake|river/.test(id);
+        const park = /park|grass|wood|forest|landcover/.test(id);
+        map.setPaintProperty(layer.id, "fill-color", water ? palette.sea : park ? palette.park : palette.land);
+      }
+      if (layer.type === "line" && layer.paint?.["line-color"] !== undefined) map.setPaintProperty(layer.id, "line-color", palette.road);
+      if (layer.type === "symbol" && layer.paint?.["text-color"] !== undefined) {
+        map.setPaintProperty(layer.id, "text-color", palette.label);
+        if (layer.paint?.["text-halo-color"] !== undefined) map.setPaintProperty(layer.id, "text-halo-color", palette.space);
+      }
+    } catch { /* Some style layers do not allow color overrides. */ }
+  }
 }
-
-function HomepageGlobe({ theme, city }: { theme: GlobeTheme; city: HomepageCity }) {
+function HomepageGlobe({ theme }: { theme: GlobeTheme }) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const themeRef = useRef(theme);
-  const cityRef = useRef(city);
-  const cityZoomTimer = useRef<number | null>(null);
-
   useEffect(() => {
     themeRef.current = theme;
-    mapRef.current?.setStyle(homepageGlobeStyle(theme));
+    if (mapRef.current) applyHomepageGlobeTheme(mapRef.current, theme);
   }, [theme]);
-
-  useEffect(() => {
-    cityRef.current = city;
-    const map = mapRef.current;
-    if (!map) return;
-    if (cityZoomTimer.current !== null) window.clearTimeout(cityZoomTimer.current);
-    map.stop();
-    map.flyTo({ center: [city.lon, city.lat], zoom: 3.35, duration: 2500, essential: true });
-    cityZoomTimer.current = window.setTimeout(() => {
-      if (!mapRef.current) return;
-      mapRef.current.flyTo({ center: [15, 18], zoom: 1.25, duration: 2400, essential: true });
-    }, 4300);
-  }, [city.slug, city.city]);
-
   useEffect(() => {
     const host = container.current;
     if (!host) return;
@@ -88,77 +146,44 @@ function HomepageGlobe({ theme, city }: { theme: GlobeTheme; city: HomepageCity 
     let frame = 0;
     let disposed = false;
     let isVisible = false;
-    let pauseUntil = 0;
+    let userTookControl = false;
     let previous = performance.now();
-
+    const resizeObserver = new ResizeObserver(() => map?.resize());
+    resizeObserver.observe(host);
     const observer = new IntersectionObserver((entries) => {
       isVisible = entries.some((entry) => entry.isIntersecting);
       if (!isVisible || map || disposed) return;
       map = new MapLibreMap({
         container: host,
-        style: homepageGlobeStyle(themeRef.current),
-        center: [15, 18],
-        zoom: 1.25,
-        projection: { type: "globe" },
+        style: generateMapStyle(getTheme(themeRef.current === "Carrara" ? "carrara" : themeRef.current === "Blue Water" ? "blue_water" : "midnight_blue")),
+        center: [18, 18],
+        zoom: 1.55,
+        // The hero uses a circular globe mask; cap the close-up before it becomes
+        // a tiny clipped patch and before the source tiles are heavily over-zoomed.
+        maxZoom: 12.5,
         attributionControl: false,
+        // Let the page keep native wheel scrolling while the pointer is over the globe.
+        // Visitors can still zoom with the small explicit +/- control.
+        scrollZoom: false,
         renderWorldCopies: false,
         dragRotate: true,
-        scrollZoom: false,
         touchPitch: false,
         maxPitch: 0,
         canvasContextAttributes: { antialias: true },
       });
       mapRef.current = map;
       map.addControl(new AttributionControl({ compact: true }), "bottom-right");
-
-      const addCountryOutlines = () => {
-        if (!map || !map.isStyleLoaded() || !map.getSource("openfreemap")) return;
-        const outlineColor = themeRef.current === "midnight_blue" ? "#a8b5ff" : "#9de1ff";
-        if (!map.getLayer("homepage-country-outline")) {
-          const firstSymbol = map.getStyle().layers.find((layer) => layer.type === "symbol")?.id;
-          map.addLayer({
-            id: "homepage-country-outline",
-            type: "line",
-            source: "openfreemap",
-            "source-layer": "boundary",
-            minzoom: 0,
-            filter: ["==", ["to-number", ["get", "admin_level"]], 2],
-            paint: {
-              "line-color": outlineColor,
-              "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.8, 3, 1.1, 6, 1.45],
-              "line-opacity": 0.94,
-            },
-          }, firstSymbol);
-        } else {
-          map.setPaintProperty("homepage-country-outline", "line-color", outlineColor);
-        }
-        try {
-          map.setFog({
-            color: "#080b1f",
-            highColor: themeRef.current === "midnight_blue" ? "#24204b" : "#172b54",
-            spaceColor: "#050817",
-            starIntensity: 0.72,
-          });
-        } catch { /* Keep the globe visible where fog is unsupported. */ }
-      };
-
+      map.addControl(new NavigationControl({ showCompass: false }), "bottom-left");
       map.on("error", (event) => console.error("Homepage globe data error", event.error));
-      map.on("style.load", () => {
+      map.on("style.load", () => { if (map) applyHomepageGlobeTheme(map, themeRef.current); });
+      map.on("load", () => {
         if (!map) return;
-        try { map.setProjection({ type: "globe" }); } catch { /* The globe projection is already active. */ }
-        addCountryOutlines();
+        try { map.setProjection({ type: "globe" }); } catch { /* Keep the default projection if globe mode is unavailable. */ }
+        applyHomepageGlobeTheme(map, themeRef.current);
       });
-      map.once("load", () => {
-        addCountryOutlines();
-        const firstCity = cityRef.current;
-        map?.flyTo({ center: [firstCity.lon, firstCity.lat], zoom: 3.35, duration: 2500, essential: true });
-        cityZoomTimer.current = window.setTimeout(() => {
-          if (!mapRef.current) return;
-          mapRef.current.flyTo({ center: [15, 18], zoom: 1.25, duration: 2400, essential: true });
-        }, 4300);
-      });
-
-      const pauseSpin = () => { pauseUntil = Date.now() + 4500; };
+      // Once a visitor starts exploring, leave the globe under their control.
+      // A timed resume can rotate the target away during a long zoom sequence.
+      const pauseSpin = () => { userTookControl = true; };
       map.on("dragstart", pauseSpin);
       map.on("zoomstart", pauseSpin);
       map.on("rotatestart", pauseSpin);
@@ -166,80 +191,89 @@ function HomepageGlobe({ theme, city }: { theme: GlobeTheme; city: HomepageCity 
         if (disposed || !map) return;
         const delta = Math.min(48, now - previous);
         previous = now;
-        if (isVisible && document.visibilityState === "visible" && Date.now() > pauseUntil) {
+        if (isVisible && document.visibilityState === "visible" && !userTookControl) {
           const center = map.getCenter();
-          map.setCenter([center.lng + delta * 0.0012, center.lat]);
+          map.setCenter([center.lng + delta * 0.0035, center.lat]);
         }
         frame = window.requestAnimationFrame(spin);
       };
       frame = window.requestAnimationFrame(spin);
-    }, { rootMargin: "220px" });
+    }, { rootMargin: "180px" });
     observer.observe(host);
     return () => {
       disposed = true;
       observer.disconnect();
+      resizeObserver.disconnect();
       window.cancelAnimationFrame(frame);
-      if (cityZoomTimer.current !== null) window.clearTimeout(cityZoomTimer.current);
       map?.remove();
       mapRef.current = null;
     };
   }, []);
-
   return (
-    <div className="home-globe-stage" aria-label="Slowly rotating 3D world map with country borders">
+    <div className="home-globe-stage" aria-label="Interactive 3D globe">
       <div className="home-globe-shell">
-        <span className="home-globe-halo" aria-hidden="true" />
-        <div className="home-globe" ref={container} aria-label="Interactive world map globe with country borders. No pins or markers." role="img" />
+        <div className="home-globe" ref={container} aria-label="Interactive 3D globe. Drag to explore." role="img" />
       </div>
     </div>
   );
 }
 
-function CityMapSpotlight({ city, theme }: { city: HomepageCity; theme: GlobeTheme }) {
-  const container = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<MapLibreMap | null>(null);
-  const cityRef = useRef(city);
-  const themeRef = useRef(theme);
+function HomepageVideoBackdrop() {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    cityRef.current = city;
-    mapRef.current?.flyTo({ center: [city.lon, city.lat], zoom: 9.2, duration: 1450, essential: true });
-  }, [city.slug, city.city]);
-
-  useEffect(() => {
-    themeRef.current = theme;
-    mapRef.current?.setStyle(homepageGlobeStyle(theme));
-  }, [theme]);
-
-  useEffect(() => {
-    const host = container.current;
-    if (!host) return;
-    const map = new MapLibreMap({
-      container: host,
-      style: homepageGlobeStyle(themeRef.current),
-      center: [cityRef.current.lon, cityRef.current.lat],
-      zoom: 9.2,
-      interactive: false,
-      attributionControl: false,
-      canvasContextAttributes: { antialias: true },
-    });
-    mapRef.current = map;
-    map.addControl(new AttributionControl({ compact: true }), "bottom-right");
-    map.on("error", (event) => console.error("Homepage city map data error", event.error));
+    const video = videoRef.current;
+    if (!video) return;
+    let positionFrame = 0;
+    const syncVideoPosition = () => {
+      cancelAnimationFrame(positionFrame);
+      positionFrame = requestAnimationFrame(() => {
+        const scrollRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const progress = Math.min(1, Math.max(0, window.scrollY / scrollRange));
+        // Hold the clear upper sky through the opening, then ease the footage down
+        // toward its horizon and people as the visitor moves through the story.
+        const focus = progress * progress * (3 - 2 * progress);
+        video.style.objectPosition = `center ${focus * 100}%`;
+      });
+    };
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncPlayback = () => {
+      if (motionPreference.matches || document.visibilityState !== "visible") {
+        video.pause();
+        return;
+      }
+      void video.play().catch(() => { /* The poster remains visible if autoplay is unavailable. */ });
+    };
+    syncPlayback();
+    syncVideoPosition();
+    window.addEventListener("scroll", syncVideoPosition, { passive: true });
+    window.addEventListener("resize", syncVideoPosition);
+    document.addEventListener("visibilitychange", syncPlayback);
+    motionPreference.addEventListener("change", syncPlayback);
     return () => {
-      map.remove();
-      mapRef.current = null;
+      document.removeEventListener("visibilitychange", syncPlayback);
+      motionPreference.removeEventListener("change", syncPlayback);
+      window.removeEventListener("scroll", syncVideoPosition);
+      window.removeEventListener("resize", syncVideoPosition);
+      cancelAnimationFrame(positionFrame);
+      video.pause();
     };
   }, []);
 
-  return <div className="home-city-map-canvas" ref={container} role="img" aria-label={city.city + ", " + city.country + " street map preview"} />;
+  return (
+    <div className="home-video-backdrop" aria-hidden="true">
+      <video ref={videoRef} className="home-video-backdrop__video" muted loop playsInline preload="none" poster="/assets/maparte-cinematic-poster.jpg">
+        <source src="/assets/maparte-cinematic-story-60.mp4" type="video/mp4" />
+      </video>
+    </div>
+  );
 }
 
 function MapCard({ sample }: { sample: MapSample }) {
   return (
     <article className="home-map-card">
       <a className="home-map-card__art" href={sample.landing} aria-label={"Explore " + sample.title + " map example"}>
-        <img src={"/assets/presets/" + sample.image} alt={sample.title + " digital map design for " + sample.place + ", created with MAPARTE"} loading="lazy" />
+        <img src={"/assets/map-posters/" + sample.image} alt={sample.title + " digital map design for " + sample.place + ", created with MAPARTE"} loading="lazy" />
         <span className="home-map-card__badge">{sample.theme} · Digital map</span>
       </a>
       <div className="home-map-card__copy">
@@ -255,26 +289,8 @@ function MapCard({ sample }: { sample: MapSample }) {
 export default function HomePage() {
   const [activeFilter, setActiveFilter] = useState("All maps");
   const [styleChoice, setStyleChoice] = useState<"Carrara" | "Midnight Blue">("Carrara");
-  const [globeTheme, setGlobeTheme] = useState("midnight_blue");
-  const [activeCityIndex, setActiveCityIndex] = useState(0);
+  const [globeTheme, setGlobeTheme] = useState<GlobeTheme>("Midnight Blue");
   const [query, setQuery] = useState("");
-  const [usePortraitSpaceVideo, setUsePortraitSpaceVideo] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 650px)").matches);
-
-  const activeCity = homepageCities[activeCityIndex % homepageCities.length] ?? homepageCities[0];
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setActiveCityIndex((index) => (index + 1) % homepageCities.length);
-    }, 8000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const viewport = window.matchMedia("(max-width: 650px)");
-    const syncVideo = () => setUsePortraitSpaceVideo(viewport.matches);
-    viewport.addEventListener("change", syncVideo);
-    return () => viewport.removeEventListener("change", syncVideo);
-  }, []);
 
   const visibleSamples = useMemo(
     () => activeFilter === "All maps" ? samples : samples.filter((sample) => sample.category === activeFilter),
@@ -291,7 +307,7 @@ export default function HomePage() {
     const root = document.querySelector(".maparte-home");
     if (!root) return;
     const targets = root.querySelectorAll<HTMLElement>(
-      ".home-trust-row, .home-gallery, .home-style-showcase, .home-features, .home-story-band, .home-how, .home-faq, .home-final-cta",
+      ".home-trust-row, .home-gallery, .home-style-showcase, .home-features, .home-story-band, .home-how, .home-how .home-steps article, .home-globe-section, .home-faq, .home-final-cta",
     );
     if (!("IntersectionObserver" in window)) {
       targets.forEach((target) => target.classList.add("home-motion-visible"));
@@ -313,11 +329,10 @@ export default function HomePage() {
 
   return (
     <div className="maparte-home">
-      <video key={usePortraitSpaceVideo ? "portrait-space" : "wide-space"} className="home-galaxy-video" src={usePortraitSpaceVideo ? "/assets/space_journey_mobile.mp4" : "/assets/space_journey_loop.mp4"} autoPlay muted loop playsInline preload="metadata" poster={usePortraitSpaceVideo ? "/assets/space_journey_mobile_poster.jpg" : "/assets/space_journey_poster.jpg"} aria-hidden="true">
-      </video>
+      <HomepageVideoBackdrop />
       <header className="home-header">
         <a className="home-brand" href="/" aria-label="MAPARTE home">
-          <img src="/assets/icon-192.png" alt="" width="38" height="38" />
+          <img src="/assets/logo.svg" alt="" width="38" height="38" />
           <span><strong>MAPARTE</strong><small>MAP IT. MAKE IT YOURS.</small></span>
         </a>
         <nav className="home-nav" aria-label="Main navigation">
@@ -331,21 +346,16 @@ export default function HomePage() {
       </header>
 
       <main>
-        <section className="home-hero" data-globe-theme={globeTheme}>
-          <div className="home-hero__globe-bg" aria-hidden="true" />
+        <section className="home-hero">
           <div className="home-hero__copy">
             <span className="home-eyebrow"><i /> CUSTOM DIGITAL MAP ART</span>
             <h1>Your place.<br /><em>Your map.<br />Your story.</em></h1>
             <p className="home-hero__lead">Turn a hometown, a shared moment, a journey or a finish line into a map design that feels like yours.</p>
             <form className="home-search" onSubmit={handleSearch}>
               <span aria-hidden="true">⌕</span>
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search a city, town, village or place" aria-label="Search for a place to map" />
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search a city or town" aria-label="Search for a place to map" />
               <button type="submit">Start with a place <span aria-hidden="true">→</span></button>
             </form>
-            <div className="home-globe-theme-picker" role="group" aria-label="Choose a globe map theme">
-              <span>GLOBE THEMES</span>
-              <div>{featuredGlobeThemes.map((theme) => <button key={theme.id} type="button" className={globeTheme === theme.id ? "is-active" : ""} aria-pressed={globeTheme === theme.id} onClick={() => setGlobeTheme(theme.id)}>{theme.label}</button>)}</div>
-            </div>
             <div className="home-hero__actions">
               <a href="#maps" className="home-secondary-cta">Explore real map designs</a>
               <span>Design in your browser · Download a digital file</span>
@@ -357,16 +367,12 @@ export default function HomePage() {
             </ul>
           </div>
           <div className="home-hero__visual">
-            <div className="home-hero__note"><span className="home-note-dot" /> LIVE MAP PREVIEW <b>01 / {homepageCities.length}</b></div>
-            <div className="home-city-globe-frame" key="home-city-globe">
-              <HomepageGlobe theme={globeTheme} city={activeCity} />
-              <div className="home-city-map-overlay" key={activeCity.slug ?? activeCityIndex}>
-                <span>{featuredGlobeThemes.find((item) => item.id === globeTheme)?.label ?? "Maparte theme"}</span>
-                <strong>{activeCity.city}</strong>
-                <small>{activeCity.country} · Globe focus</small>
-              </div>
+            <HomepageGlobe theme={globeTheme} />
+            <div className="home-globe-theme-picker" role="group" aria-label="Choose globe color theme">
+              <span>GLOBE THEMES</span>
+              {globeThemeOptions.map((theme) => <button key={theme} type="button" aria-pressed={globeTheme === theme} onClick={() => setGlobeTheme(theme)}><i className={"home-globe-theme-swatch home-globe-theme-swatch--" + theme.toLowerCase().replace(/ /g, "-")} />{theme}</button>)}
             </div>
-            <div className="home-hero__caption"><span>800 CITIES · LIVE MAP DATA</span><strong>{activeCity.city}, {activeCity.country}</strong><small>Real streets · changing themes · clean map borders</small></div>
+            <div className="home-globe-meta"><span>800 CITIES · LIVE MAP DATA</span><small>Real streets · changing themes · clean map borders</small></div>
           </div>
         </section>
 
@@ -403,7 +409,7 @@ export default function HomePage() {
             <h2>Choose a style.<br /><em>Set the feeling.</em></h2>
             <p>See the same Hometown Roots map in two MAPARTE themes. Switch the sample to compare the real map artwork.</p>
             <div className="home-style-switch" role="group" aria-label="Choose a map theme">
-              {(["Carrara", "Midnight Blue"] as const).map((style) => <button key={style} type="button" aria-pressed={styleChoice === style} onClick={() => { setStyleChoice(style); setGlobeTheme(style === "Carrara" ? "carrara" : "midnight_blue"); }}><i className={"swatch swatch--" + (style === "Carrara" ? "carrara" : "midnight")} />{style}</button>)}
+              {(["Carrara", "Midnight Blue"] as const).map((style) => <button key={style} type="button" aria-pressed={styleChoice === style} onClick={() => setStyleChoice(style)}><i className={"swatch swatch--" + (style === "Carrara" ? "carrara" : "midnight")} />{style}</button>)}
             </div>
             <div className="home-style-note"><b>{styleChoice}</b><span>{styleChoice === "Carrara" ? "Warm stone, fine charcoal roads, pale water." : "Deep navy, gold roads, a quiet atlas mood."}</span></div>
             <EditorLink className="home-primary-cta">Explore map styles <span aria-hidden="true">↗</span></EditorLink>
@@ -421,14 +427,14 @@ export default function HomePage() {
             <p>MAPARTE’s tools are all part of the design. Start with a place, then shape the map around what matters to you.</p>
           </div>
           <div className="home-feature-grid">
-            <article><span className="home-feature-icon">⌕</span><small>01 / LOCATION</small><h3>Find your place</h3><p>Search a city, town, village, address or coordinates. Pan, zoom and set the exact map area.</p></article>
-            <article><span className="home-feature-icon">◈</span><small>02 / MAP STYLE</small><h3>Set the map mood</h3><p>Choose from the available color themes and map layers, then fine-tune the look.</p></article>
-            <article><span className="home-feature-icon">▤</span><small>03 / LAYOUT</small><h3>Frame the view</h3><p>Choose poster or phone dimensions, then apply one of the available border styles and adjustments.</p></article>
-            <article><span className="home-feature-icon">T</span><small>04 / TYPE</small><h3>Add the right words</h3><p>Show town or village, city, state and country. Add a date, title or tagline and tune the type.</p></article>
-            <article><span className="home-feature-icon">⌖</span><small>05 / MARKERS & ROUTES</small><h3>Point to what matters</h3><p>Use built-in, emoji or custom markers. Add a GPX route with start and finish details.</p></article>
-            <article><span className="home-feature-icon">▣</span><small>06 / PREVIEW</small><h3>Preview for your screen</h3><p>Make a poster-style design or phone wallpaper. Preview it against a wall photo in Special Full Screen.</p></article>
+            <article><div className="home-feature-grid__label"><small>01 / LOCATION</small><span className="home-feature-icon">⌕</span></div><h3>Find your place</h3><p>Search a city, town, village, address or coordinates. Pan, zoom and set the exact map area.</p></article>
+            <article><div className="home-feature-grid__label"><small>02 / MAP STYLE</small><span className="home-feature-icon">◈</span></div><h3>Set the map mood</h3><p>Choose from the available color themes and map layers, then fine-tune the look.</p></article>
+            <article><div className="home-feature-grid__label"><small>03 / LAYOUT</small><span className="home-feature-icon">▤</span></div><h3>Frame the view</h3><p>Choose poster or phone dimensions, then apply one of the available border styles and adjustments.</p></article>
+            <article><div className="home-feature-grid__label"><small>04 / TYPE</small><span className="home-feature-icon">T</span></div><h3>Add the right words</h3><p>Show town or village, city, state and country. Add a date, title or tagline and tune the type.</p></article>
+            <article><div className="home-feature-grid__label"><small>05 / MARKERS & ROUTES</small><span className="home-feature-icon">⌖</span></div><h3>Point to what matters</h3><p>Use built-in, emoji or custom markers. Add a GPX route with start and finish details.</p></article>
+            <article><div className="home-feature-grid__label"><small>06 / PREVIEW</small><span className="home-feature-icon">▣</span></div><h3>Preview for your screen</h3><p>Make a poster-style design or phone wallpaper. Preview it against a wall photo in Special Full Screen.</p></article>
           </div>
-          <div className="home-feature-foot"><span>Want to see every control in action?</span><EditorLink className="home-text-link">Open the MAPARTE editor <span aria-hidden="true">↗</span></EditorLink></div>
+          <div className="home-feature-foot"><span>Want to see every control in action?</span><EditorLink className="home-text-link home-outline-cta">Open the MAPARTE editor <span aria-hidden="true">↗</span></EditorLink></div>
         </section>
 
         <section className="home-story-band" id="stories">
@@ -456,14 +462,30 @@ export default function HomePage() {
             <h2>Three steps. <em>Your design.</em></h2>
           </div>
           <div className="home-steps">
-            <article><b>01</b><span>Search</span><h3>Choose where it begins</h3><p>Find a place by name, address or coordinates and set the view.</p></article>
-            <article><b>02</b><span>Personalize</span><h3>Make the map your own</h3><p>Choose a theme and layout, add your words, borders, markers or route.</p></article>
-            <article><b>03</b><span>Preview & download</span><h3>Take it to your screen</h3><p>Review the poster or wallpaper layout and see the available download choices.</p></article>
+            <article data-step="01">
+              <a className="home-step-art" href="/where-we-met" aria-label="See the Paris map example">
+                <img src="/assets/map-posters/where-we-met.png" alt="MAPARTE map artwork for a memorable place in Paris" loading="lazy" />
+                <span>PARIS · A PLACE TO BEGIN</span>
+              </a>
+              <div className="home-step-copy"><b>01</b><span>SEARCH</span><h3>Choose where it begins</h3><p>Find a place by name, address or coordinates, then settle on the view that holds the memory.</p></div>
+            </article>
+            <article data-step="02">
+              <a className="home-step-art" href="/hometown-roots" aria-label="See the Hometown Roots map example">
+                <img src="/assets/map-posters/hometown-roots.png" alt="MAPARTE Hometown Roots map artwork" loading="lazy" />
+                <span>DEHRADUN TO MUSSOORIE · YOUR ROUTE</span>
+              </a>
+              <div className="home-step-copy"><b>02</b><span>MAKE IT YOURS</span><h3>Give the map its feeling</h3><p>Choose a theme and layout. Add your words, a border, markers or a route that belongs to the story.</p></div>
+            </article>
+            <article data-step="03">
+              <a className="home-step-art" href="/she-said-yes" aria-label="See the She Said Yes map example">
+                <img src="/assets/map-posters/she-said-yes.png" alt="MAPARTE She Said Yes map artwork" loading="lazy" />
+                <span>AMALFI COAST · KEEP THE MOMENT</span>
+              </a>
+              <div className="home-step-copy"><b>03</b><span>PREVIEW & DOWNLOAD</span><h3>Keep it close</h3><p>Preview your digital design, choose a poster or phone layout, and download it for your screen.</p></div>
+            </article>
           </div>
           <EditorLink className="home-primary-cta">Create a map in your browser <span aria-hidden="true">↗</span></EditorLink>
         </section>
-
-
 
         <section className="home-faq home-section" id="faq">
           <div className="home-section__heading home-section__heading--center">
@@ -489,7 +511,7 @@ export default function HomePage() {
       <footer className="home-footer">
         <div className="home-footer__brand"><strong>MAPARTE</strong><span>Map it. Make it yours.</span></div>
         <nav aria-label="Footer navigation"><a href="#maps">Map gallery</a><a href="#features">Features</a><a href="#how">How it works</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refund</a></nav>
-        <small>Digital map designs · Map data © OpenStreetMap contributors · Space visuals: <a href="https://svs.gsfc.nasa.gov/13155/" target="_blank" rel="noreferrer">NASA Milky Way</a>, <a href="https://svs.gsfc.nasa.gov/20391/" target="_blank" rel="noreferrer">Solar System</a>, <a href="https://svs.gsfc.nasa.gov/5039/" target="_blank" rel="noreferrer">Moon-to-Earth</a> and <a href="https://svs.gsfc.nasa.gov/20402/" target="_blank" rel="noreferrer">Lucy asteroid flyby</a>.</small>
+        <small>Digital map designs · Map data © OpenStreetMap contributors</small>
       </footer>
     </div>
   );
