@@ -7,6 +7,7 @@ import type {
 } from "@/features/markers/domain/types";
 import { drawMarkersOnCanvas } from "@/features/markers/infrastructure/rendering";
 import type { Route } from "@/features/routes/domain/types";
+import type { SquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
 import { applyFades } from "@/features/poster/infrastructure/renderer/layers";
@@ -61,15 +62,7 @@ interface LayeredSvgOptions {
   matInsetYRatio?: number;
   mapInsetXRatio?: number;
   mapInsetYRatio?: number;
-  squareCaptionGeometry?: {
-    posterWidth: number;
-    posterHeight: number;
-    x: number;
-    y: number;
-    size: number;
-    safeInsetX: number;
-    safeInsetY: number;
-  };
+  squareCaptionGeometry?: SquareCaptionGeometry;
 }
 
 function renderMapCanvasToDataUrl(
@@ -629,19 +622,23 @@ export async function createLayeredSvgBlobFromMap({
     const squareCaptionSvg = squareCaptionGeometry
       ? (() => {
           const g = squareCaptionGeometry;
-          const centerX = g.x + g.size / 2;
-          const captionY = g.y + g.size + pageHeight * 0.035;
+          const anchorX = g.captionX;
+          const textAnchor = g.captionAlign === "left" ? "start" : g.captionAlign === "right" ? "end" : "middle";
+          const captionY = g.captionY;
           const countryY = captionY + pageHeight * 0.044;
           const dateY = countryY + pageHeight * 0.032;
           const coordsY = dateY + (customDate?.trim() ? pageHeight * 0.028 : 0);
           const base = Math.min(pageWidth, pageHeight) / 1000 * fontScale;
           const creditY = pageHeight - g.safeInsetY;
+          const dividerWidth = Math.min(pageWidth * 0.14, g.captionWidth * 0.2);
+          const dividerX1 = g.captionAlign === "left" ? anchorX : g.captionAlign === "right" ? anchorX - dividerWidth : anchorX - dividerWidth / 2;
+          const dividerX2 = dividerX1 + dividerWidth;
           const captionSvg = showPosterText ? `
-  <text x="${centerX}" y="${captionY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(20, 48 * base)}" font-weight="600" fill="${textColor}">${escapeXml(formatCityLabel(displayCity))}</text>
-  ${displayCity && displayCountry ? `<line x1="${pageWidth * 0.43}" y1="${captionY + pageHeight * 0.018}" x2="${pageWidth * 0.57}" y2="${captionY + pageHeight * 0.018}" stroke="${textColor}" stroke-opacity="0.55" stroke-width="${Math.max(1, pageWidth / 1000 * 2)}" />` : ""}
-  ${displayCountry ? `<text x="${centerX}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(13, 25 * base)}" font-weight="400" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>` : ""}
-  ${customDate?.trim() ? `<text x="${centerX}" y="${dateY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(11, 19 * base)}" fill="${textColor}">${escapeXml(customDate.trim())}</text>` : ""}
-  <text x="${centerX}" y="${coordsY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(10, 16 * base)}" opacity="0.72" fill="${textColor}">${escapeXml(formatCoordinates(center.lat, center.lon))}</text>` : "";
+  <text x="${anchorX}" y="${captionY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(20, 48 * base)}" font-weight="600" fill="${textColor}">${escapeXml(formatCityLabel(displayCity))}</text>
+  ${displayCity && displayCountry ? `<line x1="${dividerX1}" y1="${captionY + pageHeight * 0.018}" x2="${dividerX2}" y2="${captionY + pageHeight * 0.018}" stroke="${textColor}" stroke-opacity="0.55" stroke-width="${Math.max(1, pageWidth / 1000 * 2)}" />` : ""}
+  ${displayCountry ? `<text x="${anchorX}" y="${countryY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(13, 25 * base)}" font-weight="400" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>` : ""}
+  ${customDate?.trim() ? `<text x="${anchorX}" y="${dateY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(11, 19 * base)}" fill="${textColor}">${escapeXml(customDate.trim())}</text>` : ""}
+  <text x="${anchorX}" y="${coordsY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(10, 16 * base)}" opacity="0.72" fill="${textColor}">${escapeXml(formatCoordinates(center.lat, center.lon))}</text>` : "";
           return `<g id="square-caption-typography">${captionSvg}</g>
 <g id="square-caption-credits" font-family="${bodyFontFamily}" font-size="${Math.max(9, 13 * Math.min(pageWidth, pageHeight) / 1000)}" opacity="0.68">
 <text x="${pageWidth - g.safeInsetX}" y="${creditY}" text-anchor="end" fill="${attributionColor}">© OpenStreetMap contributors</text>

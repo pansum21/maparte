@@ -42,6 +42,7 @@ import {
   createCustomLayoutOption,
   formatLayoutDimensions,
   getLayoutOption,
+  getMaparteCaptionVariant,
   isMaparteSquareCaptionLayout,
 } from "@/features/layout/infrastructure/layoutRepository";
 import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
@@ -305,6 +306,7 @@ export default function PreviewPanel({
         heightCm,
         borderMetrics.mapInsetCm,
         borderMetrics.gapCm,
+          getMaparteCaptionVariant(form.layout) ?? "center-bottom",
       )
     : null;
   const resolutionInfoLabel = `${previewCanvasSize.width} × ${previewCanvasSize.height} px (${previewCanvasSize.effectiveDpi} PPI)`;
@@ -520,6 +522,9 @@ export default function PreviewPanel({
               "--square-map-height": squareCaptionGeometry ? `${(squareCaptionGeometry.size / previewCanvasSize.height) * 100}%` : undefined,
               "--square-safe-x": squareCaptionGeometry ? `${(squareCaptionGeometry.safeInsetX / previewCanvasSize.width) * 100}%` : undefined,
               "--square-safe-y": squareCaptionGeometry ? `${(squareCaptionGeometry.safeInsetY / previewCanvasSize.height) * 100}%` : undefined,
+              "--square-caption-x": squareCaptionGeometry ? `${(squareCaptionGeometry.captionX / previewCanvasSize.width) * 100}%` : undefined,
+              "--square-caption-y": squareCaptionGeometry ? `${(squareCaptionGeometry.captionY / previewCanvasSize.height) * 100}%` : undefined,
+              "--square-caption-width": squareCaptionGeometry ? `${(squareCaptionGeometry.captionWidth / previewCanvasSize.width) * 100}%` : undefined,
               "--mat-inset-x": borderMetrics.matInsetX,
               "--mat-inset-y": borderMetrics.matInsetY,
               "--cinema-poster-x": `${cinemaPosterPlacement.x}vw`,
@@ -602,6 +607,7 @@ export default function PreviewPanel({
             showOverlay={form.overlayBottom ?? form.showMarkers}
             customDate={activeCustomDate}
             squareCaption={isSquareCaptionLayout}
+            squareCaptionGeometry={squareCaptionGeometry}
           />
           <NeatlineArtwork
             selection={neatlineSelection}

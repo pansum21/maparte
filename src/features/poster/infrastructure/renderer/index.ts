@@ -134,32 +134,38 @@ export async function compositeExport(
     const font = fontFamily ? `"${fontFamily}", "Space Grotesk", sans-serif` : '"Space Grotesk", sans-serif';
     const mono = fontFamily ? `"${fontFamily}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace';
     const base = Math.min(posterWidth, posterHeight) / 1000;
-    const captionY = y + size + posterHeight * 0.035;
+    const captionY = squareCaptionGeometry.captionY;
     ctx.fillStyle = textColor;
-    ctx.textAlign = "center";
+    ctx.textAlign = squareCaptionGeometry.captionAlign;
     ctx.textBaseline = "middle";
     if (showPosterText) {
       ctx.font = `600 ${Math.max(20, 48 * base * getPosterFontScale(fontSize))}px ${font}`;
-      ctx.fillText(formatCityLabel(displayCity), posterWidth / 2, captionY, posterWidth * 0.86);
+      ctx.fillText(formatCityLabel(displayCity), squareCaptionGeometry.captionX, captionY, squareCaptionGeometry.captionWidth);
       if (displayCity && displayCountry) {
         ctx.globalAlpha = 0.55;
-        ctx.fillRect(posterWidth * 0.43, captionY + posterHeight * 0.018, posterWidth * 0.14, Math.max(1, 2 * base));
+        const dividerWidth = Math.min(posterWidth * 0.14, squareCaptionGeometry.captionWidth * 0.2);
+        const dividerX = squareCaptionGeometry.captionAlign === "left"
+          ? squareCaptionGeometry.captionX
+          : squareCaptionGeometry.captionAlign === "right"
+            ? squareCaptionGeometry.captionX - dividerWidth
+            : squareCaptionGeometry.captionX - dividerWidth / 2;
+        ctx.fillRect(dividerX, captionY + posterHeight * 0.018, dividerWidth, Math.max(1, 2 * base));
         ctx.globalAlpha = 1;
       }
       let lineY = captionY + posterHeight * 0.044;
       if (displayCountry) {
         ctx.font = `400 ${Math.max(13, 25 * base * getPosterFontScale(fontSize))}px ${font}`;
-        ctx.fillText(displayCountry.toUpperCase(), posterWidth / 2, lineY, posterWidth * 0.86);
+        ctx.fillText(displayCountry.toUpperCase(), squareCaptionGeometry.captionX, lineY, squareCaptionGeometry.captionWidth);
         lineY += posterHeight * 0.032;
       }
       if (customDate?.trim()) {
         ctx.font = `400 ${Math.max(11, 19 * base * getPosterFontScale(fontSize))}px ${mono}`;
-        ctx.fillText(customDate.trim(), posterWidth / 2, lineY, posterWidth * 0.86);
+        ctx.fillText(customDate.trim(), squareCaptionGeometry.captionX, lineY, squareCaptionGeometry.captionWidth);
         lineY += posterHeight * 0.028;
       }
       ctx.globalAlpha = 0.72;
       ctx.font = `400 ${Math.max(10, 16 * base * getPosterFontScale(fontSize))}px ${mono}`;
-      ctx.fillText(formatCoordinates(center.lat, center.lon), posterWidth / 2, lineY, posterWidth * 0.86);
+      ctx.fillText(formatCoordinates(center.lat, center.lon), squareCaptionGeometry.captionX, lineY, squareCaptionGeometry.captionWidth);
       ctx.globalAlpha = 1;
     }
 

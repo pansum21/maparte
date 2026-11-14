@@ -321,9 +321,6 @@ export default function SettingsPanel({
               <LayersSection
                 form={state.form}
                 onChange={handleChange}
-                minPosterCm={MIN_POSTER_CM}
-                maxPosterCm={MAX_POSTER_CM}
-                onNumericFieldBlur={handleNumericFieldBlur}
               />
             ) : null}
           </div>

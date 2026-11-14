@@ -134,7 +134,20 @@ export const MAPARTE_SQUARE_CAPTION_LAYOUT_ID =
   "print_maparte_square_caption_a4_portrait";
 
 export function isMaparteSquareCaptionLayout(layoutId: string): boolean {
-  return layoutId === MAPARTE_SQUARE_CAPTION_LAYOUT_ID;
+  return getMaparteCaptionVariant(layoutId) !== null;
+}
+
+export type MaparteCaptionVariant = "center-bottom" | "left-bottom" | "right-bottom" | "top-left";
+
+const maparteCaptionVariants: Record<string, MaparteCaptionVariant> = {
+  [MAPARTE_SQUARE_CAPTION_LAYOUT_ID]: "center-bottom",
+  print_maparte_left_caption_a4_portrait: "left-bottom",
+  print_maparte_right_caption_a4_portrait: "right-bottom",
+  print_maparte_corner_caption_a4_portrait: "top-left",
+};
+
+export function getMaparteCaptionVariant(layoutId: string): MaparteCaptionVariant | null {
+  return maparteCaptionVariants[layoutId] ?? null;
 }
 
 export function formatLayoutDimensions(layoutOption: Layout): string {

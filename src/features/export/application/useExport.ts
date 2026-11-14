@@ -20,7 +20,7 @@ import {
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { readNeatlineSelection, getPosterBorderMetrics } from "@/features/layout/ui/NeatlinePicker";
-import { isMaparteSquareCaptionLayout } from "@/features/layout/infrastructure/layoutRepository";
+import { getMaparteCaptionVariant, isMaparteSquareCaptionLayout } from "@/features/layout/infrastructure/layoutRepository";
 import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { getAllMarkerIcons } from "@/features/markers/infrastructure/iconRegistry";
 import { ensureFont } from "@/core/services";
@@ -268,6 +268,7 @@ export function useExport() {
               heightCm,
               borderMetrics.mapInsetCm,
               borderMetrics.gapCm,
+              getMaparteCaptionVariant(form.layout) ?? "center-bottom",
             )
           : undefined;
 
