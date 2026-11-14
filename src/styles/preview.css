@@ -1154,7 +1154,7 @@
 .poster-frame.is-maparte-square-caption.has-maparte-caption-backdrop .poster-caption-map-backdrop {
   position: absolute;
   z-index: 0;
-  inset: 0;
+  inset: calc(var(--square-map-y, 1.7%) + var(--square-map-height, 67.4%)) 0 0;
   overflow: hidden;
   pointer-events: none;
   background: var(--poster-bg, #0a1628);
@@ -1165,7 +1165,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.72;
+  opacity: 0.9;
 }
 
 .poster-frame.is-maparte-square-caption .poster-caption-map-wash {
@@ -1175,18 +1175,18 @@
   pointer-events: none;
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--poster-bg, #0a1628) 8%, transparent),
-    color-mix(in srgb, var(--poster-bg, #0a1628) 28%, transparent)
+    color-mix(in srgb, var(--poster-bg, #0a1628) 2%, transparent),
+    color-mix(in srgb, var(--poster-bg, #0a1628) 10%, transparent)
   );
 }
 
 .poster-frame.is-maparte-square-caption.has-maparte-caption-blur .poster-caption-map-wash {
-  -webkit-backdrop-filter: blur(3px) saturate(0.88);
-  backdrop-filter: blur(3px) saturate(0.88);
+  -webkit-backdrop-filter: blur(1.5px);
+  backdrop-filter: blur(1.5px);
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--poster-bg, #0a1628) 14%, transparent),
-    color-mix(in srgb, var(--poster-bg, #0a1628) 42%, transparent)
+    color-mix(in srgb, var(--poster-bg, #0a1628) 5%, transparent),
+    color-mix(in srgb, var(--poster-bg, #0a1628) 18%, transparent)
   );
 }
 

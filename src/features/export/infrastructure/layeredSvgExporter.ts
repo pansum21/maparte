@@ -623,14 +623,21 @@ export async function createLayeredSvgBlobFromMap({
       ? (() => {
           const g = squareCaptionGeometry;
           const backdropLayers = vectorLayersSvg.replace(/id="/g, 'id="caption-backdrop-');
-          const blurRadius = Math.max(1, Math.min(7, pageWidth * 0.0015));
-          const washOpacity = overlayBottom ? 0.42 : 0.28;
+          const blurRadius = Math.max(2, Math.min(20, pageWidth * 0.0045));
+          const washOpacity = overlayBottom ? 0.18 : 0.1;
+          const captionTop = g.y + g.size;
+          const captionHeight = pageHeight - captionTop;
+          const backdropScaleX = pageWidth / exportWidth;
+          const backdropScaleY = pageWidth / exportHeight;
+          const backdropHeight = exportHeight * backdropScaleY;
+          const backdropTop = captionTop - (backdropHeight - captionHeight) / 2;
           return `<defs>
+<clipPath id="maparte-caption-map-clip"><rect x="0" y="${captionTop.toFixed(1)}" width="${pageWidth}" height="${captionHeight.toFixed(1)}" /></clipPath>
 <filter id="maparte-caption-map-blur" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="${overlayBottom ? blurRadius : 0}" /></filter>
-<linearGradient id="maparte-caption-map-wash" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${theme.ui.bg}" stop-opacity="${overlayBottom ? 0.14 : 0.08}"/><stop offset="100%" stop-color="${theme.ui.bg}" stop-opacity="${washOpacity}"/></linearGradient>
+<linearGradient id="maparte-caption-map-wash" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${theme.ui.bg}" stop-opacity="${overlayBottom ? 0.05 : 0.02}"/><stop offset="100%" stop-color="${theme.ui.bg}" stop-opacity="${washOpacity}"/></linearGradient>
 </defs>
-<g id="maparte-caption-map-backdrop" transform="scale(${(pageWidth / exportWidth).toFixed(5)} ${(pageHeight / exportHeight).toFixed(5)})" opacity="0.72" filter="url(#maparte-caption-map-blur)">${backdropLayers}</g>
-<rect id="maparte-caption-map-wash" x="0" y="${(g.y + g.size).toFixed(1)}" width="${pageWidth}" height="${(pageHeight - g.y - g.size).toFixed(1)}" fill="url(#maparte-caption-map-wash)"/>`;
+<g id="maparte-caption-map-backdrop" clip-path="url(#maparte-caption-map-clip)" transform="translate(0 ${backdropTop.toFixed(1)}) scale(${backdropScaleX.toFixed(5)} ${backdropScaleY.toFixed(5)})" opacity="0.9" filter="url(#maparte-caption-map-blur)">${backdropLayers}</g>
+<rect id="maparte-caption-map-wash" x="0" y="${captionTop.toFixed(1)}" width="${pageWidth}" height="${captionHeight.toFixed(1)}" fill="url(#maparte-caption-map-wash)"/>`;
         })()
       : "";
     const squareCaptionSvg = squareCaptionGeometry

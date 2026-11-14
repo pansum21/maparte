@@ -110,22 +110,30 @@ export async function compositeExport(
     ctx.fillStyle = showWhiteMat ? "#fff" : theme.ui.bg;
     ctx.fillRect(0, 0, posterWidth, posterHeight);
 
-    // Carry the live city map below the square into the caption area. The
-    // selected bottom style softens this continuation, while turning it off
-    // still leaves the same map visible instead of an empty paper block.
+    // Continue the city map only under the caption, at the square map's scale.
+    // Clipping the same map crop to the caption keeps the poster from looking
+    // like a stretched duplicate sheet. Style only softens this lower region.
+    const captionTop = y + size;
+    const captionHeight = posterHeight - captionTop;
+    const backdropWidth = posterWidth;
+    const backdropHeight = backdropWidth * (mapCanvas.height / Math.max(1, mapCanvas.width));
+    const backdropTop = captionTop - (backdropHeight - captionHeight) / 2;
     ctx.save();
-    ctx.globalAlpha = 0.72;
+    ctx.beginPath();
+    ctx.rect(0, captionTop, posterWidth, captionHeight);
+    ctx.clip();
+    ctx.globalAlpha = 0.9;
     ctx.filter = overlayBottom
-      ? `blur(${Math.max(2, Math.min(14, posterWidth * 0.003))}px)`
+      ? `blur(${Math.max(2, Math.min(20, posterWidth * 0.0045))}px)`
       : "none";
-    ctx.drawImage(mapCanvas, 0, 0, posterWidth, posterHeight);
+    ctx.drawImage(mapCanvas, 0, backdropTop, backdropWidth, backdropHeight);
     ctx.restore();
 
-    const captionWash = ctx.createLinearGradient(0, y + size, 0, posterHeight);
-    captionWash.addColorStop(0, withAlpha(theme.ui.bg, overlayBottom ? 0.14 : 0.08));
-    captionWash.addColorStop(1, withAlpha(theme.ui.bg, overlayBottom ? 0.42 : 0.28));
+    const captionWash = ctx.createLinearGradient(0, captionTop, 0, posterHeight);
+    captionWash.addColorStop(0, withAlpha(theme.ui.bg, overlayBottom ? 0.05 : 0.02));
+    captionWash.addColorStop(1, withAlpha(theme.ui.bg, overlayBottom ? 0.18 : 0.1));
     ctx.fillStyle = captionWash;
-    ctx.fillRect(0, y + size, posterWidth, posterHeight - (y + size));
+    ctx.fillRect(0, captionTop, posterWidth, captionHeight);
 
     // The export map is captured square, so all map based overlays share its
     // exact projection and are scaled into the same square opening.
