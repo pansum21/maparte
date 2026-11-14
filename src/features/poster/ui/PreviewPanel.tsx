@@ -110,6 +110,7 @@ export default function PreviewPanel({
   const mapWindowRef = useRef<HTMLDivElement | null>(null);
   const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const captionBackdropCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
   const [mapInstance, setMapInstance] = useState<any>(null);
 
@@ -243,19 +244,18 @@ export default function PreviewPanel({
 
     let rafId: number | null = null;
     const syncGhostCanvas = () => {
-      const ghost = ghostCanvasRef.current;
-      if (!ghost) return;
       const src = map.getCanvas();
       if (!src || src.width === 0 || src.height === 0) return;
 
-      if (ghost.width !== src.width || ghost.height !== src.height) {
-        ghost.width = src.width;
-        ghost.height = src.height;
-      }
-
-      const ctx = ghost.getContext("2d");
-      if (!ctx) return;
-      ctx.drawImage(src, 0, 0);
+      [ghostCanvasRef.current, captionBackdropCanvasRef.current].forEach((target) => {
+        if (!target) return;
+        if (target.width !== src.width || target.height !== src.height) {
+          target.width = src.width;
+          target.height = src.height;
+        }
+        const ctx = target.getContext("2d");
+        if (ctx) ctx.drawImage(src, 0, 0);
+      });
     };
 
     const scheduleSync = () => {
@@ -485,7 +485,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaptionLayout ? " is-maparte-square-caption" : ""}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaptionLayout ? " is-maparte-square-caption has-maparte-caption-backdrop" : ""}${isSquareCaptionLayout && (form.overlayBottom ?? form.showMarkers) ? " has-maparte-caption-blur" : ""}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
             posterDragRef.current = {
@@ -536,6 +536,18 @@ export default function PreviewPanel({
           
 
 
+          {isSquareCaptionLayout ? (
+            <>
+              <div className="poster-caption-map-backdrop" aria-hidden="true">
+                <canvas ref={captionBackdropCanvasRef} />
+              </div>
+              <div
+                className="poster-caption-map-wash"
+                aria-hidden="true"
+              />
+            </>
+          ) : null}
+
           <div ref={mapWindowRef} className="poster-map-window">
           <Suspense
             fallback={
@@ -559,7 +571,7 @@ export default function PreviewPanel({
               onMapReady={setMapInstance}
             />
           </Suspense>
-          <GradientFades color={effectiveTheme.ui.bg} top={form.overlayTop ?? form.showMarkers} bottom={form.overlayBottom ?? form.showMarkers} />
+          <GradientFades color={effectiveTheme.ui.bg} top={form.overlayTop ?? form.showMarkers} bottom={isSquareCaptionLayout ? false : (form.overlayBottom ?? form.showMarkers)} />
           <RouteOverlay
             routes={state.routes}
             mapRef={mapRef}
@@ -636,3 +648,4 @@ export default function PreviewPanel({
     </section>
   );
 }
+

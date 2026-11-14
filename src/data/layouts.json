@@ -57,7 +57,7 @@
         },
         {
           "id": "print_maparte_square_caption_a4_portrait",
-          "name": "MAPARTE Square Caption · A4",
+          "name": "Square Caption · A4",
           "description": "A square map above an editable, centered place caption on A4 portrait paper.",
           "width": 21,
           "height": 29.7,
@@ -68,7 +68,7 @@
         },
         {
           "id": "print_maparte_left_caption_a4_portrait",
-          "name": "MAPARTE Left Caption · A4",
+          "name": "Left Caption · A4",
           "description": "A square map with its place name, country and coordinates aligned at the lower left.",
           "width": 21,
           "height": 29.7,
@@ -79,7 +79,7 @@
         },
         {
           "id": "print_maparte_right_caption_a4_portrait",
-          "name": "MAPARTE Right Caption · A4",
+          "name": "Right Caption · A4",
           "description": "A square map with its place name, country and coordinates aligned at the lower right.",
           "width": 21,
           "height": 29.7,
@@ -90,7 +90,7 @@
         },
         {
           "id": "print_maparte_corner_caption_a4_portrait",
-          "name": "MAPARTE Corner Details · A4",
+          "name": "Corner Details · A4",
           "description": "Place details sit in the upper-left corner above a larger square map.",
           "width": 21,
           "height": 29.7,
@@ -457,3 +457,4 @@
     }
   ]
 }
+

@@ -1148,6 +1148,48 @@
   aspect-ratio: 1;
 }
 
+/* Keep the same city map beneath the editorial caption area. The crisp square
+   remains the main map; the lower continuation stays visible in either style
+   state and only gains a soft blur when Overlay Bottom is enabled. */
+.poster-frame.is-maparte-square-caption.has-maparte-caption-backdrop .poster-caption-map-backdrop {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--poster-bg, #0a1628);
+}
+
+.poster-frame.is-maparte-square-caption .poster-caption-map-backdrop canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.72;
+}
+
+.poster-frame.is-maparte-square-caption .poster-caption-map-wash {
+  position: absolute;
+  z-index: 1;
+  inset: calc(var(--square-map-y, 1.7%) + var(--square-map-height, 67.4%)) 0 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--poster-bg, #0a1628) 8%, transparent),
+    color-mix(in srgb, var(--poster-bg, #0a1628) 28%, transparent)
+  );
+}
+
+.poster-frame.is-maparte-square-caption.has-maparte-caption-blur .poster-caption-map-wash {
+  -webkit-backdrop-filter: blur(3px) saturate(0.88);
+  backdrop-filter: blur(3px) saturate(0.88);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--poster-bg, #0a1628) 14%, transparent),
+    color-mix(in srgb, var(--poster-bg, #0a1628) 42%, transparent)
+  );
+}
+
 .poster-frame.is-maparte-square-caption .poster-text-overlay {
   z-index: 3;
 }
@@ -1274,3 +1316,4 @@
   color: #ffffff;
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
 }
+

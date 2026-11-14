@@ -9,11 +9,6 @@ export interface SquareCaptionGeometry {
   /** Keep the credit baseline 5 mm inside the innermost border. */
   safeInsetX: number;
   safeInsetY: number;
-  captionX: number;
-  captionY: number;
-  captionWidth: number;
-  captionAlign: "left" | "center" | "right";
-  variant: "center-bottom" | "left-bottom" | "right-bottom" | "top-left";
 }
 
 /**
@@ -28,7 +23,6 @@ export function getSquareCaptionGeometry(
   heightCm: number,
   mapInsetCm: number,
   gapCm: number,
-  variant: SquareCaptionGeometry["variant"] = "center-bottom",
 ): SquareCaptionGeometry {
   const pxPerCmX = posterWidth / Math.max(1, widthCm);
   const pxPerCmY = posterHeight / Math.max(1, heightCm);
@@ -38,41 +32,17 @@ export function getSquareCaptionGeometry(
   const safeInsetY = safeInsetCm * pxPerCmY;
   const availableWidth = Math.max(1, posterWidth - safeInsetX * 2);
   const availableHeight = Math.max(1, posterHeight - safeInsetY * 2);
-  const topCaption = variant === "top-left";
-  // Reserve room for the editable caption below the map, or above it for the
-  // corner details treatment. Brand credit stays in its own 5 mm safe zone.
-  const captionHeight = (topCaption ? 3.6 : 7) * pxPerCmY;
-  const captionGap = 0.35 * pxPerCmY;
-  const y = topCaption ? safeInsetY + captionHeight + captionGap : safeInsetY;
-  const mapBottomLimit = posterHeight - safeInsetY - (topCaption ? 0 : captionHeight);
-  const size = Math.min(availableWidth, mapBottomLimit - y);
-  const captionY = topCaption
-    ? safeInsetY + 0.9 * pxPerCmY
-    : y + size + captionGap;
-  const captionWidth = topCaption ? availableWidth * 0.74 : availableWidth;
-  const captionAlign = variant === "left-bottom" || topCaption
-    ? "left"
-    : variant === "right-bottom"
-      ? "right"
-      : "center";
-  const captionX = captionAlign === "left"
-    ? safeInsetX
-    : captionAlign === "right"
-      ? posterWidth - safeInsetX
-      : posterWidth / 2;
+  // Keep at least 7 cm at the bottom for the editable caption and two credits.
+  const captionHeight = 7 * pxPerCmY;
+  const size = Math.min(availableWidth, availableHeight - captionHeight);
 
   return {
     posterWidth,
     posterHeight,
     x: (posterWidth - size) / 2,
-    y,
+    y: safeInsetY,
     size,
     safeInsetX,
     safeInsetY,
-    captionX,
-    captionY,
-    captionWidth,
-    captionAlign,
-    variant,
   };
 }

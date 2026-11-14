@@ -4,6 +4,7 @@ import { drawMarkersOnCanvas } from "@/features/markers/infrastructure/rendering
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
 import { formatCoordinates } from "@/shared/geo/posterBounds";
+import { withAlpha } from "@/shared/utils/color";
 import { APP_CREDIT_URL } from "@/core/config";
 import { formatCityLabel, getPosterFontScale } from "@/features/poster/domain/textLayout";
 import type { ExportOptions, CanvasSize } from "../../domain/types";
@@ -108,6 +109,23 @@ export async function compositeExport(
     const { posterWidth, posterHeight, x, y, size, safeInsetX, safeInsetY } = squareCaptionGeometry;
     ctx.fillStyle = showWhiteMat ? "#fff" : theme.ui.bg;
     ctx.fillRect(0, 0, posterWidth, posterHeight);
+
+    // Carry the live city map below the square into the caption area. The
+    // selected bottom style softens this continuation, while turning it off
+    // still leaves the same map visible instead of an empty paper block.
+    ctx.save();
+    ctx.globalAlpha = 0.72;
+    ctx.filter = overlayBottom
+      ? `blur(${Math.max(2, Math.min(14, posterWidth * 0.003))}px)`
+      : "none";
+    ctx.drawImage(mapCanvas, 0, 0, posterWidth, posterHeight);
+    ctx.restore();
+
+    const captionWash = ctx.createLinearGradient(0, y + size, 0, posterHeight);
+    captionWash.addColorStop(0, withAlpha(theme.ui.bg, overlayBottom ? 0.14 : 0.08));
+    captionWash.addColorStop(1, withAlpha(theme.ui.bg, overlayBottom ? 0.42 : 0.28));
+    ctx.fillStyle = captionWash;
+    ctx.fillRect(0, y + size, posterWidth, posterHeight - (y + size));
 
     // The export map is captured square, so all map based overlays share its
     // exact projection and are scaled into the same square opening.
@@ -447,3 +465,4 @@ export async function compositeExport(
 export { resolveCanvasSize } from "./canvas";
 export { applyFades } from "./layers";
 export { drawPosterText } from "./typography";
+

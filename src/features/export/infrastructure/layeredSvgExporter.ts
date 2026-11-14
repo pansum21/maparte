@@ -619,6 +619,20 @@ export async function createLayeredSvgBlobFromMap({
     const placementTransform = squareCaptionGeometry
       ? `transform="translate(${squareCaptionGeometry.x} ${squareCaptionGeometry.y}) scale(${squareCaptionGeometry.size / exportWidth} ${squareCaptionGeometry.size / exportHeight})"`
       : "";
+    const captionBackdropSvg = squareCaptionGeometry
+      ? (() => {
+          const g = squareCaptionGeometry;
+          const backdropLayers = vectorLayersSvg.replace(/id="/g, 'id="caption-backdrop-');
+          const blurRadius = Math.max(1, Math.min(7, pageWidth * 0.0015));
+          const washOpacity = overlayBottom ? 0.42 : 0.28;
+          return `<defs>
+<filter id="maparte-caption-map-blur" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="${overlayBottom ? blurRadius : 0}" /></filter>
+<linearGradient id="maparte-caption-map-wash" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${theme.ui.bg}" stop-opacity="${overlayBottom ? 0.14 : 0.08}"/><stop offset="100%" stop-color="${theme.ui.bg}" stop-opacity="${washOpacity}"/></linearGradient>
+</defs>
+<g id="maparte-caption-map-backdrop" transform="scale(${(pageWidth / exportWidth).toFixed(5)} ${(pageHeight / exportHeight).toFixed(5)})" opacity="0.72" filter="url(#maparte-caption-map-blur)">${backdropLayers}</g>
+<rect id="maparte-caption-map-wash" x="0" y="${(g.y + g.size).toFixed(1)}" width="${pageWidth}" height="${(pageHeight - g.y - g.size).toFixed(1)}" fill="url(#maparte-caption-map-wash)"/>`;
+        })()
+      : "";
     const squareCaptionSvg = squareCaptionGeometry
       ? (() => {
           const g = squareCaptionGeometry;
@@ -650,6 +664,7 @@ ${includeCredits ? `<text x="${g.safeInsetX}" y="${creditY}" text-anchor="start"
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${pageWidth}" height="${pageHeight}" viewBox="0 0 ${pageWidth} ${pageHeight}">
 ${matRect}
+${captionBackdropSvg}
 <g ${placementTransform}>
 <g ${groupTransform}>
 ${vectorLayersSvg}
@@ -670,3 +685,4 @@ ${neatlineLayerSvg}
     offscreenContainer.remove();
   }
 }
+

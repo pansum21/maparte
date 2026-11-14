@@ -442,14 +442,6 @@ export default function AppShell() {
     setBackdropOpen(false);
     setIsEditing(false);
     if (tab === desktopTab && desktopPanelOpen) {
-      if (tab === "layout" && state.form.layout !== "custom") {
-        dispatch({
-          type: "SET_LAYOUT",
-          layoutId: "custom",
-          widthCm: "20",
-          heightCm: "30",
-        });
-      }
       setDesktopPanelOpen(false);
     } else {
       setDesktopTab(tab);
