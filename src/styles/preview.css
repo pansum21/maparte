@@ -1138,6 +1138,45 @@
   background: transparent;
 }
 
+/* Editorial A4 print: square map above the editable place caption. */
+.poster-frame.is-maparte-square-caption .poster-map-window {
+  inset: auto;
+  top: var(--square-map-y, 1.7%);
+  left: var(--square-map-x, 2.4%);
+  width: var(--square-map-width, 95.2%);
+  height: var(--square-map-height, 67.4%);
+  aspect-ratio: 1;
+}
+
+.poster-frame.is-maparte-square-caption .poster-text-overlay {
+  z-index: 3;
+}
+
+.poster-frame.is-maparte-square-caption .poster-divider {
+  left: 44%;
+  right: 44%;
+}
+
+.poster-frame.is-maparte-square-caption .poster-city,
+.poster-frame.is-maparte-square-caption .poster-country,
+.poster-frame.is-maparte-square-caption .poster-tagline,
+.poster-frame.is-maparte-square-caption .poster-coords {
+  padding-inline: 6%;
+  box-sizing: border-box;
+}
+
+.poster-frame.is-maparte-square-caption .poster-attribution {
+  left: var(--square-safe-x, 2.4%);
+  right: auto;
+  text-align: left;
+}
+
+.poster-frame.is-maparte-square-caption .poster-credits {
+  left: auto;
+  right: var(--square-safe-x, 2.4%);
+  text-align: right;
+}
+
 /* .poster-frame.has-white-mat .poster-map-window disabled */
 
 .poster-map-window > .map-container,

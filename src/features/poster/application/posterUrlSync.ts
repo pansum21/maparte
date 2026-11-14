@@ -114,7 +114,7 @@ export function serializePosterStateToUrl(
   }
 
   // 2. Border / Neatline layout (if customized)
-  if (form.layout && form.layout !== defaultLayoutId) {
+  if (form.layout && form.layout !== "custom" && form.layout !== defaultLayoutId) {
     params.set("border", form.layout);
   }
 

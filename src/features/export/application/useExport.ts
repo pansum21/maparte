@@ -20,6 +20,8 @@ import {
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { readNeatlineSelection, getPosterBorderMetrics } from "@/features/layout/ui/NeatlinePicker";
+import { isMaparteSquareCaptionLayout } from "@/features/layout/infrastructure/layoutRepository";
+import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { getAllMarkerIcons } from "@/features/markers/infrastructure/iconRegistry";
 import { ensureFont } from "@/core/services";
 import {
@@ -257,6 +259,17 @@ export function useExport() {
           neatlineSelection.showWhiteMat,
         );
         const showWhiteMat = Boolean(neatlineSelection.showWhiteMat);
+        const isSquareCaption = isMaparteSquareCaptionLayout(form.layout);
+        const squareCaptionGeometry = isSquareCaption
+          ? getSquareCaptionGeometry(
+              size.width,
+              size.height,
+              widthCm,
+              heightCm,
+              borderMetrics.mapInsetCm,
+              borderMetrics.gapCm,
+            )
+          : undefined;
 
         const lat = Number(form.latitude) || 0;
         const lon = Number(form.longitude) || 0;
@@ -264,8 +277,8 @@ export function useExport() {
         if (format === "svg") {
           const svgBlob = await createLayeredSvgBlobFromMap({
             map,
-            exportWidth: size.width,
-            exportHeight: size.height,
+            exportWidth: squareCaptionGeometry?.size ?? size.width,
+            exportHeight: squareCaptionGeometry?.size ?? size.height,
             theme: effectiveTheme,
             center: { lat, lon },
             displayCity: getActivePosterLabels(form).city,
@@ -284,11 +297,12 @@ export function useExport() {
               : [],
             routes: visibleRoutes,
             neatlineSvg,
-            showWhiteMat,
+            showWhiteMat: squareCaptionGeometry ? false : showWhiteMat,
             matInsetXRatio: borderMetrics.matInsetXRatio,
             matInsetYRatio: borderMetrics.matInsetYRatio,
             mapInsetXRatio: borderMetrics.mapInsetXRatio,
             mapInsetYRatio: borderMetrics.mapInsetYRatio,
+            squareCaptionGeometry,
           });
           const svgFilename = createPosterFilename(
             form.displayCity || form.location,
@@ -315,25 +329,33 @@ export function useExport() {
           markerSizeScale,
         } = await captureMapAsCanvas(
           map,
-          size.width,
-          size.height,
-          showWhiteMat,
-          borderMetrics.mapInsetXRatio,
-          borderMetrics.mapInsetYRatio,
+          squareCaptionGeometry?.size ?? size.width,
+          squareCaptionGeometry?.size ?? size.height,
+          squareCaptionGeometry ? false : showWhiteMat,
+          squareCaptionGeometry ? 0 : borderMetrics.mapInsetXRatio,
+          squareCaptionGeometry ? 0 : borderMetrics.mapInsetYRatio,
         );
         // The WebGL map surface can be smaller than the requested poster on
         // some devices. Export at the actual rendered pixel dimensions instead
         // of interpolating it upward and labeling the result as 500 PPI.
-        const density = {
-          x: mapCanvas.width / widthInches,
-          y: mapCanvas.height / heightInches,
-        };
+        const squarePhysicalInches = squareCaptionGeometry
+          ? (squareCaptionGeometry.size / size.width) * widthCm / 2.54
+          : null;
+        const density = squarePhysicalInches
+          ? {
+              x: mapCanvas.width / squarePhysicalInches,
+              y: mapCanvas.height / squarePhysicalInches,
+            }
+          : {
+              x: mapCanvas.width / widthInches,
+              y: mapCanvas.height / heightInches,
+            };
         const effectiveDpi = Math.max(1, Math.floor(Math.min(density.x, density.y)));
 
         // 2. Composite fades + text
         const { canvas: fullCanvas } = await compositeExport(mapCanvas, {
           mapAlreadyInset,
-          showWhiteMat,
+          showWhiteMat: squareCaptionGeometry ? false : showWhiteMat,
           matInsetXRatio: borderMetrics.matInsetXRatio,
           matInsetYRatio: borderMetrics.matInsetYRatio,
           mapInsetXRatio: borderMetrics.mapInsetXRatio,
@@ -362,6 +384,7 @@ export function useExport() {
           markerScaleY: hasVisibleOverlays ? markerScaleY : undefined,
           markerSizeScale: hasVisibleOverlays ? markerSizeScale : undefined,
           routes: visibleRoutes,
+          squareCaptionGeometry,
         });
 
         const canvas = isPro ? fullCanvas : applyFreeTier(fullCanvas);
@@ -380,8 +403,8 @@ export function useExport() {
         } else if (format === "zip") {
           const svgBlob = await createLayeredSvgBlobFromMap({
             map,
-            exportWidth: size.width,
-            exportHeight: size.height,
+            exportWidth: squareCaptionGeometry?.size ?? size.width,
+            exportHeight: squareCaptionGeometry?.size ?? size.height,
             theme: effectiveTheme,
             center: { lat, lon },
             displayCity: getActivePosterLabels(form).city,
@@ -400,11 +423,12 @@ export function useExport() {
               : [],
             routes: visibleRoutes,
             neatlineSvg,
-            showWhiteMat,
+            showWhiteMat: squareCaptionGeometry ? false : showWhiteMat,
             matInsetXRatio: borderMetrics.matInsetXRatio,
             matInsetYRatio: borderMetrics.matInsetYRatio,
             mapInsetXRatio: borderMetrics.mapInsetXRatio,
             mapInsetYRatio: borderMetrics.mapInsetYRatio,
+            squareCaptionGeometry,
           });
 
           const pngBlob = await createPngBlob(canvas, density);

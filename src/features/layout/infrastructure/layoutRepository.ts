@@ -130,6 +130,13 @@ export const defaultLayoutId: string = layoutOptionsById[manifestDefaultId]
   ? manifestDefaultId
   : (layoutOptions[0]?.id ?? fallbackLayout.id);
 
+export const MAPARTE_SQUARE_CAPTION_LAYOUT_ID =
+  "print_maparte_square_caption_a4_portrait";
+
+export function isMaparteSquareCaptionLayout(layoutId: string): boolean {
+  return layoutId === MAPARTE_SQUARE_CAPTION_LAYOUT_ID;
+}
+
 export function formatLayoutDimensions(layoutOption: Layout): string {
   if (!layoutOption) return "";
   return `${formatDecimal(layoutOption.width)} x ${formatDecimal(layoutOption.height)} ${layoutOption.unit}`;

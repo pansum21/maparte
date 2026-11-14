@@ -42,7 +42,9 @@ import {
   createCustomLayoutOption,
   formatLayoutDimensions,
   getLayoutOption,
+  isMaparteSquareCaptionLayout,
 } from "@/features/layout/infrastructure/layoutRepository";
+import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import {
@@ -294,6 +296,17 @@ export default function PreviewPanel({
     getLayoutOption(form.layout) ?? createCustomLayoutOption(widthCm, heightCm);
   const posterSizeLabel = formatLayoutDimensions(layoutOption);
   const previewCanvasSize = resolveCanvasSize(widthCm / 2.54, heightCm / 2.54, 500);
+  const isSquareCaptionLayout = isMaparteSquareCaptionLayout(form.layout);
+  const squareCaptionGeometry = isSquareCaptionLayout
+    ? getSquareCaptionGeometry(
+        previewCanvasSize.width,
+        previewCanvasSize.height,
+        widthCm,
+        heightCm,
+        borderMetrics.mapInsetCm,
+        borderMetrics.gapCm,
+      )
+    : null;
   const resolutionInfoLabel = `${previewCanvasSize.width} × ${previewCanvasSize.height} px (${previewCanvasSize.effectiveDpi} PPI)`;
   const layoutLabel = `${layoutOption.name} (${formatLayoutDimensions(layoutOption)})`;
   const infoLocationLabel =
@@ -470,7 +483,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaptionLayout ? " is-maparte-square-caption" : ""}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
             posterDragRef.current = {
@@ -501,6 +514,12 @@ export default function PreviewPanel({
               "--poster-bg": posterBg,
               "--map-inset-x": borderMetrics.mapInsetX,
               "--map-inset-y": borderMetrics.mapInsetY,
+              "--square-map-x": squareCaptionGeometry ? `${(squareCaptionGeometry.x / previewCanvasSize.width) * 100}%` : undefined,
+              "--square-map-y": squareCaptionGeometry ? `${(squareCaptionGeometry.y / previewCanvasSize.height) * 100}%` : undefined,
+              "--square-map-width": squareCaptionGeometry ? `${(squareCaptionGeometry.size / previewCanvasSize.width) * 100}%` : undefined,
+              "--square-map-height": squareCaptionGeometry ? `${(squareCaptionGeometry.size / previewCanvasSize.height) * 100}%` : undefined,
+              "--square-safe-x": squareCaptionGeometry ? `${(squareCaptionGeometry.safeInsetX / previewCanvasSize.width) * 100}%` : undefined,
+              "--square-safe-y": squareCaptionGeometry ? `${(squareCaptionGeometry.safeInsetY / previewCanvasSize.height) * 100}%` : undefined,
               "--mat-inset-x": borderMetrics.matInsetX,
               "--mat-inset-y": borderMetrics.matInsetY,
               "--cinema-poster-x": `${cinemaPosterPlacement.x}vw`,
@@ -582,6 +601,7 @@ export default function PreviewPanel({
             includeCredits={form.includeCredits}
             showOverlay={form.overlayBottom ?? form.showMarkers}
             customDate={activeCustomDate}
+            squareCaption={isSquareCaptionLayout}
           />
           <NeatlineArtwork
             selection={neatlineSelection}

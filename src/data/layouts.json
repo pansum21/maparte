@@ -56,6 +56,17 @@
           "posterHeightCm": 29.7
         },
         {
+          "id": "print_maparte_square_caption_a4_portrait",
+          "name": "MAPARTE Square Caption · A4",
+          "description": "A square map above an editable, centered place caption on A4 portrait paper.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='17' y='2' width='30' height='30' rx='1' fill='#4B91B7'/><path d='M20 35h24M24 38h16' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
           "id": "print_a5_portrait",
           "name": "A5 Portrait",
           "description": "ISO A5 portrait format.",

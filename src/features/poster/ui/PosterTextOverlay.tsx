@@ -30,6 +30,7 @@ interface PosterTextOverlayProps {
   includeCredits: boolean;
   showOverlay: boolean;
   customDate?: string;
+  squareCaption?: boolean;
 }
 
 /**
@@ -50,6 +51,7 @@ export default function PosterTextOverlay({
   includeCredits,
   showOverlay,
   customDate,
+  squareCaption = false,
 }: PosterTextOverlayProps) {
   const toCqMin = (px: number) => (px / TEXT_DIMENSION_REFERENCE_PX) * 100;
   const fontScale = getPosterFontScale(fontSize);
@@ -72,14 +74,14 @@ export default function PosterTextOverlay({
   const hasTagline = Boolean(customDate && customDate.trim());
 
   return (
-    <div className="poster-text-overlay" style={{ color: textColor }}>
+    <div className={`poster-text-overlay${squareCaption ? " is-square-caption-text" : ""}`} style={{ color: textColor }}>
       {showPosterText && (
         <>
           <p
             className="poster-city"
             style={{
               fontFamily: titleFont,
-              top: `${TEXT_CITY_Y_RATIO * 100}%`,
+              top: squareCaption ? "75%" : `${TEXT_CITY_Y_RATIO * 100}%`,
               fontSize: cityFontSize,
             }}
           >
@@ -89,14 +91,14 @@ export default function PosterTextOverlay({
             className="poster-divider"
             style={{
               borderColor: textColor,
-              top: `${TEXT_DIVIDER_Y_RATIO * 100}%`,
+              top: squareCaption ? "79%" : `${TEXT_DIVIDER_Y_RATIO * 100}%`,
             }}
           /> : null}
           {country ? <p
             className="poster-country"
             style={{
               fontFamily: titleFont,
-              top: `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
+              top: squareCaption ? "82%" : `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
               fontSize: countryFontSize,
             }}
           >
@@ -107,7 +109,7 @@ export default function PosterTextOverlay({
               className="poster-tagline"
               style={{
                 fontFamily: bodyFont,
-                top: `${(country ? .918 : .89) * 100}%`,
+              top: squareCaption ? "85%" : `${(country ? .918 : .89) * 100}%`,
                 fontSize: taglineFontSize,
                 letterSpacing: "0.06em",
               }}
@@ -119,7 +121,7 @@ export default function PosterTextOverlay({
             className="poster-coords"
             style={{
               fontFamily: bodyFont,
-              top: `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
+              top: squareCaption ? "88%" : `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
               fontSize: coordsFontSize,
             }}
           >
@@ -127,20 +129,6 @@ export default function PosterTextOverlay({
           </p>
         </>
       )}
-
-      <span
-        className="poster-attribution"
-        style={{
-          fontFamily: bodyFont,
-          color: attributionColor,
-          opacity: attributionOpacity,
-          fontSize: attributionFontSize,
-          bottom: `${TEXT_EDGE_MARGIN_RATIO * 100}%`,
-          right: `${TEXT_EDGE_MARGIN_RATIO * 100}%`,
-        }}
-      >
-        &copy; OpenStreetMap contributors
-      </span>
 
       {includeCredits && (
         <span
@@ -150,11 +138,12 @@ export default function PosterTextOverlay({
             color: attributionColor,
             opacity: attributionOpacity,
             fontSize: attributionFontSize,
-            bottom: `${TEXT_EDGE_MARGIN_RATIO * 100}%`,
-            left: `${TEXT_EDGE_MARGIN_RATIO * 100}%`,
+            bottom: squareCaption ? "var(--square-safe-y, 1.7%)" : `${TEXT_EDGE_MARGIN_RATIO * 100}%`,
+            left: squareCaption ? "var(--square-safe-x, 2.4%)" : `${TEXT_EDGE_MARGIN_RATIO * 100}%`,
+            right: squareCaption ? "var(--square-safe-x, 2.4%)" : undefined,
           }}
         >
-          © {APP_CREDIT_URL}
+          {APP_CREDIT_URL}
         </span>
       )}
     </div>

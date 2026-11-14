@@ -20,6 +20,15 @@ export interface CanvasSize {
 
 /** Options passed to the export compositor (map snapshot + text overlay). */
 export interface ExportOptions {
+  squareCaptionGeometry?: {
+    posterWidth: number;
+    posterHeight: number;
+    x: number;
+    y: number;
+    size: number;
+    safeInsetX: number;
+    safeInsetY: number;
+  };
   /** Map pixels were rendered directly into the page canvas' 10% print mat. */
   mapAlreadyInset?: boolean;
   /** Whether the white paper mat sheet should frame the poster map. */

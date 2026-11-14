@@ -511,7 +511,7 @@ export default function HomePage() {
       <footer className="home-footer">
         <div className="home-footer__brand"><strong>MAPARTE</strong><span>Map it. Make it yours.</span></div>
         <nav aria-label="Footer navigation"><a href="#maps">Map gallery</a><a href="#features">Features</a><a href="#how">How it works</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refund</a></nav>
-        <small>Digital map designs · Map data © OpenStreetMap contributors</small>
+        <small>Digital map designs made for the places you love.</small>
       </footer>
     </div>
   );

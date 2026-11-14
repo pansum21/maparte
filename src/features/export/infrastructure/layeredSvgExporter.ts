@@ -61,6 +61,15 @@ interface LayeredSvgOptions {
   matInsetYRatio?: number;
   mapInsetXRatio?: number;
   mapInsetYRatio?: number;
+  squareCaptionGeometry?: {
+    posterWidth: number;
+    posterHeight: number;
+    x: number;
+    y: number;
+    size: number;
+    safeInsetX: number;
+    safeInsetY: number;
+  };
 }
 
 function renderMapCanvasToDataUrl(
@@ -246,6 +255,7 @@ export async function createLayeredSvgBlobFromMap({
   matInsetYRatio,
   mapInsetXRatio,
   mapInsetYRatio,
+  squareCaptionGeometry,
 }: LayeredSvgOptions): Promise<Blob> {
   await waitForMapIdle(map);
 
@@ -515,7 +525,7 @@ export async function createLayeredSvgBlobFromMap({
 
     let vectorTypographySvg = "";
 
-    if (showPosterText) {
+    if (showPosterText && !squareCaptionGeometry) {
       const hasTagline = Boolean(customDate && customDate.trim().length > 0);
       const cityLabel = formatCityLabel(displayCity);
       let cityFontSize = CITY_FONT_BASE_PX * dimScale * fontScale * computeCityFontScale(displayCity);
@@ -566,7 +576,7 @@ export async function createLayeredSvgBlobFromMap({
 
     let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale * fontScale;
     const osmText = "© OpenStreetMap contributors";
-    const appText = `✦ MAPARTE • ${APP_CREDIT_URL}`;
+    const appText = APP_CREDIT_URL;
     const approxOsmWidth = osmText.length * attributionFontSize * 0.6;
     const approxAppWidth = includeCredits ? appText.length * attributionFontSize * 0.6 : 0;
     const edgeMargin = exportWidth * TEXT_EDGE_MARGIN_RATIO;
@@ -578,14 +588,14 @@ export async function createLayeredSvgBlobFromMap({
 
     const attrY = exportHeight * (1 - TEXT_EDGE_MARGIN_RATIO);
     const osmX = exportWidth * (1 - TEXT_EDGE_MARGIN_RATIO);
-    vectorTypographySvg += `
+    if (!squareCaptionGeometry) vectorTypographySvg += `
   <text x="${osmX}" y="${attrY}" text-anchor="end" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">© OpenStreetMap contributors</text>
 `;
 
-    if (includeCredits) {
+    if (includeCredits && !squareCaptionGeometry) {
       const credX = exportWidth * TEXT_EDGE_MARGIN_RATIO;
       vectorTypographySvg += `
-  <text x="${credX}" y="${attrY}" text-anchor="start" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">✦ MAPARTE • ${escapeXml(APP_CREDIT_URL)}</text>
+  <text x="${credX}" y="${attrY}" text-anchor="start" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">${escapeXml(APP_CREDIT_URL)}</text>
 `;
     }
 
@@ -594,32 +604,66 @@ export async function createLayeredSvgBlobFromMap({
     const finalMapInsetXRatio = mapInsetXRatio ?? (showWhiteMat ? 0.055 : 0);
     const finalMapInsetYRatio = mapInsetYRatio ?? (showWhiteMat ? 0.055 : 0);
 
-    const neatlineX = exportWidth * finalMatInsetXRatio;
-    const neatlineY = exportHeight * finalMatInsetYRatio;
-    const neatlineW = exportWidth * (1 - finalMatInsetXRatio * 2);
-    const neatlineH = exportHeight * (1 - finalMatInsetYRatio * 2);
+    const pageWidth = squareCaptionGeometry?.posterWidth ?? exportWidth;
+    const pageHeight = squareCaptionGeometry?.posterHeight ?? exportHeight;
+    const neatlineX = pageWidth * finalMatInsetXRatio;
+    const neatlineY = pageHeight * finalMatInsetYRatio;
+    const neatlineW = pageWidth * (1 - finalMatInsetXRatio * 2);
+    const neatlineH = pageHeight * (1 - finalMatInsetYRatio * 2);
 
     const neatlineLayerSvg = neatlineSvg
-      ? `<svg x="${neatlineX}" y="${neatlineY}" width="${neatlineW}" height="${neatlineH}" viewBox="0 0 1000 ${(1000 * exportHeight) / exportWidth}" preserveAspectRatio="none">${neatlineSvg}</svg>`
+      ? `<svg x="${neatlineX}" y="${neatlineY}" width="${neatlineW}" height="${neatlineH}" viewBox="0 0 1000 ${(1000 * pageHeight) / pageWidth}" preserveAspectRatio="none">${neatlineSvg}</svg>`
       : "";
 
-    const matRect = showWhiteMat ? `<rect width="100%" height="100%" fill="#fff"/>` : "";
-    const groupTransform = showWhiteMat
+    const matRect = showWhiteMat
+      ? `<rect width="${pageWidth}" height="${pageHeight}" fill="#fff"/>`
+      : squareCaptionGeometry
+        ? `<rect width="${pageWidth}" height="${pageHeight}" fill="${theme.ui.bg}"/>`
+        : "";
+    const groupTransform = showWhiteMat && !squareCaptionGeometry
       ? `transform="translate(${exportWidth * finalMapInsetXRatio} ${exportHeight * finalMapInsetYRatio}) scale(${1 - finalMapInsetXRatio * 2} ${1 - finalMapInsetYRatio * 2})"`
+      : "";
+    const placementTransform = squareCaptionGeometry
+      ? `transform="translate(${squareCaptionGeometry.x} ${squareCaptionGeometry.y}) scale(${squareCaptionGeometry.size / exportWidth} ${squareCaptionGeometry.size / exportHeight})"`
+      : "";
+    const squareCaptionSvg = squareCaptionGeometry
+      ? (() => {
+          const g = squareCaptionGeometry;
+          const centerX = g.x + g.size / 2;
+          const captionY = g.y + g.size + pageHeight * 0.035;
+          const countryY = captionY + pageHeight * 0.044;
+          const dateY = countryY + pageHeight * 0.032;
+          const coordsY = dateY + (customDate?.trim() ? pageHeight * 0.028 : 0);
+          const base = Math.min(pageWidth, pageHeight) / 1000 * fontScale;
+          const creditY = pageHeight - g.safeInsetY;
+          const captionSvg = showPosterText ? `
+  <text x="${centerX}" y="${captionY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(20, 48 * base)}" font-weight="600" fill="${textColor}">${escapeXml(formatCityLabel(displayCity))}</text>
+  ${displayCity && displayCountry ? `<line x1="${pageWidth * 0.43}" y1="${captionY + pageHeight * 0.018}" x2="${pageWidth * 0.57}" y2="${captionY + pageHeight * 0.018}" stroke="${textColor}" stroke-opacity="0.55" stroke-width="${Math.max(1, pageWidth / 1000 * 2)}" />` : ""}
+  ${displayCountry ? `<text x="${centerX}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(13, 25 * base)}" font-weight="400" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>` : ""}
+  ${customDate?.trim() ? `<text x="${centerX}" y="${dateY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(11, 19 * base)}" fill="${textColor}">${escapeXml(customDate.trim())}</text>` : ""}
+  <text x="${centerX}" y="${coordsY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(10, 16 * base)}" opacity="0.72" fill="${textColor}">${escapeXml(formatCoordinates(center.lat, center.lon))}</text>` : "";
+          return `<g id="square-caption-typography">${captionSvg}</g>
+<g id="square-caption-credits" font-family="${bodyFontFamily}" font-size="${Math.max(9, 13 * Math.min(pageWidth, pageHeight) / 1000)}" opacity="0.68">
+<text x="${pageWidth - g.safeInsetX}" y="${creditY}" text-anchor="end" fill="${attributionColor}">© OpenStreetMap contributors</text>
+${includeCredits ? `<text x="${g.safeInsetX}" y="${creditY}" text-anchor="start" fill="${attributionColor}">${escapeXml(APP_CREDIT_URL)}</text>` : ""}
+</g>`;
+        })()
       : "";
 
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="${exportWidth}" height="${exportHeight}" viewBox="0 0 ${exportWidth} ${exportHeight}">
+<svg xmlns="http://www.w3.org/2000/svg" width="${pageWidth}" height="${pageHeight}" viewBox="0 0 ${pageWidth} ${pageHeight}">
 ${matRect}
+<g ${placementTransform}>
 <g ${groupTransform}>
 ${vectorLayersSvg}
 ${routesSvg}
 ${fadesSvg}
 ${markersSvg}
-<g id="vector-typography">
+${squareCaptionGeometry ? "" : `<g id="vector-typography">`}
 ${vectorTypographySvg}
+${squareCaptionGeometry ? "" : `</g>`}
 </g>
-</g>
+${squareCaptionGeometry ? `</g>${squareCaptionSvg}` : ""}
 ${neatlineLayerSvg}
 </svg>`;
 

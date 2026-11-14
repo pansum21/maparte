@@ -116,7 +116,7 @@ export function drawPosterText(
 
   // Attribution layout: ensure left and right attributions never collide or overlap
   const osmText = "\u00a9 OpenStreetMap contributors";
-  const appText = `✦ MAPARTE • ${APP_CREDIT_URL}`;
+  const appText = APP_CREDIT_URL;
 
   let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale * fontScale;
   ctx.font = `300 ${attributionFontSize}px ${bodyFontFamily}`;

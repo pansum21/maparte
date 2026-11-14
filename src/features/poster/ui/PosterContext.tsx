@@ -31,10 +31,7 @@ import { createDefaultRouteSettings } from "@/features/routes/infrastructure/hel
 
 /* ────── Default form (moved from appConfig) ────── */
 
-import {
-  defaultLayoutId,
-  getLayoutOption,
-} from "@/features/layout/infrastructure/layoutRepository";
+import { getLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import { defaultThemeName } from "@/features/theme/infrastructure/themeRepository";
 import {
   DEFAULT_POSTER_WIDTH_CM,
@@ -49,13 +46,6 @@ import {
 import { resolveCityFromUrl, findCityMatch } from "@/features/location/domain/cityRouteResolver";
 import { parsePosterStateFromUrl, serializePosterStateToUrl } from "@/features/poster/application/posterUrlSync";
 
-const defaultLayoutOption = getLayoutOption(defaultLayoutId);
-const defaultLayoutWidthCm = Number(
-  defaultLayoutOption?.widthCm ?? DEFAULT_POSTER_WIDTH_CM,
-);
-const defaultLayoutHeightCm = Number(
-  defaultLayoutOption?.heightCm ?? DEFAULT_POSTER_HEIGHT_CM,
-);
 const DEFAULT_LOCATION_LABEL = "Dehradun, Uttarakhand, India";
 
 export const DEFAULT_FORM: PosterForm = {
@@ -63,10 +53,10 @@ export const DEFAULT_FORM: PosterForm = {
   latitude: DEFAULT_LAT.toFixed(6),
   longitude: DEFAULT_LON.toFixed(6),
   distance: String(DEFAULT_DISTANCE_METERS),
-  width: String(defaultLayoutWidthCm),
-  height: String(defaultLayoutHeightCm),
+  width: String(DEFAULT_POSTER_WIDTH_CM),
+  height: String(DEFAULT_POSTER_HEIGHT_CM),
   theme: defaultThemeName,
-  layout: defaultLayoutId,
+  layout: "custom",
   displayCity: DEFAULT_CITY,
   displayTown: "",
   displayCountry: DEFAULT_COUNTRY,

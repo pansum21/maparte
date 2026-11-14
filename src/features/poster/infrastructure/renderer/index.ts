@@ -3,6 +3,9 @@ import { drawPosterText } from "./typography";
 import { drawMarkersOnCanvas } from "@/features/markers/infrastructure/rendering";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
+import { formatCoordinates } from "@/shared/geo/posterBounds";
+import { APP_CREDIT_URL } from "@/core/config";
+import { formatCityLabel, getPosterFontScale } from "@/features/poster/domain/textLayout";
 import type { ExportOptions, CanvasSize } from "../../domain/types";
 
 async function drawNeatlineSvg(
@@ -78,19 +81,115 @@ export async function compositeExport(
     markerSizeScale = 1,
     routes = [],
     neatlineSvg,
+    squareCaptionGeometry,
   } = options;
 
   const width = mapCanvas.width;
   const height = mapCanvas.height;
 
-  const canvas = mapAlreadyInset ? mapCanvas : document.createElement("canvas");
+  const canvas = squareCaptionGeometry
+    ? document.createElement("canvas")
+    : mapAlreadyInset
+      ? mapCanvas
+      : document.createElement("canvas");
   if (!mapAlreadyInset) {
     canvas.width = width;
     canvas.height = height;
   }
+  if (squareCaptionGeometry) {
+    canvas.width = squareCaptionGeometry.posterWidth;
+    canvas.height = squareCaptionGeometry.posterHeight;
+  }
 
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas rendering is not available.");
+
+  if (squareCaptionGeometry) {
+    const { posterWidth, posterHeight, x, y, size, safeInsetX, safeInsetY } = squareCaptionGeometry;
+    ctx.fillStyle = showWhiteMat ? "#fff" : theme.ui.bg;
+    ctx.fillRect(0, 0, posterWidth, posterHeight);
+
+    // The export map is captured square, so all map based overlays share its
+    // exact projection and are scaled into the same square opening.
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(size / width, size / height);
+    ctx.drawImage(mapCanvas, 0, 0, width, height);
+    if (overlayTop || overlayBottom) {
+      applyFades(ctx, width, height, theme.ui.bg, overlayTop, overlayBottom);
+    }
+    if (routes.length > 0 && markerProjection) {
+      drawRoutesOnCanvas(ctx, routes, markerProjection, markerScaleX, markerScaleY, markerSizeScale);
+      if (markerIcons.length > 0) {
+        const endpoints = routeEndpointMarkerItems(routes);
+        if (endpoints.length) await drawMarkersOnCanvas(ctx, endpoints, markerIcons, markerProjection, markerScaleX, markerScaleY, markerSizeScale);
+      }
+    }
+    if (markers.length > 0 && markerIcons.length > 0 && markerProjection) {
+      await drawMarkersOnCanvas(ctx, markers, markerIcons, markerProjection, markerScaleX, markerScaleY, markerSizeScale);
+    }
+    ctx.restore();
+
+    const textColor = theme.ui.text || "#171717";
+    const font = fontFamily ? `"${fontFamily}", "Space Grotesk", sans-serif` : '"Space Grotesk", sans-serif';
+    const mono = fontFamily ? `"${fontFamily}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace';
+    const base = Math.min(posterWidth, posterHeight) / 1000;
+    const captionY = y + size + posterHeight * 0.035;
+    ctx.fillStyle = textColor;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    if (showPosterText) {
+      ctx.font = `600 ${Math.max(20, 48 * base * getPosterFontScale(fontSize))}px ${font}`;
+      ctx.fillText(formatCityLabel(displayCity), posterWidth / 2, captionY, posterWidth * 0.86);
+      if (displayCity && displayCountry) {
+        ctx.globalAlpha = 0.55;
+        ctx.fillRect(posterWidth * 0.43, captionY + posterHeight * 0.018, posterWidth * 0.14, Math.max(1, 2 * base));
+        ctx.globalAlpha = 1;
+      }
+      let lineY = captionY + posterHeight * 0.044;
+      if (displayCountry) {
+        ctx.font = `400 ${Math.max(13, 25 * base * getPosterFontScale(fontSize))}px ${font}`;
+        ctx.fillText(displayCountry.toUpperCase(), posterWidth / 2, lineY, posterWidth * 0.86);
+        lineY += posterHeight * 0.032;
+      }
+      if (customDate?.trim()) {
+        ctx.font = `400 ${Math.max(11, 19 * base * getPosterFontScale(fontSize))}px ${mono}`;
+        ctx.fillText(customDate.trim(), posterWidth / 2, lineY, posterWidth * 0.86);
+        lineY += posterHeight * 0.028;
+      }
+      ctx.globalAlpha = 0.72;
+      ctx.font = `400 ${Math.max(10, 16 * base * getPosterFontScale(fontSize))}px ${mono}`;
+      ctx.fillText(formatCoordinates(center.lat, center.lon), posterWidth / 2, lineY, posterWidth * 0.86);
+      ctx.globalAlpha = 1;
+    }
+
+    const creditY = posterHeight - safeInsetY;
+    const creditSize = Math.max(9, 13 * base);
+    ctx.font = `300 ${creditSize}px ${mono}`;
+    ctx.textBaseline = "bottom";
+    ctx.globalAlpha = 0.68;
+    ctx.textAlign = "right";
+    ctx.fillText("© OpenStreetMap contributors", posterWidth - safeInsetX, creditY, posterWidth * 0.42);
+    if (includeCredits) {
+      ctx.textAlign = "left";
+      ctx.fillText(APP_CREDIT_URL, safeInsetX, creditY, posterWidth * 0.42);
+    }
+    ctx.globalAlpha = 1;
+    await drawNeatlineSvg(ctx, posterWidth, posterHeight, neatlineSvg, matInsetXRatio, matInsetYRatio);
+
+    const sizeInfo: CanvasSize = {
+      width: posterWidth,
+      height: posterHeight,
+      requestedWidth: posterWidth,
+      requestedHeight: posterHeight,
+      downscaleFactor: 1,
+      requestedDpi: 0,
+      effectiveDpiX: widthInches > 0 ? posterWidth / widthInches : 0,
+      effectiveDpiY: heightInches > 0 ? posterHeight / heightInches : 0,
+      effectiveDpi: Math.floor(Math.min(widthInches > 0 ? posterWidth / widthInches : 0, heightInches > 0 ? posterHeight / heightInches : 0)),
+    };
+    return { canvas, size: sizeInfo };
+  }
 
   if (showWhiteMat) {
     // 1. Fill crisp white paper mat background
