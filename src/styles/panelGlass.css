@@ -12,6 +12,67 @@
   -webkit-backdrop-filter: blur(16px) saturate(155%);
 }
 
+/* On phones, the open tool sheet and the bottom tool dock form one edge-to-edge surface.
+   The closed dock remains a floating capsule; opening a tool squares the dock's top edge. */
+@media (max-width: 600px) {
+  .mobile-nav-wrapper {
+    transition:
+      left 220ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      right 220ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      bottom 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .app-shell[data-mobile-drawer-open="true"] .mobile-nav-wrapper {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+    isolation: isolate;
+  }
+
+  .app-shell[data-mobile-drawer-open="true"] .mobile-nav-wrapper::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: auto 0 0;
+    height: env(safe-area-inset-bottom, 0px);
+    background: var(--overlay-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    pointer-events: none;
+  }
+
+  .app-shell[data-mobile-drawer-open="true"] .mobile-nav {
+    height: 60px;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.22);
+    transition: border-radius 220ms ease, box-shadow 220ms ease;
+  }
+
+  .mobile-drawer:not(.mobile-drawer--edit-map) {
+    inset: 0 0 calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-drawer-sheet {
+    width: 100%;
+    margin: 0;
+    border-radius: 22px 22px 0 0;
+    padding-bottom: 0;
+    box-shadow:
+      inset 0 1.5px 1px rgba(255, 255, 255, 0.2),
+      0 -12px 30px rgba(0, 0, 0, 0.38);
+  }
+
+  .mobile-drawer-sheet.is-expanded {
+    height: min(84vh, calc(100dvh - 60px - env(safe-area-inset-bottom, 0px)));
+    max-height: min(84vh, calc(100dvh - 60px - env(safe-area-inset-bottom, 0px)));
+  }
+}
+
 /* Let custom wall colors remain visible through the mobile drawer overlay. */
 .mobile-drawer-backdrop {
   background: rgba(4, 10, 18, 0.22);
@@ -524,3 +585,4 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     padding: 5px 8px;
   }
 }
+
