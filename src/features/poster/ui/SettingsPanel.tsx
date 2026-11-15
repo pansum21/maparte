@@ -5,7 +5,6 @@ import { useLocationAutocomplete } from "@/features/location/application/useLoca
 import { useCurrentLocation } from "@/features/location/application/useCurrentLocation";
 import { useMapSync } from "@/features/map/application/useMapSync";
 import type { MobileTab } from "@/shared/ui/MobileNavBar";
-import { resolveTargetDistance, type SearchResult } from "@/features/location/domain/types";
 
 import LocationSection from "@/features/location/ui/LocationSection";
 import MapSettingsSection from "@/features/map/ui/MapSettingsSection";
@@ -36,6 +35,7 @@ import {
   MAX_POSTER_CM,
   FONT_OPTIONS,
 } from "@/core/config";
+import type { SearchResult } from "@/features/location/domain/types";
 
 type SectionId =
   | "templates"
@@ -73,7 +73,7 @@ export default function SettingsPanel({
   mobileTab,
   isEditing = false,
   onToggleEditing,
-  isPosterLayoutOpen = false,
+  isPosterLayoutOpen: _isPosterLayoutOpen,
 }: {
   mobileTab?: MobileTab;
   isEditing?: boolean;
@@ -104,7 +104,6 @@ export default function SettingsPanel({
   const { flyToLocation } = useMapSync(state, dispatch, mapRef);
   const { handleUseCurrentLocation, isLocatingUser, locationPermissionMessage } =
     useCurrentLocation(flyToLocation);
-
   const [isColorEditorActive, setIsColorEditorActive] = useState(false);
   const getInitialSection = (tab?: string): SectionId => ((tab as SectionId) || "location");
   const [openSections, setOpenSections] = useState<Set<SectionId>>(new Set([getInitialSection(mobileTab)]));
@@ -130,21 +129,8 @@ export default function SettingsPanel({
   };
 
   const onLocationSelect = (location: SearchResult) => {
-    const targetDist = resolveTargetDistance(location);
     handleLocationSelect(location);
-    dispatch({
-      type: "SET_FORM_FIELDS",
-      fields: {
-        distance: String(targetDist),
-        latitude: location.lat.toFixed(6),
-        longitude: location.lon.toFixed(6),
-        location: location.label,
-        displayCity: location.city || location.label.split(",")[0].trim(),
-        displayCountry: location.country || "",
-        displayContinent: location.continent || "",
-      },
-    });
-    flyToLocation(location.lat, location.lon, false, targetDist);
+    flyToLocation(location.lat, location.lon);
   };
 
   if (mobileTab === "edit-map") {
@@ -243,6 +229,7 @@ export default function SettingsPanel({
                 onThemeChange={handleThemeChange}
                 onFontChange={handleFontChange}
                 onLayoutChange={handleLayoutChange}
+                onFrameLayoutChange={(frameLayout) => dispatch({ type: "SET_FIELD", name: "frameLayout", value: frameLayout })}
                 selectedTheme={selectedTheme}
                 themeOptions={themeOptions}
                 layoutGroups={layoutGroups}
@@ -252,7 +239,6 @@ export default function SettingsPanel({
                 onColorChange={handleColorChange}
                 onResetColors={handleResetColors}
                 onColorEditorActiveChange={setIsColorEditorActive}
-                isPosterLayoutOpen={isPosterLayoutOpen}
               />
               </>
             ) : null}
@@ -284,6 +270,7 @@ export default function SettingsPanel({
                 onThemeChange={handleThemeChange}
                 onFontChange={handleFontChange}
                 onLayoutChange={handleLayoutChange}
+                onFrameLayoutChange={(frameLayout) => dispatch({ type: "SET_FIELD", name: "frameLayout", value: frameLayout })}
                 selectedTheme={selectedTheme}
                 themeOptions={themeOptions}
                 layoutGroups={layoutGroups}
@@ -293,7 +280,6 @@ export default function SettingsPanel({
                 onColorChange={handleColorChange}
                 onResetColors={handleResetColors}
                 onColorEditorActiveChange={setIsColorEditorActive}
-                isPosterLayoutOpen={isPosterLayoutOpen}
               />
               </>
             ) : null}
@@ -442,3 +428,4 @@ function AccordionHeader({
     </button>
   );
 }
+

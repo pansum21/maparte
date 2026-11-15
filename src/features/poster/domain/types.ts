@@ -6,6 +6,7 @@ import type {
 } from "@/features/markers/domain/types";
 import type { Route } from "@/features/routes/domain/types";
 import type { SquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import type { FrameLayoutGeometry } from "@/features/layout/domain/frameLayoutGeometry";
 
 export interface CanvasSize {
   width: number;
@@ -22,6 +23,7 @@ export interface CanvasSize {
 /** Options passed to the export compositor (map snapshot + text overlay). */
 export interface ExportOptions {
   squareCaptionGeometry?: SquareCaptionGeometry;
+  frameLayoutGeometry?: FrameLayoutGeometry;
   /** Map pixels were rendered directly into the page canvas' 10% print mat. */
   mapAlreadyInset?: boolean;
   /** Whether the white paper mat sheet should frame the poster map. */
@@ -65,3 +67,4 @@ export interface Typography {
   showPosterText: boolean;
   includeCredits?: boolean;
 }
+

@@ -364,7 +364,7 @@
       0 12px 36px rgba(0, 0, 0, 0.55),
       0 2px 8px rgba(0, 0, 0, 0.35);
     box-sizing: border-box;
-    width: 148px;
+    width: 174px;
     max-height: min(76vh, 620px);
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -469,8 +469,15 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    position: sticky;
+    bottom: -10px;
+    z-index: 2;
     width: 100%;
-    padding-top: 2px;
+    margin-top: auto;
+    padding: 8px 0 10px;
+    background: linear-gradient(180deg, rgba(8, 18, 30, 0.4), rgba(8, 18, 30, 0.96) 24%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
   .edit-map-bottom-actions .edit-map-action-pill {
@@ -1109,6 +1116,7 @@
     width: 356px;
     z-index: 45;
     pointer-events: none;
+    max-height: calc(100vh - 196px);
   }
 
   .desktop-left-panel .desktop-settings-slide.is-open {
@@ -1128,7 +1136,7 @@
   .app-shell[data-desktop-tab="settings"] .desktop-left-panel {
     top: 62px;
     right: auto;
-    bottom: 0;
+    bottom: 45px;
     left: 64px;
     width: 374px;
     max-height: none;
@@ -1335,27 +1343,17 @@
     box-shadow: none;
   }
 
-  /* Search icon and clickable button (left of input) */
-  .dsk-loc-bar .location-search-icon,
-  .dsk-loc-bar .location-search-btn {
+  /* Search icon (decorative, left of input) */
+  .dsk-loc-bar .location-search-icon {
     flex-shrink: 0;
     width: 28px;
     height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
-    border: none;
-    color: rgba(183, 215, 235, 0.72);
+    color: rgba(183, 215, 235, 0.52);
     font-size: 0.9rem;
-    cursor: pointer;
-    padding: 0;
-    transition: color 0.15s ease, transform 0.15s ease;
-  }
-
-  .dsk-loc-bar .location-search-btn:hover {
-    color: #38bdf8;
-    transform: scale(1.08);
+    pointer-events: none;
   }
 
   /* Shared styles for icon buttons inside the pill */
@@ -1935,14 +1933,15 @@
     overflow: hidden;
   }
 
-  /* Ghost map layer: full-bleed map behind the poster (100% transparent, 0.01 blur) */
+  /* Ghost map layer: full-bleed map at 50% opacity behind the poster */
   .poster-ghost-layer {
     display: block;
     position: absolute;
-    inset: -24px;
+    inset: -48px -24px;
+    transform: translateY(var(--poster-frame-center-offset-y));
     z-index: 0;
-    opacity: 1;
-    filter: blur(1px);
+    opacity: 0.45;
+    filter: blur(6px) saturate(0.75) brightness(0.85);
     pointer-events: none;
   }
 
@@ -2574,7 +2573,7 @@
   z-index: 90;
   top: 62px;
   right: auto;
-  bottom: 0; left: 64px; width: min(374px, calc(100vw - 64px));
+  bottom: 45px; left: 64px; width: min(374px, calc(100vw - 64px));
   max-width: calc(100vw - 64px);
   height: auto;
   max-height: none;
@@ -2598,7 +2597,7 @@
   position: fixed;
   z-index: 90;
   top: 62px;
-  bottom: 0; left: 64px; width: min(374px, calc(100vw - 64px));
+  bottom: 45px; left: 64px; width: min(374px, calc(100vw - 64px));
   box-sizing: border-box;
   padding: 14px 16px;
   border: 1px solid rgba(146, 176, 200, 0.28);
@@ -2899,7 +2898,7 @@
   position: fixed;
   z-index: 120;
   top: 62px;
-  bottom: 0; left: 64px; width: min(374px, calc(100vw - 64px));
+  bottom: 45px; left: 64px; width: min(374px, calc(100vw - 64px));
   max-width: none;
   max-height: none;
   box-sizing: border-box;
@@ -3046,56 +3045,6 @@ button.all-cities-clear-btn:not(:disabled):hover {
 }
 
 
-/* Edit Map rotation: a compact companion strip aligned with the Lock Map tool. */
-@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
-  .app-shell[data-desktop-tab="edit-map"] .desktop-left-panel {
-    top: 62px;
-    right: auto;
-    bottom: 0;
-    left: 64px;
-    width: 374px;
-    height: calc(100vh - 62px);
-    max-height: calc(100vh - 62px);
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide {
-    display: none;
-    width: 100%;
-    height: 100%;
-    max-height: 100%;
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide.is-open {
-    display: block;
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide .settings-panel {
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    padding: 0;
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .edit-map-action-panel {
-    display: block;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0 8px;
-    box-sizing: border-box;
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .edit-map-action {
-    display: none;
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .map-rotation-control {
-    height: 100%;
-    padding: 0;
-    box-sizing: border-box;
-    align-items: center;
-  }
-}
 /* Main-window tool drawer: the slim handle stays reachable while the full list slides in. */
 @media (min-width: 769px) {
   .app-shell > .desktop-nav-bar {
@@ -3187,3 +3136,239 @@ button.all-cities-clear-btn:not(:disabled):hover {
   .desktop-nav-label { font-size: .48rem !important; line-height: 1 !important; text-transform: uppercase !important; }
   .app-shell[data-desktop-tab="markers"] .marker-settings-screen { background: transparent !important; border: 0 !important; box-shadow: none !important; }
 }
+
+/* Edit Map uses the same left drawer footprint as the other tool panels. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell[data-desktop-tab="edit-map"] .desktop-left-panel {
+    top: 62px;
+    right: auto;
+    bottom: 45px;
+    left: 64px;
+    width: 374px;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .desktop-edit-map-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .desktop-edit-map-layer.is-visible {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .desktop-left-panel .desktop-settings-slide {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+  }
+
+  .desktop-edit-map-panel {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 18px 16px;
+    color: #e7f2fb;
+    background: linear-gradient(155deg, rgba(17, 35, 52, 0.94), rgba(8, 18, 30, 0.96));
+    backdrop-filter: blur(20px) saturate(155%);
+    -webkit-backdrop-filter: blur(20px) saturate(155%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 0 18px 18px 0;
+    box-shadow: inset 0 1.5px 1px rgba(255, 255, 255, 0.14), 0 16px 48px rgba(0, 0, 0, 0.42);
+    font-family: "Spline Sans Mono", monospace;
+  }
+
+  .desktop-edit-map-panel__heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .desktop-edit-map-panel__eyebrow {
+    color: #b8dcf0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .desktop-edit-map-panel__hint {
+    color: rgba(215, 232, 244, 0.58);
+    font-size: 0.66rem;
+  }
+
+  .edit-map-control-section--stacked {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    min-height: 84px;
+    padding: 10px 0 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .edit-map-control-heading-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .edit-map-control-heading-row .edit-map-title {
+    color: rgba(220, 241, 255, 0.86);
+    font-size: 0.64rem;
+    letter-spacing: 0.11em;
+  }
+
+  .edit-map-adjustment-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .edit-map-horizontal-slider {
+    flex: 1 1 auto;
+    width: 0;
+    min-width: 0;
+    height: 22px;
+    margin: 0;
+    accent-color: #55b8e8;
+    cursor: pointer;
+    writing-mode: horizontal-tb;
+  }
+
+  .edit-map-horizontal-step {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    color: #d9effb;
+    background: rgba(168, 216, 242, 0.1);
+    border: 1px solid rgba(184, 220, 240, 0.22);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .edit-map-value-box {
+    box-sizing: border-box;
+    min-width: 54px;
+    padding: 5px 6px;
+    color: #e4f5ff;
+    text-align: center;
+    font-size: 0.68rem;
+    font-variant-numeric: tabular-nums;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 7px;
+  }
+
+  .edit-map-value-box--button {
+    cursor: pointer;
+  }
+
+  .edit-map-value-input {
+    box-sizing: border-box;
+    min-width: 0;
+    height: 30px;
+    padding: 4px;
+    color: #e4f5ff;
+    text-align: center;
+    font: 600 0.68rem/1 "Spline Sans Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    background: rgba(0, 0, 0, 0.24);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 7px;
+  }
+
+  .edit-map-value-input:focus {
+    outline: 2px solid rgba(85, 184, 232, 0.65);
+    outline-offset: 1px;
+  }
+
+  .edit-map-distance-field,
+  .edit-map-angle-field {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    color: rgba(220, 241, 255, 0.72);
+    font-size: 0.65rem;
+  }
+
+  .edit-map-value-input--zoom {
+    flex: 0 0 60px;
+    width: 60px;
+  }
+
+  .edit-map-distance-field .edit-map-value-input--distance {
+    flex: 0 0 86px;
+    width: 86px;
+    font-size: 0.62rem;
+  }
+
+  .edit-map-angle-field .edit-map-value-input--rotation {
+    flex: 0 0 56px;
+    width: 56px;
+  }
+
+  .edit-map-bottom-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    position: static;
+    z-index: auto;
+    width: 100%;
+    margin: auto 0 0;
+    padding: 16px 0 8px;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .edit-map-action-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 42px;
+    padding: 8px 12px;
+    color: #e7f5fc;
+    background: rgba(168, 216, 242, 0.1);
+    border: 1px solid rgba(184, 220, 240, 0.2);
+    border-radius: 9px;
+    cursor: pointer;
+  }
+
+  .desktop-edit-map-panel .edit-map-bottom-actions .edit-map-action-pill {
+    width: 100%;
+    height: 42px;
+    font-size: 0.74rem;
+    padding: 8px 10px;
+  }
+
+  .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide.is-open {
+    display: none;
+  }
+}
+
+/* Keep numeric values readable on touch-capable browsers too. */
+.desktop-edit-map-panel .edit-map-value-input--zoom { flex: 0 0 60px; width: 60px; }
+.desktop-edit-map-panel .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 86px; width: 86px; }
+.desktop-edit-map-panel .edit-map-angle-field .edit-map-value-input--rotation { flex: 0 0 56px; width: 56px; }

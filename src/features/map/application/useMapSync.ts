@@ -83,12 +83,14 @@ interface MapSyncState {
   form: { latitude: string; longitude: string; distance: string };
   displayNameOverrides: { city: boolean; country: boolean };
   selectedLocation: { label?: string; city?: string; country?: string; continent?: string } | null;
+  isLocationFocused?: boolean;
 }
 
 type MapSyncDispatch = (action: {
   type: "SET_FORM_FIELDS";
   fields: Partial<Record<string, string>>;
   resetDisplayNameOverrides?: boolean;
+  selectedLocation?: SearchResult | null;
 }) => void;
 
 /**

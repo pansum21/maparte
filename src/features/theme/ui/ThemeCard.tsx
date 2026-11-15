@@ -1,54 +1,27 @@
-import {
-  DISPLAY_PALETTE_KEYS,
-  type ThemeOption,
-  type ThemeColorKey,
-} from "../domain/types";
+import type { ThemeOption, ResolvedTheme } from "../domain/types";
+import "./themeMapPreview.css";
 
 interface ThemeCardProps {
   themeOption: ThemeOption | null;
   onClick?: () => void;
   isSelected?: boolean;
-  showFullPalette?: boolean;
+  previewTheme: ResolvedTheme;
 }
 
 export default function ThemeCard({
   themeOption,
   onClick,
   isSelected = false,
-  showFullPalette = false,
+  previewTheme,
 }: ThemeCardProps) {
-  if (!themeOption) {
-    return null;
-  }
+  if (!themeOption) return null;
 
-  const majorPaletteKeys: ThemeColorKey[] = showFullPalette
-    ? DISPLAY_PALETTE_KEYS
-    : [
-        "ui.text",
-        "map.land",
-        "map.roads.major",
-        "map.roads.minor_high",
-        "map.roads.minor_mid",
-      ];
-  const majorPaletteIndices = majorPaletteKeys
-    .map((key) => DISPLAY_PALETTE_KEYS.indexOf(key))
-    .filter((index) => index >= 0);
-  const palette = (() => {
-    if (!Array.isArray(themeOption.palette)) return [];
-    const seen = new Set<string>();
-    const result: string[] = [];
-    for (const index of majorPaletteIndices) {
-      const color = themeOption.palette[index];
-      if (color && !seen.has(color)) {
-        seen.add(color);
-        result.push(color);
-      }
-    }
-    return result;
-  })();
-  const className = ["theme-card", isSelected ? "is-selected" : ""]
-    .filter(Boolean)
-    .join(" ");
+  const isCustomTheme = themeOption.id.startsWith("custom-theme-");
+  const className = [
+    "theme-card",
+    isSelected ? "is-selected" : "",
+    isCustomTheme ? "theme-card--palette" : "",
+  ].filter(Boolean).join(" ");
 
   return (
     <button
@@ -58,24 +31,23 @@ export default function ThemeCard({
       aria-pressed={isSelected}
       aria-label={themeOption.name}
     >
-      <div
-        className={[
-          "theme-card-palette",
-          showFullPalette ? "theme-card-palette--full" : "",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        aria-hidden="true"
-      >
-        {palette.map((color, index) => (
-          <span
-            key={`${themeOption.id}-${color}-${index}`}
-            className="theme-card-swatch"
-            style={{ backgroundColor: color }}
-            title={color}
-          />
-        ))}
-      </div>
+      {isCustomTheme ? (
+        <div className="theme-card-palette-preview" aria-hidden="true">
+          <span style={{ backgroundColor: previewTheme.map.land }} />
+          <span style={{ backgroundColor: previewTheme.map.water }} />
+          <span style={{ backgroundColor: previewTheme.map.parks }} />
+          <span style={{ backgroundColor: previewTheme.map.roads.major }} />
+          <span style={{ backgroundColor: previewTheme.map.roads.minor_mid }} />
+        </div>
+      ) : (
+        <img
+          className="theme-card-map-image"
+          src={`/theme-previews/${themeOption.id}.webp`}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      )}
       <span className="theme-card-name-shadow" aria-hidden="true" />
       <p className="theme-card-name">{themeOption.name}</p>
     </button>

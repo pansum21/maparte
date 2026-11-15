@@ -1,3 +1,30 @@
 {
-  "themes": {}
+  "themes": {
+    "aurora": {
+      "name": "Aurora",
+      "description": "Deep evergreen streets with luminous arctic teal and soft mint accents",
+      "ui": {
+        "bg": "#071A1E",
+        "text": "#B9F1DA"
+      },
+      "map": {
+        "land": "#0A2024",
+        "landcover": "#102A2D",
+        "water": "#06171D",
+        "waterway": "#0C3439",
+        "parks": "#123B36",
+        "buildings": "#173338",
+        "aeroway": "#1C3836",
+        "rail": "#7BE2C2",
+        "roads": {
+          "major": "#8AE6CB",
+          "minor_high": "#54BFA9",
+          "minor_mid": "#348E83",
+          "minor_low": "#24665F",
+          "path": "#1A4E4B",
+          "outline": "#0A2024"
+        }
+      }
+    }
+  }
 }

@@ -30,6 +30,7 @@ export interface PosterForm {
   height: string;
   theme: string;
   layout: string;
+  frameLayout?: string;
   displayCity: string;
   displayTown?: string;
   displayCountry: string;
@@ -46,22 +47,22 @@ export interface PosterForm {
   includeCredits: boolean;
   includeLandcover: boolean;
   includeForests?: boolean;
-  includeParks: boolean;
-  includeMountains?: boolean;
   includeBuildings: boolean;
   includeWater: boolean;
+  includeParks: boolean;
+  includeMountains?: boolean;
+  includeBoundaries?: boolean;
   includeAeroway: boolean;
   includeRail: boolean;
-  includeBoundaries?: boolean;
   includeRoads: boolean;
-  includeRoadPath: boolean;
-  includeRoadMinorLow: boolean;
-  includeRoadOutline: boolean;
   includeRoadNames?: boolean;
   includePlaceLabels?: boolean;
   includeNeighborhoodLabels?: boolean;
   includeWaterLabels?: boolean;
   includePoiLabels?: boolean;
+  includeRoadPath: boolean;
+  includeRoadMinorLow: boolean;
+  includeRoadOutline: boolean;
   showMarkers: boolean;
   overlayTop?: boolean;
   overlayBottom?: boolean;
@@ -535,3 +536,4 @@ export function posterReducer(
       return state;
   }
 }
+

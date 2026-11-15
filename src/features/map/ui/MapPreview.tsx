@@ -137,7 +137,7 @@ export default function MapPreview({
 
     let map: maplibregl.Map;
     try {
-      map = new maplibregl.Map({
+      const mapOptions = {
         container: containerRef.current,
         style,
         center,
@@ -147,10 +147,11 @@ export default function MapPreview({
         interactive: false,
         attributionControl: false,
         pixelRatio: getMapPixelRatio(),
-        maxCanvasSize: [4096, 8192],
+        maxCanvasSize: [4096, 8192] as [number, number],
         cancelPendingTileRequestsWhileZooming: true,
         preserveDrawingBuffer: true,
-      });
+      };
+      map = new maplibregl.Map(mapOptions as maplibregl.MapOptions);
       setMapUnavailable(false);
     } catch (error) {
       // MapLibre throws during construction when WebGL is unavailable. Catch it
