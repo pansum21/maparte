@@ -238,8 +238,11 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
           try { map.setProjection({ type: shouldUseGlobe ? "globe" : "mercator" }); } catch { /* Keep current projection if unsupported. */ }
         }
         // After scrolling settles, keep a slow one-way turn at the current zoom. No sinusoidal reversal or zoom reset.
-        const longitudeDrift = idleSeconds * 0.42;
-        const bearingDrift = idleSeconds * 0.025;
+        // Spin only while the globe is still comfortably framed. Once its edge reaches the view,
+        // the camera becomes a stable close-up and never resumes rotation while zoomed in.
+        const spinFactor = 1 - smooth(clamp((responsiveZoom - 2.05) / 0.3));
+        const longitudeDrift = idleSeconds * 0.42 * spinFactor;
+        const bearingDrift = idleSeconds * 0.025 * spinFactor;
         const rawLongitude = target.center[0] + longitudeDrift;
         const cameraLongitude = ((rawLongitude + 180) % 360 + 360) % 360 - 180;
         map.jumpTo({ center: [cameraLongitude, target.center[1]], zoom: responsiveZoom, pitch: target.pitch, bearing: target.bearing + bearingDrift, padding });
