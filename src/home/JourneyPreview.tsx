@@ -220,7 +220,7 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
       const responsiveZoomBase = zoomStart + (zoomEnd - zoomStart) * zoomProgress;
       const globeRadius = Math.min(window.innerWidth, window.innerHeight) * 0.24;
       const globeScaleBoost = Math.log2((globeRadius + 19) / globeRadius) * (1 - smooth(clamp(progress / 0.34)));
-      const heroGlobeZoomBoost = 0.46 * (1 - smooth(clamp(progress / 0.34)));
+      const heroGlobeZoomBoost = (compactView ? 0 : 0.46) * (1 - smooth(clamp(progress / 0.34)));
       const responsiveZoom = responsiveZoomBase + globeScaleBoost + heroGlobeZoomBoost;
       const idleMs = reduced ? 0 : Math.max(0, now - lastScrollAt - 3000);
       const idleSeconds = Math.max(0, idleMs / 1000 - 0.75);
