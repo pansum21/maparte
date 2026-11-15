@@ -228,6 +228,21 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 .journey-copy--plate:before{display:none}
 @media(max-width:900px){.journey-copy--plate{padding:0;border-radius:0;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}}
 
+/* Clear, centered mobile footer with equal breathing room above and below. */
+.journey-footer{font-size:11px;justify-content:space-between}
+.journey-footer__brand{display:flex;flex-direction:column;gap:7px;line-height:1.35}
+.journey-footer__brand>a{font:700 12px "Spline Sans Mono",monospace;letter-spacing:.14em}
+.journey-footer__brand>span{color:var(--muted);font:11px "Instrument Sans",Arial,sans-serif;letter-spacing:.02em}
+.journey-footer nav a{font-size:10px}
+@media(max-width:900px){
+  .journey-footer{min-height:0;padding:28px 20px;gap:21px;align-items:center;justify-content:center;text-align:center}
+  .journey-footer__brand{align-items:center;gap:8px}
+  .journey-footer__brand>a{font-size:14px}
+  .journey-footer__brand>span{font-size:13px}
+  .journey-footer nav{justify-content:center;gap:13px 19px}
+  .journey-footer nav a{font-size:12px;letter-spacing:.04em}
+}
+
 
 
 

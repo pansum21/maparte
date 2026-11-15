@@ -167,7 +167,8 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
       attributionControl: { compact: true },
       scrollZoom: false, dragPan: false, dragRotate: false, touchZoomRotate: false,
       renderWorldCopies: false,
-      canvasContextAttributes: { antialias: true, powerPreference: "high-performance" },
+      fadeDuration: window.innerWidth <= 900 ? 0 : 300,
+      canvasContextAttributes: { antialias: window.innerWidth > 900, powerPreference: "high-performance" },
     });
     mapRef.current = map;
     map.on("error", (event) => console.warn("Journey map data could not load", event.error));
@@ -213,7 +214,7 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
       const globeShiftY = Math.round((compactView ? 38 * 6 : 38 * 0.5) * heroAlign);
       const padding = window.innerWidth > 900
         ? { left: Math.round(window.innerWidth * 0.5) + globeShiftX, top: Math.round(window.innerHeight * 0.34 * heroAlign), bottom: globeShiftY }
-        : { left: Math.round(window.innerWidth * 0.38) + globeShiftX, bottom: Math.round(window.innerHeight * (progress < 0.48 ? 0.04 + 0.31 * (1 - heroAlign) : 0.18)) + globeShiftY };
+        : { left: Math.round(window.innerWidth * 0.2), bottom: Math.round(window.innerHeight * (progress < 0.48 ? 0.04 + 0.31 * (1 - heroAlign) : 0.18)) };
       const zoomStart = compactView ? 0.95 : 1.2;
       const zoomEnd = compactView ? 14.2 : 15.2;
       const zoomProgress = Math.pow(progress, compactView ? 1.22 : 1.34);
@@ -409,9 +410,8 @@ export default function JourneyPreview() {
         <div className="journey-faq__list">{journeyFaqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</div>
       </section>
       <footer className="journey-footer">
-        <a href="/?dist=3810">MAPARTE.COM <span>Map it. Make it yours.</span></a>
+        <div className="journey-footer__brand"><a href="/?dist=3810">MAPARTE.COM</a><span>Map it. Make it yours.</span></div>
         <nav aria-label="Footer navigation"><a href="#map-stories">Map gallery</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refund</a></nav>
-        <span>Digital map designs made for the places you love.</span>
       </footer>
       <div className="journey-scrollhint" aria-hidden="true" style={{ opacity: hasScrolled ? 0 : 1 }}>SCROLL TO TRAVEL <span>↓</span></div>
     </div>
