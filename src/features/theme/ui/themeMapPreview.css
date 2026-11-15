@@ -134,3 +134,22 @@
 .theme-card--palette .theme-card-name-shadow {
   height: 58%;
 }
+/* On phones, saved custom themes preview their actual colors on a real city map. */
+.theme-card-list--map-previews .theme-card-custom-map-preview {
+  display: none;
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  [data-mobile-tab="theme"] .theme-card-list--map-previews .theme-card-custom-map-preview {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: hidden;
+    background: #101820;
+    pointer-events: none;
+  }
+
+  [data-mobile-tab="theme"] .theme-card-list--map-previews .theme-card-palette-preview--desktop {
+    display: none;
+  }
+}
