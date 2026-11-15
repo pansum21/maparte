@@ -1,13 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { usePosterContext } from "@/features/poster/ui/PosterContext";
-import { useMapSync } from "@/features/map/application/useMapSync";
-import {
-  DEFAULT_DISTANCE_METERS,
-  MAX_DISTANCE_METERS,
-  MAX_MAP_ZOOM,
-  MIN_DISTANCE_METERS,
-  MIN_MAP_ZOOM,
-} from "@/core/config";
+import { useState } from "react";
 import {
   LocationIcon,
   ThemeIcon,
@@ -21,7 +12,6 @@ import {
   SparklesIcon,
   WallIcon,
   ScissorsIcon,
-  RotateIcon,
   FullScreenIcon,
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
@@ -57,154 +47,7 @@ export default function DesktopNavBar({
   isEditing = false,
   onEditMapToggle,
 }: DesktopNavBarProps) {
-  const { state, dispatch, mapRef } = usePosterContext();
-  const { flyToLocation } = useMapSync(state, dispatch, mapRef);
-
-  const [bearing, setBearing] = useState(0);
-  const [zoom, setZoom] = useState(MIN_MAP_ZOOM);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
-  interface SearchedLocationInfo {
-    lat: number;
-    lon: number;
-    distance: number;
-  }
-  const searchedLocationRef = useRef<SearchedLocationInfo | null>(null);
-
-  useEffect(() => {
-    if (
-      state.selectedLocation &&
-      typeof state.selectedLocation.lat === "number" &&
-      typeof state.selectedLocation.lon === "number" &&
-      Number.isFinite(state.selectedLocation.lat) &&
-      Number.isFinite(state.selectedLocation.lon)
-    ) {
-      searchedLocationRef.current = {
-        lat: state.selectedLocation.lat,
-        lon: state.selectedLocation.lon,
-        distance: Number.parseFloat(state.form.distance) || DEFAULT_DISTANCE_METERS,
-      };
-    } else if (!searchedLocationRef.current) {
-      const lat = Number.parseFloat(state.form.latitude);
-      const lon = Number.parseFloat(state.form.longitude);
-      const distance = Number.parseFloat(state.form.distance) || DEFAULT_DISTANCE_METERS;
-      if (Number.isFinite(lat) && Number.isFinite(lon)) {
-        searchedLocationRef.current = { lat, lon, distance };
-      }
-    }
-  }, [state.selectedLocation, state.form.latitude, state.form.longitude]);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    const syncBearing = () => {
-      const b = map.getBearing();
-      const norm = Math.round(((b % 360) + 360) % 360);
-      setBearing((prev) => (prev === 360 && norm === 0 ? 360 : norm));
-    };
-
-    const syncZoom = () => setZoom(map.getZoom());
-
-    syncBearing();
-    syncZoom();
-    map.on("rotate", syncBearing);
-    map.on("zoom", syncZoom);
-    return () => {
-      map.off("rotate", syncBearing);
-      map.off("zoom", syncZoom);
-    };
-  }, [mapRef, isEditing]);
-
-  const handleBearingChange = (newBearing: number) => {
-    const map = mapRef.current;
-    const clamped = Math.max(0, Math.min(360, newBearing));
-    setBearing(clamped);
-    if (!map) return;
-    map.setBearing(clamped === 360 ? 0 : clamped);
-  };
-
-  const handleSnap0 = () => {
-    const map = mapRef.current;
-    setBearing(0);
-    if (map) {
-      map.setBearing(0);
-    }
-  };
-
-  const handleResetRotation = () => {
-    const map = mapRef.current;
-    setBearing(0);
-    if (map) {
-      map.rotateTo(0, { duration: 300 });
-    }
-  };
-
-  const handleZoomIn = () => {
-    const map = mapRef.current;
-    if (map) map.zoomTo(Math.min(MAX_MAP_ZOOM, map.getZoom() + 0.5), { duration: 250 });
-  };
-
-  const handleZoomOut = () => {
-    const map = mapRef.current;
-    if (map) map.zoomTo(Math.max(MIN_MAP_ZOOM, map.getZoom() - 0.5), { duration: 250 });
-  };
-
-  const handleZoomSliderChange = (value: number) => {
-    const map = mapRef.current;
-    if (map) map.zoomTo(value, { duration: 150 });
-  };
-
-  const distanceMeters = Math.max(
-    MIN_DISTANCE_METERS,
-    Math.min(MAX_DISTANCE_METERS, Number(state.form.distance) || DEFAULT_DISTANCE_METERS),
-  );
-  const distanceSliderValue = Math.round(
-    ((Math.log(distanceMeters) - Math.log(MIN_DISTANCE_METERS)) /
-      (Math.log(MAX_DISTANCE_METERS) - Math.log(MIN_DISTANCE_METERS))) * 1000,
-  );
-  const handleDistanceSliderChange = (value: number) => {
-    const ratio = value / 1000;
-    const nextDistance = Math.round(
-      Math.exp(
-        Math.log(MIN_DISTANCE_METERS) +
-          ratio * (Math.log(MAX_DISTANCE_METERS) - Math.log(MIN_DISTANCE_METERS)),
-      ),
-    );
-    dispatch({ type: "SET_FIELD", name: "distance", value: String(nextDistance) });
-  };
-  const formatDistance = (meters: number) =>
-    meters >= 1_000_000
-      ? `${Number((meters / 1_000_000).toFixed(1))}M m`
-      : meters >= 100_000
-        ? `${Number((meters / 1_000).toFixed(1))}K m`
-        : `${Math.round(meters).toLocaleString()} m`;
-
-  const handleRecenter = () => {
-    const defaultDist = Number.parseFloat(state.form.distance) || DEFAULT_DISTANCE_METERS;
-    const target = searchedLocationRef.current ?? {
-      lat: Number.parseFloat(state.form.latitude),
-      lon: Number.parseFloat(state.form.longitude),
-      distance: defaultDist,
-    };
-    if (Number.isFinite(target.lat) && Number.isFinite(target.lon)) {
-      const map = mapRef.current;
-      setBearing(0);
-      if (map) {
-        map.setBearing(0);
-        map.setPitch(0);
-      }
-      flyToLocation(target.lat, target.lon, false, target.distance);
-      dispatch({
-        type: "SET_FORM_FIELDS",
-        fields: {
-          latitude: target.lat.toFixed(6),
-          longitude: target.lon.toFixed(6),
-          distance: String(Math.round(target.distance)),
-        },
-      });
-    }
-  };
-
   const isLocationActive = Boolean(isLocationVisible || allCitiesOpen);
 
   return (
@@ -245,50 +88,6 @@ export default function DesktopNavBar({
           <span className="desktop-nav-label">Edit Map</span>
         </button>
 
-        {isEditing ? (
-          <div
-            className="desktop-nav-companion desktop-companion-edit-map"
-            role="toolbar"
-            aria-label="Vertical map editing controls"
-          >
-            <div className="edit-map-companion-panel">
-              <section className="edit-map-control-section" aria-label="Zoom">
-                <span className="edit-map-title">ZOOM</span>
-                <button type="button" className="edit-map-vertical-button" onClick={handleZoomIn} title="Zoom in" aria-label="Zoom in">+</button>
-                <div className="edit-map-vertical-range-row">
-                  <input type="range" className="edit-map-vertical-slider" min={MIN_MAP_ZOOM} max={MAX_MAP_ZOOM} step="0.1" value={zoom} onChange={(event) => handleZoomSliderChange(Number(event.target.value))} aria-label="Map zoom level" />
-                  <output className="edit-map-value-box" aria-live="off">{zoom.toFixed(1)}</output>
-                </div>
-                <button type="button" className="edit-map-vertical-button" onClick={handleZoomOut} title="Zoom out" aria-label="Zoom out">−</button>
-              </section>
-
-              <section className="edit-map-control-section" aria-label="Distance">
-                <span className="edit-map-title">DISTANCE</span>
-                <div className="edit-map-vertical-range-row edit-map-vertical-range-row--distance">
-                  <input type="range" className="edit-map-vertical-slider" min="0" max="1000" step="1" value={distanceSliderValue} onChange={(event) => handleDistanceSliderChange(Number(event.target.value))} aria-label="Map distance" />
-                  <output className="edit-map-value-box edit-map-value-box--distance">{formatDistance(distanceMeters)}</output>
-                </div>
-              </section>
-
-              <section className="edit-map-control-section" aria-label="Rotation">
-                <span className="edit-map-title">ROTATION</span>
-                <div className="edit-map-vertical-range-row edit-map-vertical-range-row--rotation">
-                  <input type="range" className="edit-map-vertical-slider" min="0" max="360" step="1" value={bearing} onChange={(event) => handleBearingChange(Number(event.target.value))} aria-label="Map rotation angle" />
-                  <button type="button" className="edit-map-value-box edit-map-value-box--button" onClick={handleSnap0} title="Reset rotation to north" aria-label={`Rotation ${bearing} degrees; click to reset`}>{bearing}°</button>
-                </div>
-              </section>
-
-              <div className="edit-map-bottom-actions">
-                <button type="button" className="edit-map-action-pill edit-map-action-pill--recenter" onClick={handleRecenter} title="Recenter map to the selected place">
-                  <span className="edit-map-action-glyph">⛶</span><span>Re-center</span>
-                </button>
-                <button type="button" className="edit-map-action-pill edit-map-action-pill--reset" onClick={handleResetRotation} title="Reset rotation to north">
-                  <RotateIcon className="edit-map-action-icon" /><span>Reset</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : null}
       </div>
 
       {/* ── 3. THEME ROW (Theme + Wall Color) ── */}

@@ -38,6 +38,7 @@ const ExportFab = lazy(() => import("@/features/export/ui/ExportFab"));
 const loadDesktopLocationBar = () => import("@/shared/ui/DesktopLocationBar");
 const DesktopLocationBar = lazy(loadDesktopLocationBar);
 const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
+const EditMapPanel = lazy(() => import("@/features/map/ui/EditMapPanel"));
 const loadAllCitiesModal = () => import("@/features/location/ui/AllCitiesModal");
 const AllCitiesModal = lazy(loadAllCitiesModal);
 
@@ -466,16 +467,17 @@ export default function AppShell() {
   };
 
   const handleEditMapToggle = () => {
-    setIsEditing((prev) => {
-      const next = !prev;
-      if (next) {
-        setDesktopLocationRowVisible(false);
-        setDesktopPanelOpen(false);
-        setBackdropOpen(false);
-        setAllCitiesOpen(false);
-      }
-      return next;
-    });
+    if (isEditing) {
+      setIsEditing(false);
+      if (desktopTab === "edit-map") setDesktopPanelOpen(false);
+    } else {
+      setIsEditing(true);
+      setDesktopTab("edit-map");
+      setDesktopPanelOpen(false);
+      setDesktopLocationRowVisible(false);
+      setBackdropOpen(false);
+      setAllCitiesOpen(false);
+    }
   };
 
   const handleMobileMarkerSizeChange = useCallback(
@@ -624,6 +626,16 @@ export default function AppShell() {
       ) : null}
 
       <div className="desktop-left-panel">
+        {isEditing && !isMobileViewport ? (
+          <div
+            className={`desktop-edit-map-layer${desktopTab === "edit-map" ? " is-visible" : ""}`}
+            aria-hidden={desktopTab !== "edit-map"}
+          >
+            <Suspense fallback={null}>
+              <EditMapPanel />
+            </Suspense>
+          </div>
+        ) : null}
         <div
           className={`desktop-settings-slide${desktopPanelOpen ? " is-open" : ""}`}
         >

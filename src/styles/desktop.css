@@ -3045,68 +3045,6 @@ button.all-cities-clear-btn:not(:disabled):hover {
 }
 
 
-/* Edit Map rotation: a compact companion strip aligned with the Lock Map tool. */
-@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
-  .app-shell[data-desktop-tab="edit-map"] .desktop-left-panel {
-    top: 132px;
-    right: auto;
-    bottom: auto;
-    left: 64px;
-    width: 374px;
-    height: 52px;
-    max-height: 52px;
-    overflow: visible;
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide {
-    display: none;
-    width: 100%;
-    height: 52px;
-    min-height: 52px;
-    max-height: 52px;
-    padding: 0;
-    overflow: visible;
-    box-sizing: border-box;
-    border: 1px solid rgba(146, 176, 200, 0.24);
-    border-left: 0;
-    border-radius: 0 10px 10px 0;
-    background: linear-gradient(135deg, rgba(20, 39, 57, 0.94), rgba(9, 20, 32, 0.96));
-    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(14px) saturate(150%);
-    -webkit-backdrop-filter: blur(14px) saturate(150%);
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide.is-open {
-    display: block;
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide .settings-panel {
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    padding: 0;
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .edit-map-action-panel {
-    display: block;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0 8px;
-    box-sizing: border-box;
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .edit-map-action {
-    display: none;
-  }
-
-  .app-shell[data-desktop-tab="edit-map"] .map-rotation-control {
-    height: 100%;
-    padding: 0;
-    box-sizing: border-box;
-    align-items: center;
-  }
-}
 /* Main-window tool drawer: the slim handle stays reachable while the full list slides in. */
 @media (min-width: 769px) {
   .app-shell > .desktop-nav-bar {
@@ -3199,14 +3137,176 @@ button.all-cities-clear-btn:not(:disabled):hover {
   .app-shell[data-desktop-tab="markers"] .marker-settings-screen { background: transparent !important; border: 0 !important; box-shadow: none !important; }
 }
 
-/* Keep the persistent edit controls clear of the theme cards when both are open. */
-@media (min-width: 1120px) {
-  .app-shell[data-desktop-tab="theme"] .desktop-companion-edit-map {
-    position: fixed;
-    top: 16px;
-    right: 64px;
-    margin-left: 0;
-    transform: none;
-    animation: none;
+/* Edit Map uses the same left drawer footprint as the other tool panels. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell[data-desktop-tab="edit-map"] .desktop-left-panel {
+    top: 62px;
+    right: auto;
+    bottom: 45px;
+    left: 64px;
+    width: 374px;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .desktop-edit-map-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .desktop-edit-map-layer.is-visible {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .desktop-left-panel .desktop-settings-slide {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+  }
+
+  .desktop-edit-map-panel {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 18px 16px;
+    color: #e7f2fb;
+    background: linear-gradient(155deg, rgba(17, 35, 52, 0.94), rgba(8, 18, 30, 0.96));
+    backdrop-filter: blur(20px) saturate(155%);
+    -webkit-backdrop-filter: blur(20px) saturate(155%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 0 18px 18px 0;
+    box-shadow: inset 0 1.5px 1px rgba(255, 255, 255, 0.14), 0 16px 48px rgba(0, 0, 0, 0.42);
+    font-family: "Spline Sans Mono", monospace;
+  }
+
+  .desktop-edit-map-panel__heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .desktop-edit-map-panel__eyebrow {
+    color: #b8dcf0;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+  }
+
+  .desktop-edit-map-panel__hint {
+    color: rgba(215, 232, 244, 0.58);
+    font-size: 0.66rem;
+  }
+
+  .edit-map-control-section--horizontal {
+    display: grid;
+    grid-template-columns: 76px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 62px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .edit-map-control-section--horizontal[aria-label="Zoom"] {
+    grid-template-columns: 76px 28px minmax(40px, 1fr) 28px 54px;
+  }
+
+  .edit-map-control-section--horizontal .edit-map-title {
+    align-self: center;
+    color: rgba(220, 241, 255, 0.86);
+    font-size: 0.64rem;
+    letter-spacing: 0.11em;
+  }
+
+  .edit-map-horizontal-slider {
+    width: 100%;
+    min-width: 40px;
+    height: 22px;
+    margin: 0;
+    accent-color: #55b8e8;
+    cursor: pointer;
+    writing-mode: horizontal-tb;
+  }
+
+  .edit-map-horizontal-step {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    color: #d9effb;
+    background: rgba(168, 216, 242, 0.1);
+    border: 1px solid rgba(184, 220, 240, 0.22);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .edit-map-value-box {
+    box-sizing: border-box;
+    min-width: 54px;
+    padding: 5px 6px;
+    color: #e4f5ff;
+    text-align: center;
+    font-size: 0.68rem;
+    font-variant-numeric: tabular-nums;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 7px;
+  }
+
+  .edit-map-value-box--button {
+    cursor: pointer;
+  }
+
+  .edit-map-bottom-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    position: static;
+    z-index: auto;
+    width: 100%;
+    margin: auto 0 0;
+    padding: 16px 0 8px;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .edit-map-action-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 42px;
+    padding: 8px 12px;
+    color: #e7f5fc;
+    background: rgba(168, 216, 242, 0.1);
+    border: 1px solid rgba(184, 220, 240, 0.2);
+    border-radius: 9px;
+    cursor: pointer;
+  }
+
+  .desktop-edit-map-panel .edit-map-bottom-actions .edit-map-action-pill {
+    width: 100%;
+    height: 42px;
+    font-size: 0.74rem;
+    padding: 8px 10px;
+  }
+
+  .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide,
+  .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide.is-open {
+    display: none;
   }
 }
