@@ -1537,6 +1537,9 @@ export function NeatlinePicker({
       frameId: "none",
       showWhiteMat: false,
     }));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("maparte:enable-poster-layout"));
+    }
   };
 
   const updateThickness = (lineIndex: number, valCm: number) => {

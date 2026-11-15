@@ -5,6 +5,7 @@ import { useLocationAutocomplete } from "@/features/location/application/useLoca
 import { useCurrentLocation } from "@/features/location/application/useCurrentLocation";
 import { useMapSync } from "@/features/map/application/useMapSync";
 import type { MobileTab } from "@/shared/ui/MobileNavBar";
+import { resolveTargetDistance, type SearchResult } from "@/features/location/domain/types";
 
 import LocationSection from "@/features/location/ui/LocationSection";
 import MapSettingsSection from "@/features/map/ui/MapSettingsSection";
@@ -35,7 +36,6 @@ import {
   MAX_POSTER_CM,
   FONT_OPTIONS,
 } from "@/core/config";
-import type { SearchResult } from "@/features/location/domain/types";
 
 type SectionId =
   | "templates"
@@ -73,10 +73,12 @@ export default function SettingsPanel({
   mobileTab,
   isEditing = false,
   onToggleEditing,
+  isPosterLayoutOpen = false,
 }: {
   mobileTab?: MobileTab;
   isEditing?: boolean;
   onToggleEditing?: () => void;
+  isPosterLayoutOpen?: boolean;
 }) {
   const { state, dispatch, mapRef, selectedTheme } = usePosterContext();
   const {
@@ -128,8 +130,21 @@ export default function SettingsPanel({
   };
 
   const onLocationSelect = (location: SearchResult) => {
+    const targetDist = resolveTargetDistance(location);
     handleLocationSelect(location);
-    flyToLocation(location.lat, location.lon);
+    dispatch({
+      type: "SET_FORM_FIELDS",
+      fields: {
+        distance: String(targetDist),
+        latitude: location.lat.toFixed(6),
+        longitude: location.lon.toFixed(6),
+        location: location.label,
+        displayCity: location.city || location.label.split(",")[0].trim(),
+        displayCountry: location.country || "",
+        displayContinent: location.continent || "",
+      },
+    });
+    flyToLocation(location.lat, location.lon, false, targetDist);
   };
 
   if (mobileTab === "edit-map") {
@@ -237,6 +252,7 @@ export default function SettingsPanel({
                 onColorChange={handleColorChange}
                 onResetColors={handleResetColors}
                 onColorEditorActiveChange={setIsColorEditorActive}
+                isPosterLayoutOpen={isPosterLayoutOpen}
               />
               </>
             ) : null}
@@ -277,6 +293,7 @@ export default function SettingsPanel({
                 onColorChange={handleColorChange}
                 onResetColors={handleResetColors}
                 onColorEditorActiveChange={setIsColorEditorActive}
+                isPosterLayoutOpen={isPosterLayoutOpen}
               />
               </>
             ) : null}

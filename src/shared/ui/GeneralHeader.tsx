@@ -44,10 +44,10 @@ export default function GeneralHeader({
           type="button"
           className="general-header-text-btn general-header-about-text-btn"
           onClick={onAboutOpen}
-          aria-label="About and Guide"
-          title="About and Guide"
+          aria-label="About MapArte"
+          title="About MapArte"
         >
-          <span className="general-header-btn-label">ℹ About / Guide</span>
+          <span className="general-header-btn-label">ℹ About</span>
           <span className="general-header-btn-icon" aria-hidden="true">
             <span style={{ fontSize: "14px", lineHeight: 1 }}>ℹ</span>
           </span>

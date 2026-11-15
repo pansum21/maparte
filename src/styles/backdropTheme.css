@@ -67,13 +67,13 @@ body.has-custom-backdrop .poster-viewport::before {
 
 /* In light mode, soften the ghost map canvas so the clean backdrop shows */
 :root[data-backdrop-mode="light"] .poster-ghost-layer {
-  opacity: 0.10 !important;
-  filter: blur(14px) grayscale(1) !important;
+  opacity: 1 !important;
+  filter: blur(1px) !important;
 }
 
 body.has-custom-backdrop .poster-ghost-layer {
-  opacity: 0.22;
-  filter: blur(8px) saturate(0.6) brightness(0.85);
+  opacity: 1 !important;
+  filter: blur(1px) !important;
 }
 
 /* Poster frame shadow adapts to light mode */
@@ -1552,8 +1552,8 @@ body.has-custom-backdrop .poster-ghost-layer {
 
 .app-shell.is-cinema-mode .poster-ghost-layer {
   display: block !important;
-  opacity: 0.35 !important;
-  filter: blur(28px) saturate(1.1) brightness(0.95) !important;
+  opacity: 1 !important;
+  filter: blur(1px) !important;
 }
 
 /* ── Cinema Overlay Controls ── */
@@ -2468,13 +2468,13 @@ body.has-custom-backdrop .poster-ghost-layer {
   display: none !important;
 }
 .poster-viewport.has-wall-theme .poster-ghost-layer {
-  opacity: 0.16 !important;
-  filter: blur(8px) saturate(0.6) brightness(0.85) !important;
+  opacity: 1 !important;
+  filter: blur(1px) !important;
 }
 .poster-viewport.has-wall-theme.has-custom-wall-color .poster-ghost-layer {
   display: block !important;
-  opacity: 0.25 !important;
-  filter: blur(24px) saturate(1.1) brightness(0.9) !important;
+  opacity: 1 !important;
+  filter: blur(1px) !important;
 }
 
 
@@ -3167,14 +3167,7 @@ body.has-custom-backdrop .poster-ghost-layer {
 
 /* Special fullscreen transparency preview: checkerboard wall stays behind the frame. */
 .app-shell.is-cinema-mode .poster-viewport.is-wall-mockup:not(.has-user-wall-photo):not(.has-live-camera-background) {
-  background-color: #f3f4f6 !important;
-  background-image:
-    linear-gradient(45deg, #cbd5e1 25%, transparent 25%),
-    linear-gradient(-45deg, #cbd5e1 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #cbd5e1 75%),
-    linear-gradient(-45deg, transparent 75%, #cbd5e1 75%) !important;
-  background-size: 28px 28px !important;
-  background-position: 0 0, 0 14px, 14px -14px, -14px 0 !important;
+  background: radial-gradient(circle at 50% 50%, rgba(20, 30, 48, 0.40) 0%, rgba(5, 8, 16, 0.70) 100%) !important;
 }
 .app-shell.is-cinema-mode .poster-viewport.has-live-camera-background .cinema-live-camera-backdrop,
 .app-shell.is-cinema-mode .poster-viewport.has-user-wall-photo .cinema-wall-photo-backdrop { z-index: 0; }

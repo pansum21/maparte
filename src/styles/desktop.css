@@ -1109,7 +1109,6 @@
     width: 356px;
     z-index: 45;
     pointer-events: none;
-    max-height: calc(100vh - 196px);
   }
 
   .desktop-left-panel .desktop-settings-slide.is-open {
@@ -1129,7 +1128,7 @@
   .app-shell[data-desktop-tab="settings"] .desktop-left-panel {
     top: 62px;
     right: auto;
-    bottom: 45px;
+    bottom: 0;
     left: 64px;
     width: 374px;
     max-height: none;
@@ -1336,17 +1335,27 @@
     box-shadow: none;
   }
 
-  /* Search icon (decorative, left of input) */
-  .dsk-loc-bar .location-search-icon {
+  /* Search icon and clickable button (left of input) */
+  .dsk-loc-bar .location-search-icon,
+  .dsk-loc-bar .location-search-btn {
     flex-shrink: 0;
     width: 28px;
     height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(183, 215, 235, 0.52);
+    background: transparent;
+    border: none;
+    color: rgba(183, 215, 235, 0.72);
     font-size: 0.9rem;
-    pointer-events: none;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+
+  .dsk-loc-bar .location-search-btn:hover {
+    color: #38bdf8;
+    transform: scale(1.08);
   }
 
   /* Shared styles for icon buttons inside the pill */
@@ -1926,15 +1935,14 @@
     overflow: hidden;
   }
 
-  /* Ghost map layer: full-bleed map at 50% opacity behind the poster */
+  /* Ghost map layer: full-bleed map behind the poster (100% transparent, 0.01 blur) */
   .poster-ghost-layer {
     display: block;
     position: absolute;
-    inset: -48px -24px;
-    transform: translateY(var(--poster-frame-center-offset-y));
+    inset: -24px;
     z-index: 0;
-    opacity: 0.45;
-    filter: blur(6px) saturate(0.75) brightness(0.85);
+    opacity: 1;
+    filter: blur(1px);
     pointer-events: none;
   }
 
@@ -2566,7 +2574,7 @@
   z-index: 90;
   top: 62px;
   right: auto;
-  bottom: 45px; left: 64px; width: min(374px, calc(100vw - 64px));
+  bottom: 0; left: 64px; width: min(374px, calc(100vw - 64px));
   max-width: calc(100vw - 64px);
   height: auto;
   max-height: none;
@@ -2590,7 +2598,7 @@
   position: fixed;
   z-index: 90;
   top: 62px;
-  bottom: 45px; left: 64px; width: min(374px, calc(100vw - 64px));
+  bottom: 0; left: 64px; width: min(374px, calc(100vw - 64px));
   box-sizing: border-box;
   padding: 14px 16px;
   border: 1px solid rgba(146, 176, 200, 0.28);
@@ -2891,7 +2899,7 @@
   position: fixed;
   z-index: 120;
   top: 62px;
-  bottom: 45px; left: 64px; width: min(374px, calc(100vw - 64px));
+  bottom: 0; left: 64px; width: min(374px, calc(100vw - 64px));
   max-width: none;
   max-height: none;
   box-sizing: border-box;
@@ -3041,32 +3049,20 @@ button.all-cities-clear-btn:not(:disabled):hover {
 /* Edit Map rotation: a compact companion strip aligned with the Lock Map tool. */
 @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
   .app-shell[data-desktop-tab="edit-map"] .desktop-left-panel {
-    top: 132px;
+    top: 62px;
     right: auto;
-    bottom: auto;
+    bottom: 0;
     left: 64px;
     width: 374px;
-    height: 52px;
-    max-height: 52px;
-    overflow: visible;
+    height: calc(100vh - 62px);
+    max-height: calc(100vh - 62px);
   }
 
   .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide {
     display: none;
     width: 100%;
-    height: 52px;
-    min-height: 52px;
-    max-height: 52px;
-    padding: 0;
-    overflow: visible;
-    box-sizing: border-box;
-    border: 1px solid rgba(146, 176, 200, 0.24);
-    border-left: 0;
-    border-radius: 0 10px 10px 0;
-    background: linear-gradient(135deg, rgba(20, 39, 57, 0.94), rgba(9, 20, 32, 0.96));
-    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(14px) saturate(150%);
-    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    height: 100%;
+    max-height: 100%;
   }
 
   .app-shell[data-desktop-tab="edit-map"] .desktop-settings-slide.is-open {

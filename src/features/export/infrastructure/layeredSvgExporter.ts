@@ -553,17 +553,17 @@ export async function createLayeredSvgBlobFromMap({
       const lineX2 = exportWidth * 0.6;
 
       vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${cityY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" fill="${textColor}">${escapeXml(cityLabel)}</text>
-  ${displayCity && displayCountry ? `<line x1="${lineX1}" y1="${lineY}" x2="${lineX2}" y2="${lineY}" stroke="${textColor}" stroke-width="${lineW}" stroke-linecap="round" />` : ""}
-  <text x="${exportWidth * 0.5}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="300" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
+  <text x="${exportWidth * 0.5}" y="${cityY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" letter-spacing="0.16em" fill="${textColor}">${escapeXml(cityLabel)}</text>
+  ${displayCity && displayCountry ? `<line x1="${lineX1}" y1="${lineY}" x2="${lineX2}" y2="${lineY}" stroke="${textColor}" stroke-width="${lineW}" stroke-linecap="round" opacity="0.8" />` : ""}
+  <text x="${exportWidth * 0.5}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="300" letter-spacing="0.26em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
 `;
       if (hasTagline) {
         vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${taglineY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${taglineFontSize}" font-weight="500" opacity="0.88" fill="${textColor}">${escapeXml(customDate!.trim())}</text>
+  <text x="${exportWidth * 0.5}" y="${taglineY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${taglineFontSize}" font-weight="500" letter-spacing="0.08em" opacity="0.88" fill="${textColor}">${escapeXml(customDate!.trim())}</text>
 `;
       }
       vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${coordinatesY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="400" opacity="0.75" fill="${textColor}">${escapeXml(coordsText)}</text>
+  <text x="${exportWidth * 0.5}" y="${coordinatesY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="400" letter-spacing="0.10em" opacity="0.85" fill="${textColor}">${escapeXml(coordsText)}</text>
 `;
     }
 

@@ -50,14 +50,14 @@ export function useCurrentLocation(
       setLocationPermissionMessage("");
 
       try {
-        flyToLocation(lat, lon);
+        flyToLocation(lat, lon, false, 4900);
         dispatch({
           type: "SET_FORM_FIELDS",
           resetDisplayNameOverrides: true,
           fields: {
             latitude: lat.toFixed(6),
             longitude: lon.toFixed(6),
-            distance: String(DEFAULT_DISTANCE_METERS),
+            distance: "4900",
           },
         });
 

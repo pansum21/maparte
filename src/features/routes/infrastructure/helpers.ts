@@ -85,6 +85,46 @@ export function createRoute(input: {
   };
 }
 
+export function createRouteFromCoordinates(input: {
+  coordinates: Coordinate[];
+  defaults: RouteDefaults;
+  label?: string;
+  source?: RouteSource;
+  startIconId?: string;
+  finishIconId?: string;
+  color?: string;
+  lineStyle?: import("../domain/types").RouteLineStyle;
+  strokeWidth?: number;
+}): Route {
+  const source = input.source ?? "manual";
+  const startIcon = input.startIconId ?? input.defaults.startIconId;
+  const finishIcon = input.finishIconId ?? input.defaults.finishIconId;
+  const color = input.color ?? input.defaults.color;
+
+  return {
+    id: createId(source),
+    label: input.label ?? "Road Route",
+    source,
+    segments: [input.coordinates],
+    color,
+    strokeWidth: input.strokeWidth ?? input.defaults.strokeWidth,
+    opacity: input.defaults.opacity,
+    lineStyle: input.lineStyle ?? input.defaults.lineStyle,
+    visible: true,
+    showEndpoints: true,
+    startMarker: {
+      iconId: startIcon,
+      color,
+      size: DEFAULT_ROUTE_ENDPOINT_SIZE,
+    },
+    finishMarker: {
+      iconId: finishIcon,
+      color,
+      size: DEFAULT_ROUTE_ENDPOINT_SIZE,
+    },
+  };
+}
+
 export function routeEndpointMarkerItems(routes: Route[]): MarkerItem[] {
   const items: MarkerItem[] = [];
   for (const route of routes) {

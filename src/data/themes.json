@@ -5,24 +5,24 @@
       "description": "Deep navy background with gold/copper roads - luxury atlas aesthetic",
       "ui": {
         "bg": "#0A1628",
-        "text": "#D6B352"
+        "text": "#E5B84B"
       },
       "map": {
         "land": "#0A1628",
         "landcover": "#0D1C2F",
-        "water": "#061020",
-        "waterway": "#061020",
+        "water": "#050B14",
+        "waterway": "#050B14",
         "parks": "#0F2235",
         "buildings": "#6E5A45",
         "aeroway": "#0F2235",
-        "rail": "#d6b352",
+        "rail": "#E5B84B",
         "roads": {
-          "major": "#C99C37",
-          "path": "#414033",
+          "major": "#D4A338",
+          "path": "#52401C",
           "outline": "#4f4b36",
-          "minor_high": "#8A6820",
-          "minor_mid": "#333530",
-          "minor_low": "#272c2e"
+          "minor_high": "#A8822B",
+          "minor_mid": "#7D6124",
+          "minor_low": "#5A451C"
         }
       }
     },
@@ -54,27 +54,27 @@
     },
     "noir": {
       "name": "Noir",
-      "description": "Pure black background with white/gray roads - modern gallery aesthetic",
+      "description": "Obsidian dark background with silver/white roads - modern gallery aesthetic",
       "ui": {
-        "bg": "#000000",
+        "bg": "#0D0E11",
         "text": "#FFFFFF"
       },
       "map": {
-        "land": "#000000",
-        "landcover": "#0E0E0E",
-        "water": "#0B0B0B",
-        "waterway": "#0B0B0B",
-        "parks": "#171717",
-        "buildings": "#6F6F6F",
-        "aeroway": "#171717",
-        "rail": "#ffffff",
+        "land": "#0D0E11",
+        "landcover": "#141519",
+        "water": "#07080A",
+        "waterway": "#07080A",
+        "parks": "#1A1B22",
+        "buildings": "#3A3B45",
+        "aeroway": "#1A1B22",
+        "rail": "#FFFFFF",
         "roads": {
-          "major": "#E8E8E8",
-          "path": "#454545",
-          "outline": "#575757",
-          "minor_high": "#A0A0A0",
-          "minor_mid": "#333333",
-          "minor_low": "#242424"
+          "major": "#FFFFFF",
+          "path": "#4C4D58",
+          "outline": "#2A2B34",
+          "minor_high": "#C8C8D2",
+          "minor_mid": "#8E8E9A",
+          "minor_low": "#626270"
         }
       }
     },
@@ -316,25 +316,25 @@
       "name": "Blueprint",
       "description": "Classic architectural blueprint - technical drawing aesthetic",
       "ui": {
-        "bg": "#1A3A5C",
+        "bg": "#162F4D",
         "text": "#E8F4FF"
       },
       "map": {
-        "land": "#1A3A5C",
-        "landcover": "#1D4066",
-        "water": "#0E2740",
-        "waterway": "#0E2740",
-        "parks": "#1F466F",
-        "buildings": "#6EA4CC",
-        "aeroway": "#1F466F",
-        "rail": "#e8f4ff",
+        "land": "#162F4D",
+        "landcover": "#1A385C",
+        "water": "#0D1E33",
+        "waterway": "#0D1E33",
+        "parks": "#1E426D",
+        "buildings": "#4D7FA8",
+        "aeroway": "#1E426D",
+        "rail": "#E8F4FF",
         "roads": {
-          "major": "#D8EEFA",
-          "path": "#526c88",
-          "outline": "#607993",
-          "minor_high": "#7AAED0",
-          "minor_mid": "#435f7d",
-          "minor_low": "#375473"
+          "major": "#FFFFFF",
+          "path": "#3B678C",
+          "outline": "#234B7A",
+          "minor_high": "#B8E1FF",
+          "minor_mid": "#7AB8E8",
+          "minor_low": "#4E85B2"
         }
       }
     },
@@ -348,19 +348,19 @@
       "map": {
         "land": "#1A070F",
         "landcover": "#280C18",
-        "water": "#2A0D17",
-        "waterway": "#2A0D17",
+        "water": "#10040A",
+        "waterway": "#10040A",
         "parks": "#351021",
-        "buildings": "#EE8EA4",
+        "buildings": "#8A2A44",
         "aeroway": "#351021",
-        "rail": "#f6d7bc",
+        "rail": "#F6D7BC",
         "roads": {
-          "major": "#C0103C",
-          "path": "#553f3e",
-          "outline": "#654e4a",
-          "minor_high": "#780C2C",
-          "minor_mid": "#463132",
-          "minor_low": "#392427"
+          "major": "#FF2B5E",
+          "path": "#4A1021",
+          "outline": "#350B18",
+          "minor_high": "#D9224E",
+          "minor_mid": "#9E1939",
+          "minor_low": "#6A1127"
         }
       }
     },

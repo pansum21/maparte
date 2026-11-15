@@ -373,6 +373,40 @@ function googleMapsResolverPlugin() {
 }
 
 
+function nominatimProxyPlugin() {
+  return {
+    name: "nominatim-proxy",
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        if (req.url && req.url.startsWith("/api/nominatim")) {
+          const parsedUrl = new URL(req.url, "http://localhost");
+          const targetPath = parsedUrl.pathname.replace(/^\/api\/nominatim/, "");
+          const targetUrl = `https://nominatim.openstreetmap.org${targetPath}${parsedUrl.search}`;
+          try {
+            const fetchRes = await fetch(targetUrl, {
+              headers: {
+                "User-Agent": "MapArte/0.4.8 (support@maparte.com)",
+                Accept: "application/json",
+              },
+            });
+            const data = await fetchRes.text();
+            res.statusCode = fetchRes.status;
+            res.setHeader("Content-Type", "application/json");
+            res.end(data);
+          } catch (err) {
+            res.statusCode = 500;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: err.message }));
+          }
+          return;
+        }
+        next();
+      });
+    },
+  };
+}
+
+
 function seoVerificationPlugin() {
   let resolvedConfig;
   return {
@@ -409,6 +443,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    nominatimProxyPlugin(),
     adsensePlugin(),
     legalPagesPlugin(),
     marketingPagesPlugin(),

@@ -67,8 +67,22 @@ export default function LocationSection({
                 value={form.location}
                 onChange={onChange}
                 onFocus={onLocationFocus}
-                onBlur={onLocationBlur}
-                onKeyDown={async (e) => { if (e.key === "Enter") { const results = await searchNow(e.currentTarget.value); if (Array.isArray(results) && results.length > 0 && results[0].fromGoogleMaps) { onLocationSelect(results[0]); } } }}
+                onBlur={() => {
+                  window.setTimeout(() => {
+                    onLocationBlur();
+                  }, 220);
+                }}
+                onKeyDown={async (e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const val = e.currentTarget.value.trim();
+                    if (!val) return;
+                    const results = await searchNow(val);
+                    if (Array.isArray(results) && results.length > 0) {
+                      onLocationSelect(results[0]);
+                    }
+                  }
+                }}
                 placeholder={PLACEHOLDER_LOCATION_SEARCH}
                 autoComplete="off"
               />

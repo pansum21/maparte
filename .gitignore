@@ -40,3 +40,8 @@ updates.json
 
 # ignore agent setting files
 .claude/
+
+# Media scratch & screenshots
+*.mp4
+preset-landing-page-screenshots/
+!public/**/*.mp4

@@ -114,15 +114,7 @@
 }
 
 .poster-viewport.is-wall-mockup .poster-ghost-layer {
-  display: block !important;
-  position: absolute;
-  inset: -12% -12%;
-  opacity: 0.35 !important;
-  filter: blur(28px) saturate(1.1) brightness(0.95) !important;
-  transform: none !important;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-  z-index: 1;
+  display: none !important;
 }
 
 .poster-viewport.is-wall-mockup .desktop-layout-label {
@@ -701,16 +693,18 @@
   text-transform: uppercase;
   text-align: center;
   line-height: 1.1;
+  letter-spacing: 0.16em;
   transform: translateY(-50%);
   white-space: pre-wrap;
 }
 
 .poster-divider {
   position: absolute;
-  left: 40%;
-  right: 40%;
+  left: 42%;
+  right: 42%;
   border: 0;
-  border-top: 2px solid currentcolor;
+  border-top: 1.5px solid currentcolor;
+  opacity: 0.8;
   height: 0;
   margin: 0;
   transform: translateY(-50%);
@@ -726,6 +720,7 @@
   text-transform: uppercase;
   text-align: center;
   line-height: 1.2;
+  letter-spacing: 0.26em;
   transform: translateY(-50%);
 }
 
@@ -740,7 +735,7 @@
   line-height: 1.2;
   transform: translateY(-50%);
   opacity: 0.88;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .poster-coords {
@@ -752,7 +747,8 @@
   font-weight: 400;
   font-size: 1.6cqh;
   text-align: center;
-  opacity: 0.75;
+  opacity: 0.85;
+  letter-spacing: 0.10em;
   transform: translateY(-50%);
 }
 

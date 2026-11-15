@@ -322,8 +322,7 @@ export default function RoutesSection() {
       <div className="routes-section__content">
         {routes.length === 0 ? (
           <p className="routes-section__empty">
-            Upload a <code>.gpx</code> file to draw a route on the poster.
-            Drawing routes manually is coming soon.
+            Upload a <code>.gpx</code> file from your run, trek, or ride to draw your exact route on the poster.
           </p>
         ) : null}
 

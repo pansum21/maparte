@@ -154,6 +154,25 @@ export default function DesktopNavBar({
     if (map) map.zoomTo(value, { duration: 150 });
   };
 
+  const handleFlyToGlobe = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("maparte:disable-poster-layout"));
+    }
+    dispatch({
+      type: "SET_FORM_FIELDS",
+      fields: { distance: "100000000" },
+    });
+    const map = mapRef.current;
+    if (map) {
+      map.flyTo({
+        zoom: -1.8,
+        duration: 2500,
+        curve: 1.42,
+        essential: true,
+      });
+    }
+  };
+
   const distanceMeters = Math.max(
     MIN_DISTANCE_METERS,
     Math.min(MAX_DISTANCE_METERS, Number(state.form.distance) || DEFAULT_DISTANCE_METERS),
@@ -178,7 +197,6 @@ export default function DesktopNavBar({
       : meters >= 100_000
         ? `${Number((meters / 1_000).toFixed(1))}K m`
         : `${Math.round(meters).toLocaleString()} m`;
-
   const handleRecenter = () => {
     const defaultDist = Number.parseFloat(state.form.distance) || DEFAULT_DISTANCE_METERS;
     const target = searchedLocationRef.current ?? {
@@ -284,6 +302,9 @@ export default function DesktopNavBar({
                 </button>
                 <button type="button" className="edit-map-action-pill edit-map-action-pill--reset" onClick={handleResetRotation} title="Reset rotation to north">
                   <RotateIcon className="edit-map-action-icon" /><span>Reset</span>
+                </button>
+                <button type="button" className="edit-map-action-pill" onClick={handleFlyToGlobe} title="3D Earth Globe View">
+                  <span className="edit-map-action-glyph">🌍</span><span>Globe</span>
                 </button>
               </div>
             </div>

@@ -87,31 +87,48 @@ export function drawPosterText(
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = `700 ${cityFontSize}px ${titleFontFamily}`;
+    if ("letterSpacing" in ctx) {
+      (ctx as any).letterSpacing = `${Math.round(cityFontSize * 0.16)}px`;
+    }
     ctx.fillText(cityLabel, width * 0.5, cityY);
 
     if (city && country) {
-    ctx.strokeStyle = textColor;
-    ctx.lineWidth = Math.max(1, 3 * dimScale);
-    ctx.beginPath();
-    ctx.moveTo(width * 0.4, lineY);
-    ctx.lineTo(width * 0.6, lineY);
-    ctx.stroke();
+      ctx.strokeStyle = textColor;
+      ctx.lineWidth = Math.max(1, 1.5 * dimScale);
+      ctx.globalAlpha = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(width * 0.42, lineY);
+      ctx.lineTo(width * 0.58, lineY);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
     }
 
+    if ("letterSpacing" in ctx) {
+      (ctx as any).letterSpacing = `${Math.round(countryFontSize * 0.26)}px`;
+    }
     ctx.font = `300 ${countryFontSize}px ${titleFontFamily}`;
     ctx.fillText(country.toUpperCase(), width * 0.5, countryY);
 
     if (hasTagline) {
       ctx.globalAlpha = 0.88;
+      if ("letterSpacing" in ctx) {
+        (ctx as any).letterSpacing = `${Math.round(taglineFontSize * 0.08)}px`;
+      }
       ctx.font = `500 ${taglineFontSize}px ${bodyFontFamily}`;
       ctx.fillText(customDate!.trim(), width * 0.5, taglineY);
       ctx.globalAlpha = 1;
     }
 
-    ctx.globalAlpha = 0.75;
+    ctx.globalAlpha = 0.85;
+    if ("letterSpacing" in ctx) {
+      (ctx as any).letterSpacing = `${Math.round(coordinateFontSize * 0.10)}px`;
+    }
     ctx.font = `400 ${coordinateFontSize}px ${bodyFontFamily}`;
     ctx.fillText(coordsString, width * 0.5, coordinatesY);
     ctx.globalAlpha = 1;
+    if ("letterSpacing" in ctx) {
+      (ctx as any).letterSpacing = "0px";
+    }
   }
 
   // Attribution layout: ensure left and right attributions never collide or overlap
@@ -120,26 +137,8 @@ export function drawPosterText(
 
   let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale * fontScale;
   ctx.font = `300 ${attributionFontSize}px ${bodyFontFamily}`;
-  const osmWidth = ctx.measureText(osmText).width;
   const appWidth = includeCredits ? ctx.measureText(appText).width : 0;
   const edgeMargin = width * TEXT_EDGE_MARGIN_RATIO;
-  const availableAttributionWidth = width - (edgeMargin * 2) - (includeCredits ? width * 0.04 : 0);
-  const requiredAttributionWidth = osmWidth + appWidth;
-
-  if (requiredAttributionWidth > availableAttributionWidth && requiredAttributionWidth > 0) {
-    attributionFontSize = Math.max(7 * dimScale * fontScale, attributionFontSize * (availableAttributionWidth / requiredAttributionWidth));
-  }
-
-  ctx.fillStyle = attributionColor;
-  ctx.globalAlpha = attributionAlpha;
-  ctx.textAlign = "right";
-  ctx.textBaseline = "bottom";
-  ctx.font = `300 ${attributionFontSize}px ${bodyFontFamily}`;
-  ctx.fillText(
-    osmText,
-    width * (1 - TEXT_EDGE_MARGIN_RATIO),
-    height * (1 - TEXT_EDGE_MARGIN_RATIO),
-  );
   ctx.globalAlpha = 1;
 
   if (includeCredits) {

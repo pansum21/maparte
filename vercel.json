@@ -62,6 +62,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/nominatim/(.*)",
+      "destination": "https://nominatim.openstreetmap.org/"
+    },
+    {
       "source": "/where-we-met",
       "destination": "/where-we-met/index.html"
     },

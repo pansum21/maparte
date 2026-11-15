@@ -46,11 +46,13 @@ function SettingsDrawer({
   onClose,
   isEditing,
   onToggleEditing,
+  isPosterLayoutOpen,
 }: {
   mobileTab: MobileTab;
   onClose: () => void;
   isEditing: boolean;
   onToggleEditing: () => void;
+  isPosterLayoutOpen?: boolean;
 }) {
   // Start as a content-sized sheet; long sections remain reachable by scrolling
   // and users can still expand the sheet from its handle when they need more room.
@@ -94,6 +96,7 @@ function SettingsDrawer({
                 mobileTab={mobileTab}
                 isEditing={isEditing}
                 onToggleEditing={onToggleEditing}
+                isPosterLayoutOpen={isPosterLayoutOpen}
               />
             </Suspense>
           )}
@@ -214,6 +217,22 @@ export default function AppShell() {
   }, [handleCinemaWallPhotoChange]);
   const [cinemaPosterPlacement, setCinemaPosterPlacement] = useState({ x: 0, y: 0, scale: 1 });
   const [allCitiesOpen, setAllCitiesOpen] = useState(false);
+  const [isPosterLayoutOpen, setIsPosterLayoutOpen] = useState(false);
+
+  useEffect(() => {
+    const handleEnableLayout = () => {
+      setIsPosterLayoutOpen(true);
+    };
+    const handleDisableLayout = () => {
+      setIsPosterLayoutOpen(false);
+    };
+    window.addEventListener("maparte:enable-poster-layout", handleEnableLayout);
+    window.addEventListener("maparte:disable-poster-layout", handleDisableLayout);
+    return () => {
+      window.removeEventListener("maparte:enable-poster-layout", handleEnableLayout);
+      window.removeEventListener("maparte:disable-poster-layout", handleDisableLayout);
+    };
+  }, []);
 
   const handleToggleCinema = useCallback((forceState?: boolean) => {
     setIsCinemaMode((prev) => {
@@ -441,6 +460,15 @@ export default function AppShell() {
     setAllCitiesOpen(false);
     setBackdropOpen(false);
     setIsEditing(false);
+    if (tab === "layout") {
+      if (tab === desktopTab && desktopPanelOpen) {
+        setDesktopPanelOpen(false);
+      } else {
+        setDesktopTab("layout");
+        setDesktopPanelOpen(true);
+      }
+      return;
+    }
     if (tab === desktopTab && desktopPanelOpen) {
       if (tab === "layout" && state.form.layout !== "custom") {
         dispatch({
@@ -517,6 +545,7 @@ export default function AppShell() {
         ) : null}
         <PreviewPanel
           isCinemaMode={true}
+          isPosterLayoutOpen={isPosterLayoutOpen}
           onToggleCinema={() => handleToggleCinema(false)}
           wallPhoto={cinemaWallPhoto}
           cameraStream={cinemaCameraStream}
@@ -563,7 +592,7 @@ export default function AppShell() {
         onCinemaToggle={() => handleToggleCinema(true)}
       />
       <InstallPrompt />
-      <StartupLocationModal />
+      {/* StartupLocationModal omitted at startup to reduce layers and let user explore 3D Globe directly */}
 
       <DesktopNavBar
         activeTab={desktopTab}
@@ -643,6 +672,7 @@ export default function AppShell() {
                 mobileTab={desktopTab}
                 isEditing={isEditing}
                 onToggleEditing={() => setIsEditing((prev) => !prev)}
+                isPosterLayoutOpen={isPosterLayoutOpen}
               />
             )}
           </Suspense>
@@ -654,6 +684,8 @@ export default function AppShell() {
         onToggleCinema={() => handleToggleCinema(true)}
         isEditing={isEditing}
         setIsEditing={setIsEditing}
+        isPosterLayoutOpen={isPosterLayoutOpen}
+        onTogglePosterLayout={() => setIsPosterLayoutOpen((prev) => !prev)}
       />
 
       {mobileDrawerOpen ? (
@@ -662,6 +694,7 @@ export default function AppShell() {
           onClose={() => setMobileDrawerOpen(false)}
           isEditing={isEditing}
           onToggleEditing={() => setIsEditing((prev) => !prev)}
+          isPosterLayoutOpen={isPosterLayoutOpen}
         />
       ) : null}
 
@@ -708,9 +741,11 @@ export default function AppShell() {
           setIsEditing((prev) => !prev);
         }}
       />
-      <Suspense fallback={null}>
-        <ExportFab isMobile={isMobileViewport} />
-      </Suspense>
+      {isPosterLayoutOpen ? (
+        <Suspense fallback={null}>
+          <ExportFab isMobile={isMobileViewport} />
+        </Suspense>
+      ) : null}
 
       <FooterNote />
       <Suspense fallback={null}>
@@ -744,6 +779,7 @@ export default function AppShell() {
         />
       ) : null}
 
+      
       {allCitiesOpen ? (
         <Suspense fallback={<section className="all-cities-modal all-cities-modal--loading" role="status">Loading locations…</section>}>
           <AllCitiesModal

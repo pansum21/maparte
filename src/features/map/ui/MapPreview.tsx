@@ -142,12 +142,14 @@ export default function MapPreview({
         style,
         center,
         zoom,
+        minZoom: Math.max(-2, minZoom ?? -2),
+        maxZoom: maxZoom ?? 22,
         interactive: false,
         attributionControl: false,
         pixelRatio: getMapPixelRatio(),
         maxCanvasSize: [4096, 8192],
         cancelPendingTileRequestsWhileZooming: true,
-        canvasContextAttributes: { preserveDrawingBuffer: true },
+        preserveDrawingBuffer: true,
       });
       setMapUnavailable(false);
     } catch (error) {
@@ -161,15 +163,20 @@ export default function MapPreview({
     }
 
     mapRef.current = map;
+    if (typeof window !== "undefined") {
+      (window as any).map = map;
+    }
     onMapReady?.(map);
 
+    let isAutoSpinning = false;
+
     map.on("moveend", () => {
-      if (isSyncing.current) return;
+      if (isSyncing.current || isAutoSpinning) return;
       const currentCenter = map.getCenter();
       onMoveEndRef.current?.([currentCenter.lng, currentCenter.lat], map.getZoom());
     });
     map.on("move", () => {
-      if (isSyncing.current) return;
+      if (isSyncing.current || isAutoSpinning) return;
       const currentCenter = map.getCenter();
       onMoveRef.current?.([currentCenter.lng, currentCenter.lat], map.getZoom());
     });
@@ -201,12 +208,65 @@ export default function MapPreview({
     window.visualViewport?.addEventListener("resize", syncPixelRatio, { passive: true });
     window.visualViewport?.addEventListener("scroll", syncPixelRatio, { passive: true });
 
+    // Gentle, majestic planetary spin when zoomed out to Globe level (zoom < 4.5)
+    let animationFrameId: number | undefined;
+    let isUserInteracting = false;
+    let resumeSpinTimeout: number | undefined;
+    let wheelTimeout: number | undefined;
+
+    const spinGlobe = () => {
+      if (!mapRef.current) return;
+      const currentZoom = map.getZoom();
+      if (!isUserInteracting && !isSyncing.current && currentZoom < 4.5) {
+        const current = map.getCenter();
+        isAutoSpinning = true;
+        map.jumpTo({ center: [current.lng + 0.02, current.lat] });
+        isAutoSpinning = false;
+      }
+      animationFrameId = requestAnimationFrame(spinGlobe);
+    };
+
+    animationFrameId = requestAnimationFrame(spinGlobe);
+
+    const onUserInteractStart = () => {
+      isUserInteracting = true;
+      window.clearTimeout(resumeSpinTimeout);
+    };
+
+    const onUserInteractEnd = () => {
+      window.clearTimeout(resumeSpinTimeout);
+      resumeSpinTimeout = window.setTimeout(() => {
+        isUserInteracting = false;
+      }, 1500);
+    };
+
+    const onWheel = () => {
+      onUserInteractStart();
+      window.clearTimeout(wheelTimeout);
+      wheelTimeout = window.setTimeout(() => {
+        onUserInteractEnd();
+      }, 400);
+    };
+
+    map.on("mousedown", onUserInteractStart);
+    map.on("touchstart", onUserInteractStart);
+    map.on("wheel", onWheel);
+    map.on("dragstart", onUserInteractStart);
+    map.on("mouseup", onUserInteractEnd);
+    map.on("touchend", onUserInteractEnd);
+    map.on("dragend", onUserInteractEnd);
+
+
+
     return () => {
       resizeObserver.disconnect();
       window.removeEventListener("resize", syncPixelRatio);
       window.visualViewport?.removeEventListener("resize", syncPixelRatio);
       window.visualViewport?.removeEventListener("scroll", syncPixelRatio);
       window.clearTimeout(pixelRatioTimer);
+      window.clearTimeout(resumeSpinTimeout);
+      window.clearTimeout(wheelTimeout);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
       mapRef.current = null;
       map.remove();
     };
@@ -227,7 +287,8 @@ export default function MapPreview({
         deceleration: 2500,
       });
       map.touchZoomRotate.enable();
-      map.doubleClickZoom.enable();
+      // Disable double click zoom so accidental rapid clicks never zoom the globe
+      map.doubleClickZoom.disable();
       map.keyboard.enable();
       if (allowRotation) {
         map.dragRotate.enable();
@@ -252,7 +313,7 @@ export default function MapPreview({
     if (!map) return;
 
     if (typeof minZoom === "number") {
-      map.setMinZoom(minZoom);
+      map.setMinZoom(Math.max(-2, minZoom));
     }
     if (typeof maxZoom === "number") {
       map.setMaxZoom(maxZoom);
@@ -316,6 +377,25 @@ export default function MapPreview({
     }
 
     isSyncing.current = true;
+
+    // Cinematic Google Earth flight when switching location or selecting a city
+    if (centerDelta > 0.05) {
+      map.flyTo({
+        center,
+        zoom,
+        essential: true,
+        duration: 5200,
+        curve: 1.35,
+        speed: 0.55,
+      });
+      const onMoveEnd = () => {
+        isSyncing.current = false;
+        map.off('moveend', onMoveEnd);
+      };
+      map.once('moveend', onMoveEnd);
+      return;
+    }
+
     map.jumpTo({ center, zoom });
     requestAnimationFrame(() => {
       isSyncing.current = false;

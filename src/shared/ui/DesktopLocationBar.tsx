@@ -11,7 +11,7 @@ import {
   PLACEHOLDER_EXAMPLE_LATITUDE,
   PLACEHOLDER_EXAMPLE_LONGITUDE,
 } from "@/features/location/ui/constants";
-import type { SearchResult } from "@/features/location/domain/types";
+import { type SearchResult, resolveTargetDistance } from "@/features/location/domain/types";
 import { POPULAR_CITIES, type PopularCity } from "@/features/location/domain/popularCities";
 import { MyLocationIcon, LocationIcon, SearchIcon } from "@/shared/ui/Icons";
 
@@ -43,12 +43,26 @@ export default function DesktopLocationBar() {
   const hasLocationValue = state.form.location.trim().length > 0;
 
   const onLocationSelect = (location: SearchResult) => {
+    const targetDist = resolveTargetDistance(location);
     handleLocationSelectBase(location);
-    flyToLocation(location.lat, location.lon);
+    dispatch({
+      type: "SET_FORM_FIELDS",
+      fields: {
+        distance: String(targetDist),
+        latitude: location.lat.toFixed(6),
+        longitude: location.lon.toFixed(6),
+        location: location.label,
+        displayCity: location.city || location.label.split(",")[0].trim(),
+        displayCountry: location.country || "",
+        displayContinent: location.continent || "",
+      },
+    });
+    flyToLocation(location.lat, location.lon, false, targetDist);
   };
 
   const onPopularCityClick = (city: PopularCity) => {
     const fullLabel = `${city.name}, ${city.country}`;
+    const targetDist = 4900;
     const searchResult: SearchResult = {
       id: `popular:${city.id}`,
       label: fullLabel,
@@ -63,6 +77,7 @@ export default function DesktopLocationBar() {
       type: "SET_FORM_FIELDS",
       resetDisplayNameOverrides: true,
       fields: {
+        distance: String(targetDist),
         location: fullLabel,
         latitude: city.lat.toFixed(6),
         longitude: city.lon.toFixed(6),
@@ -71,7 +86,24 @@ export default function DesktopLocationBar() {
         displayContinent: city.continent,
       },
     });
-    flyToLocation(city.lat, city.lon);
+    flyToLocation(city.lat, city.lon, false, targetDist);
+  };
+
+  const blurTimerRef = useState<{ id?: number }>({})[0];
+
+  const handleSearchTrigger = async () => {
+    const val = state.form.location.trim();
+    if (!val) return;
+    let results = await searchNow(val);
+    if ((!results || results.length === 0) && val.includes(",")) {
+      const firstPart = val.split(",")[0].trim();
+      if (firstPart) {
+        results = await searchNow(firstPart);
+      }
+    }
+    if (results && results.length > 0) {
+      onLocationSelect(results[0]);
+    }
   };
 
   return (
@@ -80,18 +112,36 @@ export default function DesktopLocationBar() {
         <div className="location-search-stack">
           <div className="location-search-main-row">
             <div className="location-search-row">
-              <span className="location-search-icon" aria-hidden="true">
+              <button
+                type="button"
+                className="location-search-btn"
+                title="Search location"
+                aria-label="Search location"
+                onClick={handleSearchTrigger}
+              >
                 <SearchIcon />
-              </span>
+              </button>
               <div className="location-input-wrap">
                 <input
                   className="form-control-tall"
                   name="location"
                   value={state.form.location}
                   onChange={handleChange}
-                  onFocus={() => setLocationFocused(true)}
-                  onBlur={() => setLocationFocused(false)}
-                  onKeyDown={async (e) => { if (e.key === "Enter") { const results = await searchNow(e.currentTarget.value); if (results && results.length > 0 && results[0].fromGoogleMaps) { onLocationSelect(results[0]); } } }}
+                  onFocus={() => {
+                    if (blurTimerRef.id) window.clearTimeout(blurTimerRef.id);
+                    setLocationFocused(true);
+                  }}
+                  onBlur={() => {
+                    blurTimerRef.id = window.setTimeout(() => {
+                      setLocationFocused(false);
+                    }, 220);
+                  }}
+                  onKeyDown={async (e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      await handleSearchTrigger();
+                    }
+                  }}
                   placeholder={PLACEHOLDER_LOCATION_SEARCH}
                   autoComplete="off"
                 />

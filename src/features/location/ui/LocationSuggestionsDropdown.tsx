@@ -69,6 +69,10 @@ export default function LocationSuggestionsDropdown({
                   event.preventDefault();
                   onSelect(suggestion);
                 }}
+                onClick={(event) => {
+                  event.preventDefault();
+                  onSelect(suggestion);
+                }}
               >
                 {suggestion.fromGoogleMaps ? (
                   <span aria-hidden="true" style={{ marginRight: 6 }}>📍</span>

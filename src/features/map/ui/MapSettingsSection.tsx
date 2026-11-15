@@ -58,6 +58,7 @@ interface MapSettingsSectionProps {
   onColorChange: (key: string, value: string) => void;
   onResetColors: () => void;
   onColorEditorActiveChange?: (active: boolean) => void;
+  isPosterLayoutOpen?: boolean;
 }
 
 export default function MapSettingsSection({
@@ -77,6 +78,7 @@ export default function MapSettingsSection({
   onColorChange,
   onResetColors,
   onColorEditorActiveChange,
+  isPosterLayoutOpen = false,
 }: MapSettingsSectionProps) {
   const [isThemeEditing, setIsThemeEditing] = useState(false);
   const [savedCustomThemes, setSavedCustomThemes] = useState<SavedCustomTheme[]>(loadCustomThemes);
@@ -293,7 +295,13 @@ export default function MapSettingsSection({
   }
 
   function handleLayoutSelectInline(layoutId: string) {
-    onLayoutChange(form.layout === layoutId ? "print_a4_portrait" : layoutId);
+    if (isPosterLayoutOpen && form.layout === layoutId) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("maparte:disable-poster-layout"));
+      }
+    } else {
+      onLayoutChange(layoutId);
+    }
     setIsLayoutEditing(false);
   }
 
@@ -565,7 +573,7 @@ export default function MapSettingsSection({
                     <LayoutCard
                       key={layoutOption.id}
                       layoutOption={layoutOption}
-                      isSelected={layoutOption.id === form.layout}
+                      isSelected={Boolean(isPosterLayoutOpen && layoutOption.id === form.layout)}
                       onClick={() => handleLayoutSelectInline(layoutOption.id)}
                     />
                   ))}

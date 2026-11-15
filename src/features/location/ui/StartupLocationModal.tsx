@@ -22,7 +22,7 @@ import {
   useRecentLocations,
 } from "@/features/location/application/useRecentLocations";
 import LocationSuggestionsDropdown from "./LocationSuggestionsDropdown";
-import type { SearchResult } from "@/features/location/domain/types";
+import { resolveTargetDistance, type SearchResult } from "@/features/location/domain/types";
 
 const CLOSE_ANIMATION_MS = 220;
 const DEFAULT_LOCATION_LABEL = "Dehradun, Uttarakhand, India";
@@ -103,7 +103,7 @@ export default function StartupLocationModal({
         location: location.label,
         latitude: location.lat.toFixed(6),
         longitude: location.lon.toFixed(6),
-        distance: String(DEFAULT_DISTANCE_METERS),
+        distance: String(resolveTargetDistance(location)),
         displayCity: location.city,
         displayCountry: location.country,
         displayContinent: location.continent,
@@ -282,7 +282,17 @@ export default function StartupLocationModal({
           }}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => setTimeout(() => setIsInputFocused(false), 120)}
-          onKeyDown={async (e) => { if (e.key === "Enter") { const results = await searchNow(e.currentTarget.value); if (results && results.length > 0 && results[0].fromGoogleMaps) { onSuggestionSelect(results[0]); } } }}
+          onKeyDown={async (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              const val = e.currentTarget.value.trim();
+              if (!val) return;
+              const results = await searchNow(val);
+              if (results && results.length > 0) {
+                onSuggestionSelect(results[0]);
+              }
+            }
+          }}
           placeholder={PLACEHOLDER_LOCATION_SEARCH}
           autoComplete="off"
         />

@@ -159,14 +159,32 @@ export function useFormHandlers() {
       const layoutOption = getLayoutOption(layoutId);
       if (!layoutOption) return;
 
+      // If this layout is already selected, toggle it OFF to restore normal fullscreen map
+      if (state.form.layout === layoutOption.id) {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("maparte:disable-poster-layout"));
+        }
+        dispatch({
+          type: "SET_LAYOUT",
+          layoutId: "",
+          widthCm: formatLayoutCm(layoutOption.widthCm),
+          heightCm: formatLayoutCm(layoutOption.heightCm),
+        });
+        return;
+      }
+
       dispatch({
         type: "SET_LAYOUT",
         layoutId: layoutOption.id,
         widthCm: formatLayoutCm(layoutOption.widthCm),
         heightCm: formatLayoutCm(layoutOption.heightCm),
       });
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("maparte:enable-poster-layout"));
+      }
     },
-    [dispatch],
+    [dispatch, state.form.layout],
   );
 
   const handleColorChange = useCallback(

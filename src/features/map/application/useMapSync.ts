@@ -73,7 +73,7 @@ function resolveZoomBounds(
   );
 
   return {
-    minZoom: Math.min(minZoomFromDistance, maxZoomFromDistance),
+    minZoom: MIN_MAP_ZOOM,
     maxZoom: Math.max(minZoomFromDistance, maxZoomFromDistance),
   };
 }
@@ -104,6 +104,7 @@ export function useMapSync(
   const latestLocationLookupSeqRef = useRef(0);
   const skippedCoordinateLookupRef = useRef<string>("");
   const lastManualCoordinateLookupRef = useRef<string>("");
+  const isFlyingRef = useRef(false);
   // Read selectedLocation without adding it to the coordinate effect's deps.
   // The effect should only re-run when lat/lon change (user typed coordinates),
   // not when selectedLocation changes (e.g. CLEAR_LOCATION) — otherwise clearing
@@ -120,13 +121,10 @@ export function useMapSync(
 
   const [containerPx, setContainerPx] = useState(DEFAULT_CONTAINER_PX);
 
-  // Scale up so small viewports reach the same effective width (and thus
-  // the same MapLibre zoom / tile detail level) as desktop.
-  const overzoomScale = Math.min(
-    MAX_OVERZOOM_SCALE,
-    Math.max(MAP_OVERZOOM_SCALE, MIN_EFFECTIVE_CONTAINER_PX / containerPx),
-  );
-  const effectiveContainerPx = containerPx * overzoomScale;
+  // Keep overzoomScale strictly at 1.0 so the map canvas is never shrunk via CSS transform scale,
+  // ensuring roads inside the poster layout frame retain their full, bold, architectural width.
+  const overzoomScale = 1;
+  const effectiveContainerPx = containerPx;
 
   const setContainerWidth = useCallback((px: number) => {
     if (px <= 0) return;
@@ -196,15 +194,18 @@ export function useMapSync(
             return;
           }
 
+          const hasCity = Boolean(form.displayCity && form.displayCity.trim());
+          const hasCountry = Boolean(form.displayCountry && form.displayCountry.trim());
+
           dispatch({
             type: "SET_FORM_FIELDS",
             fields: {
               location: nextLocation,
               displayContinent: nextContinent,
-              ...(!displayNameOverridesRef.current.city
+              ...(!hasCity && !displayNameOverridesRef.current.city
                 ? { displayCity: nextCity }
                 : {}),
-              ...(!displayNameOverridesRef.current.country
+              ...(!hasCountry && !displayNameOverridesRef.current.country
                 ? { displayCountry: nextCountry }
                 : {}),
             },
@@ -214,7 +215,7 @@ export function useMapSync(
           // Ignore lookup failures; coordinates stay authoritative.
         });
     },
-    [dispatch],
+    [dispatch, form.displayCity, form.displayCountry],
   );
 
   const handleMove = useCallback(
@@ -229,7 +230,9 @@ export function useMapSync(
       const [lon, lat] = center;
       const bounds = resolveZoomBounds(lat, effectiveContainerPx);
       const boundedZoom = clamp(zoom, bounds.minZoom, bounds.maxZoom);
-      const distance = zoomToDistance(boundedZoom, lat, effectiveContainerPx);
+      const rawDistance = zoomToDistance(boundedZoom, lat, effectiveContainerPx);
+      // Preserve top opening distance (50 Million meters) when at global Earth overview
+      const distance = boundedZoom <= 0.2 ? Math.max(50_000_000, rawDistance) : rawDistance;
       skippedCoordinateLookupRef.current = `${lat.toFixed(6)},${lon.toFixed(6)}`;
 
       dispatch({
@@ -241,7 +244,9 @@ export function useMapSync(
         },
       });
 
-      updateLocationFromCoordinates(lat, lon);
+      if (!isFlyingRef.current && distance <= 250_000) {
+        updateLocationFromCoordinates(lat, lon);
+      }
     },
     [dispatch, effectiveContainerPx, updateLocationFromCoordinates],
   );
@@ -292,12 +297,24 @@ export function useMapSync(
 
       lastLookupCoordsRef.current = [lat, lon];
       lastLocationLookupAtRef.current = Date.now();
+      isFlyingRef.current = true;
 
       mapRef.current?.flyTo({
         center: [lon, lat],
         zoom,
-        duration: FLY_TO_DURATION_MS,
+        duration: 5200,
+        curve: 1.45,
+        speed: 0.7,
+        essential: true,
       });
+
+      const map = mapRef.current;
+      if (map) {
+        const onEnd = () => {
+          isFlyingRef.current = false;
+        };
+        map.once("moveend", onEnd);
+      }
     },
     [mapRef, formDistance, effectiveContainerPx, mapZoom],
   );

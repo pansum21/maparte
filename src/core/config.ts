@@ -10,8 +10,8 @@ export const DEFAULT_POSTER_HEIGHT_CM = 30;
 export const LAYOUT_MATCH_TOLERANCE_CM = 0.01;
 
 export const MIN_DISTANCE_METERS = 15;
-export const MAX_DISTANCE_METERS = 20_000_000;
-export const DEFAULT_DISTANCE_METERS = 4_000;
+export const MAX_DISTANCE_METERS = 200_000_000;
+export const DEFAULT_DISTANCE_METERS = 100_000_000;
 
 /* ── Map / MapLibre ── */
 
@@ -21,8 +21,8 @@ export const EARTH_CIRCUMFERENCE_M = 40_075_016.686;
 /** Vector tile size for OpenMapTiles/OpenFreeMap tile scheme. */
 export const TILE_SIZE_PX = 512;
 
-/** Min zoom level allowed for the map. */
-export const MIN_MAP_ZOOM = 0.5;
+/** Min zoom level for 3D Globe: MapLibre allows between -2 and maxZoom. */
+export const MIN_MAP_ZOOM = -2;
 
 /** Max zoom level allowed for the map (zoom 22 allows street, alley, and building level inspection). */
 export const MAX_MAP_ZOOM = 22;
@@ -30,8 +30,8 @@ export const MAX_MAP_ZOOM = 22;
 /** Default container width (px) used before ResizeObserver measures the real one. */
 export const DEFAULT_CONTAINER_PX = 600;
 
-/** Duration (ms) for flyTo animation when selecting a location. */
-export const FLY_TO_DURATION_MS = 900;
+/** Duration (ms) for flyTo animation when selecting a location — smooth, progressive dive so city tiles stream in without blank flashes. */
+export const FLY_TO_DURATION_MS = 5500;
 
 /** Dehradun, India — default fallback when geolocation is denied. */
 export const DEFAULT_LAT = 30.3165;

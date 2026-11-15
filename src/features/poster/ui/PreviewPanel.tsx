@@ -42,10 +42,7 @@ import {
   createCustomLayoutOption,
   formatLayoutDimensions,
   getLayoutOption,
-  getMaparteCaptionVariant,
-  isMaparteSquareCaptionLayout,
 } from "@/features/layout/infrastructure/layoutRepository";
-import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import {
@@ -70,6 +67,8 @@ interface PreviewPanelProps {
   cameraStream?: MediaStream | null;
   cinemaPosterPlacement?: { x: number; y: number; scale: number };
   onCinemaPosterPlacementChange?: (placement: { x: number; y: number; scale: number }) => void;
+  isPosterLayoutOpen?: boolean;
+  onTogglePosterLayout?: () => void;
 }
 
 
@@ -84,7 +83,12 @@ export default function PreviewPanel({
   cameraStream = null,
   cinemaPosterPlacement = { x: 0, y: 0, scale: 1 },
   onCinemaPosterPlacementChange,
+  isPosterLayoutOpen: propIsPosterLayoutOpen,
+  onTogglePosterLayout,
 }: PreviewPanelProps) {
+  const [internalIsPosterLayoutOpen, setInternalIsPosterLayoutOpen] = useState(false);
+  const isPosterLayoutOpen = propIsPosterLayoutOpen !== undefined ? propIsPosterLayoutOpen : internalIsPosterLayoutOpen;
+  const handleTogglePosterLayout = onTogglePosterLayout || (() => setInternalIsPosterLayoutOpen((prev) => !prev));
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
   const {
@@ -109,8 +113,6 @@ export default function PreviewPanel({
   const frameRef = useRef<HTMLDivElement | null>(null);
   const mapWindowRef = useRef<HTMLDivElement | null>(null);
   const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
-  const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const captionBackdropCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
   const [mapInstance, setMapInstance] = useState<any>(null);
 
@@ -238,47 +240,6 @@ export default function PreviewPanel({
     };
   }, [mapInstance, mapRef]);
 
-  useEffect(() => {
-    const map = mapInstance || mapRef.current;
-    if (!map) return;
-
-    let rafId: number | null = null;
-    const syncGhostCanvas = () => {
-      const src = map.getCanvas();
-      if (!src || src.width === 0 || src.height === 0) return;
-
-      [ghostCanvasRef.current, captionBackdropCanvasRef.current].forEach((target) => {
-        if (!target) return;
-        if (target.width !== src.width || target.height !== src.height) {
-          target.width = src.width;
-          target.height = src.height;
-        }
-        const ctx = target.getContext("2d");
-        if (ctx) ctx.drawImage(src, 0, 0);
-      });
-    };
-
-    const scheduleSync = () => {
-      if (rafId !== null) return;
-      rafId = requestAnimationFrame(() => {
-        rafId = null;
-        syncGhostCanvas();
-      });
-    };
-
-    syncGhostCanvas();
-
-    map.on("render", scheduleSync);
-    map.on("idle", syncGhostCanvas);
-    map.on("moveend", syncGhostCanvas);
-
-    return () => {
-      if (rafId !== null) cancelAnimationFrame(rafId);
-      map.off("render", scheduleSync);
-      map.off("idle", syncGhostCanvas);
-      map.off("moveend", syncGhostCanvas);
-    };
-  }, [mapInstance, mapRef]);
 
   useEffect(() => {
     if (!isMarkerEditorActive) {
@@ -297,18 +258,6 @@ export default function PreviewPanel({
     getLayoutOption(form.layout) ?? createCustomLayoutOption(widthCm, heightCm);
   const posterSizeLabel = formatLayoutDimensions(layoutOption);
   const previewCanvasSize = resolveCanvasSize(widthCm / 2.54, heightCm / 2.54, 500);
-  const isSquareCaptionLayout = isMaparteSquareCaptionLayout(form.layout);
-  const squareCaptionGeometry = isSquareCaptionLayout
-    ? getSquareCaptionGeometry(
-        previewCanvasSize.width,
-        previewCanvasSize.height,
-        widthCm,
-        heightCm,
-        borderMetrics.mapInsetCm,
-        borderMetrics.gapCm,
-          getMaparteCaptionVariant(form.layout) ?? "center-bottom",
-      )
-    : null;
   const resolutionInfoLabel = `${previewCanvasSize.width} × ${previewCanvasSize.height} px (${previewCanvasSize.effectiveDpi} PPI)`;
   const layoutLabel = `${layoutOption.name} (${formatLayoutDimensions(layoutOption)})`;
   const infoLocationLabel =
@@ -445,7 +394,7 @@ export default function PreviewPanel({
   return (
     <section className="preview-panel">
       <div
-        className={`poster-viewport${isCinemaMode ? " is-wall-mockup" : ""}${wallPhoto && isCinemaMode ? " has-user-wall-photo" : ""}${cameraStream && isCinemaMode ? " has-live-camera-background" : ""}`}
+        className={`poster-viewport${isPosterLayoutOpen ? " is-poster-layout-mode" : " is-fullscreen-globe-mode"}${isCinemaMode ? " is-wall-mockup" : ""}${wallPhoto && isCinemaMode ? " has-user-wall-photo" : ""}${cameraStream && isCinemaMode ? " has-live-camera-background" : ""}`}
         style={wallPhoto && isCinemaMode ? { "--cinema-wall-photo": `url("${wallPhoto}")` } as CSSProperties : undefined}
       >
         {wallPhoto && isCinemaMode ? (
@@ -457,18 +406,13 @@ export default function PreviewPanel({
           />
         ) : null}
         {cameraStream && isCinemaMode ? <video ref={cameraVideoRef} className="cinema-live-camera-backdrop" autoPlay muted playsInline aria-hidden="true" /> : null}
-        {/* Ambient ghost map layer: canvas clone of the main map blurred behind the poster */}
-        <div className="poster-ghost-layer" aria-hidden="true">
-          <canvas
-            ref={ghostCanvasRef}
-            className="poster-ghost-canvas"
-          />
-        </div>
-        {!isCinemaMode ? (
+        {!isCinemaMode && isPosterLayoutOpen ? (
           <div className="desktop-layout-label" aria-hidden="true">
             {layoutLabel}
           </div>
         ) : null}
+
+
 
         {!isCinemaMode ? (
           <button
@@ -485,7 +429,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaptionLayout ? " is-maparte-square-caption has-maparte-caption-backdrop" : ""}${isSquareCaptionLayout && (form.overlayBottom ?? form.showMarkers) ? " has-maparte-caption-blur" : ""}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
             posterDragRef.current = {
@@ -516,15 +460,6 @@ export default function PreviewPanel({
               "--poster-bg": posterBg,
               "--map-inset-x": borderMetrics.mapInsetX,
               "--map-inset-y": borderMetrics.mapInsetY,
-              "--square-map-x": squareCaptionGeometry ? `${(squareCaptionGeometry.x / previewCanvasSize.width) * 100}%` : undefined,
-              "--square-map-y": squareCaptionGeometry ? `${(squareCaptionGeometry.y / previewCanvasSize.height) * 100}%` : undefined,
-              "--square-map-width": squareCaptionGeometry ? `${(squareCaptionGeometry.size / previewCanvasSize.width) * 100}%` : undefined,
-              "--square-map-height": squareCaptionGeometry ? `${(squareCaptionGeometry.size / previewCanvasSize.height) * 100}%` : undefined,
-              "--square-safe-x": squareCaptionGeometry ? `${(squareCaptionGeometry.safeInsetX / previewCanvasSize.width) * 100}%` : undefined,
-              "--square-safe-y": squareCaptionGeometry ? `${(squareCaptionGeometry.safeInsetY / previewCanvasSize.height) * 100}%` : undefined,
-              "--square-caption-x": squareCaptionGeometry ? `${(squareCaptionGeometry.captionX / previewCanvasSize.width) * 100}%` : undefined,
-              "--square-caption-y": squareCaptionGeometry ? `${(squareCaptionGeometry.captionY / previewCanvasSize.height) * 100}%` : undefined,
-              "--square-caption-width": squareCaptionGeometry ? `${(squareCaptionGeometry.captionWidth / previewCanvasSize.width) * 100}%` : undefined,
               "--mat-inset-x": borderMetrics.matInsetX,
               "--mat-inset-y": borderMetrics.matInsetY,
               "--cinema-poster-x": `${cinemaPosterPlacement.x}vw`,
@@ -535,18 +470,6 @@ export default function PreviewPanel({
         >
           
 
-
-          {isSquareCaptionLayout ? (
-            <>
-              <div className="poster-caption-map-backdrop" aria-hidden="true">
-                <canvas ref={captionBackdropCanvasRef} />
-              </div>
-              <div
-                className="poster-caption-map-wash"
-                aria-hidden="true"
-              />
-            </>
-          ) : null}
 
           <div ref={mapWindowRef} className="poster-map-window">
           <Suspense
@@ -561,17 +484,19 @@ export default function PreviewPanel({
               center={mapCenter}
               zoom={mapZoom}
               mapRef={mapRef}
-              interactive={isEditing && !isMarkerEditorActive}
-              allowRotation={isEditing}
+              interactive={(!isPosterLayoutOpen || isEditing) && !isMarkerEditorActive}
+              allowRotation={!isPosterLayoutOpen || isEditing}
               minZoom={mapMinZoom}
               maxZoom={mapMaxZoom}
-              overzoomScale={overzoomScale}
+              overzoomScale={1}
               onMove={handleMove}
               onMoveEnd={handleMoveEnd}
               onMapReady={setMapInstance}
             />
           </Suspense>
-          <GradientFades color={effectiveTheme.ui.bg} top={form.overlayTop ?? form.showMarkers} bottom={isSquareCaptionLayout ? false : (form.overlayBottom ?? form.showMarkers)} />
+          {isPosterLayoutOpen ? (
+            <GradientFades color={effectiveTheme.ui.bg} top={form.overlayTop ?? form.showMarkers} bottom={form.overlayBottom ?? form.showMarkers} />
+          ) : null}
           <RouteOverlay
             routes={state.routes}
             mapRef={mapRef}
@@ -604,29 +529,31 @@ export default function PreviewPanel({
 
           
 
-          {/* PosterTextOverlay rendered at poster-frame level so it is NEVER clipped by the shape */}
-          <PosterTextOverlay
-            city={cityLabel}
-            country={countryLabel}
-            lat={formLat}
-            lon={formLon}
-            fontFamily={form.fontFamily}
-            fontSize={Number(form.fontSize) || 16}
-            textColor={posterTextColor}
-            landColor={effectiveTheme.map.land}
-            showPosterText={form.showPosterText}
-            includeCredits={form.includeCredits}
-            showOverlay={form.overlayBottom ?? form.showMarkers}
-            customDate={activeCustomDate}
-            squareCaption={isSquareCaptionLayout}
-            squareCaptionGeometry={squareCaptionGeometry}
-          />
-          <NeatlineArtwork
-            selection={neatlineSelection}
-            className="preview-neatline"
-            widthCm={form.width}
-            heightCm={form.height}
-          />
+          {/* PosterTextOverlay rendered at poster-frame level only in Poster Layout mode */}
+          {isPosterLayoutOpen ? (
+            <>
+              <PosterTextOverlay
+                city={cityLabel}
+                country={countryLabel}
+                lat={formLat}
+                lon={formLon}
+                fontFamily={form.fontFamily}
+                fontSize={Number(form.fontSize) || 16}
+                textColor={posterTextColor}
+                landColor={effectiveTheme.map.land}
+                showPosterText={form.showPosterText}
+                includeCredits={form.includeCredits}
+                showOverlay={form.overlayBottom ?? form.showMarkers}
+                customDate={activeCustomDate}
+              />
+              <NeatlineArtwork
+                selection={neatlineSelection}
+                className="preview-neatline"
+                widthCm={form.width}
+                heightCm={form.height}
+              />
+            </>
+          ) : null}
           {state.showGrid ? (
             <PosterGridOverlay
               backgroundColor={posterBg}
@@ -648,4 +575,3 @@ export default function PreviewPanel({
     </section>
   );
 }
-

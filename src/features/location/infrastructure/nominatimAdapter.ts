@@ -21,6 +21,31 @@ import {
 const inFlightSearchRequests = new Map<string, Promise<SearchResult[]>>();
 const inFlightReverseRequests = new Map<string, Promise<SearchResult>>();
 
+
+async function fetchNominatimData(
+  http: IHttp,
+  path: string,
+  params: string,
+  signal?: AbortSignal
+): Promise<any> {
+  const isBrowser = typeof window !== 'undefined';
+  if (isBrowser) {
+    try {
+      const proxyUrl = `/api/nominatim/${path}?${params}`;
+      const res = await http.get(proxyUrl, { headers: { Accept: 'application/json' }, signal }, 8000);
+      if (res && res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fall through to direct nominatim fetch
+    }
+  }
+
+  const directUrl = `https://nominatim.openstreetmap.org/${path}?${params}`;
+  const directRes = await http.get(directUrl, { headers: { Accept: 'application/json' }, signal }, 14000);
+  return await directRes.json();
+}
+
 export function createNominatimAdapter(
   http: IHttp,
   cache: ICache,
@@ -114,21 +139,60 @@ export function createNominatimAdapter(
       return inFlightSearchRequests.get(cacheKey)!;
     }
 
-    const url =
-      "https://nominatim.openstreetmap.org/search?" +
-      `format=jsonv2&addressdetails=1&limit=${normalizedLimit}&q=${encodeURIComponent(lookup)}`;
+    // Helper to execute Nominatim query and parse results
+    const doFetch = async (queryStr: string): Promise<SearchResult[]> => {
+      try {
+        const data = await fetchNominatimData(
+          http,
+          "search",
+          `format=jsonv2&addressdetails=1&limit=${normalizedLimit}&q=${encodeURIComponent(queryStr)}`,
+          signal
+        );
+        return parseLocationResponseItems(data);
+      } catch (err) {
+        return [];
+      }
+    };
 
-    const promise = http
-      .get(url, { headers: { Accept: "application/json" }, signal }, 16_000)
-      .then(async (response) => {
-        const data = await response.json();
-        const results = parseLocationResponseItems(data);
+    const promise = (async () => {
+      // 1. First attempt: raw user query
+      let results = await doFetch(lookup);
+      if (results.length > 0) {
         cache.write(cacheKey, results);
         return results;
-      })
-      .finally(() => {
-        inFlightSearchRequests.delete(cacheKey);
-      });
+      }
+
+      // 2. Second attempt: Normalize Hindi / Indic country terms (e.g. सोलन, इंडिया -> सोलन, India)
+      let cleaned = lookup
+        .replace(/\b(इंडिया|भारत|हिंदुस्तान)\b/gi, "India")
+        .replace(/\b(यूएसए|अमेरिका)\b/gi, "USA")
+        .replace(/\b(कनाडा)\b/gi, "Canada")
+        .replace(/\b(ब्रिटेन|इंग्लैंड)\b/gi, "UK")
+        .trim();
+
+      if (cleaned !== lookup) {
+        results = await doFetch(cleaned);
+        if (results.length > 0) {
+          cache.write(cacheKey, results);
+          return results;
+        }
+      }
+
+      // 3. Third attempt: If query has commas (e.g. "सोलन, इंडिया"), search the primary city name before the comma
+      const parts = lookup.split(/[,،]+/).map((s) => s.trim()).filter(Boolean);
+      if (parts.length > 1) {
+        results = await doFetch(parts[0]);
+        if (results.length > 0) {
+          cache.write(cacheKey, results);
+          return results;
+        }
+      }
+
+      cache.write(cacheKey, []);
+      return [];
+    })().finally(() => {
+      inFlightSearchRequests.delete(cacheKey);
+    });
 
     inFlightSearchRequests.set(cacheKey, promise);
     return promise;
@@ -222,14 +286,12 @@ export function createNominatimAdapter(
       return inFlightReverseRequests.get(cacheKey)!;
     }
 
-    const url =
-      "https://nominatim.openstreetmap.org/reverse?" +
-      `format=jsonv2&addressdetails=1&zoom=10&lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}`;
-
-    const promise = http
-      .get(url, { headers: { Accept: "application/json" } }, 16_000)
-      .then(async (response) => {
-        const data = await response.json();
+    const promise = fetchNominatimData(
+      http,
+      "reverse",
+      `format=jsonv2&addressdetails=1&zoom=10&lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}`
+    )
+      .then((data) => {
         const normalized = normalizeLocationResult(data);
         if (!normalized) {
           throw new Error("No nearby city found for the selected coordinates.");

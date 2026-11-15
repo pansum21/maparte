@@ -8,7 +8,7 @@ import { useMapSync } from "@/features/map/application/useMapSync";
 import { DEFAULT_DISTANCE_METERS } from "@/core/config";
 import { useFormHandlers } from "@/features/poster/application/useFormHandlers";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
-import type { SearchResult } from "@/features/location/domain/types";
+import { resolveTargetDistance, type SearchResult } from "@/features/location/domain/types";
 import { LocationIcon, MyLocationIcon, SearchIcon } from "@/shared/ui/Icons";
 
 interface AllCitiesModalProps {
@@ -186,15 +186,22 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
   const hasLocationValue = state.form.location.trim().length > 0;
 
   const onLocationSelect = (result: SearchResult) => {
+    const targetDist = resolveTargetDistance(result);
     handleLocationSelectBase(result);
     dispatch({
       type: "SET_FORM_FIELDS",
       resetDisplayNameOverrides: true,
       fields: {
-        distance: String(DEFAULT_DISTANCE_METERS),
+        distance: String(targetDist),
+        latitude: result.lat.toFixed(6),
+        longitude: result.lon.toFixed(6),
+        location: result.label,
+        displayCity: result.city || result.label.split(",")[0].trim(),
+        displayCountry: result.country || "",
+        displayContinent: result.continent || "",
       },
     });
-    flyToLocation(result.lat, result.lon, false, DEFAULT_DISTANCE_METERS);
+    flyToLocation(result.lat, result.lon, false, targetDist);
     onClose();
   };
 
@@ -209,6 +216,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
       lat: item.lat,
       lon: item.lon,
     };
+    const targetDist = 4900;
     handleLocationSelectBase(result);
     dispatch({
       type: "SET_FORM_FIELDS",
@@ -220,10 +228,10 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
         displayCity: item.city,
         displayCountry: item.country,
         displayContinent: item.continent,
-        distance: String(DEFAULT_DISTANCE_METERS),
+        distance: String(targetDist),
       },
     });
-    flyToLocation(item.lat, item.lon, false, DEFAULT_DISTANCE_METERS);
+    flyToLocation(item.lat, item.lon, false, targetDist);
     onClose();
   };
 
