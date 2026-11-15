@@ -47,7 +47,6 @@ interface MapSettingsForm {
 interface MapSettingsSectionProps {
   activeMobileTab?: string;
   form: MapSettingsForm;
-  previewCenter: [lon: number, lat: number];
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onNumericFieldBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onThemeChange: (themeId: string) => void;
@@ -67,7 +66,6 @@ interface MapSettingsSectionProps {
 export default function MapSettingsSection({
   activeMobileTab,
   form,
-  previewCenter,
   onChange,
   onNumericFieldBlur,
   onThemeChange,
@@ -137,36 +135,6 @@ export default function MapSettingsSection({
     const customOption = savedCustomThemes.find((item) => item.id === activeThemeOptionId);
     return { ...(customOption ?? selectedThemeOption), palette: currentThemePalette };
   }, [activeThemeOptionId, currentThemePalette, savedCustomThemes, selectedThemeOption]);
-
-  const themePreviewOptions = useMemo(
-    () => ({
-      includeLandcover: form.includeLandcover,
-      includeBuildings: form.includeBuildings,
-      includeWater: form.includeWater,
-      includeParks: form.includeParks,
-      includeAeroway: form.includeAeroway,
-      includeRail: form.includeRail,
-      includeRoads: form.includeRoads,
-      includeRoadPath: form.includeRoadPath,
-      includeRoadMinorLow: form.includeRoadMinorLow,
-      includeRoadOutline: form.includeRoadOutline,
-      // Keep theme cards at a stable city-wide extent so roads stay readable.
-      distanceMeters: 200_000,
-    }),
-    [
-      form.distance,
-      form.includeAeroway,
-      form.includeBuildings,
-      form.includeLandcover,
-      form.includeParks,
-      form.includeRail,
-      form.includeRoadMinorLow,
-      form.includeRoadOutline,
-      form.includeRoadPath,
-      form.includeRoads,
-      form.includeWater,
-    ],
-  );
 
   const resolvePreviewTheme = useCallback(
     (option: ThemeOption): ResolvedTheme => {
@@ -542,9 +510,7 @@ export default function MapSettingsSection({
             onThemeSelect={handleThemeSelect}
             onThemeAction={handleThemeAction}
             onDeleteCustomTheme={handleDeleteCustomTheme}
-            previewCenter={previewCenter}
             resolvePreviewTheme={resolvePreviewTheme}
-            mapOptions={themePreviewOptions}
             onSelectDesign={(design) => {
               if (onFontChange) {
                 onFontChange(design.fontFamily);

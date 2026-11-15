@@ -3,7 +3,6 @@ import ThemeCard from "./ThemeCard";
 import { EditIcon, TrashIcon } from "@/shared/ui/Icons";
 import type { ResolvedTheme, ThemeOption } from "../domain/types";
 import type { PopularDesign } from "../domain/popularDesigns";
-import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
 
 interface ThemeSummarySectionProps {
   listRef?: RefObject<HTMLDivElement>;
@@ -13,9 +12,7 @@ interface ThemeSummarySectionProps {
   onThemeSelect: (themeId: string) => void;
   onThemeAction?: (group: "maparte" | "yours") => void;
   onDeleteCustomTheme?: (themeId: string) => void;
-  previewCenter: [lon: number, lat: number];
   resolvePreviewTheme: (option: ThemeOption) => ResolvedTheme;
-  mapOptions: Parameters<typeof generateMapStyle>[1];
   onSelectDesign?: (design: PopularDesign) => void;
 }
 
@@ -27,9 +24,7 @@ export default function ThemeSummarySection({
   onThemeSelect,
   onThemeAction,
   onDeleteCustomTheme,
-  previewCenter,
   resolvePreviewTheme,
-  mapOptions,
 }: ThemeSummarySectionProps) {
   const [activeGroup, setActiveGroup] = useState<"maparte" | "yours">("maparte");
   const description =
@@ -103,8 +98,6 @@ export default function ThemeSummarySection({
               <ThemeCard
                 themeOption={themeOption}
                 previewTheme={resolvePreviewTheme(themeOption)}
-                previewCenter={previewCenter}
-                mapOptions={mapOptions}
                 isSelected={themeOption.id === selectedThemeId}
                 onClick={() => onThemeSelect(themeOption.id)}
               />

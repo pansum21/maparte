@@ -34,8 +34,6 @@ import {
   MIN_POSTER_CM,
   MAX_POSTER_CM,
   FONT_OPTIONS,
-  DEFAULT_LAT,
-  DEFAULT_LON,
 } from "@/core/config";
 import type { SearchResult } from "@/features/location/domain/types";
 
@@ -104,12 +102,6 @@ export default function SettingsPanel({
   const { flyToLocation } = useMapSync(state, dispatch, mapRef);
   const { handleUseCurrentLocation, isLocatingUser, locationPermissionMessage } =
     useCurrentLocation(flyToLocation);
-  const previewLat = Number(state.form.latitude);
-  const previewLon = Number(state.form.longitude);
-  const previewCenter: [number, number] = [
-    Number.isFinite(previewLon) ? previewLon : DEFAULT_LON,
-    Number.isFinite(previewLat) ? previewLat : DEFAULT_LAT,
-  ];
   const [isColorEditorActive, setIsColorEditorActive] = useState(false);
   const getInitialSection = (tab?: string): SectionId => ((tab as SectionId) || "location");
   const [openSections, setOpenSections] = useState<Set<SectionId>>(new Set([getInitialSection(mobileTab)]));
@@ -230,7 +222,6 @@ export default function SettingsPanel({
               <MapSettingsSection
                 activeMobileTab={mobileTab}
                 form={state.form}
-                previewCenter={previewCenter}
                 onChange={handleChange}
                 onNumericFieldBlur={handleNumericFieldBlur}
                 onThemeChange={handleThemeChange}
@@ -271,7 +262,6 @@ export default function SettingsPanel({
               <MapSettingsSection
                 activeMobileTab={mobileTab}
                 form={state.form}
-                previewCenter={previewCenter}
                 onChange={handleChange}
                 onNumericFieldBlur={handleNumericFieldBlur}
                 onThemeChange={handleThemeChange}

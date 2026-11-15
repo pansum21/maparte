@@ -1,17 +1,10 @@
-import {
-  type ThemeOption,
-  type ResolvedTheme,
-} from "../domain/types";
-import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
-import ThemeMapPreview from "./ThemeMapPreview";
+import type { ThemeOption, ResolvedTheme } from "../domain/types";
 
 interface ThemeCardProps {
   themeOption: ThemeOption | null;
   onClick?: () => void;
   isSelected?: boolean;
   previewTheme: ResolvedTheme;
-  previewCenter: [lon: number, lat: number];
-  mapOptions: Parameters<typeof generateMapStyle>[1];
 }
 
 export default function ThemeCard({
@@ -19,16 +12,15 @@ export default function ThemeCard({
   onClick,
   isSelected = false,
   previewTheme,
-  previewCenter,
-  mapOptions,
 }: ThemeCardProps) {
-  if (!themeOption) {
-    return null;
-  }
+  if (!themeOption) return null;
 
-  const className = ["theme-card", isSelected ? "is-selected" : ""]
-    .filter(Boolean)
-    .join(" ");
+  const isCustomTheme = themeOption.id.startsWith("custom-theme-");
+  const className = [
+    "theme-card",
+    isSelected ? "is-selected" : "",
+    isCustomTheme ? "theme-card--palette" : "",
+  ].filter(Boolean).join(" ");
 
   return (
     <button
@@ -38,11 +30,23 @@ export default function ThemeCard({
       aria-pressed={isSelected}
       aria-label={themeOption.name}
     >
-      <ThemeMapPreview
-        theme={previewTheme}
-        center={previewCenter}
-        mapOptions={mapOptions}
-      />
+      {isCustomTheme ? (
+        <div className="theme-card-palette-preview" aria-hidden="true">
+          <span style={{ backgroundColor: previewTheme.map.land }} />
+          <span style={{ backgroundColor: previewTheme.map.water }} />
+          <span style={{ backgroundColor: previewTheme.map.parks }} />
+          <span style={{ backgroundColor: previewTheme.map.roads.major }} />
+          <span style={{ backgroundColor: previewTheme.map.roads.minor_mid }} />
+        </div>
+      ) : (
+        <img
+          className="theme-card-map-image"
+          src={`/theme-previews/${themeOption.id}.webp`}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      )}
       <span className="theme-card-name-shadow" aria-hidden="true" />
       <p className="theme-card-name">{themeOption.name}</p>
     </button>
