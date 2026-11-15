@@ -209,8 +209,8 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
       const destination = destinationRef.current;
       const target = interpolateView(progress, destination);
       const heroAlign = 1 - smooth(clamp(progress / 0.28));
-      const globeShiftX = Math.round(38 * 2);
-      const globeShiftY = Math.round(38 * 6);
+      const globeShiftX = Math.round((compactView ? 38 * 2 : 38 * 4) * heroAlign);
+      const globeShiftY = Math.round((compactView ? 38 * 6 : 38 * 0.5) * heroAlign);
       const padding = window.innerWidth > 900
         ? { left: Math.round(window.innerWidth * 0.5) + globeShiftX, top: Math.round(window.innerHeight * 0.34 * heroAlign), bottom: globeShiftY }
         : { left: Math.round(window.innerWidth * 0.38) + globeShiftX, bottom: Math.round(window.innerHeight * (progress < 0.48 ? 0.04 + 0.31 * (1 - heroAlign) : 0.18)) + globeShiftY };
@@ -220,7 +220,8 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
       const responsiveZoomBase = zoomStart + (zoomEnd - zoomStart) * zoomProgress;
       const globeRadius = Math.min(window.innerWidth, window.innerHeight) * 0.24;
       const globeScaleBoost = Math.log2((globeRadius + 19) / globeRadius) * (1 - smooth(clamp(progress / 0.34)));
-      const responsiveZoom = responsiveZoomBase + globeScaleBoost;
+      const heroGlobeZoomBoost = (compactView ? 0 : 0.46) * (1 - smooth(clamp(progress / 0.34)));
+      const responsiveZoom = responsiveZoomBase + globeScaleBoost + heroGlobeZoomBoost;
       const idleMs = reduced ? 0 : Math.max(0, now - lastScrollAt - 3000);
       const idleSeconds = Math.max(0, idleMs / 1000 - 0.75);
       if (idleMs > 0 || Math.abs(progress - lastAppliedProgress) > 0.0005) {
@@ -236,8 +237,7 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
           try { map.setProjection({ type: shouldUseGlobe ? "globe" : "mercator" }); } catch { /* Keep current projection if unsupported. */ }
         }
         // After scrolling settles, keep a slow one-way turn at the current zoom. No sinusoidal reversal or zoom reset.
-        const degreesPerPixel = 360 / (512 * 2 ** responsiveZoom);
-      const longitudeDrift = idleSeconds * Math.max(0.000001, 0.7 * degreesPerPixel);
+        const longitudeDrift = idleSeconds * 0.42;
         const bearingDrift = idleSeconds * 0.025;
         const rawLongitude = target.center[0] + longitudeDrift;
         const cameraLongitude = ((rawLongitude + 180) % 360 + 360) % 360 - 180;
