@@ -126,7 +126,8 @@ const preferredThemeOrder = [
   "ocean",
   "neon",
   "japanese_ink",
-  "retro_vintage"
+  "retro_vintage",
+  "aurora"
 ];
 
 function isObject(value: unknown): value is ThemeObject {

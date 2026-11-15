@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createCustomLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import {
   DISPLAY_PALETTE_KEYS,
@@ -21,16 +21,20 @@ import { CheckIcon, EditIcon } from "@/shared/ui/Icons";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import type { LayoutGroup } from "@/features/layout/domain/types";
 import { loadCustomThemes, saveCustomThemes, type SavedCustomTheme } from "@/features/theme/infrastructure/customThemeStorage";
+import { getTheme } from "@/features/theme/infrastructure/themeRepository";
+import { applyThemeColorOverrides } from "@/features/theme/domain/colorPaths";
 
 const FALLBACK_COLOR = "#000000";
 
 interface MapSettingsForm {
   theme: string;
   layout: string;
+  frameLayout?: string;
   width: string;
   height: string;
   distance: string;
   includeBuildings: boolean;
+  includeLandcover: boolean;
   includeWater: boolean;
   includeParks: boolean;
   includeAeroway: boolean;
@@ -48,6 +52,7 @@ interface MapSettingsSectionProps {
   onNumericFieldBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onThemeChange: (themeId: string) => void;
   onLayoutChange: (layoutId: string) => void;
+  onFrameLayoutChange?: (frameLayout: string) => void;
   onFontChange?: (font: string) => void;
   selectedTheme: ResolvedTheme;
   themeOptions: ThemeOption[];
@@ -58,7 +63,6 @@ interface MapSettingsSectionProps {
   onColorChange: (key: string, value: string) => void;
   onResetColors: () => void;
   onColorEditorActiveChange?: (active: boolean) => void;
-  isPosterLayoutOpen?: boolean;
 }
 
 export default function MapSettingsSection({
@@ -68,6 +72,7 @@ export default function MapSettingsSection({
   onNumericFieldBlur,
   onThemeChange,
   onLayoutChange,
+  onFrameLayoutChange,
   onFontChange,
   selectedTheme,
   themeOptions,
@@ -78,7 +83,6 @@ export default function MapSettingsSection({
   onColorChange,
   onResetColors,
   onColorEditorActiveChange,
-  isPosterLayoutOpen = false,
 }: MapSettingsSectionProps) {
   const [isThemeEditing, setIsThemeEditing] = useState(false);
   const [savedCustomThemes, setSavedCustomThemes] = useState<SavedCustomTheme[]>(loadCustomThemes);
@@ -134,6 +138,17 @@ export default function MapSettingsSection({
     const customOption = savedCustomThemes.find((item) => item.id === activeThemeOptionId);
     return { ...(customOption ?? selectedThemeOption), palette: currentThemePalette };
   }, [activeThemeOptionId, currentThemePalette, savedCustomThemes, selectedThemeOption]);
+
+  const resolvePreviewTheme = useCallback(
+    (option: ThemeOption): ResolvedTheme => {
+      const savedTheme = savedCustomThemes.find((item) => item.id === option.id);
+      const baseThemeId = savedTheme?.baseThemeId ?? option.id;
+      const overrides = savedTheme?.colors ??
+        (activeThemeOptionId === option.id ? customColors : {});
+      return applyThemeColorOverrides(getTheme(baseThemeId), overrides);
+    },
+    [activeThemeOptionId, customColors, savedCustomThemes],
+  );
 
   const activeColorChoices = useMemo(() => {
     if (!activeColorKey) return { suggestedColors: [], moreColors: [] };
@@ -295,13 +310,7 @@ export default function MapSettingsSection({
   }
 
   function handleLayoutSelectInline(layoutId: string) {
-    if (isPosterLayoutOpen && form.layout === layoutId) {
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("maparte:disable-poster-layout"));
-      }
-    } else {
-      onLayoutChange(layoutId);
-    }
+    onLayoutChange(form.layout === layoutId ? "print_a4_portrait" : layoutId);
     setIsLayoutEditing(false);
   }
 
@@ -504,6 +513,7 @@ export default function MapSettingsSection({
             onThemeSelect={handleThemeSelect}
             onThemeAction={handleThemeAction}
             onDeleteCustomTheme={handleDeleteCustomTheme}
+            resolvePreviewTheme={resolvePreviewTheme}
             onSelectDesign={(design) => {
               if (onFontChange) {
                 onFontChange(design.fontFamily);
@@ -573,17 +583,41 @@ export default function MapSettingsSection({
                     <LayoutCard
                       key={layoutOption.id}
                       layoutOption={layoutOption}
-                      isSelected={Boolean(isPosterLayoutOpen && layoutOption.id === form.layout)}
+                      isSelected={layoutOption.id === form.layout}
                       onClick={() => handleLayoutSelectInline(layoutOption.id)}
                     />
                   ))}
                 </div>
               </section>
             ))}
+            <section className="layout-inline-group frame-layout-group" aria-label="Frame layouts">
+              <h3>Frame Layout</h3>
+              <p className="frame-layout-help">Map inset, clean white title space, and city details. Works with portrait and landscape sizes.</p>
+              <div className="frame-layout-grid">
+                {[
+                  ["classic", "Classic"], ["left", "Left"], ["right", "Right"], ["center", "Center"],
+                  ["dark", "Dark"], ["box", "Box"], ["title", "Title"], ["full-map", "Full Map"],
+                ].map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    className={`frame-layout-option${(form.frameLayout ?? "none") === id ? " is-selected" : ""}`}
+                    aria-pressed={(form.frameLayout ?? "none") === id}
+                    onClick={() => onFrameLayoutChange?.(id)}
+                  >
+                    <span className={`frame-layout-swatch frame-layout-swatch--${id}`} aria-hidden="true">
+                      <i /><b /><em />
+                    </span>
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
           </div>
         )}
       </div>
     </section>
   );
 }
+
 

@@ -38,6 +38,7 @@ const ExportFab = lazy(() => import("@/features/export/ui/ExportFab"));
 const loadDesktopLocationBar = () => import("@/shared/ui/DesktopLocationBar");
 const DesktopLocationBar = lazy(loadDesktopLocationBar);
 const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
+const EditMapPanel = lazy(() => import("@/features/map/ui/EditMapPanel"));
 const loadAllCitiesModal = () => import("@/features/location/ui/AllCitiesModal");
 const AllCitiesModal = lazy(loadAllCitiesModal);
 
@@ -459,16 +460,6 @@ export default function AppShell() {
     setDesktopLocationRowVisible(false);
     setAllCitiesOpen(false);
     setBackdropOpen(false);
-    setIsEditing(false);
-    if (tab === "layout") {
-      if (tab === desktopTab && desktopPanelOpen) {
-        setDesktopPanelOpen(false);
-      } else {
-        setDesktopTab("layout");
-        setDesktopPanelOpen(true);
-      }
-      return;
-    }
     if (tab === desktopTab && desktopPanelOpen) {
       if (tab === "layout" && state.form.layout !== "custom") {
         dispatch({
@@ -490,22 +481,22 @@ export default function AppShell() {
     void loadAllCitiesModal();
     setDesktopLocationRowVisible(false);
     setBackdropOpen(false);
-    setIsEditing(false);
     setDesktopPanelOpen(false);
     setAllCitiesOpen((open) => !open);
   };
 
   const handleEditMapToggle = () => {
-    setIsEditing((prev) => {
-      const next = !prev;
-      if (next) {
-        setDesktopLocationRowVisible(false);
-        setDesktopPanelOpen(false);
-        setBackdropOpen(false);
-        setAllCitiesOpen(false);
-      }
-      return next;
-    });
+    if (isEditing) {
+      setIsEditing(false);
+      if (desktopTab === "edit-map") setDesktopPanelOpen(false);
+    } else {
+      setIsEditing(true);
+      setDesktopTab("edit-map");
+      setDesktopPanelOpen(false);
+      setDesktopLocationRowVisible(false);
+      setBackdropOpen(false);
+      setAllCitiesOpen(false);
+    }
   };
 
   const handleMobileMarkerSizeChange = useCallback(
@@ -602,7 +593,6 @@ export default function AppShell() {
         onLocationToggle={handleDesktopLocationToggle}
         onTabChange={handleDesktopTabChange}
         onSettingsClick={() => {
-          setIsEditing(false);
           setDesktopLocationRowVisible(false);
           setAllCitiesOpen(false);
           setBackdropOpen(false);
@@ -613,7 +603,6 @@ export default function AppShell() {
         wallOpen={backdropOpen}
         onOpenWall={() => {
           setDesktopLocationRowVisible(false);
-          setIsEditing(false);
           setDesktopPanelOpen(false);
           setAllCitiesOpen(false);
           setBackdropOpen((open) => !open);
@@ -657,6 +646,16 @@ export default function AppShell() {
       ) : null}
 
       <div className="desktop-left-panel">
+        {isEditing && !isMobileViewport ? (
+          <div
+            className={`desktop-edit-map-layer${desktopTab === "edit-map" && !desktopPanelOpen && !backdropOpen && !allCitiesOpen && !desktopLocationRowVisible ? " is-visible" : ""}`}
+            aria-hidden={desktopTab !== "edit-map" || desktopPanelOpen || backdropOpen || allCitiesOpen || desktopLocationRowVisible}
+          >
+            <Suspense fallback={null}>
+              <EditMapPanel />
+            </Suspense>
+          </div>
+        ) : null}
         <div
           className={`desktop-settings-slide${desktopPanelOpen ? " is-open" : ""}`}
         >

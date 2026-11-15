@@ -16,7 +16,7 @@ interface UseCurrentLocationReturn {
 }
 
 export function useCurrentLocation(
-  flyToLocation: (lat: number, lon: number) => void,
+  flyToLocation: (lat: number, lon: number, animated?: boolean, durationMs?: number) => void,
 ): UseCurrentLocationReturn {
   const { dispatch } = usePosterDispatch();
   const [isLocatingUser, setIsLocatingUser] = useState(false);
