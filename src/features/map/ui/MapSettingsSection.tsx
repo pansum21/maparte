@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createCustomLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import {
   DISPLAY_PALETTE_KEYS,
@@ -21,6 +21,8 @@ import { CheckIcon, EditIcon } from "@/shared/ui/Icons";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import type { LayoutGroup } from "@/features/layout/domain/types";
 import { loadCustomThemes, saveCustomThemes, type SavedCustomTheme } from "@/features/theme/infrastructure/customThemeStorage";
+import { getTheme } from "@/features/theme/infrastructure/themeRepository";
+import { applyThemeColorOverrides } from "@/features/theme/domain/colorPaths";
 
 const FALLBACK_COLOR = "#000000";
 
@@ -31,6 +33,7 @@ interface MapSettingsForm {
   height: string;
   distance: string;
   includeBuildings: boolean;
+  includeLandcover: boolean;
   includeWater: boolean;
   includeParks: boolean;
   includeAeroway: boolean;
@@ -44,6 +47,8 @@ interface MapSettingsForm {
 interface MapSettingsSectionProps {
   activeMobileTab?: string;
   form: MapSettingsForm;
+  previewCenter: [lon: number, lat: number];
+  previewZoom: number;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onNumericFieldBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onThemeChange: (themeId: string) => void;
@@ -63,6 +68,8 @@ interface MapSettingsSectionProps {
 export default function MapSettingsSection({
   activeMobileTab,
   form,
+  previewCenter,
+  previewZoom,
   onChange,
   onNumericFieldBlur,
   onThemeChange,
@@ -132,6 +139,46 @@ export default function MapSettingsSection({
     const customOption = savedCustomThemes.find((item) => item.id === activeThemeOptionId);
     return { ...(customOption ?? selectedThemeOption), palette: currentThemePalette };
   }, [activeThemeOptionId, currentThemePalette, savedCustomThemes, selectedThemeOption]);
+
+  const themePreviewOptions = useMemo(
+    () => ({
+      includeLandcover: form.includeLandcover,
+      includeBuildings: form.includeBuildings,
+      includeWater: form.includeWater,
+      includeParks: form.includeParks,
+      includeAeroway: form.includeAeroway,
+      includeRail: form.includeRail,
+      includeRoads: form.includeRoads,
+      includeRoadPath: form.includeRoadPath,
+      includeRoadMinorLow: form.includeRoadMinorLow,
+      includeRoadOutline: form.includeRoadOutline,
+      distanceMeters: Number(form.distance),
+    }),
+    [
+      form.distance,
+      form.includeAeroway,
+      form.includeBuildings,
+      form.includeLandcover,
+      form.includeParks,
+      form.includeRail,
+      form.includeRoadMinorLow,
+      form.includeRoadOutline,
+      form.includeRoadPath,
+      form.includeRoads,
+      form.includeWater,
+    ],
+  );
+
+  const resolvePreviewTheme = useCallback(
+    (option: ThemeOption): ResolvedTheme => {
+      const savedTheme = savedCustomThemes.find((item) => item.id === option.id);
+      const baseThemeId = savedTheme?.baseThemeId ?? option.id;
+      const overrides = savedTheme?.colors ??
+        (activeThemeOptionId === option.id ? customColors : {});
+      return applyThemeColorOverrides(getTheme(baseThemeId), overrides);
+    },
+    [activeThemeOptionId, customColors, savedCustomThemes],
+  );
 
   const activeColorChoices = useMemo(() => {
     if (!activeColorKey) return { suggestedColors: [], moreColors: [] };
@@ -496,6 +543,10 @@ export default function MapSettingsSection({
             onThemeSelect={handleThemeSelect}
             onThemeAction={handleThemeAction}
             onDeleteCustomTheme={handleDeleteCustomTheme}
+            previewCenter={previewCenter}
+            previewZoom={previewZoom}
+            resolvePreviewTheme={resolvePreviewTheme}
+            mapOptions={themePreviewOptions}
             onSelectDesign={(design) => {
               if (onFontChange) {
                 onFontChange(design.fontFamily);
