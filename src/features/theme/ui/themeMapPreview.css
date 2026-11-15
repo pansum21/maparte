@@ -1,7 +1,7 @@
-/* Two-up live city maps give each theme choice an actual map preview. */
+/* Three-up live city maps give each theme choice an actual map preview. */
 .theme-card-list--map-previews {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
   gap: 10px;
   max-height: min(54vh, 520px);
@@ -18,8 +18,8 @@
 .theme-card-list--map-previews .theme-card {
   width: 100%;
   min-width: 0;
-  height: 158px;
-  min-height: 158px;
+  height: 136px;
+  min-height: 136px;
   margin: 0;
 }
 
@@ -87,8 +87,8 @@
 
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   [data-mobile-tab="theme"] .theme-card-list--map-previews {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: 138px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 120px;
     max-height: min(50vh, 420px);
     gap: 9px;
   }
@@ -97,8 +97,8 @@
   [data-mobile-tab="theme"] .theme-card-list--map-previews > .theme-card-item > .theme-card {
     box-sizing: border-box;
     width: 100%;
-    height: 138px;
-    min-height: 138px;
+    height: 120px;
+    min-height: 120px;
     max-width: 100%;
     flex: none;
     margin: 0;

@@ -440,7 +440,6 @@ export default function AppShell() {
     setDesktopLocationRowVisible(false);
     setAllCitiesOpen(false);
     setBackdropOpen(false);
-    setIsEditing(false);
     if (tab === desktopTab && desktopPanelOpen) {
       if (tab === "layout" && state.form.layout !== "custom") {
         dispatch({
@@ -462,7 +461,6 @@ export default function AppShell() {
     void loadAllCitiesModal();
     setDesktopLocationRowVisible(false);
     setBackdropOpen(false);
-    setIsEditing(false);
     setDesktopPanelOpen(false);
     setAllCitiesOpen((open) => !open);
   };
@@ -573,7 +571,6 @@ export default function AppShell() {
         onLocationToggle={handleDesktopLocationToggle}
         onTabChange={handleDesktopTabChange}
         onSettingsClick={() => {
-          setIsEditing(false);
           setDesktopLocationRowVisible(false);
           setAllCitiesOpen(false);
           setBackdropOpen(false);
@@ -584,7 +581,6 @@ export default function AppShell() {
         wallOpen={backdropOpen}
         onOpenWall={() => {
           setDesktopLocationRowVisible(false);
-          setIsEditing(false);
           setDesktopPanelOpen(false);
           setAllCitiesOpen(false);
           setBackdropOpen((open) => !open);
