@@ -3198,3 +3198,15 @@ button.all-cities-clear-btn:not(:disabled):hover {
   .desktop-nav-label { font-size: .48rem !important; line-height: 1 !important; text-transform: uppercase !important; }
   .app-shell[data-desktop-tab="markers"] .marker-settings-screen { background: transparent !important; border: 0 !important; box-shadow: none !important; }
 }
+
+/* Keep the persistent edit controls clear of the theme cards when both are open. */
+@media (min-width: 1120px) {
+  .app-shell[data-desktop-tab="theme"] .desktop-companion-edit-map {
+    position: fixed;
+    top: 16px;
+    right: 64px;
+    margin-left: 0;
+    transform: none;
+    animation: none;
+  }
+}
