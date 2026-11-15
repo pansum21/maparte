@@ -628,8 +628,8 @@ export default function AppShell() {
       <div className="desktop-left-panel">
         {isEditing && !isMobileViewport ? (
           <div
-            className={`desktop-edit-map-layer${desktopTab === "edit-map" ? " is-visible" : ""}`}
-            aria-hidden={desktopTab !== "edit-map"}
+            className={`desktop-edit-map-layer${desktopTab === "edit-map" && !desktopPanelOpen && !backdropOpen && !allCitiesOpen && !desktopLocationRowVisible ? " is-visible" : ""}`}
+            aria-hidden={desktopTab !== "edit-map" || desktopPanelOpen || backdropOpen || allCitiesOpen || desktopLocationRowVisible}
           >
             <Suspense fallback={null}>
               <EditMapPanel />
