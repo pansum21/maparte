@@ -209,8 +209,8 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
       const destination = destinationRef.current;
       const target = interpolateView(progress, destination);
       const heroAlign = 1 - smooth(clamp(progress / 0.28));
-      const globeShiftX = Math.round(38 * 4 * heroAlign);
-      const globeShiftY = Math.round(38 * 8 * heroAlign);
+      const globeShiftX = Math.round((compactView ? 38 * 2 : 38 * 4) * heroAlign);
+      const globeShiftY = Math.round((compactView ? 38 * 6 : 38 * 0.5) * heroAlign);
       const padding = window.innerWidth > 900
         ? { left: Math.round(window.innerWidth * 0.5) + globeShiftX, top: Math.round(window.innerHeight * 0.34 * heroAlign), bottom: globeShiftY }
         : { left: Math.round(window.innerWidth * 0.38) + globeShiftX, bottom: Math.round(window.innerHeight * (progress < 0.48 ? 0.04 + 0.31 * (1 - heroAlign) : 0.18)) + globeShiftY };
