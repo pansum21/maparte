@@ -3198,8 +3198,9 @@ button.all-cities-clear-btn:not(:disabled):hover {
 
   .desktop-edit-map-panel__eyebrow {
     color: #b8dcf0;
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
   }
 
   .desktop-edit-map-panel__hint {
@@ -3235,7 +3236,7 @@ button.all-cities-clear-btn:not(:disabled):hover {
   .edit-map-adjustment-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
   }
 
@@ -3282,10 +3283,9 @@ button.all-cities-clear-btn:not(:disabled):hover {
 
   .edit-map-value-input {
     box-sizing: border-box;
-    width: 72px;
     min-width: 0;
-    height: 32px;
-    padding: 4px 6px;
+    height: 30px;
+    padding: 4px;
     color: #e4f5ff;
     text-align: center;
     font: 600 0.68rem/1 "Spline Sans Mono", monospace;
@@ -3310,12 +3310,20 @@ button.all-cities-clear-btn:not(:disabled):hover {
     font-size: 0.65rem;
   }
 
-  .edit-map-distance-field .edit-map-value-input {
-    width: 66px;
+  .edit-map-value-input--zoom {
+    flex: 0 0 50px;
+    width: 50px;
   }
 
-  .edit-map-angle-field .edit-map-value-input {
-    width: 60px;
+  .edit-map-distance-field .edit-map-value-input--distance {
+    flex: 0 0 78px;
+    width: 78px;
+    font-size: 0.62rem;
+  }
+
+  .edit-map-angle-field .edit-map-value-input--rotation {
+    flex: 0 0 44px;
+    width: 44px;
   }
 
   .edit-map-bottom-actions {

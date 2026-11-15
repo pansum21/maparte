@@ -183,42 +183,42 @@ export default function EditMapPanel() {
       <div className="edit-map-control-section edit-map-control-section--stacked" aria-label="Zoom">
         <div className="edit-map-control-heading-row">
           <span className="edit-map-title">ZOOM</span>
-          <input type="number" className="edit-map-value-input" min={MIN_MAP_ZOOM} max={MAX_MAP_ZOOM} step="0.1" value={zoomDraft} onChange={(event) => setZoomDraft(event.target.value)} onBlur={commitZoom} onKeyDown={commitOnEnter} aria-label="Zoom level number" title="Enter a zoom level" />
         </div>
         <div className="edit-map-adjustment-row">
           <button type="button" className="edit-map-horizontal-step" onClick={() => handleZoomChange(Math.max(MIN_MAP_ZOOM, zoom - 0.5))} aria-label="Zoom out">−</button>
           <input type="range" className="edit-map-horizontal-slider" min={MIN_MAP_ZOOM} max={MAX_MAP_ZOOM} step="0.1" value={zoom} onChange={(event) => handleZoomChange(Number(event.target.value))} aria-label="Map zoom level" />
           <button type="button" className="edit-map-horizontal-step" onClick={() => handleZoomChange(Math.min(MAX_MAP_ZOOM, zoom + 0.5))} aria-label="Zoom in">+</button>
+          <input type="number" className="edit-map-value-input edit-map-value-input--zoom" min={MIN_MAP_ZOOM} max={MAX_MAP_ZOOM} step="0.1" value={zoomDraft} onChange={(event) => setZoomDraft(event.target.value)} onBlur={commitZoom} onKeyDown={commitOnEnter} aria-label="Zoom level number" title="Enter a zoom level" />
         </div>
       </div>
 
       <div className="edit-map-control-section edit-map-control-section--stacked" aria-label="Distance">
         <div className="edit-map-control-heading-row">
           <span className="edit-map-title">DISTANCE</span>
-          <div className="edit-map-distance-field">
-            <input type="number" className="edit-map-value-input" min={MIN_DISTANCE_METERS} max={MAX_DISTANCE_METERS} step="1" value={distanceDraft} onChange={(event) => setDistanceDraft(event.target.value)} onBlur={commitDistance} onKeyDown={commitOnEnter} aria-label="Map distance in meters" title="Enter distance in meters" />
-            <span aria-hidden="true">m</span>
-          </div>
         </div>
         <div className="edit-map-adjustment-row">
           <button type="button" className="edit-map-horizontal-step" onClick={() => handleDistanceStep(-1)} aria-label="Decrease map distance">−</button>
           <input type="range" className="edit-map-horizontal-slider" min="0" max="1000" step="1" value={distanceSliderValue} onChange={(event) => handleDistanceChange(Number(event.target.value))} aria-label="Map distance" />
           <button type="button" className="edit-map-horizontal-step" onClick={() => handleDistanceStep(1)} aria-label="Increase map distance">+</button>
+          <div className="edit-map-distance-field">
+            <input type="number" className="edit-map-value-input edit-map-value-input--distance" min={MIN_DISTANCE_METERS} max={MAX_DISTANCE_METERS} step="1" value={distanceDraft} onChange={(event) => setDistanceDraft(event.target.value)} onBlur={commitDistance} onKeyDown={commitOnEnter} aria-label="Map distance in meters" title="Enter distance in meters" />
+            <span aria-hidden="true">m</span>
+          </div>
         </div>
       </div>
 
       <div className="edit-map-control-section edit-map-control-section--stacked" aria-label="Rotation">
         <div className="edit-map-control-heading-row">
           <span className="edit-map-title">ROTATION</span>
-          <div className="edit-map-angle-field">
-            <input type="number" className="edit-map-value-input" min="0" max="360" step="1" value={bearingDraft} onChange={(event) => setBearingDraft(event.target.value)} onBlur={commitBearing} onKeyDown={commitOnEnter} aria-label="Rotation angle in degrees" title="Enter rotation in degrees" />
-            <span aria-hidden="true">°</span>
-          </div>
         </div>
         <div className="edit-map-adjustment-row">
           <button type="button" className="edit-map-horizontal-step" onClick={() => handleRotationChange(bearing - 1)} aria-label="Rotate map counterclockwise">−</button>
           <input type="range" className="edit-map-horizontal-slider" min="0" max="360" step="1" value={bearing} onChange={(event) => handleRotationChange(Number(event.target.value))} aria-label="Map rotation angle" />
           <button type="button" className="edit-map-horizontal-step" onClick={() => handleRotationChange(bearing + 1)} aria-label="Rotate map clockwise">+</button>
+          <div className="edit-map-angle-field">
+            <input type="number" className="edit-map-value-input edit-map-value-input--rotation" min="0" max="360" step="1" value={bearingDraft} onChange={(event) => setBearingDraft(event.target.value)} onBlur={commitBearing} onKeyDown={commitOnEnter} aria-label="Rotation angle in degrees" title="Enter rotation in degrees" />
+            <span aria-hidden="true">°</span>
+          </div>
         </div>
       </div>
 

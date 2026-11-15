@@ -150,9 +150,10 @@ export default function MapSettingsSection({
       includeRoadPath: form.includeRoadPath,
       includeRoadMinorLow: form.includeRoadMinorLow,
       includeRoadOutline: form.includeRoadOutline,
-      distanceMeters: 4_000,
+      distanceMeters: Number(form.distance),
     }),
     [
+      form.distance,
       form.includeAeroway,
       form.includeBuildings,
       form.includeLandcover,

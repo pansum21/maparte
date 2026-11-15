@@ -26,6 +26,7 @@ export default function ThemeMapPreview({
   const [nearViewport, setNearViewport] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
+  const distanceMeters = Number(mapOptions.distanceMeters) || 4_000;
 
   const style = useMemo(
     () => generateMapStyle(theme, mapOptions),
@@ -56,7 +57,7 @@ export default function ThemeMapPreview({
     let map: maplibregl.Map;
     try {
       const previewZoom = distanceToZoom(
-        4_000,
+        distanceMeters,
         center[1],
         Math.max(host.clientWidth, 120),
       );
@@ -123,12 +124,12 @@ export default function ThemeMapPreview({
     if (!map) return;
     const host = hostRef.current;
     const previewZoom = distanceToZoom(
-      4_000,
+      distanceMeters,
       center[1],
       Math.max(host?.clientWidth ?? 160, 120),
     );
     map.jumpTo({ center, zoom: previewZoom });
-  }, [center]);
+  }, [center, distanceMeters]);
 
   return (
     <div className="theme-map-preview" aria-hidden="true">
