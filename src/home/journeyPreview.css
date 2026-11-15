@@ -195,6 +195,23 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 .journey-footer>*{position:relative;z-index:1}
 @media(prefers-reduced-motion:reduce){.journey-footer:before{animation:none}}
 
+/* Keep story copy close as the reader moves between chapters on both screen sizes. */
+.journey-chapter{height:auto;min-height:0;padding:76px clamp(26px,10vw,154px) 24px;align-items:flex-start}
+.journey-chapter:first-child{padding-top:clamp(127px,calc(38vh - 3cm),247px)}
+.journey-copy,.journey-chapter--right .journey-copy{padding:0}
+.journey-copy--plate{padding:34px 36px;border-radius:28px}
+@media(max-width:900px){
+  .journey-chapter{height:auto;min-height:0;padding:64px 22px 20px;align-items:flex-start}
+  .journey-chapter:first-child{height:auto;min-height:0;padding-top:clamp(67px,calc(30vh - 3cm),127px)}
+  .journey-copy,.journey-chapter--right .journey-copy{padding:0;width:min(100%,520px)}
+  .journey-copy--plate{padding:23px 22px;border-radius:24px}
+}
+@media(max-width:500px){
+  .journey-chapter{padding:58px 20px 18px}
+  .journey-chapter:first-child{padding-top:clamp(67px,calc(30vh - 3cm),127px)}
+  .journey-copy--plate{padding:21px 20px}
+}
+
 
 
 
