@@ -53,8 +53,8 @@ export const DEFAULT_FORM: PosterForm = {
   latitude: DEFAULT_LAT.toFixed(6),
   longitude: DEFAULT_LON.toFixed(6),
   distance: "100000000", // Fixed permanent opening distance at 10 Crore meters (100 Million meters) on 3D Earth Globe view
-  width: String(defaultLayoutWidthCm),
-  height: String(defaultLayoutHeightCm),
+  width: String(DEFAULT_POSTER_WIDTH_CM),
+  height: String(DEFAULT_POSTER_HEIGHT_CM),
   theme: defaultThemeName,
   layout: "custom",
   displayCity: DEFAULT_CITY,
