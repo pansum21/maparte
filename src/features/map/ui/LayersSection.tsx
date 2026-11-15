@@ -243,18 +243,6 @@ export default function LayersSection({
         </label>
       </div>
 
-      <div className="map-details-section">
-        <h3 className="map-details-subtitle">Map Details</h3>
-        <div className="map-details-card">
-          <MapDimensionFields
-            form={form}
-            minPosterCm={minPosterCm}
-            maxPosterCm={maxPosterCm}
-            onChange={onChange}
-          />
-        </div>
-      </div>
-
     </section>
   );
 }
