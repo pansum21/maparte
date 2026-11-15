@@ -474,10 +474,10 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
 /* Keep compact mobile themes in their grid tracks and preset cards aligned. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   [data-mobile-tab="theme"] .theme-card-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-rows: 72px;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-auto-rows: clamp(124px, 36vw, 142px);
     align-items: stretch;
-    gap: 8px !important;
+    gap: 7px !important;
   }
 
   [data-mobile-tab="theme"] .theme-card-list > .theme-card-item {
@@ -485,8 +485,8 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100%;
-    height: 72px;
-    min-height: 72px;
+    height: clamp(124px, 36vw, 142px);
+    min-height: clamp(124px, 36vw, 142px);
     flex: none !important;
     margin: 0 !important;
   }
@@ -497,8 +497,8 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100%;
-    height: 72px !important;
-    min-height: 72px !important;
+    height: clamp(124px, 36vw, 142px) !important;
+    min-height: clamp(124px, 36vw, 142px) !important;
     flex: none !important;
     margin: 0 !important;
   }
@@ -508,7 +508,12 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     height: 100%;
   }
 
-  [data-mobile-tab="templates"] .occasion-templates-grid {
+    [data-mobile-tab="theme"] .theme-card-list > .theme-card-item .theme-card-name,
+  [data-mobile-tab="theme"] .theme-card-list > .theme-card-item .theme-card-name-shadow {
+    display: none !important;
+  }
+
+[data-mobile-tab="templates"] .occasion-templates-grid {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     grid-auto-rows: auto;
