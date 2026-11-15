@@ -102,6 +102,7 @@ export type PosterAction =
       type: "SET_FORM_FIELDS";
       fields: Partial<PosterForm>;
       resetDisplayNameOverrides?: boolean;
+      selectedLocation?: SearchResult | null;
     }
   | { type: "SET_THEME"; themeId: string }
   | { type: "SET_LAYOUT"; layoutId: string; widthCm: string; heightCm: string }
@@ -187,6 +188,9 @@ export function posterReducer(
     case "SET_FORM_FIELDS":
       return {
         ...state,
+        ...(action.selectedLocation !== undefined
+          ? { selectedLocation: action.selectedLocation }
+          : {}),
         form: { ...state.form, ...action.fields },
         displayNameOverrides: action.resetDisplayNameOverrides
           ? { city: false, country: false }

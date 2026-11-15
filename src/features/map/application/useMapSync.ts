@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { clamp } from "@/shared/geo/math";
 import { reverseGeocodeCoordinates } from "@/core/services";
 import type { MapInstanceRef } from "@/features/map/domain/types";
+import type { SearchResult } from "@/features/location/domain/types";
 import {
   MIN_DISTANCE_METERS,
   MAX_DISTANCE_METERS,
@@ -161,6 +162,16 @@ export function useMapSync(
     [formDistance, formLat, effectiveContainerPx, mapZoomBounds],
   );
 
+  const lookupTimerRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    return () => {
+      if (lookupTimerRef.current) {
+        window.clearTimeout(lookupTimerRef.current);
+      }
+    };
+  }, []);
+
   const updateLocationFromCoordinates = useCallback(
     (lat: number, lon: number) => {
       const now = Date.now();
@@ -169,8 +180,7 @@ export function useMapSync(
         !previous ||
         Math.abs(previous[0] - lat) >= 0.002 ||
         Math.abs(previous[1] - lon) >= 0.002;
-      const canLookup = now - lastLocationLookupAtRef.current >= 2000;
-      if (!movedEnough || !canLookup) {
+      if (!movedEnough) {
         return;
       }
 
@@ -184,7 +194,7 @@ export function useMapSync(
             return;
           }
           const fallbackLabel = String(nearest.label ?? "").trim();
-          const nextCity = String(nearest.city ?? "").trim();
+          const nextCity = String(nearest.city ?? "").trim() || fallbackLabel.split(",")[0].trim();
           const nextCountry = String(nearest.country ?? "").trim();
           const nextContinent = String(nearest.continent ?? "").trim();
           const nextLocation =
@@ -194,18 +204,26 @@ export function useMapSync(
             return;
           }
 
-          const hasCity = Boolean(form.displayCity && form.displayCity.trim());
-          const hasCountry = Boolean(form.displayCountry && form.displayCountry.trim());
+          const nextSearchResult: SearchResult = {
+            id: `coord:${lat.toFixed(4)},${lon.toFixed(4)}`,
+            label: nextLocation,
+            city: nextCity,
+            country: nextCountry,
+            continent: nextContinent,
+            lat,
+            lon,
+          };
 
           dispatch({
             type: "SET_FORM_FIELDS",
+            selectedLocation: nextSearchResult,
             fields: {
-              location: nextLocation,
+              ...(state.isLocationFocused ? {} : { location: nextLocation }),
               displayContinent: nextContinent,
-              ...(!hasCity && !displayNameOverridesRef.current.city
+              ...(!displayNameOverridesRef.current.city && nextCity
                 ? { displayCity: nextCity }
                 : {}),
-              ...(!hasCountry && !displayNameOverridesRef.current.country
+              ...(!displayNameOverridesRef.current.country && nextCountry
                 ? { displayCountry: nextCountry }
                 : {}),
             },
@@ -215,7 +233,7 @@ export function useMapSync(
           // Ignore lookup failures; coordinates stay authoritative.
         });
     },
-    [dispatch, form.displayCity, form.displayCountry],
+    [dispatch, state.isLocationFocused],
   );
 
   const handleMove = useCallback(
@@ -244,8 +262,13 @@ export function useMapSync(
         },
       });
 
-      if (!isFlyingRef.current && distance <= 250_000) {
-        updateLocationFromCoordinates(lat, lon);
+      if (!isFlyingRef.current && (distance <= 2_500_000 || boundedZoom >= 3.5)) {
+        if (lookupTimerRef.current) {
+          window.clearTimeout(lookupTimerRef.current);
+        }
+        lookupTimerRef.current = window.setTimeout(() => {
+          updateLocationFromCoordinates(lat, lon);
+        }, 350);
       }
     },
     [dispatch, effectiveContainerPx, updateLocationFromCoordinates],
