@@ -36,6 +36,7 @@ async function fetchNominatimData(
       if (res && res.ok) {
         return await res.json();
       }
+      throw new Error(`Nominatim proxy failed with status: ${res?.status}`);
     } catch {
       // Fall through to direct nominatim fetch
     }

@@ -63,7 +63,7 @@
   "rewrites": [
     {
       "source": "/api/nominatim/(.*)",
-      "destination": "https://nominatim.openstreetmap.org/"
+      "destination": "https://nominatim.openstreetmap.org/$1"
     },
     {
       "source": "/where-we-met",
