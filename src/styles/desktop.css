@@ -3209,17 +3209,13 @@ button.all-cities-clear-btn:not(:disabled):hover {
 
   .edit-map-control-section--horizontal {
     display: grid;
-    grid-template-columns: 76px 1fr auto;
+    grid-template-columns: 76px 28px minmax(40px, 1fr) 28px 88px;
     align-items: center;
     gap: 10px;
     width: 100%;
     min-height: 62px;
     padding: 10px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .edit-map-control-section--horizontal[aria-label="Zoom"] {
-    grid-template-columns: 76px 28px minmax(40px, 1fr) 28px 54px;
   }
 
   .edit-map-control-section--horizontal .edit-map-title {
@@ -3267,6 +3263,44 @@ button.all-cities-clear-btn:not(:disabled):hover {
 
   .edit-map-value-box--button {
     cursor: pointer;
+  }
+
+  .edit-map-value-input {
+    box-sizing: border-box;
+    width: 72px;
+    min-width: 0;
+    height: 32px;
+    padding: 4px 6px;
+    color: #e4f5ff;
+    text-align: center;
+    font: 600 0.68rem/1 "Spline Sans Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    background: rgba(0, 0, 0, 0.24);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 7px;
+  }
+
+  .edit-map-value-input:focus {
+    outline: 2px solid rgba(85, 184, 232, 0.65);
+    outline-offset: 1px;
+  }
+
+  .edit-map-distance-field,
+  .edit-map-angle-field {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    color: rgba(220, 241, 255, 0.72);
+    font-size: 0.65rem;
+  }
+
+  .edit-map-distance-field .edit-map-value-input {
+    width: 66px;
+  }
+
+  .edit-map-angle-field .edit-map-value-input {
+    width: 60px;
   }
 
   .edit-map-bottom-actions {

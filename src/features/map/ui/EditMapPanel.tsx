@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import {
   DEFAULT_DISTANCE_METERS,
   MAX_DISTANCE_METERS,
@@ -21,6 +21,9 @@ export default function EditMapPanel() {
   const { flyToLocation } = useMapSync(state, dispatch, mapRef);
   const [bearing, setBearing] = useState(0);
   const [zoom, setZoom] = useState(MIN_MAP_ZOOM);
+  const [zoomDraft, setZoomDraft] = useState(MIN_MAP_ZOOM.toFixed(1));
+  const [distanceDraft, setDistanceDraft] = useState(String(DEFAULT_DISTANCE_METERS));
+  const [bearingDraft, setBearingDraft] = useState("0");
   const searchedLocationRef = useRef<SearchedLocationInfo | null>(null);
 
   useEffect(() => {
@@ -75,12 +78,10 @@ export default function EditMapPanel() {
     ((Math.log(distanceMeters) - Math.log(MIN_DISTANCE_METERS)) /
       (Math.log(MAX_DISTANCE_METERS) - Math.log(MIN_DISTANCE_METERS))) * 1000,
   );
-  const formatDistance = (meters: number) =>
-    meters >= 1_000_000
-      ? `${Number((meters / 1_000_000).toFixed(1))}M m`
-      : meters >= 100_000
-        ? `${Number((meters / 1_000).toFixed(1))}K m`
-        : `${Math.round(meters).toLocaleString()} m`;
+
+  useEffect(() => setZoomDraft(zoom.toFixed(1)), [zoom]);
+  useEffect(() => setDistanceDraft(String(distanceMeters)), [distanceMeters]);
+  useEffect(() => setBearingDraft(String(bearing)), [bearing]);
 
   const handleDistanceChange = (value: number) => {
     const ratio = value / 1000;
@@ -93,14 +94,55 @@ export default function EditMapPanel() {
     dispatch({ type: "SET_FIELD", name: "distance", value: String(nextDistance) });
   };
 
+  const handleDistanceStep = (direction: -1 | 1) => {
+    handleDistanceChange(Math.max(0, Math.min(1000, distanceSliderValue + direction * 10)));
+  };
+
   const handleZoomChange = (value: number) => {
     mapRef.current?.zoomTo(value, { duration: 150 });
   };
 
   const handleRotationChange = (value: number) => {
-    const nextBearing = Math.max(0, Math.min(360, value));
+    const nextBearing = Math.round(Math.max(0, Math.min(360, value)));
     setBearing(nextBearing);
     mapRef.current?.setBearing(nextBearing === 360 ? 0 : nextBearing);
+  };
+
+  const commitZoom = () => {
+    const parsed = Number(zoomDraft);
+    if (!Number.isFinite(parsed)) {
+      setZoomDraft(zoom.toFixed(1));
+      return;
+    }
+    const next = Math.max(MIN_MAP_ZOOM, Math.min(MAX_MAP_ZOOM, parsed));
+    handleZoomChange(next);
+    setZoomDraft(next.toFixed(1));
+  };
+
+  const commitDistance = () => {
+    const parsed = Number(distanceDraft);
+    if (!Number.isFinite(parsed)) {
+      setDistanceDraft(String(distanceMeters));
+      return;
+    }
+    const next = Math.round(Math.max(MIN_DISTANCE_METERS, Math.min(MAX_DISTANCE_METERS, parsed)));
+    dispatch({ type: "SET_FIELD", name: "distance", value: String(next) });
+    setDistanceDraft(String(next));
+  };
+
+  const commitBearing = () => {
+    const parsed = Number(bearingDraft);
+    if (!Number.isFinite(parsed)) {
+      setBearingDraft(String(bearing));
+      return;
+    }
+    const next = Math.round(Math.max(0, Math.min(360, parsed)));
+    handleRotationChange(next);
+    setBearingDraft(String(next));
+  };
+
+  const commitOnEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") event.currentTarget.blur();
   };
 
   const handleRecenter = () => {
@@ -143,19 +185,29 @@ export default function EditMapPanel() {
         <button type="button" className="edit-map-horizontal-step" onClick={() => handleZoomChange(Math.max(MIN_MAP_ZOOM, zoom - 0.5))} aria-label="Zoom out">−</button>
         <input type="range" className="edit-map-horizontal-slider" min={MIN_MAP_ZOOM} max={MAX_MAP_ZOOM} step="0.1" value={zoom} onChange={(event) => handleZoomChange(Number(event.target.value))} aria-label="Map zoom level" />
         <button type="button" className="edit-map-horizontal-step" onClick={() => handleZoomChange(Math.min(MAX_MAP_ZOOM, zoom + 0.5))} aria-label="Zoom in">+</button>
-        <output className="edit-map-value-box">{zoom.toFixed(1)}</output>
+        <input type="number" className="edit-map-value-input" min={MIN_MAP_ZOOM} max={MAX_MAP_ZOOM} step="0.1" value={zoomDraft} onChange={(event) => setZoomDraft(event.target.value)} onBlur={commitZoom} onKeyDown={commitOnEnter} aria-label="Zoom level number" title="Enter a zoom level" />
       </div>
 
       <div className="edit-map-control-section edit-map-control-section--horizontal" aria-label="Distance">
         <span className="edit-map-title">DISTANCE</span>
+        <button type="button" className="edit-map-horizontal-step" onClick={() => handleDistanceStep(-1)} aria-label="Decrease map distance">−</button>
         <input type="range" className="edit-map-horizontal-slider" min="0" max="1000" step="1" value={distanceSliderValue} onChange={(event) => handleDistanceChange(Number(event.target.value))} aria-label="Map distance" />
-        <output className="edit-map-value-box edit-map-value-box--distance">{formatDistance(distanceMeters)}</output>
+        <button type="button" className="edit-map-horizontal-step" onClick={() => handleDistanceStep(1)} aria-label="Increase map distance">+</button>
+        <div className="edit-map-distance-field">
+          <input type="number" className="edit-map-value-input" min={MIN_DISTANCE_METERS} max={MAX_DISTANCE_METERS} step="1" value={distanceDraft} onChange={(event) => setDistanceDraft(event.target.value)} onBlur={commitDistance} onKeyDown={commitOnEnter} aria-label="Map distance in meters" title="Enter distance in meters" />
+          <span aria-hidden="true">m</span>
+        </div>
       </div>
 
       <div className="edit-map-control-section edit-map-control-section--horizontal" aria-label="Rotation">
         <span className="edit-map-title">ROTATION</span>
+        <button type="button" className="edit-map-horizontal-step" onClick={() => handleRotationChange(bearing - 1)} aria-label="Rotate map counterclockwise">−</button>
         <input type="range" className="edit-map-horizontal-slider" min="0" max="360" step="1" value={bearing} onChange={(event) => handleRotationChange(Number(event.target.value))} aria-label="Map rotation angle" />
-        <button type="button" className="edit-map-value-box edit-map-value-box--button" onClick={() => handleRotationChange(0)} title="Reset rotation to north" aria-label={`Rotation ${bearing} degrees; click to reset`}>{bearing}°</button>
+        <button type="button" className="edit-map-horizontal-step" onClick={() => handleRotationChange(bearing + 1)} aria-label="Rotate map clockwise">+</button>
+        <div className="edit-map-angle-field">
+          <input type="number" className="edit-map-value-input" min="0" max="360" step="1" value={bearingDraft} onChange={(event) => setBearingDraft(event.target.value)} onBlur={commitBearing} onKeyDown={commitOnEnter} aria-label="Rotation angle in degrees" title="Enter rotation in degrees" />
+          <span aria-hidden="true">°</span>
+        </div>
       </div>
 
       <div className="edit-map-bottom-actions">
