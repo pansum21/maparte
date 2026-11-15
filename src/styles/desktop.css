@@ -3311,19 +3311,19 @@ button.all-cities-clear-btn:not(:disabled):hover {
   }
 
   .edit-map-value-input--zoom {
-    flex: 0 0 50px;
-    width: 50px;
+    flex: 0 0 60px;
+    width: 60px;
   }
 
   .edit-map-distance-field .edit-map-value-input--distance {
-    flex: 0 0 78px;
-    width: 78px;
+    flex: 0 0 86px;
+    width: 86px;
     font-size: 0.62rem;
   }
 
   .edit-map-angle-field .edit-map-value-input--rotation {
-    flex: 0 0 44px;
-    width: 44px;
+    flex: 0 0 56px;
+    width: 56px;
   }
 
   .edit-map-bottom-actions {
@@ -3367,3 +3367,8 @@ button.all-cities-clear-btn:not(:disabled):hover {
     display: none;
   }
 }
+
+/* Keep numeric values readable on touch-capable browsers too. */
+.desktop-edit-map-panel .edit-map-value-input--zoom { flex: 0 0 60px; width: 60px; }
+.desktop-edit-map-panel .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 86px; width: 86px; }
+.desktop-edit-map-panel .edit-map-angle-field .edit-map-value-input--rotation { flex: 0 0 56px; width: 56px; }
