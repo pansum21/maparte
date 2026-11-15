@@ -475,7 +475,7 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   [data-mobile-tab="theme"] .theme-card-list {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    grid-auto-rows: clamp(124px, 36vw, 142px);
+    grid-auto-rows: clamp(124px, 36vw, 142px) !important;
     align-items: stretch;
     gap: 7px !important;
   }
