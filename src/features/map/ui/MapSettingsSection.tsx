@@ -48,7 +48,6 @@ interface MapSettingsSectionProps {
   activeMobileTab?: string;
   form: MapSettingsForm;
   previewCenter: [lon: number, lat: number];
-  previewZoom: number;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onNumericFieldBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onThemeChange: (themeId: string) => void;
@@ -69,7 +68,6 @@ export default function MapSettingsSection({
   activeMobileTab,
   form,
   previewCenter,
-  previewZoom,
   onChange,
   onNumericFieldBlur,
   onThemeChange,
@@ -152,10 +150,9 @@ export default function MapSettingsSection({
       includeRoadPath: form.includeRoadPath,
       includeRoadMinorLow: form.includeRoadMinorLow,
       includeRoadOutline: form.includeRoadOutline,
-      distanceMeters: Number(form.distance),
+      distanceMeters: 4_000,
     }),
     [
-      form.distance,
       form.includeAeroway,
       form.includeBuildings,
       form.includeLandcover,
@@ -544,7 +541,6 @@ export default function MapSettingsSection({
             onThemeAction={handleThemeAction}
             onDeleteCustomTheme={handleDeleteCustomTheme}
             previewCenter={previewCenter}
-            previewZoom={previewZoom}
             resolvePreviewTheme={resolvePreviewTheme}
             mapOptions={themePreviewOptions}
             onSelectDesign={(design) => {

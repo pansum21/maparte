@@ -36,10 +36,8 @@ import {
   FONT_OPTIONS,
   DEFAULT_LAT,
   DEFAULT_LON,
-  DEFAULT_DISTANCE_METERS,
 } from "@/core/config";
 import type { SearchResult } from "@/features/location/domain/types";
-import { distanceToZoom } from "@/features/map/application/useMapSync";
 
 type SectionId =
   | "templates"
@@ -112,12 +110,6 @@ export default function SettingsPanel({
     Number.isFinite(previewLon) ? previewLon : DEFAULT_LON,
     Number.isFinite(previewLat) ? previewLat : DEFAULT_LAT,
   ];
-  const previewZoom = distanceToZoom(
-    Number(state.form.distance) || DEFAULT_DISTANCE_METERS,
-    previewCenter[1],
-    320,
-  );
-
   const [isColorEditorActive, setIsColorEditorActive] = useState(false);
   const getInitialSection = (tab?: string): SectionId => ((tab as SectionId) || "location");
   const [openSections, setOpenSections] = useState<Set<SectionId>>(new Set([getInitialSection(mobileTab)]));
@@ -239,7 +231,6 @@ export default function SettingsPanel({
                 activeMobileTab={mobileTab}
                 form={state.form}
                 previewCenter={previewCenter}
-                previewZoom={previewZoom}
                 onChange={handleChange}
                 onNumericFieldBlur={handleNumericFieldBlur}
                 onThemeChange={handleThemeChange}
@@ -281,7 +272,6 @@ export default function SettingsPanel({
                 activeMobileTab={mobileTab}
                 form={state.form}
                 previewCenter={previewCenter}
-                previewZoom={previewZoom}
                 onChange={handleChange}
                 onNumericFieldBlur={handleNumericFieldBlur}
                 onThemeChange={handleThemeChange}

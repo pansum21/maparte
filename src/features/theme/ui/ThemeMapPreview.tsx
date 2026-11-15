@@ -3,6 +3,7 @@ import * as maplibregl from "maplibre-gl";
 import type { StyleSpecification } from "maplibre-gl";
 import type { ResolvedTheme } from "../domain/types";
 import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
+import { distanceToZoom } from "@/features/map/application/useMapSync";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@/features/map/infrastructure/maplibreWorker";
 import "./themeMapPreview.css";
@@ -10,7 +11,6 @@ import "./themeMapPreview.css";
 interface ThemeMapPreviewProps {
   theme: ResolvedTheme;
   center: [lon: number, lat: number];
-  zoom: number;
   mapOptions: Parameters<typeof generateMapStyle>[1];
 }
 
@@ -18,7 +18,6 @@ interface ThemeMapPreviewProps {
 export default function ThemeMapPreview({
   theme,
   center,
-  zoom,
   mapOptions,
 }: ThemeMapPreviewProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
@@ -56,11 +55,16 @@ export default function ThemeMapPreview({
 
     let map: maplibregl.Map;
     try {
+      const previewZoom = distanceToZoom(
+        4_000,
+        center[1],
+        Math.max(host.clientWidth, 120),
+      );
       map = new maplibregl.Map({
         container: host,
         style,
         center,
-        zoom,
+        zoom: previewZoom,
         interactive: false,
         attributionControl: false,
         renderWorldCopies: false,
@@ -96,7 +100,7 @@ export default function ThemeMapPreview({
       map.remove();
       setLoaded(false);
     };
-    // A MapLibre instance is created once per visible card; updates are applied below.
+    // A MapLibre instance is created once per visible card; changes are applied below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nearViewport]);
 
@@ -117,8 +121,14 @@ export default function ThemeMapPreview({
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    map.jumpTo({ center, zoom });
-  }, [center, zoom]);
+    const host = hostRef.current;
+    const previewZoom = distanceToZoom(
+      4_000,
+      center[1],
+      Math.max(host?.clientWidth ?? 160, 120),
+    );
+    map.jumpTo({ center, zoom: previewZoom });
+  }, [center]);
 
   return (
     <div className="theme-map-preview" aria-hidden="true">

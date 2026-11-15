@@ -11,7 +11,6 @@ interface ThemeCardProps {
   isSelected?: boolean;
   previewTheme: ResolvedTheme;
   previewCenter: [lon: number, lat: number];
-  previewZoom: number;
   mapOptions: Parameters<typeof generateMapStyle>[1];
 }
 
@@ -21,7 +20,6 @@ export default function ThemeCard({
   isSelected = false,
   previewTheme,
   previewCenter,
-  previewZoom,
   mapOptions,
 }: ThemeCardProps) {
   if (!themeOption) {
@@ -43,7 +41,6 @@ export default function ThemeCard({
       <ThemeMapPreview
         theme={previewTheme}
         center={previewCenter}
-        zoom={previewZoom}
         mapOptions={mapOptions}
       />
       <span className="theme-card-name-shadow" aria-hidden="true" />

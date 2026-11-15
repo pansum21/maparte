@@ -14,7 +14,6 @@ interface ThemeSummarySectionProps {
   onThemeAction?: (group: "maparte" | "yours") => void;
   onDeleteCustomTheme?: (themeId: string) => void;
   previewCenter: [lon: number, lat: number];
-  previewZoom: number;
   resolvePreviewTheme: (option: ThemeOption) => ResolvedTheme;
   mapOptions: Parameters<typeof generateMapStyle>[1];
   onSelectDesign?: (design: PopularDesign) => void;
@@ -29,7 +28,6 @@ export default function ThemeSummarySection({
   onThemeAction,
   onDeleteCustomTheme,
   previewCenter,
-  previewZoom,
   resolvePreviewTheme,
   mapOptions,
 }: ThemeSummarySectionProps) {
@@ -106,7 +104,6 @@ export default function ThemeSummarySection({
                 themeOption={themeOption}
                 previewTheme={resolvePreviewTheme(themeOption)}
                 previewCenter={previewCenter}
-                previewZoom={previewZoom}
                 mapOptions={mapOptions}
                 isSelected={themeOption.id === selectedThemeId}
                 onClick={() => onThemeSelect(themeOption.id)}
