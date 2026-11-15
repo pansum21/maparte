@@ -657,54 +657,6 @@ export function generateMapStyle(
       },
 
       {
-        id: "road-path-casing",
-        source: SOURCE_ID,
-        "source-layer": "transportation",
-        type: "line",
-        minzoom: ROAD_PATH_DETAIL_MIN_ZOOM,
-        filter: lineClassFilter(MAP_ROAD_PATH_CLASSES),
-        paint: {
-          "line-color": roadOutlineColor,
-          "line-width": widthExpr(roadPathCasingStops),
-          "line-opacity": includeRoadOutline && includeRoadPath
-            ? opacityExpr([
-                [8, 0.62],
-                [12, 0.72],
-                [18, 0.85],
-              ])
-            : 0,
-        },
-        layout: {
-          visibility: includeRoadPath ? ("visible" as const) : ("none" as const),
-          "line-cap": "round" as const,
-          "line-join": "round" as const,
-        },
-      },
-      {
-        id: "road-minor-mid-casing",
-        source: SOURCE_ID,
-        "source-layer": "transportation",
-        type: "line",
-        minzoom: ROAD_MINOR_DETAIL_MIN_ZOOM,
-        filter: lineClassFilter(MAP_ROAD_MINOR_MID_CLASSES),
-        paint: {
-          "line-color": roadOutlineColor,
-          "line-width": widthExpr(roadMinorMidCasingStops),
-          "line-opacity": includeRoadOutline
-            ? opacityExpr([
-                [6, 0.42],
-                [12, 0.56],
-                [18, 0.66],
-              ])
-            : 0,
-        },
-        layout: {
-          visibility: includeRoads ? ("visible" as const) : ("none" as const),
-          "line-cap": "round" as const,
-          "line-join": "round" as const,
-        },
-      },
-      {
         id: "road-minor-high-casing",
         source: SOURCE_ID,
         "source-layer": "transportation",
