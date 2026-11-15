@@ -586,3 +586,22 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
   }
 }
 
+
+
+/* 3 mm phone-edge clearance for the connected tool sheet and dock. */
+@media (max-width: 600px) {
+  .mobile-nav-wrapper {
+    left: 3mm;
+    right: 3mm;
+    bottom: calc(3mm + env(safe-area-inset-bottom, 0px));
+  }
+  .app-shell[data-mobile-drawer-open="true"] .mobile-nav-wrapper {
+    left: 3mm;
+    right: 3mm;
+    bottom: 3mm;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .mobile-drawer:not(.mobile-drawer--edit-map) {
+    inset: 0 3mm calc(60px + 3mm + env(safe-area-inset-bottom, 0px));
+  }
+}
