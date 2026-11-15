@@ -1,4 +1,5 @@
 import type { ThemeOption, ResolvedTheme } from "../domain/types";
+import "./themeMapPreview.css";
 
 interface ThemeCardProps {
   themeOption: ThemeOption | null;
