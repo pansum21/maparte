@@ -227,6 +227,7 @@ export default function SettingsPanel({
                 onThemeChange={handleThemeChange}
                 onFontChange={handleFontChange}
                 onLayoutChange={handleLayoutChange}
+                onFrameLayoutChange={(frameLayout) => dispatch({ type: "SET_FIELD", name: "frameLayout", value: frameLayout })}
                 selectedTheme={selectedTheme}
                 themeOptions={themeOptions}
                 layoutGroups={layoutGroups}
@@ -267,6 +268,7 @@ export default function SettingsPanel({
                 onThemeChange={handleThemeChange}
                 onFontChange={handleFontChange}
                 onLayoutChange={handleLayoutChange}
+                onFrameLayoutChange={(frameLayout) => dispatch({ type: "SET_FIELD", name: "frameLayout", value: frameLayout })}
                 selectedTheme={selectedTheme}
                 themeOptions={themeOptions}
                 layoutGroups={layoutGroups}
@@ -424,3 +426,4 @@ function AccordionHeader({
     </button>
   );
 }
+

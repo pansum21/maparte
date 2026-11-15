@@ -30,6 +30,7 @@ export interface PosterForm {
   height: string;
   theme: string;
   layout: string;
+  frameLayout?: string;
   displayCity: string;
   displayTown?: string;
   displayCountry: string;
@@ -523,3 +524,4 @@ export function posterReducer(
       return state;
   }
 }
+

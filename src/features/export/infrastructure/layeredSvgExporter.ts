@@ -8,6 +8,7 @@ import type {
 import { drawMarkersOnCanvas } from "@/features/markers/infrastructure/rendering";
 import type { Route } from "@/features/routes/domain/types";
 import type { SquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import type { FrameLayoutGeometry } from "@/features/layout/domain/frameLayoutGeometry";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
 import { applyFades } from "@/features/poster/infrastructure/renderer/layers";
@@ -63,6 +64,7 @@ interface LayeredSvgOptions {
   mapInsetXRatio?: number;
   mapInsetYRatio?: number;
   squareCaptionGeometry?: SquareCaptionGeometry;
+  frameLayoutGeometry?: FrameLayoutGeometry;
 }
 
 function renderMapCanvasToDataUrl(
@@ -249,6 +251,7 @@ export async function createLayeredSvgBlobFromMap({
   mapInsetXRatio,
   mapInsetYRatio,
   squareCaptionGeometry,
+  frameLayoutGeometry,
 }: LayeredSvgOptions): Promise<Blob> {
   await waitForMapIdle(map);
 
@@ -518,7 +521,7 @@ export async function createLayeredSvgBlobFromMap({
 
     let vectorTypographySvg = "";
 
-    if (showPosterText && !squareCaptionGeometry) {
+    if (showPosterText && !squareCaptionGeometry && !frameLayoutGeometry) {
       const hasTagline = Boolean(customDate && customDate.trim().length > 0);
       const cityLabel = formatCityLabel(displayCity);
       let cityFontSize = CITY_FONT_BASE_PX * dimScale * fontScale * computeCityFontScale(displayCity);
@@ -581,11 +584,11 @@ export async function createLayeredSvgBlobFromMap({
 
     const attrY = exportHeight * (1 - TEXT_EDGE_MARGIN_RATIO);
     const osmX = exportWidth * (1 - TEXT_EDGE_MARGIN_RATIO);
-    if (!squareCaptionGeometry) vectorTypographySvg += `
+    if (!squareCaptionGeometry && !frameLayoutGeometry) vectorTypographySvg += `
   <text x="${osmX}" y="${attrY}" text-anchor="end" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">© OpenStreetMap contributors</text>
 `;
 
-    if (includeCredits && !squareCaptionGeometry) {
+    if (includeCredits && !squareCaptionGeometry && !frameLayoutGeometry) {
       const credX = exportWidth * TEXT_EDGE_MARGIN_RATIO;
       vectorTypographySvg += `
   <text x="${credX}" y="${attrY}" text-anchor="start" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">${escapeXml(APP_CREDIT_URL)}</text>
@@ -597,8 +600,8 @@ export async function createLayeredSvgBlobFromMap({
     const finalMapInsetXRatio = mapInsetXRatio ?? (showWhiteMat ? 0.055 : 0);
     const finalMapInsetYRatio = mapInsetYRatio ?? (showWhiteMat ? 0.055 : 0);
 
-    const pageWidth = squareCaptionGeometry?.posterWidth ?? exportWidth;
-    const pageHeight = squareCaptionGeometry?.posterHeight ?? exportHeight;
+    const pageWidth = frameLayoutGeometry?.posterWidth ?? squareCaptionGeometry?.posterWidth ?? exportWidth;
+    const pageHeight = frameLayoutGeometry?.posterHeight ?? squareCaptionGeometry?.posterHeight ?? exportHeight;
     const neatlineX = pageWidth * finalMatInsetXRatio;
     const neatlineY = pageHeight * finalMatInsetYRatio;
     const neatlineW = pageWidth * (1 - finalMatInsetXRatio * 2);
@@ -608,15 +611,19 @@ export async function createLayeredSvgBlobFromMap({
       ? `<svg x="${neatlineX}" y="${neatlineY}" width="${neatlineW}" height="${neatlineH}" viewBox="0 0 1000 ${(1000 * pageHeight) / pageWidth}" preserveAspectRatio="none">${neatlineSvg}</svg>`
       : "";
 
-    const matRect = showWhiteMat
+    const matRect = frameLayoutGeometry
+      ? (frameLayoutGeometry.style === "full-map" ? "" : `<rect width="${pageWidth}" height="${pageHeight}" fill="#fff"/>${frameLayoutGeometry.style === "dark" ? `<rect x="${frameLayoutGeometry.x}" y="${frameLayoutGeometry.y + frameLayoutGeometry.height}" width="${frameLayoutGeometry.width}" height="${pageHeight - frameLayoutGeometry.y - frameLayoutGeometry.height - frameLayoutGeometry.safeInsetY}" fill="#111"/>` : ""}`)
+      : showWhiteMat
       ? `<rect width="${pageWidth}" height="${pageHeight}" fill="#fff"/>`
       : squareCaptionGeometry
         ? `<rect width="${pageWidth}" height="${pageHeight}" fill="${theme.ui.bg}"/>`
         : "";
-    const groupTransform = showWhiteMat && !squareCaptionGeometry
+    const groupTransform = showWhiteMat && !squareCaptionGeometry && !frameLayoutGeometry
       ? `transform="translate(${exportWidth * finalMapInsetXRatio} ${exportHeight * finalMapInsetYRatio}) scale(${1 - finalMapInsetXRatio * 2} ${1 - finalMapInsetYRatio * 2})"`
       : "";
-    const placementTransform = squareCaptionGeometry
+    const placementTransform = frameLayoutGeometry
+      ? `transform="translate(${frameLayoutGeometry.x} ${frameLayoutGeometry.y}) scale(${frameLayoutGeometry.width / exportWidth} ${frameLayoutGeometry.height / exportHeight})"`
+      : squareCaptionGeometry
       ? `transform="translate(${squareCaptionGeometry.x} ${squareCaptionGeometry.y}) scale(${squareCaptionGeometry.size / exportWidth} ${squareCaptionGeometry.size / exportHeight})"`
       : "";
     const captionBackdropSvg = squareCaptionGeometry
@@ -667,6 +674,28 @@ ${includeCredits ? `<text x="${g.safeInsetX}" y="${creditY}" text-anchor="start"
 </g>`;
         })()
       : "";
+    const frameLayoutSvg = frameLayoutGeometry
+      ? (() => {
+          const g = frameLayoutGeometry;
+          const isBox = g.style === "box";
+          const isTitle = g.style === "title";
+          const anchor = g.captionAlign === "left" ? "start" : g.captionAlign === "right" ? "end" : "middle";
+          const textColor = g.style === "dark" ? "#fff" : (theme.ui.text || "#171717");
+          const textX = g.captionX;
+          const textY = isBox ? g.y + g.height - pageHeight * .047 : g.captionY;
+          const base = Math.min(pageWidth, pageHeight) / 1000 * fontScale;
+          const countryY = textY + pageHeight * .041;
+          const dateY = countryY + pageHeight * .03;
+          const coordsY = dateY + (customDate?.trim() ? pageHeight * .026 : 0);
+          const titleText = showPosterText && g.style !== "full-map" ? `<text x="${textX}" y="${textY}" text-anchor="${anchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(18, (isTitle ? 66 : 42) * base)}" font-weight="${isTitle ? 800 : 600}" letter-spacing="${g.style === "classic" ? "0.16em" : "0"}" fill="${textColor}">${escapeXml(formatCityLabel(displayCity))}</text>
+${displayCountry ? `<text x="${textX}" y="${countryY}" text-anchor="${anchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(12, 23 * base)}" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>` : ""}
+${customDate?.trim() ? `<text x="${textX}" y="${dateY}" text-anchor="${anchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(10, 17 * base)}" fill="${textColor}">${escapeXml(customDate.trim())}</text>` : ""}
+<text x="${textX}" y="${coordsY}" text-anchor="${anchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(9, 14 * base)}" opacity="0.72" fill="${textColor}">${escapeXml(formatCoordinates(center.lat, center.lon))}</text>` : "";
+          const boxPlate = isBox ? `<rect x="${g.captionX - g.captionWidth / 2}" y="${g.y + g.height - pageHeight * .075}" width="${g.captionWidth}" height="${pageHeight * .12}" fill="#fff" fill-opacity=".96"/>` : "";
+          const footerCredits = g.style === "full-map" ? "" : `<g font-family="${bodyFontFamily}" font-size="${Math.max(9, 12 * Math.min(pageWidth, pageHeight) / 1000)}" opacity=".68" fill="${textColor}"><text x="${g.safeInsetX}" y="${pageHeight - g.safeInsetY}">${escapeXml(APP_CREDIT_URL)}</text><text x="${pageWidth - g.safeInsetX}" y="${pageHeight - g.safeInsetY}" text-anchor="end">© OpenStreetMap contributors</text></g>`;
+          return `${boxPlate}<g id="frame-layout-typography">${titleText}</g>${footerCredits}`;
+        })()
+      : "";
 
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${pageWidth}" height="${pageHeight}" viewBox="0 0 ${pageWidth} ${pageHeight}">
@@ -678,11 +707,11 @@ ${vectorLayersSvg}
 ${routesSvg}
 ${fadesSvg}
 ${markersSvg}
-${squareCaptionGeometry ? "" : `<g id="vector-typography">`}
+${squareCaptionGeometry || frameLayoutGeometry ? "" : `<g id="vector-typography">`}
 ${vectorTypographySvg}
-${squareCaptionGeometry ? "" : `</g>`}
+${squareCaptionGeometry || frameLayoutGeometry ? "" : `</g>`}
 </g>
-${squareCaptionGeometry ? `</g>${squareCaptionSvg}` : ""}
+${squareCaptionGeometry ? `</g>${squareCaptionSvg}` : frameLayoutGeometry ? `</g>${frameLayoutSvg}` : ""}
 ${neatlineLayerSvg}
 </svg>`;
 
@@ -692,4 +721,5 @@ ${neatlineLayerSvg}
     offscreenContainer.remove();
   }
 }
+
 

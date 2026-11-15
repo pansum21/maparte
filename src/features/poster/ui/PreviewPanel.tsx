@@ -46,6 +46,7 @@ import {
   isMaparteSquareCaptionLayout,
 } from "@/features/layout/infrastructure/layoutRepository";
 import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import {
@@ -309,6 +310,19 @@ export default function PreviewPanel({
           getMaparteCaptionVariant(form.layout) ?? "center-bottom",
       )
     : null;
+  const frameLayout = form.frameLayout ?? "none";
+  const isFrameLayout = frameLayout !== "none" && !isSquareCaptionLayout;
+  const frameLayoutGeometry = isFrameLayout
+    ? getFrameLayoutGeometry(
+        previewCanvasSize.width,
+        previewCanvasSize.height,
+        widthCm,
+        heightCm,
+        borderMetrics.mapInsetCm,
+        borderMetrics.gapCm,
+        frameLayout as FrameLayoutId,
+      )
+    : null;
   const resolutionInfoLabel = `${previewCanvasSize.width} × ${previewCanvasSize.height} px (${previewCanvasSize.effectiveDpi} PPI)`;
   const layoutLabel = `${layoutOption.name} (${formatLayoutDimensions(layoutOption)})`;
   const infoLocationLabel =
@@ -485,7 +499,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaptionLayout ? " is-maparte-square-caption has-maparte-caption-backdrop" : ""}${isSquareCaptionLayout && (form.overlayBottom ?? form.showMarkers) ? " has-maparte-caption-blur" : ""}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaptionLayout ? " is-maparte-square-caption has-maparte-caption-backdrop" : ""}${isSquareCaptionLayout && (form.overlayBottom ?? form.showMarkers) ? " has-maparte-caption-blur" : ""}${isFrameLayout ? ` is-frame-layout frame-layout--${frameLayout}` : ""}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
             posterDragRef.current = {
@@ -525,6 +539,15 @@ export default function PreviewPanel({
               "--square-caption-x": squareCaptionGeometry ? `${(squareCaptionGeometry.captionX / previewCanvasSize.width) * 100}%` : undefined,
               "--square-caption-y": squareCaptionGeometry ? `${(squareCaptionGeometry.captionY / previewCanvasSize.height) * 100}%` : undefined,
               "--square-caption-width": squareCaptionGeometry ? `${(squareCaptionGeometry.captionWidth / previewCanvasSize.width) * 100}%` : undefined,
+              "--frame-map-x": frameLayoutGeometry ? `${(frameLayoutGeometry.x / previewCanvasSize.width) * 100}%` : undefined,
+              "--frame-map-y": frameLayoutGeometry ? `${(frameLayoutGeometry.y / previewCanvasSize.height) * 100}%` : undefined,
+              "--frame-map-width": frameLayoutGeometry ? `${(frameLayoutGeometry.width / previewCanvasSize.width) * 100}%` : undefined,
+              "--frame-map-height": frameLayoutGeometry ? `${(frameLayoutGeometry.height / previewCanvasSize.height) * 100}%` : undefined,
+              "--frame-safe-x": frameLayoutGeometry ? `${(frameLayoutGeometry.safeInsetX / previewCanvasSize.width) * 100}%` : undefined,
+              "--frame-safe-y": frameLayoutGeometry ? `${(frameLayoutGeometry.safeInsetY / previewCanvasSize.height) * 100}%` : undefined,
+              "--frame-caption-x": frameLayoutGeometry ? `${(frameLayoutGeometry.captionX / previewCanvasSize.width) * 100}%` : undefined,
+              "--frame-caption-y": frameLayoutGeometry ? `${(frameLayoutGeometry.captionY / previewCanvasSize.height) * 100}%` : undefined,
+              "--frame-caption-width": frameLayoutGeometry ? `${(frameLayoutGeometry.captionWidth / previewCanvasSize.width) * 100}%` : undefined,
               "--mat-inset-x": borderMetrics.matInsetX,
               "--mat-inset-y": borderMetrics.matInsetY,
               "--cinema-poster-x": `${cinemaPosterPlacement.x}vw`,
@@ -620,6 +643,7 @@ export default function PreviewPanel({
             customDate={activeCustomDate}
             squareCaption={isSquareCaptionLayout}
             squareCaptionGeometry={squareCaptionGeometry}
+            frameLayoutGeometry={frameLayoutGeometry}
           />
           <NeatlineArtwork
             selection={neatlineSelection}
@@ -648,4 +672,5 @@ export default function PreviewPanel({
     </section>
   );
 }
+
 

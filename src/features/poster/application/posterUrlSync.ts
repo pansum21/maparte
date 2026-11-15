@@ -11,6 +11,7 @@ import {
 export interface ParsedUrlPosterState {
   theme?: string;
   layout?: string;
+  frameLayout?: string;
   fontFamily?: string;
   customDate?: string;
   displayCity?: string;
@@ -44,6 +45,8 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
 
     const border = params.get("border") || params.get("layout");
     if (border && border.trim()) result.layout = border.trim();
+    const frameLayout = params.get("frame");
+    if (frameLayout && frameLayout.trim()) result.frameLayout = frameLayout.trim();
     const font = params.get("font") || params.get("fontFamily");
     if (font && font.trim()) result.fontFamily = font.trim();
 
@@ -118,6 +121,10 @@ export function serializePosterStateToUrl(
     params.set("border", form.layout);
   }
 
+  if (form.frameLayout && form.frameLayout !== "none") {
+    params.set("frame", form.frameLayout);
+  }
+
   // 3. Font family (if customized)
   if (form.fontFamily && form.fontFamily.trim().length > 0) {
     params.set("font", form.fontFamily.trim());
@@ -161,3 +168,4 @@ export function serializePosterStateToUrl(
 
   return { path, search, fullUrl };
 }
+

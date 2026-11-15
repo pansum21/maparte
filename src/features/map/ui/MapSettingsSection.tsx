@@ -29,6 +29,7 @@ const FALLBACK_COLOR = "#000000";
 interface MapSettingsForm {
   theme: string;
   layout: string;
+  frameLayout?: string;
   width: string;
   height: string;
   distance: string;
@@ -51,6 +52,7 @@ interface MapSettingsSectionProps {
   onNumericFieldBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
   onThemeChange: (themeId: string) => void;
   onLayoutChange: (layoutId: string) => void;
+  onFrameLayoutChange?: (frameLayout: string) => void;
   onFontChange?: (font: string) => void;
   selectedTheme: ResolvedTheme;
   themeOptions: ThemeOption[];
@@ -70,6 +72,7 @@ export default function MapSettingsSection({
   onNumericFieldBlur,
   onThemeChange,
   onLayoutChange,
+  onFrameLayoutChange,
   onFontChange,
   selectedTheme,
   themeOptions,
@@ -587,10 +590,34 @@ export default function MapSettingsSection({
                 </div>
               </section>
             ))}
+            <section className="layout-inline-group frame-layout-group" aria-label="Frame layouts">
+              <h3>Frame Layout</h3>
+              <p className="frame-layout-help">Map inset, clean white title space, and city details. Works with portrait and landscape sizes.</p>
+              <div className="frame-layout-grid">
+                {[
+                  ["classic", "Classic"], ["left", "Left"], ["right", "Right"], ["center", "Center"],
+                  ["dark", "Dark"], ["box", "Box"], ["title", "Title"], ["full-map", "Full Map"],
+                ].map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    className={`frame-layout-option${(form.frameLayout ?? "none") === id ? " is-selected" : ""}`}
+                    aria-pressed={(form.frameLayout ?? "none") === id}
+                    onClick={() => onFrameLayoutChange?.(id)}
+                  >
+                    <span className={`frame-layout-swatch frame-layout-swatch--${id}`} aria-hidden="true">
+                      <i /><b /><em />
+                    </span>
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
           </div>
         )}
       </div>
     </section>
   );
 }
+
 

@@ -57,6 +57,7 @@ export const DEFAULT_FORM: PosterForm = {
   height: String(DEFAULT_POSTER_HEIGHT_CM),
   theme: defaultThemeName,
   layout: "custom",
+  frameLayout: "none",
   displayCity: DEFAULT_CITY,
   displayTown: "",
   displayCountry: DEFAULT_COUNTRY,
@@ -516,3 +517,4 @@ export function usePosterDispatch(): PosterDispatchContextValue {
   }
   return ctx;
 }
+

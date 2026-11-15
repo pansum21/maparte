@@ -83,10 +83,102 @@ export async function compositeExport(
     routes = [],
     neatlineSvg,
     squareCaptionGeometry,
+    frameLayoutGeometry,
   } = options;
 
   const width = mapCanvas.width;
   const height = mapCanvas.height;
+
+  if (frameLayoutGeometry) {
+    const g = frameLayoutGeometry;
+    const page = document.createElement("canvas");
+    page.width = g.posterWidth;
+    page.height = g.posterHeight;
+    const pageCtx = page.getContext("2d");
+    if (!pageCtx) throw new Error("Canvas rendering is not available.");
+    pageCtx.fillStyle = g.style === "full-map" ? theme.ui.bg : "#fff";
+    pageCtx.fillRect(0, 0, page.width, page.height);
+    if (g.style === "dark") {
+      pageCtx.fillStyle = "#111";
+      pageCtx.fillRect(g.x, g.y + g.height, g.width, page.height - (g.y + g.height) - g.safeInsetY);
+    }
+    if (g.style === "box") {
+      pageCtx.save();
+      pageCtx.shadowColor = "rgba(0,0,0,.16)";
+      pageCtx.shadowBlur = Math.max(2, page.width * .003);
+      pageCtx.fillStyle = "rgba(255,255,255,.96)";
+      pageCtx.fillRect(g.captionX - g.captionWidth / 2, g.y + g.height - page.height * .075, g.captionWidth, page.height * .12);
+      pageCtx.restore();
+    }
+    pageCtx.save();
+    pageCtx.translate(g.x, g.y);
+    pageCtx.scale(g.width / width, g.height / height);
+    pageCtx.drawImage(mapCanvas, 0, 0, width, height);
+    if (overlayTop || overlayBottom) applyFades(pageCtx, width, height, theme.ui.bg, overlayTop, overlayBottom);
+    if (routes.length > 0 && markerProjection) {
+      drawRoutesOnCanvas(pageCtx, routes, markerProjection, markerScaleX, markerScaleY, markerSizeScale);
+      if (markerIcons.length > 0) {
+        const endpoints = routeEndpointMarkerItems(routes);
+        if (endpoints.length) await drawMarkersOnCanvas(pageCtx, endpoints, markerIcons, markerProjection, markerScaleX, markerScaleY, markerSizeScale);
+      }
+    }
+    if (markers.length > 0 && markerIcons.length > 0 && markerProjection) {
+      await drawMarkersOnCanvas(pageCtx, markers, markerIcons, markerProjection, markerScaleX, markerScaleY, markerSizeScale);
+    }
+    pageCtx.restore();
+
+    const textColor = g.style === "dark" ? "#fff" : (theme.ui.text || "#171717");
+    const font = fontFamily ? `"${fontFamily}", "Space Grotesk", sans-serif` : '"Space Grotesk", sans-serif';
+    const mono = fontFamily ? `"${fontFamily}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace';
+    const scale = Math.min(page.width, page.height) / 1000 * getPosterFontScale(fontSize);
+    const box = g.style === "box";
+    const captionY = box ? g.y + g.height - page.height * .047 : g.captionY;
+    const captionX = g.captionX;
+    pageCtx.fillStyle = textColor;
+    pageCtx.textAlign = g.captionAlign;
+    pageCtx.textBaseline = "middle";
+    if (showPosterText && g.style !== "full-map") {
+      pageCtx.font = `600 ${Math.max(18, (g.style === "title" ? 66 : 42) * scale)}px ${font}`;
+      pageCtx.fillText(formatCityLabel(displayCity), captionX, captionY, g.captionWidth);
+      let lineY = captionY + page.height * .041;
+      if (displayCountry) {
+        pageCtx.font = `400 ${Math.max(12, 23 * scale)}px ${font}`;
+        pageCtx.fillText(displayCountry.toUpperCase(), captionX, lineY, g.captionWidth);
+        lineY += page.height * .03;
+      }
+      if (customDate?.trim()) {
+        pageCtx.font = `400 ${Math.max(10, 17 * scale)}px ${mono}`;
+        pageCtx.fillText(customDate.trim(), captionX, lineY, g.captionWidth);
+        lineY += page.height * .026;
+      }
+      pageCtx.globalAlpha = .72;
+      pageCtx.font = `400 ${Math.max(9, 14 * scale)}px ${mono}`;
+      pageCtx.fillText(formatCoordinates(center.lat, center.lon), captionX, lineY, g.captionWidth);
+      pageCtx.globalAlpha = 1;
+    } else if (showPosterText) {
+      drawPosterText(pageCtx, page.width, page.height, theme, center, displayCity, displayCountry, fontFamily, true, overlayBottom, includeCredits, customDate, fontSize);
+    }
+    pageCtx.textBaseline = "bottom";
+    pageCtx.globalAlpha = .68;
+    pageCtx.font = `300 ${Math.max(9, 12 * scale)}px ${mono}`;
+    pageCtx.textAlign = "left";
+    pageCtx.fillStyle = g.style === "dark" ? "#fff" : textColor;
+    pageCtx.fillText(APP_CREDIT_URL, g.safeInsetX, page.height - g.safeInsetY, page.width * .42);
+    pageCtx.textAlign = "right";
+    pageCtx.fillText("© OpenStreetMap contributors", page.width - g.safeInsetX, page.height - g.safeInsetY, page.width * .42);
+    pageCtx.globalAlpha = 1;
+    await drawNeatlineSvg(pageCtx, page.width, page.height, neatlineSvg, matInsetXRatio, matInsetYRatio);
+    const densityX = widthInches > 0 ? page.width / widthInches : 0;
+    const densityY = heightInches > 0 ? page.height / heightInches : 0;
+    return {
+      canvas: page,
+      size: {
+        width: page.width, height: page.height, requestedWidth: page.width, requestedHeight: page.height,
+        downscaleFactor: 1, requestedDpi: 0, effectiveDpiX: densityX, effectiveDpiY: densityY,
+        effectiveDpi: Math.floor(Math.min(densityX, densityY)),
+      },
+    };
+  }
 
   const canvas = squareCaptionGeometry
     ? document.createElement("canvas")
@@ -473,4 +565,5 @@ export async function compositeExport(
 export { resolveCanvasSize } from "./canvas";
 export { applyFades } from "./layers";
 export { drawPosterText } from "./typography";
+
 
