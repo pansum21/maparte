@@ -150,7 +150,8 @@ export default function MapSettingsSection({
       includeRoadPath: form.includeRoadPath,
       includeRoadMinorLow: form.includeRoadMinorLow,
       includeRoadOutline: form.includeRoadOutline,
-      distanceMeters: Number(form.distance),
+      // Keep theme cards at a stable city-wide extent so roads stay readable.
+      distanceMeters: 200_000,
     }),
     [
       form.distance,
