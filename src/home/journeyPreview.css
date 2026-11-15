@@ -200,6 +200,7 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 .journey-chapter:first-child{padding-top:clamp(127px,calc(38vh - 3cm),247px)}
 .journey-copy,.journey-chapter--right .journey-copy{padding:0}
 .journey-copy--plate{padding:34px 36px;border-radius:28px}
+.journey-scrollhint{bottom:8px;font-size:7px}
 @media(max-width:900px){
   .journey-chapter{height:auto;min-height:0;padding:64px 22px 20px;align-items:flex-start}
   .journey-chapter:first-child{height:auto;min-height:0;padding-top:clamp(67px,calc(30vh - 3cm),127px)}
