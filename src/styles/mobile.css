@@ -2158,7 +2158,7 @@
   .app-shell > .preview-panel .desktop-right-panel { display: none !important; }
 
   .mobile-drawer.mobile-drawer--edit-map {
-    inset: auto 12px calc(74px + env(safe-area-inset-bottom, 0px));
+    inset: auto calc(12px - 0.3mm) calc(74px - 0.2mm + env(safe-area-inset-bottom, 0px));
     display: block;
     pointer-events: none;
     z-index: 99;

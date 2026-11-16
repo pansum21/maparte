@@ -12,6 +12,8 @@ export const LAYOUT_MATCH_TOLERANCE_CM = 0.01;
 export const MIN_DISTANCE_METERS = 15;
 export const MAX_DISTANCE_METERS = 200_000_000;
 export const DEFAULT_DISTANCE_METERS = 100_000_000;
+/** Wide starting frame for the editor so the world view fills the preview. */
+export const INITIAL_EDITOR_DISTANCE_METERS = 5_235_000;
 
 /* ── Map / MapLibre ── */
 

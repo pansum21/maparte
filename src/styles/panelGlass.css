@@ -12,6 +12,21 @@
   -webkit-backdrop-filter: blur(16px) saturate(155%);
 }
 
+/* Phones may request desktop-site mode while still reporting a coarse pointer.
+   Keep only the mobile tool navigation visible in that case. */
+@media (max-width: 1280px) and (pointer: coarse) {
+  .app-shell > .desktop-nav-bar,
+  .app-shell > .desktop-left-panel,
+  .app-shell > .preview-panel .desktop-right-panel,
+  .app-shell > .desktop-location-row-wrap {
+    display: none !important;
+  }
+
+  .app-shell > .mobile-nav-wrapper {
+    display: flex !important;
+  }
+}
+
 /* On phones, the open tool sheet and the bottom tool dock form one edge-to-edge surface.
    The closed dock remains a floating capsule; opening a tool squares the dock's top edge. */
 @media (max-width: 600px) {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   DEFAULT_CITY,
   DEFAULT_COUNTRY,
-  DEFAULT_DISTANCE_METERS,
+  INITIAL_EDITOR_DISTANCE_METERS,
   DEFAULT_LAT,
   DEFAULT_LON,
 } from "@/core/config";
@@ -22,7 +22,7 @@ import {
   useRecentLocations,
 } from "@/features/location/application/useRecentLocations";
 import LocationSuggestionsDropdown from "./LocationSuggestionsDropdown";
-import { resolveTargetDistance, type SearchResult } from "@/features/location/domain/types";
+import type { SearchResult } from "@/features/location/domain/types";
 
 const CLOSE_ANIMATION_MS = 220;
 const DEFAULT_LOCATION_LABEL = "Dehradun, Uttarakhand, India";
@@ -87,7 +87,7 @@ export default function StartupLocationModal({
           location: DEFAULT_LOCATION_LABEL,
           latitude: DEFAULT_LAT.toFixed(6),
           longitude: DEFAULT_LON.toFixed(6),
-          distance: String(DEFAULT_DISTANCE_METERS),
+          distance: String(INITIAL_EDITOR_DISTANCE_METERS),
           displayCity: DEFAULT_CITY,
           displayCountry: DEFAULT_COUNTRY,
           displayContinent: "Asia",
@@ -103,7 +103,7 @@ export default function StartupLocationModal({
         location: location.label,
         latitude: location.lat.toFixed(6),
         longitude: location.lon.toFixed(6),
-        distance: String(resolveTargetDistance(location)),
+        distance: String(INITIAL_EDITOR_DISTANCE_METERS),
         displayCity: location.city,
         displayCountry: location.country,
         displayContinent: location.continent,
