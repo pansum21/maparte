@@ -490,6 +490,16 @@
   color: #fbbf24;
 }
 
+.app-settings-map-data {
+  margin: 10px 0 0;
+}
+
+.app-settings-map-data .source-link {
+  color: #9edcf7;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .app-settings-toggles {
   display: flex;
   flex-direction: column;

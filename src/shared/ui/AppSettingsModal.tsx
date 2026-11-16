@@ -8,6 +8,8 @@ import { useRecentLocations } from "@/features/location/application/useRecentLoc
 import { openLegalDoc } from "@/features/legal/application/legalDoc";
 import { resetBackdropThemeToDefault } from "@/features/theme/application/useBackdropTheme";
 import { resetNeatlineSettings } from "@/features/layout/ui/NeatlinePicker";
+import { CONTACT_EMAIL, KOFI_URL } from "@/core/config";
+import MapAttributionLinks from "@/shared/ui/MapAttributionLinks";
 import {
   CloseIcon,
   SettingsIcon,
@@ -33,6 +35,8 @@ export default function AppSettingsModal({
   const [confirmation, setConfirmation] = useState<"reset" | "clear" | null>(null);
   const [cookieSettingsUnavailable, setCookieSettingsUnavailable] =
     useState(false);
+  const contactEmail = String(CONTACT_EMAIL ?? "").trim();
+  const supportUrl = String(KOFI_URL ?? "").trim();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -255,6 +259,30 @@ export default function AppSettingsModal({
                 Cookie controls are not available in this browser session.
               </p>
             ) : null}
+          </div>
+
+          <div className="app-settings-card app-settings-links-card app-settings-support-card">
+            <h3 className="app-settings-card-title">Support &amp; Map Data</h3>
+            <div className="settings-actions-grid">
+              {contactEmail ? (
+                <a className="settings-action-btn" href={`mailto:${contactEmail}`}>
+                  Contact Support
+                </a>
+              ) : null}
+              {supportUrl ? (
+                <a
+                  className="settings-action-btn"
+                  href={supportUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Support MapArte
+                </a>
+              ) : null}
+            </div>
+            <p className="settings-links-description app-settings-map-data">
+              Map data and tools: <MapAttributionLinks />
+            </p>
           </div>
         </div>
       </div>

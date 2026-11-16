@@ -5,7 +5,15 @@
 export default function MapAttributionLinks() {
   return (
     <>
-      Tiles &copy;{" "}
+      <a
+        className="source-link"
+        href="https://www.openstreetmap.org/copyright"
+        target="_blank"
+        rel="noreferrer"
+      >
+        OpenStreetMap contributors
+      </a>
+      {" | "}Tiles &copy;{" "}
       <a
         className="source-link"
         href="https://openmaptiles.org/"
