@@ -326,7 +326,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
               type="text"
               className="all-cities-search-input"
               name="location"
-              placeholder="Search city, country or Google Maps..."
+              placeholder="Type a place, then press Enter to search..."
               value={state.form.location}
               onChange={handleInputChange}
               onFocus={() => setLocationFocused(true)}

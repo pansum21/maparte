@@ -49,7 +49,7 @@ export default function LocationSuggestionsDropdown({
   const prefix = variant === "startup" ? "startup-location" : "location";
 
   if (!isFocused) return null;
-  if (isLiveMode && suggestions.length === 0) return null;
+  if (isLiveMode && suggestions.length === 0 && !isSearching) return null;
   if (!isLiveMode && recent.length === 0) return null;
 
   const visibleRecent = expanded

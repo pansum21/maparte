@@ -1,5 +1,5 @@
 /** Placeholder shown in the location search input across desktop and mobile. */
-export const PLACEHOLDER_LOCATION_SEARCH = "Town, city, state, or Google Maps link...";
+export const PLACEHOLDER_LOCATION_SEARCH = "Type a place, then press Enter to search...";
 
 /**
  * Example coordinates used as input placeholders (Dehradun, India).

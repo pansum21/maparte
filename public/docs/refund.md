@@ -1,12 +1,17 @@
-# Digital Products Refund Policy
+# Refunds and Digital Downloads
 
-At **MapArte** (maparte.com), we specialize in custom-rendered, ultra-high-definition digital map art and wallpapers.
+Last updated: November 17, 2026
 
-## 1. Nature of Digital Goods
-Due to the immediate digital nature of our custom 4K/8K downloads, **all sales are generally final and non-refundable** once the watermark-free file has been generated and downloaded.
+## Current service
 
-## 2. Quality Guarantee & Free Revisions
-Your satisfaction is our top priority. If your downloaded map contains a rendering glitch, typographical error, or incorrect coordinates caused by our system, contact our support within 7 days at **support@maparte.com**. We will happily regenerate and deliver a corrected ultra-HD print file at zero cost.
+MAPARTE currently offers a free phone-wallpaper download and does not have paid checkout enabled. No payment is taken for a paid map or download through the current website, so there is no MAPARTE paid-order refund process at this time. MAPARTE does not currently use Dodo Payments or another provider to charge for editor downloads.
 
-## 3. Chargeback & Payment Inquiries
-Payments are securely processed via **Dodo Payments**. Before opening any dispute with your bank, please reach out to us directly for immediate resolution within 24 hours.
+## Trouble with a free download
+
+If a free export fails, is damaged, or does not match the preview because of a technical problem, email [support@maparte.com](mailto:support@maparte.com) with a short description and, if possible, a screenshot. Do not include payment-card information. We can review the issue and advise on a fresh export or another available fix; a particular correction or turnaround time is not guaranteed.
+
+## If paid products are introduced
+
+Before any paid checkout is enabled, MAPARTE will publish the applicable price, product details, delivery method, cancellation and refund terms, and payment-provider information. Those terms will be shown before an order is placed and will not apply retroactively to free downloads.
+
+This page does not limit any rights that apply under the law where you live.

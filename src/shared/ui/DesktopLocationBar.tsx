@@ -143,6 +143,7 @@ export default function DesktopLocationBar() {
                     }
                   }}
                   placeholder={PLACEHOLDER_LOCATION_SEARCH}
+                  aria-label="Search for a town, city, address, coordinates, or Google Maps link; press Enter or select search to search"
                   autoComplete="off"
                 />
                 {hasLocationValue ? (

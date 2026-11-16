@@ -84,6 +84,7 @@ export default function LocationSection({
                   }
                 }}
                 placeholder={PLACEHOLDER_LOCATION_SEARCH}
+                aria-label="Search for a town, city, address, coordinates, or Google Maps link; press Enter to search"
                 autoComplete="off"
               />
               {hasLocationValue ? (

@@ -9,18 +9,15 @@ interface UseLocationAutocompleteReturn {
   searchNow: (query: string) => Promise<SearchResult[]>;
 }
 
-const DEBOUNCE_DELAY_MS = 450;
-
 export function useLocationAutocomplete(
   locationInput: string,
-  isFocused: boolean,
+  _isFocused: boolean,
 ): UseLocationAutocompleteReturn {
   const [locationSuggestions, setLocationSuggestions] = useState<
     SearchResult[]
   >([]);
   const [isLocationSearching, setIsLocationSearching] = useState(false);
   const latestQueryRef = useRef("");
-  const debounceIdRef = useRef<number | undefined>(undefined);
   const abortRef = useRef<AbortController | null>(null);
 
   const performSearch = useCallback(async (query: string): Promise<SearchResult[]> => {
@@ -63,40 +60,24 @@ export function useLocationAutocomplete(
 
   const searchNow = useCallback(
     async (query: string): Promise<SearchResult[]> => {
-      // Cancel any pending debounce so it doesn't fire again after the immediate search
-      window.clearTimeout(debounceIdRef.current);
-      debounceIdRef.current = undefined;
       return await performSearch(query);
     },
     [performSearch],
   );
 
   useEffect(() => {
-    const query = String(locationInput ?? "").trim();
-    if (!isFocused || query.length < 2) {
-      latestQueryRef.current = "";
-      setLocationSuggestions([]);
-      setIsLocationSearching(false);
-      return undefined;
-    }
-
-    let cancelled = false;
-    debounceIdRef.current = window.setTimeout(() => {
-      if (!cancelled) {
-        void performSearch(query);
-      }
-    }, DEBOUNCE_DELAY_MS);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(debounceIdRef.current);
-      debounceIdRef.current = undefined;
-      abortRef.current?.abort();
-      abortRef.current = null;
-    };
-  }, [locationInput, isFocused, performSearch]);
+    latestQueryRef.current = "";
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setIsLocationSearching(false);
+    setLocationSuggestions([]);
+  }, [locationInput]);
 
   const clearLocationSuggestions = useCallback(() => {
+    latestQueryRef.current = "";
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setIsLocationSearching(false);
     setLocationSuggestions([]);
   }, []);
 

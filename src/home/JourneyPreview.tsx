@@ -279,7 +279,7 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
 }
 
 const chapters = [
-  { kicker: "A PLACE IS A BEGINNING", title: <>The world is wide.<br /><em>Your place is here.</em></>, body: <>Turn <em>a hometown</em>, <em>a shared moment</em>, a journey or a finish line into a map design that feels like yours.</>, side: "left", tag: "01 / FIND YOUR PLACE" },
+  { kicker: "A PLACE IS A BEGINNING", title: <>The world is wide.<br /><em>Your place is here.</em></>, body: <>Turn <em>a hometown</em>, <em>a shared moment</em>, a journey or a finish line into digital map art. Design it in your browser, download the file and print it yourself if you like. MAPARTE does not print or ship posters.</>, side: "left", tag: "01 / FIND YOUR PLACE" },
   { kicker: "CROSS THE DISTANCE", title: <>Half a world away.<br /><em>One familiar city.</em></>, body: <>The view leaves the whole planet behind and follows <em>one place</em> across the map, narrowing in until its streets begin to appear.</>, side: "right", tag: "02 / FIND THE CITY" },
   { kicker: "LAND IN THE DETAILS", title: <>Your streets.<br /><em>Your own coordinates.</em></>, body: <>Country lines give way to <em>neighbourhoods</em>, waterways and street names. The map settles around the exact corner you want to keep.</>, side: "left", tag: "03 / SET THE VIEW" },
   { kicker: "FOLLOW WHAT MATTERS", title: <>One place at a time.<br /><em>Closer with every scroll.</em></>, body: <>The globe keeps turning as the view travels toward one chosen city. Its streets and buildings come into focus as you reach the end.</>, side: "right", tag: "04 / FOLLOW THE VIEW" },
@@ -395,7 +395,7 @@ export default function JourneyPreview() {
               {index === 0 ? <h1>{chapter.title}</h1> : <h2>{chapter.title}</h2>}
               <p>{chapter.body}</p>
               {index === 0 && <>
-                <div className="journey-facts"><span>800 CITIES · LIVE MAP DATA</span><span>REAL STREETS · DIGITAL DOWNLOAD</span></div>
+                <div className="journey-facts"><span>800 CITY ENTRIES · SEARCH PLACES OR COORDINATES</span><span>DIGITAL DOWNLOAD · NO PRINTING OR SHIPPING</span></div>
                 <div className="journey-actions">
                   <a className="journey-action journey-action--glass" href="/?dist=5235000">Start with a place</a>
                   <a className="journey-action journey-action--quiet" href="#map-stories">Explore real map designs</a>
