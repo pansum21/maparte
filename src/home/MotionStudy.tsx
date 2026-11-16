@@ -38,21 +38,21 @@ function MapArtwork({ index }: { index: number }) {
   );
 }
 
-function ArtCard({ index, className = "" }: { index: number; className?: string }) {
-  return <article className={`motion-card ${className}`}><MapArtwork index={index} /><span>{cards[index].label}</span></article>;
+function ArtCard({ index, className = "", onOpen }: { index: number; className?: string; onOpen: (index: number) => void }) {
+  return <button type="button" className={`motion-card ${className}`} onClick={(event) => { event.stopPropagation(); onOpen(index); }} aria-label={`Open ${cards[index].label}`}><MapArtwork index={index} /><span>{cards[index].label}</span></button>;
 }
 
-function SectionHeading({ number, title, subtitle }: { number: string; title: string; subtitle: string }) {
-  return <div className="motion-section__heading"><span>{number} / MOTION STUDY</span><h2>{title}</h2><p>{subtitle}</p></div>;
+function SectionHeading({ number, title, subtitle, collection }: { number: string; title: string; subtitle: string; collection: string }) {
+  return <div className="motion-section__heading"><span>{number} / {collection}</span><h2>{title}</h2><p>{subtitle}</p></div>;
 }
 
-function AutoCarousel() {
+function AutoCarousel({ onOpen }: { onOpen: (index: number) => void }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    timer.current = window.setInterval(() => setActive((value) => (value + 1) % cards.length), 3600);
+    timer.current = window.setInterval(() => setActive((value) => (value + 1) % cards.length), 2000);
     return () => window.clearInterval(timer.current);
   }, [paused]);
   const move = (direction: number) => setActive((value) => (value + direction + cards.length) % cards.length);
@@ -62,7 +62,7 @@ function AutoCarousel() {
       <div className="motion-carousel__stage">
         {[-1, 0, 1].map((offset) => {
           const index = (active + offset + cards.length) % cards.length;
-          return <button key={offset} className={`motion-carousel__slide is-${offset === 0 ? "active" : offset < 0 ? "left" : "right"}`} onClick={() => offset && move(offset)} aria-label={`Show map study ${index + 1}`}><ArtCard index={index} /></button>;
+          return <div key={offset} className={`motion-carousel__slide is-${offset === 0 ? "active" : offset < 0 ? "left" : "right"}`}><ArtCard index={index} onOpen={onOpen} /></div>;
         })}
       </div>
       <div className="motion-controls"><button onClick={() => move(-1)} aria-label="Previous map">←</button><span>{String(active + 1).padStart(2, "0")} <i>/</i> 10</span><button onClick={() => move(1)} aria-label="Next map">→</button><span className="motion-controls__state">{paused ? "PAUSED" : "AUTO · PAUSES ON HOVER"}</span></div>
@@ -70,7 +70,7 @@ function AutoCarousel() {
   );
 }
 
-function ScrollRail() {
+function ScrollRail({ onOpen }: { onOpen: (index: number) => void }) {
   const section = useRef<HTMLElement>(null);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
@@ -90,16 +90,16 @@ function ScrollRail() {
     return () => { cancelAnimationFrame(frame); window.removeEventListener("scroll", update); window.removeEventListener("resize", update); };
   }, []);
   return <section ref={section} className="motion-section motion-section--scroll" id="scroll-rail" style={{ "--rail-progress": progress } as CSSProperties}>
-    <div className="motion-sticky"><SectionHeading number="04" title="Scroll-linked gallery" subtitle="The strip follows your page scroll; it does not run by itself." /><div className="motion-rail__window"><div className="motion-rail__track" style={{ transform: `translate3d(-${progress * (window.innerWidth <= 700 ? 82 : 61)}%,0,0)` }}>{cards.map(({ index }) => <ArtCard key={index} index={index} />)}</div></div><div className="motion-rail__caption"><span>PAGE SCROLL</span><span>{Math.round(progress * 100)}%</span></div></div>
+    <div className="motion-sticky"><SectionHeading number="04" collection="OPTIONAL · LAYOUT STUDY" title="Scroll-linked gallery" subtitle="An optional layout idea: the row follows page scroll instead of auto-running. Tap a map to bring it forward." /><div className="motion-rail__window"><div className="motion-rail__track" style={{ transform: `translate3d(-${progress * (window.innerWidth <= 700 ? 82 : 61)}%,0,0)` }}>{cards.map(({ index }) => <ArtCard key={index} index={index} onOpen={onOpen} />)}</div></div><div className="motion-rail__caption"><span>PAGE SCROLL</span><span>{Math.round(progress * 100)}%</span></div></div>
   </section>;
 }
 
-function Coverflow() {
+function Coverflow({ onOpen }: { onOpen: (index: number) => void }) {
   const [active, setActive] = useState(4);
   const [paused, setPaused] = useState(false);
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = window.setInterval(() => setActive((value) => (value + 1) % cards.length), 4200);
+    const timer = window.setInterval(() => setActive((value) => (value + 1) % cards.length), 2000);
     return () => window.clearInterval(timer);
   }, [paused]);
   return <div className="motion-coverflow" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false); }}>
@@ -109,26 +109,38 @@ function Coverflow() {
       if (offset < -cards.length / 2) offset += cards.length;
       const spread = Math.min(Math.abs(offset), 4);
       const slideStyle: CSSProperties = { transform: `translateX(${offset * 58}%) rotateY(${offset * -18}deg) scale(${1 - spread * .105})`, zIndex: 10 - spread, opacity: 1 - spread * .19 };
-      return <button key={index} className="motion-coverflow__slide" style={slideStyle} onClick={() => setActive(index)} aria-label={`Focus map study ${index + 1}`}><ArtCard index={index} /></button>;
+      return <div key={index} className="motion-coverflow__slide" style={slideStyle}><ArtCard index={index} onOpen={(selected) => { setActive(selected); onOpen(selected); }} /></div>;
     })}</div>
     <div className="motion-controls"><button onClick={() => setActive((value) => (value - 1 + cards.length) % cards.length)} aria-label="Previous map">←</button><span>3D COVERFLOW <i>·</i> {paused ? "PAUSED" : "AUTO"}</span><button onClick={() => setActive((value) => (value + 1) % cards.length)} aria-label="Next map">→</button></div>
   </div>;
 }
 
 export default function MotionStudy() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const openArtwork = (index: number) => setOpenIndex(index);
+  const closeArtwork = () => setOpenIndex(null);
   useEffect(() => {
     document.title = "Gallery motion studies — MAPARTE";
     return () => { document.title = "MAPARTE | Create Digital Map Art & Phone Wallpapers"; };
   }, []);
+  useEffect(() => {
+    if (openIndex === null) return;
+    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") closeArtwork(); };
+    const oldOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => { document.body.style.overflow = oldOverflow; window.removeEventListener("keydown", onKeyDown); };
+  }, [openIndex]);
   return <main className="motion-study">
     <header className="motion-study__top"><a href="/" className="motion-study__logo">MAPARTE <small>DESIGN LAB</small></a><a className="motion-study__exit" href="/">Exit study ↗</a></header>
-    <section className="motion-study__hero"><span>GALLERY MOTION / PRIVATE STUDY</span><h1>Let the maps<br /><em>find their rhythm.</em></h1><p>Five ways to move a large collection. These are generated map-art sketches, made to compare motion—not final gallery artwork.</p><nav>{[["drift", "01 Drift"], ["double-flow", "02 Two flows"], ["carousel", "03 Carousel"], ["scroll-rail", "04 Scroll"], ["coverflow", "05 Coverflow"]].map(([id, label]) => <a key={id} href={`#${id}`}>{label}</a>)}</nav></section>
-    <section className="motion-section" id="drift"><SectionHeading number="01" title="Slow drift" subtitle="Ten map studies pass in one calm, continuous ribbon. Hover or focus it to pause." /><div className="motion-marquee" tabIndex={0}><div className="motion-marquee__track">{repeatCards.map(({ index }, i) => <ArtCard key={i} index={index} />)}</div></div></section>
-    <section className="motion-section" id="double-flow"><SectionHeading number="02" title="Two opposite flows" subtitle="Portrait and landscape rows travel in opposite directions. Hover either row to stop that row." /><div className="motion-double"><div className="motion-marquee" tabIndex={0}><div className="motion-marquee__track">{repeatCards.map(({ index }, i) => <ArtCard key={i} index={index} />)}</div></div><div className="motion-marquee motion-marquee--reverse motion-marquee--landscape" tabIndex={0}><div className="motion-marquee__track">{repeatCards.map(({ index }, i) => <ArtCard key={i} index={(index + 5) % 10} />)}</div></div></div></section>
-    <section className="motion-section" id="carousel"><SectionHeading number="03" title="Featured carousel" subtitle="One map leads, the next ones peek in. It advances by itself; hover, focus, swipe or arrows pause and take control." /><AutoCarousel /></section>
-    <ScrollRail />
-    <section className="motion-section motion-section--cover" id="coverflow"><SectionHeading number="05" title="Orbiting covers" subtitle="A shallow 3D fan gives the selected map the front seat. Hover pauses it; tap a map or use arrows to focus it." /><Coverflow /></section>
+    <section className="motion-study__hero"><span>GALLERY MOTION / PRIVATE STUDY</span><h1>Let the maps<br /><em>find their rhythm.</em></h1><p>Five ways to move a large collection. These are generated map-art sketches, made to compare motion—not final gallery artwork.</p><nav>{[["double-flow", "01 Map gallery"], ["drift", "02 Theme drift"], ["carousel", "03 Borders"], ["coverflow", "04 Theme orbit"], ["scroll-rail", "05 Scroll idea"]].map(([id, label]) => <a key={id} href={`#${id}`}>{label}</a>)}</nav></section>
+    <section className="motion-section" id="double-flow"><SectionHeading number="01" collection="MAP GALLERY" title="Two opposite flows" subtitle="For the map gallery: portrait and landscape maps travel in opposite directions. Tap any map to bring it into the main frame." /><div className="motion-double"><div className="motion-marquee" tabIndex={0}><div className="motion-marquee__track">{repeatCards.map(({ index }, i) => <ArtCard key={i} index={index} onOpen={openArtwork} />)}</div></div><div className="motion-marquee motion-marquee--reverse motion-marquee--landscape" tabIndex={0}><div className="motion-marquee__track">{repeatCards.map(({ index }, i) => <ArtCard key={i} index={(index + 5) % 10} onOpen={openArtwork} />)}</div></div></div></section>
+    <section className="motion-section" id="drift"><SectionHeading number="02" collection="THEME GALLERY" title="Slow drift" subtitle="For themes: one relaxed, continuous row. Hover to pause; tap a map to see it full size." /><div className="motion-marquee" tabIndex={0}><div className="motion-marquee__track">{repeatCards.map(({ index }, i) => <ArtCard key={i} index={index} onOpen={openArtwork} />)}</div></div></section>
+    <section className="motion-section" id="carousel"><SectionHeading number="03" collection="BORDER GALLERY" title="Featured carousel" subtitle="One border leads while the next frames wait behind it. It changes every two seconds; hover or focus to pause. Tap to enlarge." /><AutoCarousel onOpen={openArtwork} /></section>
+    <section className="motion-section motion-section--cover" id="coverflow"><SectionHeading number="04" collection="THEME GALLERY · 3D OPTION" title="Orbiting covers" subtitle="A shallow 3D fan gives one theme the front seat. It advances every two seconds; hover pauses it. Tap the main frame to enlarge." /><Coverflow onOpen={openArtwork} /></section>
+    <ScrollRail onOpen={openArtwork} />
     <footer className="motion-study__footer"><span>MAPARTE / MOTION STUDIES</span><a href="/">Back to the journey ↑</a></footer>
+    {openIndex !== null && <div className="motion-lightbox" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeArtwork(); }}><section className="motion-lightbox__panel" role="dialog" aria-modal="true" aria-label={`Map artwork ${openIndex + 1}`}><button className="motion-lightbox__back" onClick={closeArtwork} autoFocus>← Back to gallery</button><div className="motion-lightbox__art"><MapArtwork index={openIndex} /></div><div className="motion-lightbox__caption"><span>{cards[openIndex].label}</span><span>MAPARTE / PREVIEW ARTWORK</span></div></section></div>}
   </main>;
 }
 
