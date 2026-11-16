@@ -1,31 +1,29 @@
 /* Match the city picker panel bounds and width to the wall color and tool panels. */
 @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
   .app-shell .all-cities-modal {
-    position: absolute;
+    position: fixed;
   }
 }
 
 .app-shell .all-cities-modal {
-  top: 48px;
+  top: 50px;
   bottom: 32px;
   left: 60px;
-  width: clamp(292px, 25vw, 326px);
-  max-width: calc(100vw - 60px);
+  width: min(374px, calc(100vw - 60px));
+  max-width: none;
+  max-height: none;
+  border-left: none !important;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-top-right-radius: 18px;
   border-bottom-right-radius: 18px;
-  animation: all-cities-panel-enter 220ms cubic-bezier(0.22, 0.8, 0.28, 1) both;
-}
-
-@keyframes all-cities-panel-enter {
-  from { opacity: 0; transform: translateX(-12px); }
-  to { opacity: 1; transform: translateX(0); }
+  animation: desktopPanelSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .app-shell .all-cities-modal {
-    animation: none;
+    animation: none !important;
   }
 }
 
@@ -40,12 +38,18 @@
 
 @media (max-width: 768px) {
   .app-shell .all-cities-modal {
-    top: calc(54px + env(safe-area-inset-top, 0px));
-    bottom: 2px;
-    left: 0;
-    width: 100%;
-    max-width: 100vw;
-    border-radius: 18px 18px 0 0;
+    top: auto !important;
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    height: auto !important;
+    max-height: min(78vh, 600px) !important;
+    border-radius: 22px 22px 0 0 !important;
+    border: 1px solid rgba(146, 176, 200, 0.28) !important;
+    border-bottom: none !important;
+    animation: mobileSheetSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    will-change: transform, opacity !important;
   }
 }
-
