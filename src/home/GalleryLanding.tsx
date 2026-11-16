@@ -32,7 +32,9 @@ type GalleryKey = keyof typeof galleries;
 
 export default function GalleryLanding() {
   const pathParts = window.location.pathname.split("/").filter(Boolean);
-  const key = pathParts[pathParts.length - 1] as GalleryKey | undefined;
+  const pathKey = pathParts[pathParts.length - 1] as GalleryKey | undefined;
+  const queryKey = new URLSearchParams(window.location.search).get("gallery") as GalleryKey | null;
+  const key = queryKey || pathKey;
   const gallery = key && key in galleries ? galleries[key] : galleries.maps;
 
   useEffect(() => {
