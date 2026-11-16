@@ -275,7 +275,7 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
     appliedTheme.current = theme;
     map.setStyle(generateMapStyle(getTheme(theme === "Carrara" ? "carrara" : "midnight_blue"), { includeBuildings: true, includeRoads: true }));
   }, [theme]);
-  return <div ref={hostRef} className="journey-map" aria-label={`Earth globe moving toward ${destination.city}, ${destination.country}`} />;
+  return <div ref={hostRef} className="journey-map" aria-label={`Earth globe moving toward ${destinationRef.current.city}, ${destinationRef.current.country}`} />;
 }
 
 const chapters = [
@@ -410,6 +410,19 @@ export default function JourneyPreview() {
                   <img src={`/assets/map-posters/${story.image}`} alt={`${story.title} MAPARTE digital map design for ${story.place}`} loading="lazy" />
                   <span>{story.place}</span><b>{story.title}</b>
                 </a>)}
+              </div>}
+              {index === 5 && <div className="journey-place-film" aria-label="A cinematic story scene with authentic MAPARTE map artwork">
+                <div className="journey-place-film__visual">
+                  <img className="journey-place-film__photo" src="/assets/homepage-story/city-story-window.webp" alt="A woman looking out across a city at dusk" loading="lazy" />
+                  <div className="journey-place-film__map">
+                    <img src="/assets/presets/real-where-we-met-carrara.png" alt="Real MAPARTE Where We Met map artwork for Paris" loading="lazy" />
+                  </div>
+                  <span className="journey-place-film__eyebrow">A PLACE · A MOMENT · YOUR MAP</span>
+                </div>
+                <div className="journey-place-film__caption">
+                  <strong>Some cities stay with you.</strong>
+                  <span>A real place becomes your digital map art.</span>
+                </div>
               </div>}
               {index === 6 && <a className="journey-action journey-action--bright" href="/?dist=5235000">Create your map</a>}
             </div>
