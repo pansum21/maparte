@@ -400,12 +400,12 @@ export default function JourneyPreview() {
                   <a className="journey-action journey-action--glass" href="/?dist=5235000">Start with a place</a>
                 </div>
               </>}
-              {index === 1 && <div className="journey-chapter-cta"><a className="journey-glass" href="/gallery/maps">Explore the map gallery</a></div>}
+              {index === 1 && <div className="journey-chapter-cta"><a className="journey-glass" href="/?gallery=maps">Explore the map gallery</a></div>}
               {index === 4 && <div className="journey-themes" aria-label="Choose a map theme">
                 <button className="journey-glass" type="button" aria-pressed={theme === "Midnight Blue"} onClick={() => setTheme("Midnight Blue")}><i className="journey-swatch journey-swatch--blue" />Midnight Blue</button>
                 <button className="journey-glass" type="button" aria-pressed={theme === "Carrara"} onClick={() => setTheme("Carrara")}><i className="journey-swatch journey-swatch--stone" />Carrara</button>
               </div>}
-              {index === 4 && <div className="journey-chapter-cta"><a className="journey-glass" href="/gallery/themes">Browse all themes</a></div>}
+              {index === 4 && <div className="journey-chapter-cta"><a className="journey-glass" href="/?gallery=themes">Browse all themes</a></div>}
               {index === 5 && <div className="journey-samples" id="map-stories" aria-label="MAPARTE map ideas">
                 {mapStories.map((story) => <a className="journey-sample" href={story.href} key={story.title}>
                   <img src={`/assets/map-posters/${story.image}`} alt={`${story.title} MAPARTE digital map design for ${story.place}`} loading="lazy" />
@@ -426,8 +426,8 @@ export default function JourneyPreview() {
                 </div>
               </div>}
               {index === 5 && <nav className="journey-chapter-cta journey-chapter-cta--pair" aria-label="Explore map layouts and borders">
-                <a className="journey-glass" href="/gallery/layouts">Explore layouts</a>
-                <a className="journey-glass" href="/gallery/borders">Explore borders</a>
+                <a className="journey-glass" href="/?gallery=layouts">Explore layouts</a>
+                <a className="journey-glass" href="/?gallery=borders">Explore borders</a>
               </nav>}
               {index === 6 && <a className="journey-action journey-action--bright" href="/?dist=5235000">Create your map</a>}
             </div>
@@ -440,7 +440,7 @@ export default function JourneyPreview() {
       </section>
       <footer className="journey-footer">
         <div className="journey-footer__brand"><a href="/?dist=5235000">MAPARTE.COM</a><span>Map it. Make it yours.</span></div>
-        <nav aria-label="Footer navigation"><a href="/gallery/maps">Map gallery</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refund</a></nav>
+        <nav aria-label="Footer navigation"><a href="/?gallery=maps">Map gallery</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refund</a></nav>
       </footer>
       <div className="journey-scrollhint" aria-hidden="true" style={{ opacity: hasScrolled ? 0 : 1 }}>SCROLL TO TRAVEL <span>↓</span></div>
     </div>

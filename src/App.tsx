@@ -16,6 +16,7 @@ export default function App() {
   if (pathname === "/journey-preview") return <JourneyPreview />;
   if (/^\/gallery\/(maps|themes|layouts|borders)$/.test(pathname)) return <GalleryLanding />;
   const search = new URLSearchParams(window.location.search);
+  if (["maps", "themes", "layouts", "borders"].includes(search.get("gallery") || "")) return <GalleryLanding />;
   const editorQueryKeys = ["editor", "dist", "city", "country", "lat", "lng", "lon", "zoom", "theme", "payment", "checkout", "status", "order", "success"];
   const hasEditorQuery = editorQueryKeys.some((key) => search.has(key));
   const isHomepage = pathname === "/" && !hasEditorQuery;
