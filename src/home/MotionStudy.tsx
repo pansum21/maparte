@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import { spring } from "motion";
+import { motion } from "motion/react";
 import "./motionStudy.css";
 
 const palettes = [
@@ -38,12 +40,30 @@ function MapArtwork({ index }: { index: number }) {
   );
 }
 
-function ArtCard({ index, className = "", onOpen }: { index: number; className?: string; onOpen: (index: number) => void }) {
-  return <button type="button" className={`motion-card ${className}`} onClick={(event) => { event.stopPropagation(); onOpen(index); }} aria-label={`Open ${cards[index].label}`}><MapArtwork index={index} /><span>{cards[index].label}</span></button>;
+function ArtCard({ index, className = "", style, onOpen, onSelect }: { index: number; className?: string; style?: CSSProperties; onOpen: (index: number) => void; onSelect?: (index: number) => void }) {
+  return <button type="button" className={`motion-card ${className}`} style={style} onClick={(event) => { event.stopPropagation(); onSelect ? onSelect(index) : onOpen(index); }} aria-label={`${onSelect ? "Select" : "Open"} ${cards[index].label}`}><MapArtwork index={index} /><span>{cards[index].label}</span></button>;
 }
 
 function SectionHeading({ number, title, subtitle, collection }: { number: string; title: string; subtitle: string; collection: string }) {
   return <div className="motion-section__heading"><span>{number} / {collection}</span><h2>{title}</h2><p>{subtitle}</p></div>;
+}
+
+function MainFrame({ onOpen }: { onOpen: (index: number) => void }) {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => setActive((value) => (value + 1) % cards.length), 3200);
+    return () => window.clearInterval(timer);
+  }, [paused]);
+  const select = (index: number) => setActive(index);
+  return <div className="motion-focus" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false); }}>
+    <div className="motion-focus__stage">{[-1, 0, 1].map((offset) => {
+      const index = (active + offset + cards.length) % cards.length;
+      return <ArtCard key={offset} index={index} className={`motion-focus__slide is-${offset === 0 ? "active" : offset < 0 ? "left" : "right"}`} style={{ zIndex: offset === 0 ? 3 : 1, transform: `translateX(${offset * 72}%) scale(${offset === 0 ? 1 : .78}) rotateY(${offset * -16}deg)`, opacity: offset === 0 ? 1 : .62 }} onOpen={onOpen} onSelect={offset === 0 ? undefined : select} />;
+    })}</div>
+    <div className="motion-focus__hint"><span>MAIN FRAME · {cards[active].label}</span><span>{paused ? "PAUSED" : "TAP THE FRONT MAP TO ENLARGE"}</span></div>
+  </div>;
 }
 
 function AutoCarousel({ onOpen }: { onOpen: (index: number) => void }) {
@@ -62,7 +82,7 @@ function AutoCarousel({ onOpen }: { onOpen: (index: number) => void }) {
       <div className="motion-carousel__stage">
         {[-1, 0, 1].map((offset) => {
           const index = (active + offset + cards.length) % cards.length;
-          return <div key={offset} className={`motion-carousel__slide is-${offset === 0 ? "active" : offset < 0 ? "left" : "right"}`}><ArtCard index={index} onOpen={onOpen} /></div>;
+          return <motion.div key={offset} className={`motion-carousel__slide is-${offset === 0 ? "active" : offset < 0 ? "left" : "right"}`} animate={{ x: offset === 0 ? "0%" : offset < 0 ? "-100%" : "100%", scale: offset === 0 ? 1.08 : .78, rotateY: offset === 0 ? 0 : offset < 0 ? 14 : -14, opacity: offset === 0 ? 1 : .58 }} transition={{ type: spring, stiffness: 260, damping: 28 }}><ArtCard index={index} onOpen={onOpen} /></motion.div>;
         })}
       </div>
       <div className="motion-controls"><button onClick={() => move(-1)} aria-label="Previous map">←</button><span>{String(active + 1).padStart(2, "0")} <i>/</i> 10</span><button onClick={() => move(1)} aria-label="Next map">→</button><span className="motion-controls__state">{paused ? "PAUSED" : "AUTO · PAUSES ON HOVER"}</span></div>
@@ -108,8 +128,8 @@ function Coverflow({ onOpen }: { onOpen: (index: number) => void }) {
       if (offset > cards.length / 2) offset -= cards.length;
       if (offset < -cards.length / 2) offset += cards.length;
       const spread = Math.min(Math.abs(offset), 4);
-      const slideStyle: CSSProperties = { transform: `translateX(${offset * 58}%) rotateY(${offset * -18}deg) scale(${1 - spread * .105})`, zIndex: 10 - spread, opacity: 1 - spread * .19 };
-      return <div key={index} className="motion-coverflow__slide" style={slideStyle}><ArtCard index={index} onOpen={(selected) => { setActive(selected); onOpen(selected); }} /></div>;
+      const slideStyle: CSSProperties = { zIndex: 10 - spread };
+      return <motion.div key={index} className="motion-coverflow__slide" style={slideStyle} animate={{ x: `${offset * 58}%`, rotateY: offset * -18, scale: 1 - spread * .105, opacity: 1 - spread * .19 }} transition={{ type: spring, stiffness: 220, damping: 26 }}><ArtCard index={index} onOpen={(selected) => { setActive(selected); onOpen(selected); }} /></motion.div>;
     })}</div>
     <div className="motion-controls"><button onClick={() => setActive((value) => (value - 1 + cards.length) % cards.length)} aria-label="Previous map">←</button><span>3D COVERFLOW <i>·</i> {paused ? "PAUSED" : "AUTO"}</span><button onClick={() => setActive((value) => (value + 1) % cards.length)} aria-label="Next map">→</button></div>
   </div>;
