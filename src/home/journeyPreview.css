@@ -262,3 +262,26 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 @keyframes journey-place-map-arrive{from{opacity:0;transform:translate3d(0,18px,0) rotate(2deg)}to{opacity:1;transform:translate3d(0,0,0) rotate(2deg)}}
 @media(max-width:900px){.journey-place-film{width:100%;margin-top:22px}.journey-place-film__visual{height:clamp(220px,62vw,310px)}.journey-place-film__map{width:36%;right:5%;bottom:8%}.journey-place-film__eyebrow{font-size:8px;left:12px;bottom:12px}.journey-place-film__caption span{line-height:1.5}}
 @media(prefers-reduced-motion:reduce){.journey-place-film__photo,.journey-place-film__map{animation:none}.journey-place-film__map{opacity:1}}
+
+/* Landing Help: a full-width final stop with real MAPARTE artwork. */
+.journey-faq{width:100%;grid-template-columns:minmax(280px,.82fr) minmax(0,1.55fr);gap:clamp(34px,6vw,96px);padding:clamp(52px,7vw,108px) clamp(22px,6vw,92px)}
+.journey-faq__intro>p{max-width:34ch;margin:16px 0 0;color:var(--muted);font-size:15px;line-height:1.65}
+.journey-faq__map{display:block;width:min(100%,390px);max-height:430px;object-fit:contain;object-position:left center;margin:26px 0 0;border:1px solid rgba(233,241,232,.23);border-radius:12px;background:rgba(8,21,24,.45)}
+.journey-faq__map-caption{display:block;margin-top:10px;color:rgba(233,241,232,.5);font:9px "Spline Sans Mono",monospace;letter-spacing:.12em}
+.journey-faq__content{min-width:0}
+.journey-faq__search-label{display:block;margin:0 0 8px;color:rgba(233,241,232,.74);font-size:12px;font-weight:600}
+.journey-faq__search{display:block;width:100%;min-height:48px;margin:0 0 14px;padding:11px 15px;border:1px solid rgba(233,241,232,.28);border-radius:999px;background:rgba(6,18,22,.55);color:var(--ink);font:14px "Instrument Sans",Arial,sans-serif}
+.journey-faq__search::placeholder{color:rgba(233,241,232,.48)}
+.journey-faq__search:focus-visible,.journey-faq__more:focus-visible,.journey-faq__support a:focus-visible{outline:2px solid var(--acid);outline-offset:3px}
+.journey-faq__more{margin-top:17px;padding:10px 0;border:0;border-bottom:1px solid rgba(214,255,107,.5);background:none;color:var(--acid);font:600 12px "Instrument Sans",Arial,sans-serif;cursor:pointer}
+.journey-faq__empty{color:var(--muted);line-height:1.6}.journey-faq__empty a{color:var(--acid)}
+.journey-faq__support{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-top:28px;padding:20px 0 0;border-top:1px solid rgba(233,241,232,.18)}
+.journey-faq__support>div{display:grid;gap:7px;max-width:55ch}.journey-faq__support strong{color:var(--ink);font-size:15px}.journey-faq__support span{color:var(--muted);font-size:12px;line-height:1.6}
+.journey-faq__support>a{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 16px;border:1px solid rgba(203,238,228,.35);border-radius:999px;background:rgba(10,31,35,.48);color:var(--ink);font-size:12px;font-weight:600}
+.journey-faq__support>a:hover{border-color:var(--acid);color:var(--acid)}
+.journey-faq__policies{display:flex;flex-wrap:wrap;gap:9px 18px;margin-top:20px}
+.journey-faq__policies a{color:rgba(233,241,232,.56);font:10px "Spline Sans Mono",monospace;letter-spacing:.07em}
+.journey-faq__policies a:hover{color:var(--acid)}
+@media(max-width:900px){.journey-map{transform:translate3d(0,-2cm,0)}.journey-faq{grid-template-columns:minmax(0,1fr);gap:28px;padding:52px 26px}.journey-faq__map{width:min(100%,460px);max-height:340px;margin-top:18px}.journey-faq__support{align-items:flex-start;flex-direction:column;gap:14px}}
+@media(max-width:500px){.journey-faq{padding:44px 20px}.journey-faq__intro h2{font-size:38px}.journey-faq__intro>p{font-size:14px}.journey-faq__search{font-size:13px}.journey-faq__support>a{width:100%}}
+

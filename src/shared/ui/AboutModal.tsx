@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { CloseIcon, GitHubIcon, StarIcon, CheckIcon, LinkedInIcon, InstagramIcon, RedditIcon, ThreadsIcon, YouTubeIcon } from "./Icons";
 import { useRepoStars } from "@/shared/hooks/useRepoStars";
 import { trackEvent } from "@/shared/utils/analytics";
+import { helpFaqs } from "@/shared/help/helpFaqs";
 import {
   REPO_URL,
   REPO_API_URL,
@@ -23,6 +24,7 @@ export interface AboutModalProps {
 
 export default function AboutModal({ onClose, initialTab = "about", hideCloseButton = false }: AboutModalProps) {
   const [activeTab, setActiveTab] = useState<"about" | "guide">(initialTab);
+  const [helpQuery, setHelpQuery] = useState("");
 
   const repoUrl = String(REPO_URL ?? "").trim();
   const kofiUrl = String(KOFI_URL ?? "").trim();
@@ -40,6 +42,11 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
     { href: String(SOCIAL_THREADS ?? "").trim(), Icon: ThreadsIcon, label: "Threads" },
     { href: String(SOCIAL_YOUTUBE ?? "").trim(), Icon: YouTubeIcon, label: "YouTube" },
   ];
+
+  const normalizedHelpQuery = helpQuery.trim().toLocaleLowerCase();
+  const visibleHelpFaqs = helpFaqs.filter(({ question, answer }) =>
+    `${question} ${answer}`.toLocaleLowerCase().includes(normalizedHelpQuery),
+  );
 
   // Close on Escape key press
   useEffect(() => {
@@ -477,47 +484,28 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
                 <h3 className="guide-section-heading">
                   <span className="qa-indicator">FAQ</span> Frequently Asked Questions
                 </h3>
-                <div className="guide-faq-accordion">
-                  <details className="guide-faq-item" open>
-                    <summary className="guide-faq-question">How do I start a map?</summary>
-                    <p className="guide-faq-answer">Search for a place in the location field or enter coordinates, then adjust the map area and choose a layout. Place-name search and map tiles rely on external OpenStreetMap-based services.</p>
-                  </details>
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">Can I make a poster for a small town or village?</summary>
-                    <p className="guide-faq-answer">You can search by place name or use coordinates to move the map to a specific area. Available map detail depends on the underlying map data at that location.</p>
-                  </details>
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">What can I customize?</summary>
-                    <p className="guide-faq-answer">Choose a theme and layout, change supported map layers, select from 13 border styles, adjust line thickness and spacing, choose solid or gradient colors, add location labels and a tagline, and tune text styling.</p>
-                  </details>
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">How can I preview my design on a wall?</summary>
-                    <p className="guide-faq-answer">Open Special Full Screen and choose Upload Wall Photo. Use Adjust Poster and Layout to position the preview. On supported phones, Open Camera requires camera permission for this site.</p>
-                  </details>
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">What do Reset Poster to Defaults and Clear Search History do?</summary>
-                    <p className="guide-faq-answer">Reset Poster to Defaults restores the poster, including borders, preview artwork, map camera, and saved design settings. Clear Search History removes recent place searches only. Each action asks you to confirm.</p>
-                  </details>
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">Can I add my own markers or a walking route?</summary>
-                    <p className="guide-faq-answer">Yes. The Markers panel includes built-in and emoji choices and supports custom icon uploads. The Routes panel accepts GPX tracks and provides route and endpoint styling.</p>
-                  </details>
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">Which file formats can I download?</summary>
-                    <p className="guide-faq-answer">Open the Download panel to see the formats and output settings currently available for your design. Resolution and file details depend on the selected output and poster dimensions.</p>
-                  </details>
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">Does MAPARTE use my device location automatically?</summary>
-                    <p className="guide-faq-answer">No. Device location is requested only when you choose the location control. If you use place search or reverse geocoding, the relevant location query is sent to the map-search service. See the Privacy Policy for details.</p>
-                  </details>
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">Why is OpenStreetMap credited on the map?</summary>
-                    <p className="guide-faq-answer">MAPARTE uses OpenStreetMap data and map services. The credit and license link need to remain visible with the map or exported artwork.</p>
-                  </details>
-                  <details className="guide-faq-item">
-                    <summary className="guide-faq-question">How do I prepare a design for printing?</summary>
-                    <p className="guide-faq-answer">Choose the intended physical dimensions before exporting. Check the selected file's pixel dimensions and effective resolution with your print provider, and confirm their bleed, color, and paper requirements.</p>
-                  </details>
+                <label className="guide-faq-search-label" htmlFor="maparte-help-search">
+                  Search by question or keyword
+                </label>
+                <input
+                  id="maparte-help-search"
+                  className="guide-faq-search"
+                  type="search"
+                  value={helpQuery}
+                  onChange={(event) => setHelpQuery(event.target.value)}
+                  placeholder="How, what, where, when, can, why…"
+                />
+                <div className="guide-faq-accordion" aria-live="polite">
+                  {visibleHelpFaqs.length ? visibleHelpFaqs.map(({ question, answer }) => (
+                    <details className="guide-faq-item" key={question}>
+                      <summary className="guide-faq-question">{question}</summary>
+                      <p className="guide-faq-answer">{answer}</p>
+                    </details>
+                  )) : (
+                    <p className="guide-faq-empty">
+                      No answer matched that search. Email <a href="mailto:support@maparte.com">support@maparte.com</a> and we’ll help.
+                    </p>
+                  )}
                 </div>
               </section>
             </article>
@@ -542,3 +530,4 @@ export default function AboutModal({ onClose, initialTab = "about", hideCloseBut
     document.body,
   );
 }
+

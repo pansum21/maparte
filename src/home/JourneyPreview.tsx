@@ -6,6 +6,7 @@ import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
 import { getTheme } from "@/features/theme/infrastructure/themeRepository";
 import { SEO_CITIES } from "@/features/location/domain/cityRouteResolver";
 import { EARTH_CIRCUMFERENCE_M, TILE_SIZE_PX } from "@/core/config";
+import { helpFaqs } from "@/shared/help/helpFaqs";
 import "@fontsource/dm-serif-display/400.css";
 import "@fontsource/dm-serif-display/400-italic.css";
 import "./journeyPreview.css";
@@ -294,14 +295,6 @@ const mapStories = [
   { title: "Travel Memories", place: "TOKYO · JAPAN", image: "travel-memories.png", href: "/travel-memories" },
 ];
 
-const journeyFaqs = [
-  ["What can I make with MAPARTE?", "Custom digital map artwork for places, journeys and milestones, with poster-style and phone wallpaper layouts."],
-  ["Can I change the theme, border and text?", "Choose a supported map theme and layout, adjust borders, and add location labels, a title, date or tagline."],
-  ["Can I add markers or a running route?", "Use built-in, emoji or custom markers. You can also import a GPX route and style its line and endpoints."],
-  ["Can I preview my design on a wall?", "Use Special Full Screen to upload a wall photo. On supported phones, you can also request camera access for a live preview."],
-  ["Do you print and ship posters?", "No. MAPARTE provides digital designs and downloads. You can use the file on your device or arrange a print yourself."],
-];
-
 export default function JourneyPreview() {
   const storyRef = useRef<HTMLElement>(null);
   const progressRef = useRef(0);
@@ -311,6 +304,27 @@ export default function JourneyPreview() {
   const destinationRef = useRef(destination);
   destinationRef.current = destination;
   const [theme, setTheme] = useState<"Midnight Blue" | "Carrara">("Midnight Blue");
+  const [helpSearch, setHelpSearch] = useState("");
+  const [showAllHelp, setShowAllHelp] = useState(false);
+  const popularHelpQuestions = [
+    "What file formats can I download?",
+    "Where can I find the file I just downloaded?",
+    "What can I try if the download does not start?",
+    "Why does my exported image look soft when I print it?",
+    "What should I send if an export fails or looks damaged?",
+  ];
+  const normalizedHelpSearch = helpSearch.trim().toLocaleLowerCase();
+  const searchedHelpFaqs = helpFaqs.filter(({ question, answer }) =>
+    `${question} ${answer}`.toLocaleLowerCase().includes(normalizedHelpSearch),
+  );
+  const defaultHelpFaqs = popularHelpQuestions
+    .map((question) => helpFaqs.find((faq) => faq.question === question))
+    .filter((faq): faq is (typeof helpFaqs)[number] => Boolean(faq));
+  const visibleHelpFaqs = normalizedHelpSearch
+    ? searchedHelpFaqs
+    : showAllHelp
+      ? helpFaqs
+      : defaultHelpFaqs;
 
   useEffect(() => {
     document.title = "A place, made yours — MAPARTE";
@@ -429,9 +443,45 @@ export default function JourneyPreview() {
           </section>
         ))}
       </main>
-      <section className="journey-faq" aria-labelledby="journey-faq-title">
-        <div className="journey-faq__intro"><span>GOOD TO KNOW</span><h2 id="journey-faq-title">Before you start.</h2></div>
-        <div className="journey-faq__list">{journeyFaqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</div>
+      <section className="journey-faq" id="help" aria-labelledby="journey-faq-title">
+        <div className="journey-faq__intro">
+          <span>HELP · QUICK ANSWERS</span>
+          <h2 id="journey-faq-title">Good to know.</h2>
+          <p>Most asked questions, clear answers, and a real map to start from.</p>
+          <img className="journey-faq__map" src="/assets/map-posters/hometown-roots.png" alt="MAPARTE Hometown Roots map artwork" loading="lazy" />
+          <span className="journey-faq__map-caption">HOMETOWN ROOTS · DEHRADUN, INDIA</span>
+        </div>
+        <div className="journey-faq__content">
+          <label className="journey-faq__search-label" htmlFor="journey-help-search">Search a question</label>
+          <input
+            id="journey-help-search"
+            className="journey-faq__search"
+            type="search"
+            value={helpSearch}
+            onChange={(event) => setHelpSearch(event.target.value)}
+            placeholder="How, what, where, when, can, why…"
+          />
+          <div className="journey-faq__list" aria-live="polite">
+            {visibleHelpFaqs.length ? visibleHelpFaqs.map(({ question, answer }) => (
+              <details key={question}>
+                <summary>{question}</summary>
+                <p>{answer}</p>
+              </details>
+            )) : <p className="journey-faq__empty">No answer matched that search. Email <a href="mailto:support@maparte.com">support@maparte.com</a> and we’ll help.</p>}
+          </div>
+          {!normalizedHelpSearch && <button className="journey-faq__more" type="button" onClick={() => setShowAllHelp((show) => !show)}>
+            {showAllHelp ? "Show the most asked questions" : `See all ${helpFaqs.length} answers`}
+          </button>}
+          <aside className="journey-faq__support">
+            <div><strong>Still stuck?</strong><span>Send us a screenshot and the file that isn’t working. We’ll acknowledge your email within 24 hours and send an update within 48.</span></div>
+            <a href="mailto:support@maparte.com?subject=Help%20with%20my%20MAPARTE%20map">Email MAPARTE support</a>
+          </aside>
+          <nav className="journey-faq__policies" aria-label="Policies and account choices">
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
+            <a href="/refund">Refunds</a>
+          </nav>
+        </div>
       </section>
       <footer className="journey-footer">
         <div className="journey-footer__brand"><a href="/?dist=5235000">MAPARTE.COM</a><span>Map it. Make it yours.</span></div>
@@ -441,4 +491,5 @@ export default function JourneyPreview() {
     </div>
   );
 }
+
 
