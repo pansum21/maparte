@@ -290,9 +290,9 @@ const chapters = [
 ];
 
 const mapStories = [
-  { title: "Where We Met", place: "PARIS · FRANCE", image: "where-we-met.png", href: "/where-we-met" },
-  { title: "Hometown Roots", place: "DEHRADUN · INDIA", image: "hometown-roots.png", href: "/hometown-roots" },
-  { title: "Travel Memories", place: "TOKYO · JAPAN", image: "travel-memories.png", href: "/travel-memories" },
+  { title: "Where We Met", place: "PARIS · FRANCE", image: "where-we-met.png", href: "/?dist=5235000&city=Paris&country=France&title=Where%20We%20Met" },
+  { title: "Hometown Roots", place: "DEHRADUN · INDIA", image: "hometown-roots.png", href: "/?dist=5235000&city=Dehradun&country=India&title=Hometown%20Roots" },
+  { title: "Travel Memories", place: "TOKYO · JAPAN", image: "travel-memories.png", href: "/?dist=5235000&city=Tokyo&country=Japan&title=Travel%20Memories" },
 ];
 
 export default function JourneyPreview() {
@@ -415,10 +415,14 @@ export default function JourneyPreview() {
                   <a className="journey-action journey-action--quiet" href="#map-stories">Explore real map designs</a>
                 </div>
               </>}
+              {index === 1 && <a className="journey-action journey-action--quiet" href="/?gallery=maps">Explore the map gallery</a>}
+              {index === 2 && <a className="journey-action journey-action--quiet" href="/?gallery=borders">See the border gallery</a>}
               {index === 4 && <div className="journey-themes" aria-label="Choose a map theme">
                 <button className="journey-glass" type="button" aria-pressed={theme === "Midnight Blue"} onClick={() => setTheme("Midnight Blue")}><i className="journey-swatch journey-swatch--blue" />Midnight Blue</button>
                 <button className="journey-glass" type="button" aria-pressed={theme === "Carrara"} onClick={() => setTheme("Carrara")}><i className="journey-swatch journey-swatch--stone" />Carrara</button>
               </div>}
+              {index === 4 && <a className="journey-action journey-action--quiet" href="/?gallery=themes">Browse the theme gallery</a>}
+              {index === 5 && <a className="journey-action journey-action--quiet" href="/?gallery=layouts">Explore map layouts</a>}
               {index === 5 && <div className="journey-samples" id="map-stories" aria-label="MAPARTE map ideas">
                 {mapStories.map((story) => <a className="journey-sample" href={story.href} key={story.title}>
                   <img src={`/assets/map-posters/${story.image}`} alt={`${story.title} MAPARTE digital map design for ${story.place}`} loading="lazy" />
@@ -438,6 +442,7 @@ export default function JourneyPreview() {
                   <span>A real place becomes your digital map art.</span>
                 </div>
               </div>}
+              {index === 5 && <a className="journey-action journey-action--quiet" href="/?gallery=presets">Browse story presets</a>}
               {index === 6 && <a className="journey-action journey-action--bright" href="/?dist=5235000">Create your map</a>}
             </div>
           </section>
