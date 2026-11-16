@@ -125,7 +125,12 @@ export default function DesktopNavBar({
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "layout" ? " is-active" : ""}`}
           aria-pressed={panelOpen && activeTab === "layout"}
-          onClick={() => onTabChange("layout")}
+          onClick={() => {
+            onTabChange("layout");
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("maparte:enable-poster-layout"));
+            }
+          }}
           title="Poster Layouts & Dimensions"
           aria-label="Layout"
         >
@@ -139,7 +144,12 @@ export default function DesktopNavBar({
           type="button"
           className={`desktop-nav-tab${panelOpen && activeTab === "frames" ? " is-active" : ""}`}
           aria-pressed={panelOpen && activeTab === "frames"}
-          onClick={() => onTabChange("frames")}
+          onClick={() => {
+            onTabChange("frames");
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("maparte:enable-poster-layout"));
+            }
+          }}
           title="Map Border Lines"
           aria-label="Border"
         >

@@ -100,6 +100,49 @@
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><path d='M9 5h16M9 8h11' stroke='#9CC3DA' stroke-width='1.3' stroke-linecap='round'/><rect x='12' y='12' width='40' height='26' rx='1' fill='#4B91B7'/></svg>"
         },
         {
+          "id": "print_a4_landscape",
+          "name": "A4 Landscape",
+          "description": "Classic ISO A4 landscape format.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21
+        },
+        {
+          "id": "print_maparte_square_caption_a4_landscape",
+          "name": "Square Caption · A4 Landscape",
+          "description": "A square map on the left with place details centered on the right on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='4' y='4' width='32' height='32' rx='1' fill='#4B91B7'/><path d='M42 16h16M42 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_left_caption_a4_landscape",
+          "name": "Left Caption · A4 Landscape",
+          "description": "A square map on the left with place details left-aligned on the right.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='4' y='4' width='32' height='32' rx='1' fill='#4B91B7'/><path d='M40 16h18M40 22h14' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_right_caption_a4_landscape",
+          "name": "Right Caption · A4 Landscape",
+          "description": "A square map on the left with place details right-aligned on the right.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='4' y='4' width='32' height='32' rx='1' fill='#4B91B7'/><path d='M44 16h16M48 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
           "id": "print_a5_portrait",
           "name": "A5 Portrait",
           "description": "ISO A5 portrait format.",

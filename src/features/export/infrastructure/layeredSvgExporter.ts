@@ -8,7 +8,6 @@ import type {
 import { drawMarkersOnCanvas } from "@/features/markers/infrastructure/rendering";
 import type { Route } from "@/features/routes/domain/types";
 import type { SquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
-import type { FrameLayoutGeometry } from "@/features/layout/domain/frameLayoutGeometry";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
 import { applyFades } from "@/features/poster/infrastructure/renderer/layers";
@@ -27,8 +26,10 @@ import {
   ATTRIBUTION_FONT_BASE_PX,
   getPosterFontScale,
   formatCityLabel,
+  resolveCityDisplay,
   computeCityFontScale,
   computeAttributionColor,
+  ensureContrastTextColor,
 } from "@/features/poster/domain/textLayout";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import { blendHex } from "@/shared/utils/color";
@@ -64,7 +65,7 @@ interface LayeredSvgOptions {
   mapInsetXRatio?: number;
   mapInsetYRatio?: number;
   squareCaptionGeometry?: SquareCaptionGeometry;
-  frameLayoutGeometry?: FrameLayoutGeometry;
+  frameLayoutGeometry?: any;
 }
 
 function renderMapCanvasToDataUrl(
@@ -251,7 +252,6 @@ export async function createLayeredSvgBlobFromMap({
   mapInsetXRatio,
   mapInsetYRatio,
   squareCaptionGeometry,
-  frameLayoutGeometry,
 }: LayeredSvgOptions): Promise<Blob> {
   await waitForMapIdle(map);
 
@@ -506,28 +506,39 @@ export async function createLayeredSvgBlobFromMap({
     }
 
     // 6. Vector Typography
-    const textColor = theme.ui?.text || "#111111";
-    const landColor = theme.map?.land || "#808080";
+    const landColor = theme.map?.land || theme.ui?.bg || "#808080";
+    const rawTextColor = theme.ui?.text || "#111111";
+    const textColor = ensureContrastTextColor(rawTextColor, landColor);
     const attributionColor = computeAttributionColor(textColor, landColor, overlayBottom);
-    const attributionAlpha = overlayBottom ? 0.55 : 0.9;
-    const cleanFont = (fontFamily || "Space Grotesk").replace(/['"]/g, "").trim();
-    const titleFontFamily = cleanFont ? `'${cleanFont}', 'Space Grotesk', sans-serif` : "'Space Grotesk', sans-serif";
-    const bodyFontFamily = "'IBM Plex Mono', 'Space Grotesk', monospace";
+    const attributionAlpha = overlayBottom ? 0.65 : 0.95;
+    const cleanFont = (fontFamily || "Times New Roman").replace(/['"]/g, "").trim();
+    const isSerif = /serif|times|cormorant|baskerville|lora|merriweather|playfair/i.test(cleanFont);
+    const fontFallback = isSerif ? "'Times New Roman', Times, serif" : "'Space Grotesk', sans-serif";
+    const titleFontFamily = cleanFont ? `'${cleanFont}', ${fontFallback}` : "'Times New Roman', Times, serif";
+    const bodyFontFamily = isSerif ? `'${cleanFont}', 'Times New Roman', Times, serif` : "'IBM Plex Mono', 'Space Grotesk', monospace";
 
     const dimScale =
       Math.min(exportWidth, exportHeight) / TEXT_DIMENSION_REFERENCE_PX;
     const fontScale = getPosterFontScale(fontSize);
     const maxContentWidth = exportWidth * 0.88;
 
+    const finalMatInsetXRatio = matInsetXRatio ?? (showWhiteMat ? 0.02 : 0.025);
+    const finalMatInsetYRatio = matInsetYRatio ?? (showWhiteMat ? 0.02 : 0.025);
+    const finalMapInsetXRatio = mapInsetXRatio ?? (showWhiteMat ? 0.055 : 0);
+    const finalMapInsetYRatio = mapInsetYRatio ?? (showWhiteMat ? 0.055 : 0);
+
     let vectorTypographySvg = "";
 
-    if (showPosterText && !squareCaptionGeometry && !frameLayoutGeometry) {
+    if (showPosterText && !squareCaptionGeometry) {
       const hasTagline = Boolean(customDate && customDate.trim().length > 0);
-      const cityLabel = formatCityLabel(displayCity);
-      let cityFontSize = CITY_FONT_BASE_PX * dimScale * fontScale * computeCityFontScale(displayCity);
+      const aspectRatio = exportWidth / Math.max(1, exportHeight);
+      const cityLayout = resolveCityDisplay(displayCity, aspectRatio);
+      
+      let cityFontSize = CITY_FONT_BASE_PX * dimScale * fontScale * (cityLayout.isMultiLine ? 0.85 : computeCityFontScale(displayCity));
 
       // SVG auto-fit: ensure city name never overflows export width
-      const approxCityWidth = cityLabel.length * cityFontSize * 0.65;
+      const longestCityLine = cityLayout.lines.reduce((max, l) => l.length > max.length ? l : max, "");
+      const approxCityWidth = longestCityLine.length * cityFontSize * 0.65;
       if (approxCityWidth > maxContentWidth && approxCityWidth > 0) {
         cityFontSize = Math.max(12 * dimScale * fontScale, cityFontSize * (maxContentWidth / approxCityWidth));
       }
@@ -547,7 +558,6 @@ export async function createLayeredSvgBlobFromMap({
 
       const taglineFontSize = Math.max(12 * dimScale * fontScale, Math.round(countryFontSize * 0.88));
       const cityY = exportHeight * TEXT_CITY_Y_RATIO;
-      const lineY = exportHeight * TEXT_DIVIDER_Y_RATIO;
       const countryY = exportHeight * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
       const taglineY = exportHeight * (displayCountry ? .918 : .89);
       const coordinatesY = exportHeight * (hasTagline ? (displayCountry ? .938 : .918) : (displayCountry ? TEXT_COORDS_Y_RATIO : .9));
@@ -555,10 +565,34 @@ export async function createLayeredSvgBlobFromMap({
       const lineX1 = exportWidth * 0.4;
       const lineX2 = exportWidth * 0.6;
 
+      if (cityLayout.isMultiLine) {
+        const lineSpacing = cityFontSize * 1.08;
+        const y1 = cityY - (lineSpacing * 0.46);
+        const y2 = cityY + (lineSpacing * 0.54);
+        const isPrefix = cityLayout.lines[0].includes("CITY OF");
+        const size1 = isPrefix ? Math.round(cityFontSize * 0.68) : cityFontSize;
+        const weight1 = isPrefix ? "500" : "700";
+        const letterSpacing1 = isPrefix ? "0.22em" : "0.14em";
+
+        vectorTypographySvg += `
+  <text x="${exportWidth * 0.5}" y="${y1}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${size1}" font-weight="${weight1}" letter-spacing="${letterSpacing1}" fill="${textColor}">${escapeXml(cityLayout.lines[0])}</text>
+  <text x="${exportWidth * 0.5}" y="${y2}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" letter-spacing="0.14em" fill="${textColor}">${escapeXml(cityLayout.lines[1])}</text>
+`;
+      } else {
+        vectorTypographySvg += `
+  <text x="${exportWidth * 0.5}" y="${cityY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" letter-spacing="0.16em" fill="${textColor}">${escapeXml(cityLayout.lines[0])}</text>
+`;
+      }
+
+      const dividerY = cityLayout.isMultiLine ? (cityY + (cityFontSize * 0.54) + (countryY - (cityY + cityFontSize * 0.54)) * 0.4) : (exportHeight * TEXT_DIVIDER_Y_RATIO);
+      if (displayCity && displayCountry) {
+        vectorTypographySvg += `
+  <line x1="${lineX1}" y1="${dividerY}" x2="${lineX2}" y2="${dividerY}" stroke="${textColor}" stroke-width="${lineW}" stroke-linecap="round" opacity="0.8" />
+`;
+      }
+
       vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${cityY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" letter-spacing="0.16em" fill="${textColor}">${escapeXml(cityLabel)}</text>
-  ${displayCity && displayCountry ? `<line x1="${lineX1}" y1="${lineY}" x2="${lineX2}" y2="${lineY}" stroke="${textColor}" stroke-width="${lineW}" stroke-linecap="round" opacity="0.8" />` : ""}
-  <text x="${exportWidth * 0.5}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="300" letter-spacing="0.26em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
+  <text x="${exportWidth * 0.5}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="600" letter-spacing="0.22em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
 `;
       if (hasTagline) {
         vectorTypographySvg += `
@@ -566,7 +600,7 @@ export async function createLayeredSvgBlobFromMap({
 `;
       }
       vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${coordinatesY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="400" letter-spacing="0.10em" opacity="0.85" fill="${textColor}">${escapeXml(coordsText)}</text>
+  <text x="${exportWidth * 0.5}" y="${coordinatesY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="500" letter-spacing="0.10em" opacity="0.95" fill="${textColor}">${escapeXml(coordsText)}</text>
 `;
     }
 
@@ -582,26 +616,30 @@ export async function createLayeredSvgBlobFromMap({
       attributionFontSize = Math.max(7 * dimScale * fontScale, attributionFontSize * (availableAttrWidth / requiredAttrWidth));
     }
 
-    const attrY = exportHeight * (1 - TEXT_EDGE_MARGIN_RATIO);
-    const osmX = exportWidth * (1 - TEXT_EDGE_MARGIN_RATIO);
-    if (!squareCaptionGeometry && !frameLayoutGeometry) vectorTypographySvg += `
+    // Border clearance calculation: maparte.com is always kept exactly 0.2mm away from the inner border line
+    const hasBorder = Boolean(neatlineSvg);
+    const pointTwoMmPx = Math.max(3, Math.round((exportWidth / 210) * 0.2)); // 0.2 mm in pixels
+    const borderInnerX = hasBorder ? Math.round(exportWidth * (finalMatInsetXRatio + 0.022)) : Math.round(exportWidth * 0.035);
+    const borderInnerY = hasBorder ? Math.round(exportHeight * (finalMatInsetYRatio + 0.022)) : Math.round(exportHeight * 0.035);
+
+    const credX = borderInnerX + pointTwoMmPx;
+    const attrY = exportHeight - (borderInnerY + pointTwoMmPx);
+    const osmX = exportWidth - (borderInnerX + pointTwoMmPx);
+
+    if (!squareCaptionGeometry) vectorTypographySvg += `
   <text x="${osmX}" y="${attrY}" text-anchor="end" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">© OpenStreetMap contributors</text>
 `;
 
-    if (includeCredits && !squareCaptionGeometry && !frameLayoutGeometry) {
-      const credX = exportWidth * TEXT_EDGE_MARGIN_RATIO;
+    if (includeCredits && !squareCaptionGeometry) {
+      // Dedicated MapArte branding font size: at least 18pt / visible on sheet
+      const maparteFontSize = Math.max(attributionFontSize * 1.5, Math.round(55 * dimScale * fontScale));
       vectorTypographySvg += `
-  <text x="${credX}" y="${attrY}" text-anchor="start" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">${escapeXml(APP_CREDIT_URL)}</text>
+  <text x="${credX}" y="${attrY}" text-anchor="start" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${maparteFontSize}" font-weight="600" letter-spacing="0.1em" opacity="${Math.min(1, attributionAlpha + 0.2)}" fill="${attributionColor}">${escapeXml(APP_CREDIT_URL)}</text>
 `;
     }
 
-    const finalMatInsetXRatio = matInsetXRatio ?? (showWhiteMat ? 0.02 : 0.025);
-    const finalMatInsetYRatio = matInsetYRatio ?? (showWhiteMat ? 0.02 : 0.025);
-    const finalMapInsetXRatio = mapInsetXRatio ?? (showWhiteMat ? 0.055 : 0);
-    const finalMapInsetYRatio = mapInsetYRatio ?? (showWhiteMat ? 0.055 : 0);
-
-    const pageWidth = frameLayoutGeometry?.posterWidth ?? squareCaptionGeometry?.posterWidth ?? exportWidth;
-    const pageHeight = frameLayoutGeometry?.posterHeight ?? squareCaptionGeometry?.posterHeight ?? exportHeight;
+    const pageWidth = squareCaptionGeometry?.posterWidth ?? exportWidth;
+    const pageHeight = squareCaptionGeometry?.posterHeight ?? exportHeight;
     const neatlineX = pageWidth * finalMatInsetXRatio;
     const neatlineY = pageHeight * finalMatInsetYRatio;
     const neatlineW = pageWidth * (1 - finalMatInsetXRatio * 2);
@@ -611,42 +649,18 @@ export async function createLayeredSvgBlobFromMap({
       ? `<svg x="${neatlineX}" y="${neatlineY}" width="${neatlineW}" height="${neatlineH}" viewBox="0 0 1000 ${(1000 * pageHeight) / pageWidth}" preserveAspectRatio="none">${neatlineSvg}</svg>`
       : "";
 
-    const matRect = frameLayoutGeometry
-      ? (frameLayoutGeometry.style === "full-map" ? "" : `<rect width="${pageWidth}" height="${pageHeight}" fill="#fff"/>${frameLayoutGeometry.style === "dark" ? `<rect x="${frameLayoutGeometry.x}" y="${frameLayoutGeometry.y + frameLayoutGeometry.height}" width="${frameLayoutGeometry.width}" height="${pageHeight - frameLayoutGeometry.y - frameLayoutGeometry.height - frameLayoutGeometry.safeInsetY}" fill="#111"/>` : ""}`)
-      : showWhiteMat
+    const matRect = showWhiteMat
       ? `<rect width="${pageWidth}" height="${pageHeight}" fill="#fff"/>`
       : squareCaptionGeometry
         ? `<rect width="${pageWidth}" height="${pageHeight}" fill="${theme.ui.bg}"/>`
         : "";
-    const groupTransform = showWhiteMat && !squareCaptionGeometry && !frameLayoutGeometry
+    const groupTransform = showWhiteMat && !squareCaptionGeometry
       ? `transform="translate(${exportWidth * finalMapInsetXRatio} ${exportHeight * finalMapInsetYRatio}) scale(${1 - finalMapInsetXRatio * 2} ${1 - finalMapInsetYRatio * 2})"`
       : "";
-    const placementTransform = frameLayoutGeometry
-      ? `transform="translate(${frameLayoutGeometry.x} ${frameLayoutGeometry.y}) scale(${frameLayoutGeometry.width / exportWidth} ${frameLayoutGeometry.height / exportHeight})"`
-      : squareCaptionGeometry
+    const placementTransform = squareCaptionGeometry
       ? `transform="translate(${squareCaptionGeometry.x} ${squareCaptionGeometry.y}) scale(${squareCaptionGeometry.size / exportWidth} ${squareCaptionGeometry.size / exportHeight})"`
       : "";
-    const captionBackdropSvg = squareCaptionGeometry
-      ? (() => {
-          const g = squareCaptionGeometry;
-          const backdropLayers = vectorLayersSvg.replace(/id="/g, 'id="caption-backdrop-');
-          const blurRadius = Math.max(2, Math.min(20, pageWidth * 0.0045));
-          const washOpacity = overlayBottom ? 0.18 : 0.1;
-          const captionTop = g.y + g.size;
-          const captionHeight = pageHeight - captionTop;
-          const backdropScaleX = pageWidth / exportWidth;
-          const backdropScaleY = pageWidth / exportHeight;
-          const backdropHeight = exportHeight * backdropScaleY;
-          const backdropTop = captionTop - (backdropHeight - captionHeight) / 2;
-          return `<defs>
-<clipPath id="maparte-caption-map-clip"><rect x="0" y="${captionTop.toFixed(1)}" width="${pageWidth}" height="${captionHeight.toFixed(1)}" /></clipPath>
-<filter id="maparte-caption-map-blur" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="${overlayBottom ? blurRadius : 0}" /></filter>
-<linearGradient id="maparte-caption-map-wash" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${theme.ui.bg}" stop-opacity="${overlayBottom ? 0.05 : 0.02}"/><stop offset="100%" stop-color="${theme.ui.bg}" stop-opacity="${washOpacity}"/></linearGradient>
-</defs>
-<g id="maparte-caption-map-backdrop" clip-path="url(#maparte-caption-map-clip)" transform="translate(0 ${backdropTop.toFixed(1)}) scale(${backdropScaleX.toFixed(5)} ${backdropScaleY.toFixed(5)})" opacity="0.9" filter="url(#maparte-caption-map-blur)">${backdropLayers}</g>
-<rect id="maparte-caption-map-wash" x="0" y="${captionTop.toFixed(1)}" width="${pageWidth}" height="${captionHeight.toFixed(1)}" fill="url(#maparte-caption-map-wash)"/>`;
-        })()
-      : "";
+    const captionBackdropSvg = "";
     const squareCaptionSvg = squareCaptionGeometry
       ? (() => {
           const g = squareCaptionGeometry;
@@ -670,30 +684,8 @@ export async function createLayeredSvgBlobFromMap({
           return `<g id="square-caption-typography">${captionSvg}</g>
 <g id="square-caption-credits" font-family="${bodyFontFamily}" font-size="${Math.max(9, 13 * Math.min(pageWidth, pageHeight) / 1000)}" opacity="0.68">
 <text x="${pageWidth - g.safeInsetX}" y="${creditY}" text-anchor="end" fill="${attributionColor}">© OpenStreetMap contributors</text>
-${includeCredits ? `<text x="${g.safeInsetX}" y="${creditY}" text-anchor="start" fill="${attributionColor}">${escapeXml(APP_CREDIT_URL)}</text>` : ""}
+${includeCredits ? `<text x="${g.safeInsetX}" y="${creditY}" text-anchor="start" fill="${attributionColor}" font-size="${Math.max(18, Math.round(24 * Math.min(pageWidth, pageHeight) / 1000 * fontScale))}" font-weight="600" letter-spacing="0.1em">${escapeXml(APP_CREDIT_URL)}</text>` : ""}
 </g>`;
-        })()
-      : "";
-    const frameLayoutSvg = frameLayoutGeometry
-      ? (() => {
-          const g = frameLayoutGeometry;
-          const isBox = g.style === "box";
-          const isTitle = g.style === "title";
-          const anchor = g.captionAlign === "left" ? "start" : g.captionAlign === "right" ? "end" : "middle";
-          const textColor = g.style === "dark" ? "#fff" : (theme.ui.text || "#171717");
-          const textX = g.captionX;
-          const textY = isBox ? g.y + g.height - pageHeight * .047 : g.captionY;
-          const base = Math.min(pageWidth, pageHeight) / 1000 * fontScale;
-          const countryY = textY + pageHeight * .041;
-          const dateY = countryY + pageHeight * .03;
-          const coordsY = dateY + (customDate?.trim() ? pageHeight * .026 : 0);
-          const titleText = showPosterText && g.style !== "full-map" ? `<text x="${textX}" y="${textY}" text-anchor="${anchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(18, (isTitle ? 66 : 42) * base)}" font-weight="${isTitle ? 800 : 600}" letter-spacing="${g.style === "classic" ? "0.16em" : "0"}" fill="${textColor}">${escapeXml(formatCityLabel(displayCity))}</text>
-${displayCountry ? `<text x="${textX}" y="${countryY}" text-anchor="${anchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(12, 23 * base)}" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>` : ""}
-${customDate?.trim() ? `<text x="${textX}" y="${dateY}" text-anchor="${anchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(10, 17 * base)}" fill="${textColor}">${escapeXml(customDate.trim())}</text>` : ""}
-<text x="${textX}" y="${coordsY}" text-anchor="${anchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(9, 14 * base)}" opacity="0.72" fill="${textColor}">${escapeXml(formatCoordinates(center.lat, center.lon))}</text>` : "";
-          const boxPlate = isBox ? `<rect x="${g.captionX - g.captionWidth / 2}" y="${g.y + g.height - pageHeight * .075}" width="${g.captionWidth}" height="${pageHeight * .12}" fill="#fff" fill-opacity=".96"/>` : "";
-          const footerCredits = g.style === "full-map" ? "" : `<g font-family="${bodyFontFamily}" font-size="${Math.max(9, 12 * Math.min(pageWidth, pageHeight) / 1000)}" opacity=".68" fill="${textColor}"><text x="${g.safeInsetX}" y="${pageHeight - g.safeInsetY}">${escapeXml(APP_CREDIT_URL)}</text><text x="${pageWidth - g.safeInsetX}" y="${pageHeight - g.safeInsetY}" text-anchor="end">© OpenStreetMap contributors</text></g>`;
-          return `${boxPlate}<g id="frame-layout-typography">${titleText}</g>${footerCredits}`;
         })()
       : "";
 
@@ -707,11 +699,11 @@ ${vectorLayersSvg}
 ${routesSvg}
 ${fadesSvg}
 ${markersSvg}
-${squareCaptionGeometry || frameLayoutGeometry ? "" : `<g id="vector-typography">`}
+${squareCaptionGeometry ? "" : `<g id="vector-typography">`}
 ${vectorTypographySvg}
-${squareCaptionGeometry || frameLayoutGeometry ? "" : `</g>`}
+${squareCaptionGeometry ? "" : `</g>`}
 </g>
-${squareCaptionGeometry ? `</g>${squareCaptionSvg}` : frameLayoutGeometry ? `</g>${frameLayoutSvg}` : ""}
+${squareCaptionGeometry ? `</g>${squareCaptionSvg}` : ""}
 ${neatlineLayerSvg}
 </svg>`;
 
@@ -721,5 +713,4 @@ ${neatlineLayerSvg}
     offscreenContainer.remove();
   }
 }
-
 

@@ -35,11 +35,11 @@ export const DEFAULT_CONTAINER_PX = 600;
 /** Duration (ms) for flyTo animation when selecting a location — smooth, progressive dive so city tiles stream in without blank flashes. */
 export const FLY_TO_DURATION_MS = 5500;
 
-/** Dehradun, India — default fallback when geolocation is denied. */
-export const DEFAULT_LAT = 30.3165;
-export const DEFAULT_LON = 78.0322;
-export const DEFAULT_CITY = "Dehradun";
-export const DEFAULT_COUNTRY = "India";
+/** Default fallback when geolocation is denied or initial globe view. */
+export const DEFAULT_LAT = 20.0;
+export const DEFAULT_LON = 0.0;
+export const DEFAULT_CITY = "";
+export const DEFAULT_COUNTRY = "";
 
 /**
  * The sidebar ad in the poster preview panel is OFF unless
@@ -90,6 +90,7 @@ export interface FontOption {
 
 export const FONT_OPTIONS: FontOption[] = [
   { value: "", label: "Default (Space Grotesk)" },
+  { value: "Times New Roman", label: "Times New Roman", category: "Serif" },
   { value: "Instrument Sans", label: "Instrument Sans", category: "Sans serif" },
   { value: "Inter", label: "Inter", category: "Sans serif" },
   { value: "DM Sans", label: "DM Sans", category: "Sans serif" },

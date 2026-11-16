@@ -1,8 +1,7 @@
 import { useEffect, useState, type RefObject } from "react";
 import ThemeCard from "./ThemeCard";
 import { EditIcon, TrashIcon } from "@/shared/ui/Icons";
-import type { ResolvedTheme, ThemeOption } from "../domain/types";
-import type { PopularDesign } from "../domain/popularDesigns";
+import type { ThemeOption } from "../domain/types";
 
 interface ThemeSummarySectionProps {
   listRef?: RefObject<HTMLDivElement>;
@@ -12,8 +11,8 @@ interface ThemeSummarySectionProps {
   onThemeSelect: (themeId: string) => void;
   onThemeAction?: (group: "maparte" | "yours") => void;
   onDeleteCustomTheme?: (themeId: string) => void;
-  resolvePreviewTheme: (option: ThemeOption) => ResolvedTheme;
-  onSelectDesign?: (design: PopularDesign) => void;
+  onSelectDesign?: (design: any) => void;
+  resolvePreviewTheme?: (themeOption: ThemeOption) => any;
 }
 
 export default function ThemeSummarySection({
@@ -84,7 +83,7 @@ export default function ThemeSummarySection({
 
       {visibleThemes.length ? (
         <div
-          className="theme-card-list theme-card-list--map-previews card-scroll-list"
+          className="theme-card-list card-scroll-list"
           role="list"
           aria-label={activeGroup === "maparte" ? "MAPARTE themes" : "Your themes"}
           ref={listRef}
@@ -97,9 +96,9 @@ export default function ThemeSummarySection({
             >
               <ThemeCard
                 themeOption={themeOption}
-                previewTheme={resolvePreviewTheme(themeOption)}
                 isSelected={themeOption.id === selectedThemeId}
                 onClick={() => onThemeSelect(themeOption.id)}
+                previewTheme={resolvePreviewTheme ? resolvePreviewTheme(themeOption) : undefined as any}
               />
               {activeGroup === "yours" && onDeleteCustomTheme && (
                 <button

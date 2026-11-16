@@ -1,7 +1,6 @@
 import { formatCoordinates } from "@/shared/geo/posterBounds";
 import { APP_CREDIT_URL } from "@/core/config";
 import type { SquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
-import type { FrameLayoutGeometry } from "@/features/layout/domain/frameLayoutGeometry";
 import {
   TEXT_DIMENSION_REFERENCE_PX,
   TEXT_CITY_Y_RATIO,
@@ -14,9 +13,11 @@ import {
   COORDS_FONT_BASE_PX,
   ATTRIBUTION_FONT_BASE_PX,
   formatCityLabel,
+  resolveCityDisplay,
   getPosterFontScale,
   computeCityFontScale,
   computeAttributionColor,
+  ensureContrastTextColor,
 } from "@/features/poster/domain/textLayout";
 
 interface PosterTextOverlayProps {
@@ -34,7 +35,6 @@ interface PosterTextOverlayProps {
   customDate?: string;
   squareCaption?: boolean;
   squareCaptionGeometry?: SquareCaptionGeometry | null;
-  frameLayoutGeometry?: FrameLayoutGeometry | null;
 }
 
 /**
@@ -57,39 +57,38 @@ export default function PosterTextOverlay({
   customDate,
   squareCaption = false,
   squareCaptionGeometry,
-  frameLayoutGeometry,
 }: PosterTextOverlayProps) {
   const toCqMin = (px: number) => (px / TEXT_DIMENSION_REFERENCE_PX) * 100;
   const fontScale = getPosterFontScale(fontSize);
 
+  const isSerif = /serif|times|cormorant|baskerville|lora|merriweather|playfair/i.test(fontFamily || "");
   const titleFont = fontFamily
-    ? `"${fontFamily}", "Space Grotesk", sans-serif`
+    ? `"${fontFamily}", ${isSerif ? "'Times New Roman', Times, serif" : '"Space Grotesk", sans-serif'}`
     : '"Space Grotesk", sans-serif';
-  const bodyFont = fontFamily
-    ? `"${fontFamily}", "IBM Plex Mono", monospace`
-    : '"IBM Plex Mono", monospace';
+  const bodyFont = isSerif
+    ? `"${fontFamily}", 'Times New Roman', Times, serif`
+    : (fontFamily ? `"${fontFamily}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace');
 
-  const cityLabel = formatCityLabel(city);
-  const cityFontSize = `${toCqMin(CITY_FONT_BASE_PX * fontScale) * computeCityFontScale(city)}cqmin`;
+  const cityLayout = resolveCityDisplay(city);
+  const cityFontSize = `${toCqMin(CITY_FONT_BASE_PX * fontScale) * (cityLayout.isMultiLine ? 0.85 : computeCityFontScale(city))}cqmin`;
   const countryFontSize = `${toCqMin(COUNTRY_FONT_BASE_PX * fontScale)}cqmin`;
   const coordsFontSize = `${toCqMin(COORDS_FONT_BASE_PX * fontScale)}cqmin`;
   const taglineFontSize = `${toCqMin(68 * fontScale)}cqmin`;
   const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX * fontScale)}cqmin`;
-  const attributionColor = computeAttributionColor(textColor, landColor, showOverlay);
-  const attributionOpacity = showOverlay ? 0.55 : 0.9;
+  const maparteFontSize = `${toCqMin(80 * fontScale)}cqmin`;
+  const safeTextColor = ensureContrastTextColor(textColor, landColor);
+  const attributionColor = computeAttributionColor(safeTextColor, landColor, showOverlay);
+  const attributionOpacity = showOverlay ? 0.65 : 0.95;
   const hasTagline = Boolean(customDate && customDate.trim());
-  const frameTextGeometry = frameLayoutGeometry?.style === "full-map" ? null : frameLayoutGeometry;
-  const geometry = frameTextGeometry ?? squareCaptionGeometry;
-  const isComposedCaption = Boolean(geometry);
-  const captionVariant = squareCaptionGeometry?.variant ?? "center-bottom";
+  const geometry = squareCaptionGeometry;
+  const captionVariant = geometry?.variant ?? "center-bottom";
   const captionX = geometry ? (geometry.captionX / geometry.posterWidth) * 100 : 50;
   const captionY = geometry ? (geometry.captionY / geometry.posterHeight) * 100 : 75;
   const captionWidth = geometry ? (geometry.captionWidth / geometry.posterWidth) * 100 : 90;
   const align = geometry?.captionAlign ?? "center";
   const captionLeft = align === "left" ? captionX : align === "right" ? captionX - captionWidth : captionX - captionWidth / 2;
-  const captionLineStep = geometry ? 4 : 4;
+  const captionLineStep = geometry ? (geometry.posterHeight * 0.042 / geometry.posterHeight) * 100 : 4;
   const cityY = captionY;
-  const composedTextColor = frameTextGeometry?.style === "dark" ? "#fff" : textColor;
   const captionTextStyle = {
     left: `${captionLeft}%`,
     right: "auto",
@@ -100,35 +99,39 @@ export default function PosterTextOverlay({
   const captionDividerLeft = align === "left" ? captionX : align === "right" ? captionX - captionWidth * 0.16 : captionX - captionWidth * 0.08;
 
   return (
-    <div className={`poster-text-overlay${squareCaption ? " is-square-caption-text" : ""}${frameTextGeometry ? ` is-frame-layout-text frame-layout-text--${frameTextGeometry.style}` : ""}`} style={{ color: composedTextColor }}>
+    <div className={`poster-text-overlay${squareCaption ? " is-square-caption-text" : ""}`} style={{ color: safeTextColor }}>
       {showPosterText && (
         <>
-          <p
+          <div
             className="poster-city"
             style={{
               fontFamily: titleFont,
-              ...(isComposedCaption ? captionTextStyle : {}),
-              top: isComposedCaption ? `${cityY}%` : `${TEXT_CITY_Y_RATIO * 100}%`,
-              fontSize: frameLayoutGeometry?.style === "title" ? `calc(${cityFontSize} * 1.45)` : cityFontSize,
-              letterSpacing: frameLayoutGeometry?.style === "classic" ? "0.16em" : undefined,
+              ...(squareCaption ? captionTextStyle : {}),
+              top: squareCaption ? `${cityY}%` : `${(cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO) * 100}%`,
+              fontSize: cityFontSize,
+              lineHeight: 1.08,
             }}
           >
-            {cityLabel}
-          </p>
+            {cityLayout.lines.map((line, idx) => (
+              <span key={idx} style={{ display: "block", fontSize: idx === 0 && line.includes("CITY OF") ? "0.68em" : undefined, fontWeight: idx === 0 && line.includes("CITY OF") ? 500 : 700 }}>
+                {line}
+              </span>
+            ))}
+          </div>
           {city && country ? <hr
             className="poster-divider"
             style={{
               borderColor: textColor,
-              ...(isComposedCaption ? { left: `${captionDividerLeft}%`, right: "auto", width: `${captionWidth * 0.16}%` } : {}),
-              top: isComposedCaption ? `${cityY + captionLineStep * 0.72}%` : `${TEXT_DIVIDER_Y_RATIO * 100}%`,
+              ...(squareCaption ? { left: `${captionDividerLeft}%`, right: "auto", width: `${captionWidth * 0.16}%` } : {}),
+              top: squareCaption ? `${cityY + captionLineStep * 0.72}%` : `${TEXT_DIVIDER_Y_RATIO * 100}%`,
             }}
           /> : null}
           {country ? <p
             className="poster-country"
             style={{
               fontFamily: titleFont,
-              ...(isComposedCaption ? captionTextStyle : {}),
-              top: isComposedCaption ? `${cityY + captionLineStep * 1.08}%` : `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
+              ...(squareCaption ? captionTextStyle : {}),
+              top: squareCaption ? `${cityY + captionLineStep * 1.08}%` : `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
               fontSize: countryFontSize,
             }}
           >
@@ -139,8 +142,8 @@ export default function PosterTextOverlay({
               className="poster-tagline"
               style={{
                 fontFamily: bodyFont,
-                ...(isComposedCaption ? captionTextStyle : {}),
-                top: isComposedCaption ? `${cityY + captionLineStep * 1.52}%` : `${(country ? .918 : .89) * 100}%`,
+                ...(squareCaption ? captionTextStyle : {}),
+                top: squareCaption ? `${cityY + captionLineStep * 1.52}%` : `${(country ? .918 : .89) * 100}%`,
                 fontSize: taglineFontSize,
                 letterSpacing: "0.06em",
               }}
@@ -152,8 +155,8 @@ export default function PosterTextOverlay({
             className="poster-coords"
             style={{
               fontFamily: bodyFont,
-              ...(isComposedCaption ? captionTextStyle : {}),
-              top: isComposedCaption ? `${cityY + captionLineStep * (hasTagline ? 2.0 : country ? 1.58 : 1.08)}%` : `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
+              ...(squareCaption ? captionTextStyle : {}),
+              top: squareCaption ? `${cityY + captionLineStep * (hasTagline ? 2.0 : country ? 1.58 : 1.08)}%` : `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
               fontSize: coordsFontSize,
             }}
           >
@@ -168,12 +171,14 @@ export default function PosterTextOverlay({
           style={{
             fontFamily: bodyFont,
             color: attributionColor,
-            opacity: attributionOpacity,
-            fontSize: attributionFontSize,
-            bottom: squareCaption ? "var(--square-safe-y, 1.7%)" : frameLayoutGeometry ? "var(--frame-safe-y, 2%)" : `${TEXT_EDGE_MARGIN_RATIO * 100}%`,
-            left: squareCaption ? "var(--square-safe-x, 2.4%)" : frameLayoutGeometry ? "var(--frame-safe-x, 2%)" : `${TEXT_EDGE_MARGIN_RATIO * 100}%`,
-            right: squareCaption || frameLayoutGeometry ? "auto" : undefined,
-            textAlign: squareCaption || frameLayoutGeometry ? "left" : undefined,
+            opacity: Math.min(1, attributionOpacity + 0.15),
+            fontSize: maparteFontSize,
+            fontWeight: 600,
+            letterSpacing: "0.08em",
+            bottom: squareCaption ? "var(--square-safe-y, 1.7%)" : "calc(2.5% + 0.2mm)",
+            left: squareCaption ? "var(--square-safe-x, 2.4%)" : "calc(2.5% + 0.2mm)",
+            right: squareCaption ? "auto" : undefined,
+            textAlign: squareCaption ? "left" : undefined,
           }}
         >
           {APP_CREDIT_URL}
@@ -182,4 +187,3 @@ export default function PosterTextOverlay({
     </div>
   );
 }
-

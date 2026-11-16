@@ -1136,12 +1136,15 @@
 
 /* Editorial A4 print: square map above the editable place caption. */
 .poster-frame.is-maparte-square-caption .poster-map-window {
+  position: absolute;
   inset: auto;
-  top: var(--square-map-y, 1.7%);
-  left: var(--square-map-x, 2.4%);
-  width: var(--square-map-width, 95.2%);
-  height: var(--square-map-height, 67.4%);
-  aspect-ratio: 1;
+  top: var(--square-map-y, 5.05%);
+  left: var(--square-map-x, 7.14%);
+  width: var(--square-map-width, 85.71%);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 2px;
 }
 
 /* Keep the same city map beneath the editorial caption area. The crisp square

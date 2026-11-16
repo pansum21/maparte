@@ -1,7 +1,7 @@
 import type { PosterForm } from "@/features/poster/application/posterReducer";
 import type { MatchedCity } from "@/features/location/domain/cityRouteResolver";
 import { defaultThemeName } from "@/features/theme/infrastructure/themeRepository";
-import { defaultLayoutId } from "@/features/layout/infrastructure/layoutRepository";
+import { defaultLayoutId, getLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import {
   DEFAULT_CITY,
   DEFAULT_COUNTRY,
@@ -11,7 +11,8 @@ import {
 export interface ParsedUrlPosterState {
   theme?: string;
   layout?: string;
-  frameLayout?: string;
+  width?: string;
+  height?: string;
   fontFamily?: string;
   customDate?: string;
   displayCity?: string;
@@ -43,10 +44,24 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
     const theme = params.get("theme");
     if (theme && theme.trim()) result.theme = theme.trim();
 
-    const border = params.get("border") || params.get("layout");
-    if (border && border.trim()) result.layout = border.trim();
-    const frameLayout = params.get("frame");
-    if (frameLayout && frameLayout.trim()) result.frameLayout = frameLayout.trim();
+    const layoutParam = params.get("layout");
+    if (layoutParam && layoutParam.trim()) {
+      const opt = getLayoutOption(layoutParam.trim());
+      if (opt) {
+        result.layout = opt.id;
+        result.width = String((opt as any).posterWidthCm || opt.widthCm);
+        result.height = String((opt as any).posterHeightCm || opt.heightCm);
+      } else {
+        result.layout = layoutParam.trim();
+      }
+    }
+
+    const widthParam = params.get("width");
+    if (widthParam && !isNaN(Number(widthParam))) result.width = widthParam.trim();
+
+    const heightParam = params.get("height");
+    if (heightParam && !isNaN(Number(heightParam))) result.height = heightParam.trim();
+
     const font = params.get("font") || params.get("fontFamily");
     if (font && font.trim()) result.fontFamily = font.trim();
 
@@ -116,13 +131,9 @@ export function serializePosterStateToUrl(
     params.set("theme", form.theme);
   }
 
-  // 2. Border / Neatline layout (if customized)
+  // 2. Poster Layout (if customized)
   if (form.layout && form.layout !== "custom" && form.layout !== defaultLayoutId) {
-    params.set("border", form.layout);
-  }
-
-  if (form.frameLayout && form.frameLayout !== "none") {
-    params.set("frame", form.frameLayout);
+    params.set("layout", form.layout);
   }
 
   // 3. Font family (if customized)
@@ -168,4 +179,3 @@ export function serializePosterStateToUrl(
 
   return { path, search, fullUrl };
 }
-

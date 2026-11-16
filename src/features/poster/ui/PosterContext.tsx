@@ -37,7 +37,6 @@ import {
   DEFAULT_POSTER_WIDTH_CM,
   DEFAULT_POSTER_HEIGHT_CM,
   DEFAULT_DISTANCE_METERS,
-  INITIAL_EDITOR_DISTANCE_METERS,
   DEFAULT_LAT,
   DEFAULT_LON,
   DEFAULT_CITY,
@@ -47,37 +46,44 @@ import {
 import { resolveCityFromUrl, findCityMatch } from "@/features/location/domain/cityRouteResolver";
 import { parsePosterStateFromUrl, serializePosterStateToUrl } from "@/features/poster/application/posterUrlSync";
 
-const DEFAULT_LOCATION_LABEL = "Dehradun, Uttarakhand, India";
+const DEFAULT_LOCATION_LABEL = "";
 
 export const DEFAULT_FORM: PosterForm = {
   location: "",
   latitude: DEFAULT_LAT.toFixed(6),
   longitude: DEFAULT_LON.toFixed(6),
-  distance: String(INITIAL_EDITOR_DISTANCE_METERS),
+  distance: "100000000", // Fixed permanent opening distance at 10 Crore meters (100 Million meters) on 3D Earth Globe view
   width: String(DEFAULT_POSTER_WIDTH_CM),
   height: String(DEFAULT_POSTER_HEIGHT_CM),
   theme: defaultThemeName,
-  layout: "custom",
-  frameLayout: "none",
+  layout: "print_a4_portrait",
   displayCity: DEFAULT_CITY,
   displayTown: "",
   displayCountry: DEFAULT_COUNTRY,
-  displayContinent: "Asia",
+  displayContinent: "",
   customDate: "",
   fontFamily: "",
   fontSize: "16",
   showPosterText: true,
   includeCredits: true,
   includeLandcover: true,
+  includeForests: false,
+  includeParks: false,
+  includeMountains: false,
   includeBuildings: false,
   includeWater: true,
-  includeParks: true,
-  includeAeroway: true,
+  includeAeroway: false,
   includeRail: true,
+  includeBoundaries: true,
   includeRoads: true,
   includeRoadPath: true,
   includeRoadMinorLow: true,
   includeRoadOutline: true,
+  includeRoadNames: false,
+  includePlaceLabels: false,
+  includeNeighborhoodLabels: false,
+  includeWaterLabels: false,
+  includePoiLabels: false,
   showMarkers: true,
   showRoutes: true,
 };
@@ -97,7 +103,7 @@ function getInitialState(readUrlState = true): PosterState {
         displayContinent: matched.continent,
         latitude: matched.lat.toFixed(6),
         longitude: matched.lon.toFixed(6),
-        distance: String(matched.distanceMeters || DEFAULT_DISTANCE_METERS),
+        distance: String(matched.distanceMeters || 4900), // City map scale (shows small alleys & streets)
       };
       selectedLocation = {
         id: `city:${matched.slug}`,
@@ -450,29 +456,45 @@ export function PosterProvider({ children }: { children: ReactNode }) {
     () =>
       generateMapStyle(effectiveTheme, {
         includeLandcover: state.form.includeLandcover,
+        includeForests: state.form.includeForests ?? false,
+        includeParks: state.form.includeParks ?? false,
+        includeMountains: state.form.includeMountains ?? false,
         includeBuildings: state.form.includeBuildings,
         includeWater: state.form.includeWater,
-        includeParks: state.form.includeParks,
         includeAeroway: state.form.includeAeroway,
         includeRail: state.form.includeRail,
+        includeBoundaries: state.form.includeBoundaries ?? true,
         includeRoads: state.form.includeRoads,
         includeRoadPath: state.form.includeRoadPath,
         includeRoadMinorLow: state.form.includeRoadMinorLow,
         includeRoadOutline: state.form.includeRoadOutline,
+        includeRoadNames: state.form.includeRoadNames ?? false,
+        includePlaceLabels: state.form.includePlaceLabels ?? false,
+        includeNeighborhoodLabels: state.form.includeNeighborhoodLabels ?? false,
+        includeWaterLabels: state.form.includeWaterLabels ?? false,
+        includePoiLabels: state.form.includePoiLabels ?? false,
         distanceMeters: Number(state.form.distance),
       }),
     [
       effectiveTheme,
       state.form.includeLandcover,
+      state.form.includeForests,
+      state.form.includeParks,
+      state.form.includeMountains,
       state.form.includeBuildings,
       state.form.includeWater,
-      state.form.includeParks,
       state.form.includeAeroway,
       state.form.includeRail,
+      state.form.includeBoundaries,
       state.form.includeRoads,
       state.form.includeRoadPath,
       state.form.includeRoadMinorLow,
       state.form.includeRoadOutline,
+      state.form.includeRoadNames,
+      state.form.includePlaceLabels,
+      state.form.includeNeighborhoodLabels,
+      state.form.includeWaterLabels,
+      state.form.includePoiLabels,
       state.form.distance,
     ],
   );
@@ -518,4 +540,3 @@ export function usePosterDispatch(): PosterDispatchContextValue {
   }
   return ctx;
 }
-

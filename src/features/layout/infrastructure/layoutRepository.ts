@@ -144,6 +144,9 @@ const maparteCaptionVariants: Record<string, MaparteCaptionVariant> = {
   print_maparte_left_caption_a4_portrait: "left-bottom",
   print_maparte_right_caption_a4_portrait: "right-bottom",
   print_maparte_corner_caption_a4_portrait: "top-left",
+  print_maparte_square_caption_a4_landscape: "center-bottom",
+  print_maparte_left_caption_a4_landscape: "left-bottom",
+  print_maparte_right_caption_a4_landscape: "right-bottom",
 };
 
 export function getMaparteCaptionVariant(layoutId: string): MaparteCaptionVariant | null {

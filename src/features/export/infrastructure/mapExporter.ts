@@ -193,8 +193,12 @@ export async function captureMapAsCanvas(
       throw new Error("Could not create 2D context for export canvas");
     }
 
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
+    if (outputWidth === sourceWidth && outputHeight === sourceHeight) {
+      ctx.imageSmoothingEnabled = false;
+    } else {
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+    }
     ctx.drawImage(glCanvas, 0, 0, outputWidth, outputHeight);
 
     return {

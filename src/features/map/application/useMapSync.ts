@@ -80,18 +80,13 @@ function resolveZoomBounds(
 }
 
 interface MapSyncState {
-  form: { latitude: string; longitude: string; distance: string };
+  form: { latitude: string; longitude: string; distance: string; displayCity?: string; location?: string };
   displayNameOverrides: { city: boolean; country: boolean };
   selectedLocation: { label?: string; city?: string; country?: string; continent?: string } | null;
   isLocationFocused?: boolean;
 }
 
-type MapSyncDispatch = (action: {
-  type: "SET_FORM_FIELDS";
-  fields: Partial<Record<string, string>>;
-  resetDisplayNameOverrides?: boolean;
-  selectedLocation?: SearchResult | null;
-}) => void;
+type MapSyncDispatch = (action: any) => void;
 
 /**
  * Bidirectional synchronization between form fields and MapLibre view.
@@ -250,6 +245,19 @@ export function useMapSync(
       const [lon, lat] = center;
       const bounds = resolveZoomBounds(lat, effectiveContainerPx);
       const boundedZoom = clamp(zoom, bounds.minZoom, bounds.maxZoom);
+
+      // In 3D globe overview mode (no city selected / globe scale), do not corrupt distance with Mercator calculations
+      if (!form.displayCity && boundedZoom < 3.5) {
+        dispatch({
+          type: "SET_FORM_FIELDS",
+          fields: {
+            latitude: lat.toFixed(6),
+            longitude: lon.toFixed(6),
+          },
+        });
+        return;
+      }
+
       const rawDistance = zoomToDistance(boundedZoom, lat, effectiveContainerPx);
       // Preserve top opening distance (50 Million meters) when at global Earth overview
       const distance = boundedZoom <= 0.2 ? Math.max(50_000_000, rawDistance) : rawDistance;
@@ -279,7 +287,8 @@ export function useMapSync(
   useEffect(() => {
     const latText = String(form.latitude ?? "").trim();
     const lonText = String(form.longitude ?? "").trim();
-    if (!latText || !lonText || selectedLocationRef.current) {
+    // Do not automatically trigger coordinate lookup on startup if no location was entered
+    if (!latText || !lonText || selectedLocationRef.current || !form.location) {
       return;
     }
 

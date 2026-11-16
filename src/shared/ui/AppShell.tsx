@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
+import { useExport } from "@/features/export/application/useExport";
 import {
   MAX_MARKER_SIZE,
   MIN_MARKER_SIZE,
@@ -154,6 +155,16 @@ export default function AppShell() {
     initBackdropThemeFromStorage();
   }, []);
   const { state, dispatch } = usePosterContext();
+  const { exportPoster } = useExport();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as any).exportPoster = exportPoster;
+      (window as any).posterDispatch = dispatch;
+      (window as any).posterState = state;
+      (window as any).enablePosterLayout = () => setIsPosterLayoutOpen(true);
+    }
+  }, [exportPoster, dispatch, state]);
 
   // Fire once-per-session analytics on load (app_open).
   useSessionAnalytics();
@@ -218,7 +229,11 @@ export default function AppShell() {
   }, [handleCinemaWallPhotoChange]);
   const [cinemaPosterPlacement, setCinemaPosterPlacement] = useState({ x: 0, y: 0, scale: 1 });
   const [allCitiesOpen, setAllCitiesOpen] = useState(false);
-  const [isPosterLayoutOpen, setIsPosterLayoutOpen] = useState(false);
+  const [isPosterLayoutOpen, setIsPosterLayoutOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.has("layout") || params.has("city");
+  });
 
   useEffect(() => {
     const handleEnableLayout = () => {
@@ -461,7 +476,7 @@ export default function AppShell() {
     setAllCitiesOpen(false);
     setBackdropOpen(false);
     if (tab === desktopTab && desktopPanelOpen) {
-      if (tab === "layout" && state.form.layout !== "custom") {
+      if ((tab as any) === "layout" && state.form.layout !== "custom") {
         dispatch({
           type: "SET_LAYOUT",
           layoutId: "custom",

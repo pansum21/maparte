@@ -79,7 +79,7 @@ export function getDeviceMaxWebGlDimension(): number {
   } catch {
     // fallback
   }
-  return 2560;
+  return 4096;
 }
 
 /**

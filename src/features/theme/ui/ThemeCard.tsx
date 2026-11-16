@@ -28,7 +28,7 @@ interface ThemeCardProps {
   themeOption: ThemeOption | null;
   onClick?: () => void;
   isSelected?: boolean;
-  previewTheme: ResolvedTheme;
+  previewTheme?: ResolvedTheme;
 }
 
 export default function ThemeCard({

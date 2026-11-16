@@ -228,8 +228,7 @@ export default function DownloadModal({
     void exportPoster("png", {
       asPro: false,
       includeCredits: true,
-      targetSizeCm: { widthCm: 14.4, heightCm: 31.2 },
-      targetDpi: 192,
+      targetDpi: 300,
     });
     onClose();
   };
@@ -514,8 +513,8 @@ export default function DownloadModal({
               <p className="free-wallpaper-desc">
                 A free phone-sized PNG for your lock or home screen. Explore the editor first to try themes, layouts, borders, and map details before downloading.
               </p>
-              <p className="free-wallpaper-desc free-wallpaper-desc--excluded">
-                Phone wallpaper quality is optimized for screens and is not a print-resolution file.
+              <p className="free-wallpaper-desc">
+                High-definition 300 PPI export with crisp details for your lock or home screen.
               </p>
             </div>
             <button

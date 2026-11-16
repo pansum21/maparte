@@ -88,6 +88,7 @@ interface MapPreviewProps {
   style: StyleSpecification;
   center: [lon: number, lat: number];
   zoom: number;
+  baseGlobeZoom?: number;
   mapRef: MapInstanceRef;
   interactive?: boolean;
   allowRotation?: boolean;
@@ -111,6 +112,7 @@ export default function MapPreview({
   style,
   center,
   zoom,
+  baseGlobeZoom,
   mapRef,
   interactive = false,
   allowRotation = false,
@@ -127,6 +129,8 @@ export default function MapPreview({
   const isSyncing = useRef(false);
   const hasMountedStyleRef = useRef(false);
   const prevStyleRef = useRef<StyleSpecification | null>(null);
+  const baseGlobeZoomRef = useRef(baseGlobeZoom);
+  baseGlobeZoomRef.current = baseGlobeZoom;
   const onMoveEndRef = useRef(onMoveEnd);
   const onMoveRef = useRef(onMove);
   onMoveEndRef.current = onMoveEnd;
@@ -137,21 +141,20 @@ export default function MapPreview({
 
     let map: maplibregl.Map;
     try {
-      const mapOptions = {
+      map = new maplibregl.Map({
         container: containerRef.current,
         style,
         center,
-        zoom,
+        zoom: typeof baseGlobeZoomRef.current === "number" ? baseGlobeZoomRef.current : zoom,
         minZoom: Math.max(-2, minZoom ?? -2),
         maxZoom: maxZoom ?? 22,
         interactive: false,
         attributionControl: false,
         pixelRatio: getMapPixelRatio(),
-        maxCanvasSize: [4096, 8192] as [number, number],
+        maxCanvasSize: [4096, 8192],
         cancelPendingTileRequestsWhileZooming: true,
         preserveDrawingBuffer: true,
-      };
-      map = new maplibregl.Map(mapOptions as maplibregl.MapOptions);
+      } as any);
       setMapUnavailable(false);
     } catch (error) {
       // MapLibre throws during construction when WebGL is unavailable. Catch it
@@ -188,7 +191,11 @@ export default function MapPreview({
     // blank.  This observer ensures the map repaints once the real
     // dimensions are known.
     const resizeObserver = new ResizeObserver(() => {
+      isSyncing.current = true;
       map.resize();
+      setTimeout(() => {
+        isSyncing.current = false;
+      }, 50);
     });
     resizeObserver.observe(containerRef.current);
 
@@ -218,7 +225,12 @@ export default function MapPreview({
     const spinGlobe = () => {
       if (!mapRef.current) return;
       const currentZoom = map.getZoom();
-      if (!isUserInteracting && !isSyncing.current && currentZoom < 4.5) {
+      const baseZoom = baseGlobeZoomRef.current;
+      const isAtBaseZoom = typeof baseZoom === "number"
+        ? (currentZoom <= baseZoom + 0.06)
+        : (currentZoom < 4.5);
+
+      if (!isUserInteracting && !isSyncing.current && isAtBaseZoom) {
         const current = map.getCenter();
         isAutoSpinning = true;
         map.jumpTo({ center: [current.lng + 0.02, current.lat] });
@@ -361,6 +373,23 @@ export default function MapPreview({
 
   useEffect(() => {
     const map = mapRef.current;
+    if (!map || typeof baseGlobeZoom !== "number") return;
+    const currentZoom = map.getZoom();
+    if (currentZoom < 3.5 && Math.abs(currentZoom - baseGlobeZoom) > 0.01) {
+      isSyncing.current = true;
+      map.easeTo({
+        zoom: baseGlobeZoom,
+        duration: 350,
+      });
+      const timer = window.setTimeout(() => {
+        isSyncing.current = false;
+      }, 400);
+      return () => window.clearTimeout(timer);
+    }
+  }, [baseGlobeZoom, mapRef]);
+
+  useEffect(() => {
+    const map = mapRef.current;
     if (!map) return;
 
     const currentCenter = map.getCenter();
@@ -374,6 +403,13 @@ export default function MapPreview({
       centerDelta < MAP_CENTER_SYNC_EPSILON &&
       zoomDelta < MAP_ZOOM_SYNC_EPSILON
     ) {
+      return;
+    }
+
+    // In globe view (zoom < 3.5), zoom and spin are governed by baseGlobeZoom and direct user gestures.
+    // Do not force-jump the map unless a new location/city is selected (centerDelta > 0.05)
+    // or when viewing street-level maps (zoom >= 3.5).
+    if (map.getZoom() < 3.5 && centerDelta <= 0.05) {
       return;
     }
 

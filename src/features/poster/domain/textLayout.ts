@@ -59,6 +59,81 @@ export function formatCityLabel(city: string): string {
   return isLatinScript(city) ? city.toUpperCase().split("").join("  ") : city;
 }
 
+export interface CityDisplayLayout {
+  lines: string[];
+  isMultiLine: boolean;
+  lineSpacingRatio: number;
+}
+
+/**
+ * Intelligent layout formatter for city titles:
+ * - In landscape or wide banners, keeps names single line.
+ * - In portrait / narrow formats, cleanly breaks multi-word names (e.g. "SAN FRANCISCO", "RIO DE JANEIRO")
+ * - Handles "City of ..." prefixes on their own upper line.
+ */
+export function resolveCityDisplay(
+  city: string,
+  aspectRatio: number = 0.707,
+): CityDisplayLayout {
+  const trimmed = (city || "").trim();
+  const isLandscape = aspectRatio > 1.25;
+
+  // 1. "City of ..." prefix
+  const cityOfMatch = trimmed.match(/^(the\s+)?city\s+of\s+(.+)$/i);
+  if (cityOfMatch) {
+    const prefix = cityOfMatch[1] ? "THE CITY OF" : "CITY OF";
+    const mainCity = cityOfMatch[2].trim().toUpperCase();
+    return {
+      lines: [prefix, mainCity],
+      isMultiLine: true,
+      lineSpacingRatio: 0.85,
+    };
+  }
+
+  // 2. Landscape / wide banners: keep single line unless > 20 chars
+  if (isLandscape && trimmed.length <= 20) {
+    return {
+      lines: [trimmed.toUpperCase()],
+      isMultiLine: false,
+      lineSpacingRatio: 1.0,
+    };
+  }
+
+  // 3. Multi-word city names in portrait / narrow layouts
+  const words = trimmed.split(/\s+/);
+  if (words.length >= 2 && trimmed.length > 8) {
+    if (words.length === 2) {
+      return {
+        lines: [words[0].toUpperCase(), words[1].toUpperCase()],
+        isMultiLine: true,
+        lineSpacingRatio: 0.95,
+      };
+    }
+    if (words.length === 3) {
+      return {
+        lines: [`${words[0]} ${words[1]}`.toUpperCase(), words[2].toUpperCase()],
+        isMultiLine: true,
+        lineSpacingRatio: 0.95,
+      };
+    }
+    const mid = Math.ceil(words.length / 2);
+    return {
+      lines: [
+        words.slice(0, mid).join(" ").toUpperCase(),
+        words.slice(mid).join(" ").toUpperCase(),
+      ],
+      isMultiLine: true,
+      lineSpacingRatio: 0.95,
+    };
+  }
+
+  return {
+    lines: [trimmed.toUpperCase()],
+    isMultiLine: false,
+    lineSpacingRatio: 1.0,
+  };
+}
+
 /**
  * Returns a multiplier (≤1) to shrink the city font for long names.
  * Callers apply it to their own base font size.
@@ -75,23 +150,34 @@ export function computeCityFontScale(city: string): number {
 }
 
 /**
+ * Ensures strict contrast between text and background.
+ * Dark background (< 0.5 luma) -> text MUST be light (fallback #FFFFFF).
+ * Light background (>= 0.5 luma) -> text MUST be dark (fallback #111111).
+ */
+export function ensureContrastTextColor(textColor: string, bgHex: string): string {
+  const bgRgb = parseHex(bgHex);
+  const bgLuma = bgRgb ? (0.2126 * bgRgb.r + 0.7152 * bgRgb.g + 0.0722 * bgRgb.b) / 255 : 0.5;
+  const txtRgb = parseHex(textColor);
+  const txtLuma = txtRgb ? (0.2126 * txtRgb.r + 0.7152 * txtRgb.g + 0.0722 * txtRgb.b) / 255 : (bgLuma < 0.5 ? 1 : 0);
+
+  if (bgLuma < 0.5) {
+    if (txtLuma < 0.45) return "#FFFFFF";
+  } else {
+    if (txtLuma > 0.55) return "#111111";
+  }
+  return textColor;
+}
+
+/**
  * Determines the correct attribution text colour.
- * When markers are shown the text colour is used directly;
- * otherwise a light/dark safe colour is derived from the land luminance.
+ * Strictly guarantees high legibility against the land/background color.
  */
 export function computeAttributionColor(
   textColor: string,
   landHex: string,
-  showOverlay: boolean,
+  _showOverlay?: boolean,
 ): string {
-  if (showOverlay) {
-    return textColor;
-  }
-  const landRgb = parseHex(landHex);
-  const luma = landRgb
-    ? (0.2126 * landRgb.r + 0.7152 * landRgb.g + 0.0722 * landRgb.b) / 255
-    : 0.5;
-  return luma < 0.52 ? "#f5faff" : "#0e1822";
+  return ensureContrastTextColor(textColor, landHex);
 }
 
 /** Collapse omitted location fields without reserving empty text rows. */

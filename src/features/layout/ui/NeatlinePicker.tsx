@@ -569,8 +569,9 @@ function readSelection(): NeatlineSelection {
     const urlBorder = searchParams.get("border") || searchParams.get("neatline");
     const urlGap = searchParams.get("mapGap") || searchParams.get("gap");
     const urlTheme = searchParams.get("theme") || "";
-    const isDark = urlTheme.includes("midnight") || urlTheme.includes("noir") || urlTheme.includes("asphalt");
-    const defaultColor = isDark ? "#dfba73" : "#0f172a";
+    const urlBorderColor = searchParams.get("borderColor");
+    const isDark = urlTheme.includes("midnight") || urlTheme.includes("noir") || urlTheme.includes("chalkboard") || urlTheme.includes("blueprint") || urlTheme.includes("ruby") || urlTheme.includes("neon") || urlTheme.includes("asphalt");
+    const defaultColor = urlBorderColor || (isDark ? "#FFFFFF" : "#111111");
 
     const stored = window.localStorage.getItem(CONFIG_STORAGE_KEY);
     if (stored) {
@@ -607,7 +608,7 @@ function readSelection(): NeatlineSelection {
         singleColor:
           parsed.singleColor && parsed.singleColor !== "#354b62"
             ? parsed.singleColor
-            : "#000000",
+            : defaultColor,
         gradientFrom: parsed.gradientFrom || "#000000",
         gradientTo: parsed.gradientTo || "#475569",
         designScale:

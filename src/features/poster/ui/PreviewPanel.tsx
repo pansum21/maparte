@@ -42,11 +42,10 @@ import {
   createCustomLayoutOption,
   formatLayoutDimensions,
   getLayoutOption,
-  getMaparteCaptionVariant,
   isMaparteSquareCaptionLayout,
+  getMaparteCaptionVariant,
 } from "@/features/layout/infrastructure/layoutRepository";
 import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
-import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import {
@@ -60,7 +59,7 @@ import {
 
 const LOCKED_HINT = "Map is locked to prevent unintended movement.";
 const UNLOCK_HINT = `${LOCKED_HINT}\nClick to unlock map editing.`;
-const DEFAULT_LOCATION_LABEL = "Dehradun, Uttarakhand, India";
+const DEFAULT_LOCATION_LABEL = "Planet Earth";
 
 interface PreviewPanelProps {
   isCinemaMode?: boolean;
@@ -87,9 +86,12 @@ export default function PreviewPanel({
   cameraStream = null,
   cinemaPosterPlacement = { x: 0, y: 0, scale: 1 },
   onCinemaPosterPlacementChange,
-  isPosterLayoutOpen: _isPosterLayoutOpen,
-  onTogglePosterLayout: _onTogglePosterLayout,
+  isPosterLayoutOpen: propIsPosterLayoutOpen,
+  onTogglePosterLayout,
 }: PreviewPanelProps) {
+  const [internalIsPosterLayoutOpen, setInternalIsPosterLayoutOpen] = useState(false);
+  const isPosterLayoutOpen = propIsPosterLayoutOpen !== undefined ? propIsPosterLayoutOpen : internalIsPosterLayoutOpen;
+  const handleTogglePosterLayout = onTogglePosterLayout || (() => setInternalIsPosterLayoutOpen((prev) => !prev));
   const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
     usePosterContext();
   const {
@@ -114,8 +116,6 @@ export default function PreviewPanel({
   const frameRef = useRef<HTMLDivElement | null>(null);
   const mapWindowRef = useRef<HTMLDivElement | null>(null);
   const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
-  const ghostCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const captionBackdropCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
   const [mapInstance, setMapInstance] = useState<any>(null);
 
@@ -243,47 +243,6 @@ export default function PreviewPanel({
     };
   }, [mapInstance, mapRef]);
 
-  useEffect(() => {
-    const map = mapInstance || mapRef.current;
-    if (!map) return;
-
-    let rafId: number | null = null;
-    const syncGhostCanvas = () => {
-      const src = map.getCanvas();
-      if (!src || src.width === 0 || src.height === 0) return;
-
-      [ghostCanvasRef.current, captionBackdropCanvasRef.current].forEach((target) => {
-        if (!target) return;
-        if (target.width !== src.width || target.height !== src.height) {
-          target.width = src.width;
-          target.height = src.height;
-        }
-        const ctx = target.getContext("2d");
-        if (ctx) ctx.drawImage(src, 0, 0);
-      });
-    };
-
-    const scheduleSync = () => {
-      if (rafId !== null) return;
-      rafId = requestAnimationFrame(() => {
-        rafId = null;
-        syncGhostCanvas();
-      });
-    };
-
-    syncGhostCanvas();
-
-    map.on("render", scheduleSync);
-    map.on("idle", syncGhostCanvas);
-    map.on("moveend", syncGhostCanvas);
-
-    return () => {
-      if (rafId !== null) cancelAnimationFrame(rafId);
-      map.off("render", scheduleSync);
-      map.off("idle", syncGhostCanvas);
-      map.off("moveend", syncGhostCanvas);
-    };
-  }, [mapInstance, mapRef]);
 
   useEffect(() => {
     if (!isMarkerEditorActive) {
@@ -302,31 +261,6 @@ export default function PreviewPanel({
     getLayoutOption(form.layout) ?? createCustomLayoutOption(widthCm, heightCm);
   const posterSizeLabel = formatLayoutDimensions(layoutOption);
   const previewCanvasSize = resolveCanvasSize(widthCm / 2.54, heightCm / 2.54, 500);
-  const isSquareCaptionLayout = isMaparteSquareCaptionLayout(form.layout);
-  const squareCaptionGeometry = isSquareCaptionLayout
-    ? getSquareCaptionGeometry(
-        previewCanvasSize.width,
-        previewCanvasSize.height,
-        widthCm,
-        heightCm,
-        borderMetrics.mapInsetCm,
-        borderMetrics.gapCm,
-          getMaparteCaptionVariant(form.layout) ?? "center-bottom",
-      )
-    : null;
-  const frameLayout = form.frameLayout ?? "none";
-  const isFrameLayout = frameLayout !== "none" && !isSquareCaptionLayout;
-  const frameLayoutGeometry = isFrameLayout
-    ? getFrameLayoutGeometry(
-        previewCanvasSize.width,
-        previewCanvasSize.height,
-        widthCm,
-        heightCm,
-        borderMetrics.mapInsetCm,
-        borderMetrics.gapCm,
-        frameLayout as FrameLayoutId,
-      )
-    : null;
   const resolutionInfoLabel = `${previewCanvasSize.width} × ${previewCanvasSize.height} px (${previewCanvasSize.effectiveDpi} PPI)`;
   const layoutLabel = `${layoutOption.name} (${formatLayoutDimensions(layoutOption)})`;
   const infoLocationLabel =
@@ -338,6 +272,95 @@ export default function PreviewPanel({
   const markersLabel = `${markerCount} marker${markerCount === 1 ? "" : "s"}`;
   const coordinatesLabel = `${formLat.toFixed(4)}, ${formLon.toFixed(4)}`;
   const { city: cityLabel, country: countryLabel, customDate: activeCustomDate } = getActivePosterLabels(form);
+
+  const isSquareCaption = isMaparteSquareCaptionLayout(form.layout);
+  const captionVariant = getMaparteCaptionVariant(form.layout) ?? "center-bottom";
+  const squareCaptionGeometry = useMemo(() => {
+    if (!isSquareCaption) return null;
+    return getSquareCaptionGeometry(
+      widthCm * 100,
+      heightCm * 100,
+      widthCm,
+      heightCm,
+      borderMetrics.mapInsetCm,
+      borderMetrics.gapCm,
+      captionVariant,
+    );
+  }, [isSquareCaption, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, captionVariant]);
+
+  const [baseGlobeZoom, setBaseGlobeZoom] = useState<number>(() => {
+    if (typeof window === "undefined") return 1.0;
+    const minDim = Math.min(window.innerWidth, window.innerHeight);
+    const targetPx = minDim * 0.65;
+    return Number(Math.log2((Math.PI * targetPx) / 512).toFixed(4));
+  });
+
+  const updateBaseGlobeZoom = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    if (!isPosterLayoutOpen) {
+      // Fullscreen globe mode: 65% of viewport min dimension
+      const vWidth = window.innerWidth;
+      const vHeight = window.innerHeight;
+      const minDim = Math.min(vWidth, vHeight);
+      const targetDiameterPx = minDim * 0.65;
+      const targetZoom = Math.log2((Math.PI * targetDiameterPx) / 512);
+      setBaseGlobeZoom(Number(targetZoom.toFixed(4)));
+      return;
+    }
+
+    const frameEl = frameRef.current;
+    if (!frameEl) return;
+
+    const rect = frameEl.getBoundingClientRect();
+    const frameW = rect.width;
+    const frameH = rect.height;
+    if (frameW <= 0 || frameH <= 0) return;
+
+    if (isSquareCaption && squareCaptionGeometry) {
+      const squareSizeCm = (squareCaptionGeometry.size / squareCaptionGeometry.posterWidth) * widthCm;
+      const marginCm = Math.min(1.5, squareSizeCm * 0.1);
+      const targetDiameterCm = Math.max(1, squareSizeCm - marginCm * 2);
+      const ratio = targetDiameterCm / widthCm;
+      const targetDiameterPx = frameW * ratio;
+      const targetZoom = Math.log2((Math.PI * targetDiameterPx) / 512);
+      setBaseGlobeZoom(Number(targetZoom.toFixed(4)));
+      return;
+    }
+
+    let targetDiameterPx: number;
+    if (heightCm >= widthCm) {
+      // Portrait or square: exactly 1.5 cm margin on left and 1.5 cm on right
+      const ratio = Math.max(0.1, (widthCm - 3.0) / widthCm);
+      targetDiameterPx = frameW * ratio;
+    } else {
+      // Landscape: exactly 1.5 cm margin on top and 1.5 cm on bottom
+      const ratio = Math.max(0.1, (heightCm - 3.0) / heightCm);
+      targetDiameterPx = frameH * ratio;
+    }
+
+    const targetZoom = Math.log2((Math.PI * targetDiameterPx) / 512);
+    setBaseGlobeZoom(Number(targetZoom.toFixed(4)));
+  }, [isPosterLayoutOpen, widthCm, heightCm, isSquareCaption, squareCaptionGeometry]);
+
+  useEffect(() => {
+    updateBaseGlobeZoom();
+
+    const frameEl = frameRef.current;
+    let observer: ResizeObserver | null = null;
+    if (frameEl && typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(() => {
+        updateBaseGlobeZoom();
+      });
+      observer.observe(frameEl);
+    }
+    window.addEventListener("resize", updateBaseGlobeZoom);
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", updateBaseGlobeZoom);
+    };
+  }, [updateBaseGlobeZoom]);
 
   const handleStartEditing = useCallback(() => {
     setIsEditing(true);
@@ -463,7 +486,7 @@ export default function PreviewPanel({
   return (
     <section className="preview-panel">
       <div
-        className={`poster-viewport${isCinemaMode ? " is-wall-mockup" : ""}${wallPhoto && isCinemaMode ? " has-user-wall-photo" : ""}${cameraStream && isCinemaMode ? " has-live-camera-background" : ""}`}
+        className={`poster-viewport${isPosterLayoutOpen ? " is-poster-layout-mode" : " is-fullscreen-globe-mode"}${isCinemaMode ? " is-wall-mockup" : ""}${wallPhoto && isCinemaMode ? " has-user-wall-photo" : ""}${cameraStream && isCinemaMode ? " has-live-camera-background" : ""}`}
         style={wallPhoto && isCinemaMode ? { "--cinema-wall-photo": `url("${wallPhoto}")` } as CSSProperties : undefined}
       >
         {wallPhoto && isCinemaMode ? (
@@ -475,18 +498,13 @@ export default function PreviewPanel({
           />
         ) : null}
         {cameraStream && isCinemaMode ? <video ref={cameraVideoRef} className="cinema-live-camera-backdrop" autoPlay muted playsInline aria-hidden="true" /> : null}
-        {/* Ambient ghost map layer: canvas clone of the main map blurred behind the poster */}
-        <div className="poster-ghost-layer" aria-hidden="true">
-          <canvas
-            ref={ghostCanvasRef}
-            className="poster-ghost-canvas"
-          />
-        </div>
-        {!isCinemaMode ? (
+        {!isCinemaMode && isPosterLayoutOpen ? (
           <div className="desktop-layout-label" aria-hidden="true">
             {layoutLabel}
           </div>
         ) : null}
+
+
 
         {!isCinemaMode ? (
           <button
@@ -503,7 +521,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaptionLayout ? " is-maparte-square-caption has-maparte-caption-backdrop" : ""}${isSquareCaptionLayout && (form.overlayBottom ?? form.showMarkers) ? " has-maparte-caption-blur" : ""}${isFrameLayout ? ` is-frame-layout frame-layout--${frameLayout}` : ""}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
             posterDragRef.current = {
@@ -534,26 +552,16 @@ export default function PreviewPanel({
               "--poster-bg": posterBg,
               "--map-inset-x": borderMetrics.mapInsetX,
               "--map-inset-y": borderMetrics.mapInsetY,
-              "--square-map-x": squareCaptionGeometry ? `${(squareCaptionGeometry.x / previewCanvasSize.width) * 100}%` : undefined,
-              "--square-map-y": squareCaptionGeometry ? `${(squareCaptionGeometry.y / previewCanvasSize.height) * 100}%` : undefined,
-              "--square-map-width": squareCaptionGeometry ? `${(squareCaptionGeometry.size / previewCanvasSize.width) * 100}%` : undefined,
-              "--square-map-height": squareCaptionGeometry ? `${(squareCaptionGeometry.size / previewCanvasSize.height) * 100}%` : undefined,
-              "--square-safe-x": squareCaptionGeometry ? `${(squareCaptionGeometry.safeInsetX / previewCanvasSize.width) * 100}%` : undefined,
-              "--square-safe-y": squareCaptionGeometry ? `${(squareCaptionGeometry.safeInsetY / previewCanvasSize.height) * 100}%` : undefined,
-              "--square-caption-x": squareCaptionGeometry ? `${(squareCaptionGeometry.captionX / previewCanvasSize.width) * 100}%` : undefined,
-              "--square-caption-y": squareCaptionGeometry ? `${(squareCaptionGeometry.captionY / previewCanvasSize.height) * 100}%` : undefined,
-              "--square-caption-width": squareCaptionGeometry ? `${(squareCaptionGeometry.captionWidth / previewCanvasSize.width) * 100}%` : undefined,
-              "--frame-map-x": frameLayoutGeometry ? `${(frameLayoutGeometry.x / previewCanvasSize.width) * 100}%` : undefined,
-              "--frame-map-y": frameLayoutGeometry ? `${(frameLayoutGeometry.y / previewCanvasSize.height) * 100}%` : undefined,
-              "--frame-map-width": frameLayoutGeometry ? `${(frameLayoutGeometry.width / previewCanvasSize.width) * 100}%` : undefined,
-              "--frame-map-height": frameLayoutGeometry ? `${(frameLayoutGeometry.height / previewCanvasSize.height) * 100}%` : undefined,
-              "--frame-safe-x": frameLayoutGeometry ? `${(frameLayoutGeometry.safeInsetX / previewCanvasSize.width) * 100}%` : undefined,
-              "--frame-safe-y": frameLayoutGeometry ? `${(frameLayoutGeometry.safeInsetY / previewCanvasSize.height) * 100}%` : undefined,
-              "--frame-caption-x": frameLayoutGeometry ? `${(frameLayoutGeometry.captionX / previewCanvasSize.width) * 100}%` : undefined,
-              "--frame-caption-y": frameLayoutGeometry ? `${(frameLayoutGeometry.captionY / previewCanvasSize.height) * 100}%` : undefined,
-              "--frame-caption-width": frameLayoutGeometry ? `${(frameLayoutGeometry.captionWidth / previewCanvasSize.width) * 100}%` : undefined,
               "--mat-inset-x": borderMetrics.matInsetX,
               "--mat-inset-y": borderMetrics.matInsetY,
+              ...(squareCaptionGeometry ? {
+                "--square-map-x": `${(squareCaptionGeometry.x / squareCaptionGeometry.posterWidth) * 100}%`,
+                "--square-map-y": `${(squareCaptionGeometry.y / squareCaptionGeometry.posterHeight) * 100}%`,
+                "--square-map-width": `${(squareCaptionGeometry.size / squareCaptionGeometry.posterWidth) * 100}%`,
+                "--square-map-height": `${(squareCaptionGeometry.size / squareCaptionGeometry.posterHeight) * 100}%`,
+                "--square-safe-x": `${(squareCaptionGeometry.safeInsetX / squareCaptionGeometry.posterWidth) * 100}%`,
+                "--square-safe-y": `${(squareCaptionGeometry.safeInsetY / squareCaptionGeometry.posterHeight) * 100}%`,
+              } : {}),
               "--cinema-poster-x": `${cinemaPosterPlacement.x}vw`,
               "--cinema-poster-y": `${cinemaPosterPlacement.y}vh`,
               "--cinema-poster-scale": cinemaPosterPlacement.scale,
@@ -562,18 +570,6 @@ export default function PreviewPanel({
         >
           
 
-
-          {isSquareCaptionLayout ? (
-            <>
-              <div className="poster-caption-map-backdrop" aria-hidden="true">
-                <canvas ref={captionBackdropCanvasRef} />
-              </div>
-              <div
-                className="poster-caption-map-wash"
-                aria-hidden="true"
-              />
-            </>
-          ) : null}
 
           <div ref={mapWindowRef} className="poster-map-window">
           <Suspense
@@ -586,19 +582,22 @@ export default function PreviewPanel({
             <MapPreview
               style={mapStyle}
               center={mapCenter}
-              zoom={mapZoom}
+              zoom={(!form.displayCity && mapZoom < 3.5) ? baseGlobeZoom : mapZoom}
+              baseGlobeZoom={baseGlobeZoom}
               mapRef={mapRef}
-              interactive={isEditing && !isMarkerEditorActive}
-              allowRotation={isEditing}
+              interactive={((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing) && !isMarkerEditorActive}
+              allowRotation={(!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing}
               minZoom={mapMinZoom}
               maxZoom={mapMaxZoom}
-              overzoomScale={overzoomScale}
+              overzoomScale={1}
               onMove={handleMove}
               onMoveEnd={handleMoveEnd}
               onMapReady={setMapInstance}
             />
           </Suspense>
-          <GradientFades color={effectiveTheme.ui.bg} top={form.overlayTop ?? form.showMarkers} bottom={isSquareCaptionLayout ? false : (form.overlayBottom ?? form.showMarkers)} />
+          {isPosterLayoutOpen ? (
+            <GradientFades color={effectiveTheme.ui.bg} top={form.overlayTop ?? form.showMarkers} bottom={form.overlayBottom ?? form.showMarkers} />
+          ) : null}
           <RouteOverlay
             routes={state.routes}
             mapRef={mapRef}
@@ -631,30 +630,33 @@ export default function PreviewPanel({
 
           
 
-          {/* PosterTextOverlay rendered at poster-frame level so it is NEVER clipped by the shape */}
-          <PosterTextOverlay
-            city={cityLabel}
-            country={countryLabel}
-            lat={formLat}
-            lon={formLon}
-            fontFamily={form.fontFamily}
-            fontSize={Number(form.fontSize) || 16}
-            textColor={posterTextColor}
-            landColor={effectiveTheme.map.land}
-            showPosterText={form.showPosterText}
-            includeCredits={form.includeCredits}
-            showOverlay={form.overlayBottom ?? form.showMarkers}
-            customDate={activeCustomDate}
-            squareCaption={isSquareCaptionLayout}
-            squareCaptionGeometry={squareCaptionGeometry}
-            frameLayoutGeometry={frameLayoutGeometry}
-          />
-          <NeatlineArtwork
-            selection={neatlineSelection}
-            className="preview-neatline"
-            widthCm={form.width}
-            heightCm={form.height}
-          />
+          {/* PosterTextOverlay rendered at poster-frame level only in Poster Layout mode */}
+          {isPosterLayoutOpen ? (
+            <>
+              <PosterTextOverlay
+                city={cityLabel}
+                country={countryLabel}
+                lat={formLat}
+                lon={formLon}
+                fontFamily={form.fontFamily}
+                fontSize={Number(form.fontSize) || 16}
+                textColor={posterTextColor}
+                landColor={effectiveTheme.map.land}
+                showPosterText={form.showPosterText}
+                includeCredits={form.includeCredits}
+                showOverlay={form.overlayBottom ?? form.showMarkers}
+                customDate={activeCustomDate}
+                squareCaption={isSquareCaption}
+                squareCaptionGeometry={squareCaptionGeometry}
+              />
+              <NeatlineArtwork
+                selection={neatlineSelection}
+                className="preview-neatline"
+                widthCm={form.width}
+                heightCm={form.height}
+              />
+            </>
+          ) : null}
           {state.showGrid ? (
             <PosterGridOverlay
               backgroundColor={posterBg}
@@ -676,5 +678,3 @@ export default function PreviewPanel({
     </section>
   );
 }
-
-

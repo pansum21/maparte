@@ -265,7 +265,7 @@
       "description": "Mediterranean warmth - burnt orange and clay tones on cream",
       "ui": {
         "bg": "#F5EDE4",
-        "text": "#8B4513"
+        "text": "#542004"
       },
       "map": {
         "land": "#F5EDE4",
@@ -291,7 +291,7 @@
       "description": "Warm beige with muted brown lines",
       "ui": {
         "bg": "#F1E9DB",
-        "text": "#6B5436"
+        "text": "#3D2C17"
       },
       "map": {
         "land": "#F1E9DB",
@@ -369,7 +369,7 @@
       "description": "Warm oranges and pinks on soft peach - dreamy golden hour aesthetic",
       "ui": {
         "bg": "#FDF5F0",
-        "text": "#C45C3E"
+        "text": "#7A270F"
       },
       "map": {
         "land": "#FDF5F0",
@@ -394,7 +394,7 @@
       "description": "Dusty rose on warm white",
       "ui": {
         "bg": "#F9F1F0",
-        "text": "#7A4351"
+        "text": "#4D1B28"
       },
       "map": {
         "land": "#F9F1F0",

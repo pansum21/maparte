@@ -20,7 +20,7 @@ const fallbackTheme: ResolvedTheme = {
   description: "Mediterranean warmth - burnt orange and clay tones on cream",
   ui: {
     bg: "#F5EDE4",
-    text: "#8B4513",
+    text: "#542004",
   },
   map: {
     land: "#F5EDE4",
