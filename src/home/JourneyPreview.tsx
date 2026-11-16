@@ -275,7 +275,7 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
     appliedTheme.current = theme;
     map.setStyle(generateMapStyle(getTheme(theme === "Carrara" ? "carrara" : "midnight_blue"), { includeBuildings: true, includeRoads: true }));
   }, [theme]);
-  return <div ref={hostRef} className="journey-map" aria-label={`Earth globe moving toward ${destination.city}, ${destination.country}`} />;
+  return <div ref={hostRef} className="journey-map" aria-label={`Earth globe moving toward ${destinationRef.current.city}, ${destinationRef.current.country}`} />;
 }
 
 const chapters = [
