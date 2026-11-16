@@ -1,0 +1,16 @@
+.gallery-landing{--ink:#e9f1e8;--acid:#d6ff6b;--muted:rgba(233,241,232,.7);position:relative;isolation:isolate;display:flex;min-height:100svh;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse at 70% 45%,#18363a 0,#0d2228 32%,#071318 72%);color:var(--ink);font-family:"Instrument Sans",Arial,sans-serif}
+.gallery-landing:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 75% 43%,rgba(214,255,107,.09),transparent 1px);background-size:21px 21px;mask-image:radial-gradient(ellipse at 75% 45%,#000,transparent 58%);opacity:.28}
+.gallery-landing__header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:25px clamp(20px,6vw,86px);border-bottom:1px solid rgba(233,241,232,.13)}
+.gallery-landing__brand{font:800 12px "Spline Sans Mono",monospace;letter-spacing:.2em;color:var(--ink);text-decoration:none}
+.gallery-landing__back,.gallery-landing__make{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 16px;border-radius:999px;color:var(--ink);font:600 11px "Instrument Sans",Arial,sans-serif;text-decoration:none}
+.gallery-landing__content{width:min(900px,100%);margin:auto;padding:100px clamp(24px,9vw,132px);text-align:left}
+.gallery-landing__eyebrow{color:var(--acid);font:9px "Spline Sans Mono",monospace;letter-spacing:.17em}
+.gallery-landing__content h1{margin:18px 0 0;font:500 clamp(54px,9vw,112px)/.95 "DM Serif Display",Georgia,serif;letter-spacing:-.065em}
+.gallery-landing__content h1 em{color:var(--acid);font-weight:400}
+.gallery-landing__description{max-width:600px;margin:23px 0 0;color:rgba(233,241,232,.82);font-size:clamp(16px,2vw,20px);line-height:1.6}
+.gallery-landing__note{max-width:560px;margin-top:70px;padding-top:17px;border-top:1px solid rgba(233,241,232,.2)}
+.gallery-landing__note span{color:rgba(233,241,232,.58);font:9px "Spline Sans Mono",monospace;letter-spacing:.13em}
+.gallery-landing__note p{margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.65}
+.gallery-landing__make{margin-top:28px}
+.gallery-landing__footer{display:flex;justify-content:space-between;gap:18px;padding:23px clamp(20px,6vw,86px);border-top:1px solid rgba(233,241,232,.13);color:rgba(233,241,232,.55);font:9px "Spline Sans Mono",monospace;letter-spacing:.1em}
+@media(max-width:600px){.gallery-landing__header{padding:17px 16px}.gallery-landing__back{min-height:38px;padding:8px 11px;font-size:10px}.gallery-landing__content{padding:72px 23px}.gallery-landing__content h1{font-size:clamp(50px,15vw,76px)}.gallery-landing__note{margin-top:54px}.gallery-landing__footer{flex-direction:column;align-items:center;text-align:center;padding:20px 16px}}
