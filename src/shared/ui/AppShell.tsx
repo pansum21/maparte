@@ -1,4 +1,12 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { useExport } from "@/features/export/application/useExport";
 import {
@@ -187,6 +195,7 @@ export default function AppShell() {
   // Desktop state
   const [desktopTab, setDesktopTab] = useState<MobileTab>("theme");
   const [desktopPanelOpen, setDesktopPanelOpen] = useState(false);
+  const desktopSettingsPanelRef = useRef<HTMLDivElement | null>(null);
   const [desktopLocationRowVisible, setDesktopLocationRowVisible] =
     useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -198,6 +207,27 @@ export default function AppShell() {
   const [cinemaWallPhoto, setCinemaWallPhoto] = useState<string | null>(null);
   const [cinemaCameraStream, setCinemaCameraStream] = useState<MediaStream | null>(null);
   const cinemaWallPhotoUrlRef = useRef<string | null>(null);
+
+  useLayoutEffect(() => {
+    if (
+      !desktopPanelOpen ||
+      !window.matchMedia("(min-width: 769px) and (hover: hover) and (pointer: fine)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+    const panel = desktopSettingsPanelRef.current;
+    if (!panel) return;
+
+    const animation = panel.animate(
+      [
+        { opacity: 0, transform: "translateX(-12px)" },
+        { opacity: 1, transform: "translateX(0)" },
+      ],
+      { duration: 220, easing: "cubic-bezier(0.22, 0.8, 0.28, 1)" },
+    );
+    return () => animation.cancel();
+  }, [desktopPanelOpen, desktopTab]);
   const handleCinemaWallPhotoChange = useCallback((photo: string | null) => {
     const previousPhoto = cinemaWallPhotoUrlRef.current;
     if (previousPhoto?.startsWith("blob:") && previousPhoto !== photo) {
@@ -672,6 +702,7 @@ export default function AppShell() {
           </div>
         ) : null}
         <div
+          ref={desktopSettingsPanelRef}
           className={`desktop-settings-slide${desktopPanelOpen ? " is-open" : ""}`}
         >
           <Suspense fallback={null}>
@@ -805,3 +836,4 @@ export default function AppShell() {
     </div>
   );
 }
+

@@ -6,15 +6,27 @@
 }
 
 .app-shell .all-cities-modal {
-  top: 62px;
-  bottom: 45px;
-  left: 64px;
-  width: min(374px, calc(100vw - 64px));
-  max-width: calc(100vw - 64px);
+  top: 48px;
+  bottom: 32px;
+  left: 60px;
+  width: clamp(292px, 25vw, 326px);
+  max-width: calc(100vw - 60px);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-top-right-radius: 18px;
   border-bottom-right-radius: 18px;
+  animation: all-cities-panel-enter 220ms cubic-bezier(0.22, 0.8, 0.28, 1) both;
+}
+
+@keyframes all-cities-panel-enter {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .all-cities-modal {
+    animation: none;
+  }
 }
 
 .app-shell .all-cities-modal--loading {
@@ -36,3 +48,4 @@
     border-radius: 18px 18px 0 0;
   }
 }
+

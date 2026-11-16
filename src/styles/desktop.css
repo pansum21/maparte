@@ -1134,11 +1134,12 @@
   .app-shell[data-desktop-tab="markers"] .desktop-left-panel,
   .app-shell[data-desktop-tab="routes"] .desktop-left-panel,
   .app-shell[data-desktop-tab="settings"] .desktop-left-panel {
-    top: 62px;
+    top: 48px;
     right: auto;
-    bottom: 45px;
-    left: 64px;
-    width: 374px;
+    bottom: 32px;
+    left: 60px;
+    width: clamp(292px, 25vw, 326px);
+    max-width: calc(100vw - 60px);
     max-height: none;
   }
 
@@ -1548,6 +1549,14 @@
 
   .desktop-settings-slide.is-open {
     display: block;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .desktop-settings-slide,
+    .all-cities-modal {
+      animation: none !important;
+      transition: none !important;
+    }
   }
 
   /* Let the open typography picker and frames/borders panel use the full height of their tool panel. */
@@ -3372,3 +3381,4 @@ button.all-cities-clear-btn:not(:disabled):hover {
 .desktop-edit-map-panel .edit-map-value-input--zoom { flex: 0 0 60px; width: 60px; }
 .desktop-edit-map-panel .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 86px; width: 86px; }
 .desktop-edit-map-panel .edit-map-angle-field .edit-map-value-input--rotation { flex: 0 0 56px; width: 56px; }
+
