@@ -6,6 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { checkPaymentReturnUrl } from "@/features/export/infrastructure/planTier";
 import JourneyPreview from "@/home/JourneyPreview";
 import GalleryLanding from "@/home/GalleryLanding";
+import MotionStudy from "@/home/MotionStudy";
 
 export default function App() {
   useEffect(() => {
@@ -16,6 +17,7 @@ export default function App() {
   if (pathname === "/journey-preview") return <JourneyPreview />;
   if (/^\/gallery\/(maps|themes|layouts|borders)$/.test(pathname)) return <GalleryLanding />;
   const search = new URLSearchParams(window.location.search);
+  if (search.has("motion-study")) return <MotionStudy />;
   if (["maps", "themes", "layouts", "borders"].includes(search.get("gallery") || "")) return <GalleryLanding />;
   const editorQueryKeys = ["editor", "dist", "city", "country", "lat", "lng", "lon", "zoom", "theme", "payment", "checkout", "status", "order", "success"];
   const hasEditorQuery = editorQueryKeys.some((key) => search.has(key));
@@ -31,4 +33,5 @@ export default function App() {
     </AppProviders>
   );
 }
+
 
