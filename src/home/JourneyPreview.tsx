@@ -388,7 +388,7 @@ export default function JourneyPreview() {
       </header>
       <main id="start" ref={storyRef} className="journey-track">
         {chapters.map((chapter, index) => (
-          <section id={index === 1 ? "chapter-2" : undefined} className={`journey-chapter journey-chapter--${chapter.side}`} key={chapter.tag} data-step={index + 1}>
+          <section id={index === 1 ? "chapter-2" : index === 4 ? "themes" : index === 5 ? "customize" : undefined} className={`journey-chapter journey-chapter--${chapter.side}`} key={chapter.tag} data-step={index + 1}>
             <div className={`journey-copy${index === 5 ? " journey-copy--plate" : ""}`}>
               <span className="journey-kicker"><i />{chapter.kicker}</span>
               <div className="journey-copy__tag">{index === chapters.length - 1 ? `07 / ${destination.city.toUpperCase()} · ${destination.country.toUpperCase()}` : chapter.tag}</div>
@@ -398,8 +398,13 @@ export default function JourneyPreview() {
                 <div className="journey-facts"><span>800 CITIES · LIVE MAP DATA</span><span>REAL STREETS · DIGITAL DOWNLOAD</span></div>
                 <div className="journey-actions">
                   <a className="journey-action journey-action--glass" href="/?dist=5235000">Start with a place</a>
-                  <a className="journey-action journey-action--quiet" href="#map-stories">Explore real map designs</a>
                 </div>
+                <nav className="journey-collection-links" aria-label="Explore MAPARTE galleries">
+                  <a className="journey-glass" href="#map-stories">Map gallery</a>
+                  <a className="journey-glass" href="#themes">Theme gallery</a>
+                  <a className="journey-glass" href="#customize">Layout gallery</a>
+                  <a className="journey-glass" href="#customize">Border gallery</a>
+                </nav>
               </>}
               {index === 4 && <div className="journey-themes" aria-label="Choose a map theme">
                 <button className="journey-glass" type="button" aria-pressed={theme === "Midnight Blue"} onClick={() => setTheme("Midnight Blue")}><i className="journey-swatch journey-swatch--blue" />Midnight Blue</button>
