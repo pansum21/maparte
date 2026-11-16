@@ -5,6 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
 import { getTheme } from "@/features/theme/infrastructure/themeRepository";
 import { SEO_CITIES } from "@/features/location/domain/cityRouteResolver";
+import { EARTH_CIRCUMFERENCE_M, TILE_SIZE_PX } from "@/core/config";
 import "@fontsource/dm-serif-display/400.css";
 import "@fontsource/dm-serif-display/400-italic.css";
 import "./journeyPreview.css";
@@ -13,6 +14,7 @@ setWorkerUrl(workerUrl);
 
 type View = { at: number; center: [number, number]; zoom: number; pitch: number; bearing: number };
 type JourneyDestination = { id: string; city: string; country: string; center: [number, number] };
+const GLOBE_ROTATION_STOP_DISTANCE_METERS = 5_235_000;
 const journeyDestinations: JourneyDestination[] = SEO_CITIES
   .filter((city) => Number.isFinite(city.lat) && Number.isFinite(city.lon) && Math.abs(city.lat) < 84)
   .map((city) => ({ id: city.slug, city: city.city, country: city.country, center: [city.lon, city.lat] as [number, number] }));
@@ -212,9 +214,6 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
       const heroAlign = 1 - smooth(clamp(progress / 0.28));
       const globeShiftX = Math.round((compactView ? 38 * 2 : 38 * 4) * heroAlign);
       const globeShiftY = Math.round((compactView ? 38 * 6 : 38 * 0.5) * heroAlign);
-      const padding = window.innerWidth > 900
-        ? { left: Math.round(window.innerWidth * 0.5) + globeShiftX, top: Math.round(window.innerHeight * 0.34 * heroAlign), bottom: globeShiftY }
-        : { left: Math.round(window.innerWidth * 0.2), bottom: Math.round(window.innerHeight * (progress < 0.48 ? 0.04 + 0.31 * (1 - heroAlign) : 0.18)) };
       const zoomStart = compactView ? 0.95 : 1.2;
       const zoomEnd = compactView ? 14.2 : 15.2;
       const zoomProgress = Math.pow(progress, compactView ? 1.22 : 1.34);
@@ -223,6 +222,16 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
       const globeScaleBoost = Math.log2((globeRadius + 19) / globeRadius) * (1 - smooth(clamp(progress / 0.34)));
       const heroGlobeZoomBoost = (compactView ? 0 : 0.46) * (1 - smooth(clamp(progress / 0.34)));
       const responsiveZoom = responsiveZoomBase + globeScaleBoost + heroGlobeZoomBoost;
+      const latitudeCosine = Math.max(0.01, Math.cos((Math.abs(target.center[1]) * Math.PI) / 180));
+      const currentHalfWidthMeters =
+        (EARTH_CIRCUMFERENCE_M * latitudeCosine * map.getContainer().clientWidth) /
+        (Math.pow(2, responsiveZoom) * TILE_SIZE_PX * 2);
+      const hasReachedLayoutView = currentHalfWidthMeters <= GLOBE_ROTATION_STOP_DISTANCE_METERS;
+      const padding = hasReachedLayoutView
+        ? { top: 0, right: 0, bottom: 0, left: 0 }
+        : window.innerWidth > 900
+        ? { left: Math.round(window.innerWidth * 0.5) + globeShiftX, top: Math.round(window.innerHeight * 0.34 * heroAlign), bottom: globeShiftY }
+        : { left: Math.round(window.innerWidth * 0.2), bottom: Math.round(window.innerHeight * (progress < 0.48 ? 0.04 + 0.31 * (1 - heroAlign) : 0.18)) };
       const idleMs = reduced ? 0 : Math.max(0, now - lastScrollAt - 3000);
       const idleSeconds = Math.max(0, idleMs / 1000 - 0.75);
       if (idleMs > 0 || Math.abs(progress - lastAppliedProgress) > 0.0005) {
@@ -238,11 +247,10 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
           try { map.setProjection({ type: shouldUseGlobe ? "globe" : "mercator" }); } catch { /* Keep current projection if unsupported. */ }
         }
         // After scrolling settles, keep a slow one-way turn at the current zoom. No sinusoidal reversal or zoom reset.
-        // Spin only while the globe is still comfortably framed. Once its edge reaches the view,
-        // the camera becomes a stable close-up and never resumes rotation while zoomed in.
-        const spinFactor = 1 - smooth(clamp((responsiveZoom - 2.05) / 0.3));
-        const longitudeDrift = idleSeconds * 0.42 * spinFactor;
-        const bearingDrift = idleSeconds * 0.025 * spinFactor;
+        // Let the planet drift while travelling; hold it steady once the
+        // camera has arrived at the detailed map/layout view.
+        const longitudeDrift = hasReachedLayoutView ? 0 : idleSeconds * 0.42;
+        const bearingDrift = hasReachedLayoutView ? 0 : idleSeconds * 0.025;
         const rawLongitude = target.center[0] + longitudeDrift;
         const cameraLongitude = ((rawLongitude + 180) % 360 + 360) % 360 - 180;
         map.jumpTo({ center: [cameraLongitude, target.center[1]], zoom: responsiveZoom, pitch: target.pitch, bearing: target.bearing + bearingDrift, padding });
@@ -267,7 +275,7 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
     appliedTheme.current = theme;
     map.setStyle(generateMapStyle(getTheme(theme === "Carrara" ? "carrara" : "midnight_blue"), { includeBuildings: true, includeRoads: true }));
   }, [theme]);
-  return <div ref={hostRef} className="journey-map" aria-label="A 3D map that travels from the world to Manhattan" />;
+  return <div ref={hostRef} className="journey-map" aria-label={`Earth globe moving toward ${destination.city}, ${destination.country}`} />;
 }
 
 const chapters = [
@@ -376,7 +384,7 @@ export default function JourneyPreview() {
       <div className="journey-world" aria-hidden="true"><JourneyMap theme={theme} progressRef={progressRef} destinationRef={destinationRef} /></div>
       <header className="journey-header">
         <a className="journey-wordmark" href="#start" aria-label="MapArte home"><img src="/assets/logo.svg" alt="" /><span>MAPARTE</span></a>
-        <div className="journey-header__right"><span>MAPS FOR THE PLACES THAT STAY</span><a className="journey-glass" href="/?dist=3810">Make your map</a></div>
+        <div className="journey-header__right"><span>MAPS FOR THE PLACES THAT STAY</span><a className="journey-glass" href="/?dist=5235000">Make your map</a></div>
       </header>
       <main id="start" ref={storyRef} className="journey-track">
         {chapters.map((chapter, index) => (
@@ -389,7 +397,7 @@ export default function JourneyPreview() {
               {index === 0 && <>
                 <div className="journey-facts"><span>800 CITIES · LIVE MAP DATA</span><span>REAL STREETS · DIGITAL DOWNLOAD</span></div>
                 <div className="journey-actions">
-                  <a className="journey-action journey-action--glass" href="/?dist=3810">Start with a place</a>
+                  <a className="journey-action journey-action--glass" href="/?dist=5235000">Start with a place</a>
                   <a className="journey-action journey-action--quiet" href="#map-stories">Explore real map designs</a>
                 </div>
               </>}
@@ -403,7 +411,20 @@ export default function JourneyPreview() {
                   <span>{story.place}</span><b>{story.title}</b>
                 </a>)}
               </div>}
-              {index === 6 && <a className="journey-action journey-action--bright" href="/?dist=3810">Create your map</a>}
+              {index === 5 && <div className="journey-place-film" aria-label="A cinematic story scene with authentic MAPARTE map artwork">
+                <div className="journey-place-film__visual">
+                  <img className="journey-place-film__photo" src="/assets/homepage-story/city-story-window.webp" alt="A woman looking out across a city at dusk" loading="lazy" />
+                  <div className="journey-place-film__map">
+                    <img src="/assets/presets/real-where-we-met-carrara.png" alt="Real MAPARTE Where We Met map artwork for Paris" loading="lazy" />
+                  </div>
+                  <span className="journey-place-film__eyebrow">A PLACE · A MOMENT · YOUR MAP</span>
+                </div>
+                <div className="journey-place-film__caption">
+                  <strong>Some cities stay with you.</strong>
+                  <span>A real place becomes your digital map art.</span>
+                </div>
+              </div>}
+              {index === 6 && <a className="journey-action journey-action--bright" href="/?dist=5235000">Create your map</a>}
             </div>
           </section>
         ))}
@@ -413,7 +434,7 @@ export default function JourneyPreview() {
         <div className="journey-faq__list">{journeyFaqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</div>
       </section>
       <footer className="journey-footer">
-        <div className="journey-footer__brand"><a href="/?dist=3810">MAPARTE.COM</a><span>Map it. Make it yours.</span></div>
+        <div className="journey-footer__brand"><a href="/?dist=5235000">MAPARTE.COM</a><span>Map it. Make it yours.</span></div>
         <nav aria-label="Footer navigation"><a href="#map-stories">Map gallery</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refund</a></nav>
       </footer>
       <div className="journey-scrollhint" aria-hidden="true" style={{ opacity: hasScrolled ? 0 : 1 }}>SCROLL TO TRAVEL <span>↓</span></div>
