@@ -758,3 +758,24 @@
     line-height: 1.12 !important;
   }
 }
+
+
+/* Keep the fullscreen Layout panel aligned to the existing 350px edit dock. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .app-shell.is-cinema-mode .cinema-layout-popover,
+  .cinema-layout-popover {
+    box-sizing: border-box !important;
+    width: min(350px, calc(100vw - 40px)) !important;
+    max-width: min(350px, calc(100vw - 40px)) !important;
+  }
+  .app-shell.is-cinema-mode .cinema-layout-options button,
+  .cinema-layout-options button {
+    box-sizing: border-box;
+    min-width: 0;
+    height: auto !important;
+    min-height: 46px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.15;
+  }
+}
