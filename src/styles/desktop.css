@@ -3447,7 +3447,7 @@ button.all-cities-clear-btn:not(:disabled):hover {
 
 
 
-/* User-requested 7 cm desktop editor drawer (measured at 75% browser zoom). */
+/* Desktop drawer calibrated for roughly 6.5 cm at 80% browser zoom. */
 @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
   .desktop-left-panel,
   .app-shell[data-desktop-tab="layout"] .desktop-left-panel,
@@ -3460,7 +3460,7 @@ button.all-cities-clear-btn:not(:disabled):hover {
   .app-shell[data-desktop-tab="markers"] .desktop-left-panel,
   .app-shell[data-desktop-tab="routes"] .desktop-left-panel,
   .app-shell[data-desktop-tab="settings"] .desktop-left-panel {
-    width: 350px !important;
+    width: 307px !important;
   }
   .desktop-left-panel .desktop-settings-slide,
   .desktop-left-panel .desktop-edit-map-panel {
