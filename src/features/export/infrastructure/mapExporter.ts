@@ -182,31 +182,28 @@ export async function captureMapAsCanvas(
     const glCanvas = exportMap.getCanvas();
     const sourceWidth = glCanvas.width || renderWidth;
     const sourceHeight = glCanvas.height || renderHeight;
-    const outputScale = Math.min(1, exportWidth / sourceWidth, exportHeight / sourceHeight);
-    const outputWidth = Math.max(1, Math.floor(sourceWidth * outputScale));
-    const outputHeight = Math.max(1, Math.floor(sourceHeight * outputScale));
     const exportCanvas = document.createElement("canvas");
-    exportCanvas.width = outputWidth;
-    exportCanvas.height = outputHeight;
+    exportCanvas.width = exportWidth;
+    exportCanvas.height = exportHeight;
     const ctx = exportCanvas.getContext("2d");
     if (!ctx) {
       throw new Error("Could not create 2D context for export canvas");
     }
 
-    if (outputWidth === sourceWidth && outputHeight === sourceHeight) {
+    if (exportWidth === sourceWidth && exportHeight === sourceHeight) {
       ctx.imageSmoothingEnabled = false;
     } else {
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
     }
-    ctx.drawImage(glCanvas, 0, 0, outputWidth, outputHeight);
+    ctx.drawImage(glCanvas, 0, 0, exportWidth, exportHeight);
 
     return {
       canvas: exportCanvas,
       mapAlreadyInset: false,
       markerProjection,
-      markerScaleX: outputWidth / sourceWidth,
-      markerScaleY: outputHeight / sourceHeight,
+      markerScaleX: exportWidth / sourceWidth,
+      markerScaleY: exportHeight / sourceHeight,
       markerSizeScale,
     };
   } finally {

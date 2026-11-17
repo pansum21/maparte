@@ -179,7 +179,7 @@ export function resolveExportRenderParams(
   let renderWidth: number;
   let renderHeight: number;
 
-  if (fullResolution) {
+  if (fullResolution || Math.max(exportWidth, exportHeight) <= safeMaxGlDim) {
     renderWidth = exportWidth;
     renderHeight = exportHeight;
   } else if (aspect >= 1) {
