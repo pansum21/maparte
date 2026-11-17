@@ -523,7 +523,7 @@ export default function PreviewPanel({
           ref={frameRef}
           className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}`}
           onPointerDown={(event) => {
-            if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
+            if (!isCinemaMode || isEditing || !onCinemaPosterPlacementChange || event.button !== 0) return;
             posterDragRef.current = {
               pointerId: event.pointerId,
               startX: event.clientX,
