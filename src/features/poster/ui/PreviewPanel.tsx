@@ -288,8 +288,9 @@ export default function PreviewPanel({
       borderMetrics.mapInsetCm,
       borderMetrics.gapCm,
       captionVariant,
+      form.textAlign,
     );
-  }, [isSquareCaption, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, captionVariant]);
+  }, [isSquareCaption, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, captionVariant, form.textAlign]);
 
   const [baseGlobeZoom, setBaseGlobeZoom] = useState<number>(() => {
     if (typeof window === "undefined") return 1.0;

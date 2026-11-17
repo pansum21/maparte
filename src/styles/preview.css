@@ -1324,19 +1324,36 @@
   display: block;
   width: 30px;
   height: 39px;
-  background: #fff;
-  border: 1px solid #65717a;
+  background: rgba(16, 32, 50, 0.78);
+  border: 1.5px solid #9CC3DA;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
 }
 
-.frame-layout-swatch i { position:absolute; inset:3px 3px 10px; background:#d8e1e7; border:1px solid #aab7c0; }
-.frame-layout-swatch b { position:absolute; left:4px; right:4px; bottom:3px; height:5px; background:#fff; }
-.frame-layout-swatch em { display:none; }
-.frame-layout-swatch--left b { left:4px; right:11px; }
-.frame-layout-swatch--right b { left:11px; right:4px; }
-.frame-layout-swatch--dark b { background:#15191d; }
-.frame-layout-swatch--box b { left:7px; right:7px; bottom:11px; height:6px; box-shadow:0 1px 2px #777; }
-.frame-layout-swatch--title b { height:9px; }
-.frame-layout-swatch--full-map i { inset:2px; }
+.frame-layout-swatch i {
+  position: absolute;
+  inset: 3px 3px 10px;
+  background: #4B91B7;
+  border: 1px solid rgba(156, 195, 218, 0.5);
+  border-radius: 2px;
+}
+.frame-layout-swatch b {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 3px;
+  height: 4px;
+  background: #9CC3DA;
+  border-radius: 1px;
+}
+.frame-layout-swatch em { display: none; }
+.frame-layout-swatch--left b { left: 4px; right: 11px; }
+.frame-layout-swatch--right b { left: 11px; right: 4px; }
+.frame-layout-swatch--dark b { background: #264e66; }
+.frame-layout-swatch--box b { left: 6px; right: 6px; bottom: 9px; height: 5px; background: #9CC3DA; }
+.frame-layout-swatch--title b { height: 7px; }
+.frame-layout-swatch--full-map i { inset: 2px; }
 
 @media (max-width: 480px) {
   .frame-layout-grid { grid-template-columns: repeat(4, minmax(54px, 1fr)); gap: 6px; }

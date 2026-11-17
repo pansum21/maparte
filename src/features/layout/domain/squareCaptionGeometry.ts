@@ -30,6 +30,7 @@ export function getSquareCaptionGeometry(
   mapInsetCm: number,
   gapCm: number,
   variant: SquareCaptionGeometry["variant"] = "center-bottom",
+  requestedAlign?: "left" | "center" | "right",
 ): SquareCaptionGeometry {
   const pxPerCmX = posterWidth / Math.max(1, widthCm);
   const pxPerCmY = posterHeight / Math.max(1, heightCm);
@@ -70,11 +71,13 @@ export function getSquareCaptionGeometry(
       : lowerCenterY - lineStep * 0.85;
 
     const captionWidth = topCaption ? availableWidth * 0.74 : availableWidth;
-    const captionAlign = variant === "left-bottom" || topCaption
+    const captionAlign = topCaption
       ? "left"
-      : variant === "right-bottom"
-        ? "right"
-        : "center";
+      : requestedAlign ?? (variant === "left-bottom"
+        ? "left"
+        : variant === "right-bottom"
+          ? "right"
+          : "center");
 
     const captionX = captionAlign === "left"
       ? x
@@ -110,11 +113,11 @@ export function getSquareCaptionGeometry(
     // Center text vertically in the right column alongside the center of the square map
     const captionY = y + size / 2 - 1.6 * pxPerCmY;
 
-    const captionAlign = variant === "left-bottom"
+    const captionAlign = requestedAlign ?? (variant === "left-bottom"
       ? "left"
       : variant === "right-bottom"
         ? "right"
-        : "center";
+        : "center");
 
     const captionX = captionAlign === "left"
       ? captionXStart

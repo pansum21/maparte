@@ -280,6 +280,7 @@ export function useExport() {
               borderMetrics.mapInsetCm,
               borderMetrics.gapCm,
               getMaparteCaptionVariant(form.layout) ?? "center-bottom",
+              form.textAlign,
             )
           : undefined;
         const frameLayoutGeometry = form.frameLayout && form.frameLayout !== "none" && !squareCaptionGeometry
