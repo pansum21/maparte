@@ -1,10 +1,10 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { layoutGroups, getLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { LayoutIcon } from "@/shared/ui/Icons";
 
-const EditMapPanel = lazy(() => import("@/features/map/ui/EditMapPanel"));
+import EditMapPanel from "@/features/map/ui/EditMapPanel";
 
 interface Placement {
   x: number;
@@ -263,9 +263,7 @@ export default function CinemaWallDock({
           </div>
 
           <div className="cinema-map-adjustments">
-            <Suspense fallback={<p role="status">Loading map controls…</p>}>
-              <EditMapPanel actionsTarget={isMobile ? mapActionsTarget : null} />
-            </Suspense>
+            <EditMapPanel actionsTarget={isMobile ? mapActionsTarget : null} />
           </div>
 
           <div className="cinema-placement-heading">Poster position & size</div>
