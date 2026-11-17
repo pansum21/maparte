@@ -469,6 +469,20 @@ export default function MapSettingsSection({
       normalizedEditorColor &&
       originalEditorColor !== normalizedEditorColor,
   );
+  const framePaperLayoutIds = new Set([
+    "print_maparte_square_caption_a4_portrait",
+    "print_maparte_corner_caption_a4_portrait",
+    "print_maparte_square_caption_a4_landscape",
+  ]);
+  const framePaperLayouts = layoutGroups.flatMap((group) =>
+    group.options.filter((layoutOption) => framePaperLayoutIds.has(layoutOption.id)),
+  );
+  const standardLayoutGroups = layoutGroups
+    .map((group) => ({
+      ...group,
+      options: group.options.filter((layoutOption) => !framePaperLayoutIds.has(layoutOption.id)),
+    }))
+    .filter((group) => group.options.length > 0);
 
   return (
     <section className="panel-block">
@@ -582,24 +596,19 @@ export default function MapSettingsSection({
           </div>
         ) : (
           <div className="layout-inline-groups" ref={layoutGroupsRef}>
-            {layoutGroups.map((group) => (
-              <section key={group.id} className="layout-inline-group" data-layout-group={group.id}>
-                <h3>{group.name}</h3>
-                <div className="layout-inline-list card-scroll-list">
-                  {group.options.map((layoutOption) => (
-                    <LayoutCard
-                      key={layoutOption.id}
-                      layoutOption={layoutOption}
-                      isSelected={layoutOption.id === form.layout}
-                      onClick={() => handleLayoutSelectInline(layoutOption.id)}
-                    />
-                  ))}
-                </div>
-              </section>
-            ))}
             <section className="layout-inline-group frame-layout-group" aria-label="Frame layouts">
-              <h3>Frame Layout</h3>
-              <p className="frame-layout-help">Map inset, clean white title space, and city details. Works with portrait and landscape sizes.</p>
+              <h3>Frame Layouts</h3>
+              <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
+                {framePaperLayouts.map((layoutOption) => (
+                  <LayoutCard
+                    key={layoutOption.id}
+                    layoutOption={layoutOption}
+                    isSelected={layoutOption.id === form.layout}
+                    onClick={() => handleLayoutSelectInline(layoutOption.id)}
+                  />
+                ))}
+              </div>
+              <p className="frame-layout-help">Choose a framed paper size, then its frame style. Works with portrait and landscape.</p>
               <div className="frame-layout-grid">
                 {[
                   ["classic", "Classic"], ["left", "Left"], ["right", "Right"], ["center", "Center"],
@@ -620,6 +629,21 @@ export default function MapSettingsSection({
                 ))}
               </div>
             </section>
+            {standardLayoutGroups.map((group) => (
+              <section key={group.id} className="layout-inline-group" data-layout-group={group.id}>
+                <h3>{group.name}</h3>
+                <div className="layout-inline-list card-scroll-list">
+                  {group.options.map((layoutOption) => (
+                    <LayoutCard
+                      key={layoutOption.id}
+                      layoutOption={layoutOption}
+                      isSelected={layoutOption.id === form.layout}
+                      onClick={() => handleLayoutSelectInline(layoutOption.id)}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
         )}
       </div>
