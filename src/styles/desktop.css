@@ -1114,7 +1114,7 @@
     top: 50px;
     bottom: 32px;
     left: 60px;
-    width: 374px;
+    width: 307px;
     z-index: 85;
     pointer-events: none;
     overflow: hidden;
@@ -1140,7 +1140,7 @@
     right: auto;
     bottom: 32px;
     left: 60px;
-    width: 374px;
+    width: 307px;
     max-height: none;
   }
 
@@ -1179,7 +1179,7 @@
     position: fixed;
     top: 76px;
     left: 82px; /* 64px nav + 18px gap */
-    width: 440px;
+    width: 307px;
     z-index: 46;
     pointer-events: none;
   }
@@ -3216,7 +3216,7 @@ button.all-cities-clear-btn:not(:disabled):hover {
     right: auto;
     bottom: 32px;
     left: 60px;
-    width: 374px;
+    width: 307px;
     height: auto;
     max-height: none;
     overflow: visible;
