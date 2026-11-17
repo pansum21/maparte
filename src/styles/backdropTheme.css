@@ -1670,6 +1670,75 @@ body.has-custom-backdrop .poster-ghost-layer {
   margin-bottom: 14px;
 }
 
+.cinema-map-lock-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.cinema-map-lock-row__label {
+  display: grid;
+  gap: 3px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cinema-map-lock-row__label small {
+  color: rgba(226, 232, 240, 0.68);
+  font-size: 0.62rem;
+  font-weight: 500;
+}
+
+.cinema-map-lock-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  font: inherit;
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+.cinema-map-lock-toggle[aria-checked="true"] {
+  border-color: rgba(56, 189, 248, 0.42);
+  background: rgba(56, 189, 248, 0.14);
+}
+
+.cinema-map-lock-toggle__track {
+  position: relative;
+  width: 26px;
+  height: 15px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.42);
+}
+
+.cinema-map-lock-toggle__track::after {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  content: "";
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.cinema-map-lock-toggle[aria-checked="true"] .cinema-map-lock-toggle__track::after {
+  transform: translateX(11px);
+  background: #7dd3fc;
+}
+
 .cinema-placement-controls label {
   display: grid;
   grid-template-columns: 1fr auto;
