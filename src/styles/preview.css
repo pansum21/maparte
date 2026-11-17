@@ -1462,3 +1462,10 @@
 }
 
 
+
+
+/* A quiet map-window edge keeps pale themes distinct from the white mat. */
+.poster-frame.is-maparte-square-caption .poster-map-window,
+.poster-frame.is-frame-layout .poster-map-window {
+  box-shadow: inset 0 0 0 1px rgba(14, 25, 38, .22), 0 0 2px rgba(14, 25, 38, .18);
+}

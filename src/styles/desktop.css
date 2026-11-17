@@ -3445,3 +3445,27 @@ button.all-cities-clear-btn:not(:disabled):hover {
 .desktop-edit-map-panel .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 86px; width: 86px; }
 .desktop-edit-map-panel .edit-map-angle-field .edit-map-value-input--rotation { flex: 0 0 56px; width: 56px; }
 
+
+
+/* User-requested 7 cm desktop editor drawer (measured at 75% browser zoom). */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .desktop-left-panel,
+  .app-shell[data-desktop-tab="layout"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="theme"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="frames"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="templates"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="edit-map"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="style"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="layers"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="markers"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="routes"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="settings"] .desktop-left-panel {
+    width: 350px !important;
+  }
+  .desktop-left-panel .desktop-settings-slide,
+  .desktop-left-panel .desktop-edit-map-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
