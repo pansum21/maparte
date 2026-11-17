@@ -464,6 +464,23 @@
 .app-shell.is-cinema-mode .cinema-layout-list { scrollbar-width: none !important; }
 .app-shell.is-cinema-mode .cinema-panel-popover::-webkit-scrollbar,
 .app-shell.is-cinema-mode .cinema-layout-list::-webkit-scrollbar { display: none !important; width: 0 !important; }
+
+/* Keep fullscreen map controls readable in the narrow phone dock. */
+@media (max-width: 600px) {
+  .app-shell.is-cinema-mode .cinema-map-adjustments .desktop-edit-map-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-control-section--stacked {
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+  }
+  .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-adjustment-row {
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+}
 .cinema-placement-controls label { grid-template-columns: minmax(0, 1fr) max-content !important; justify-items: stretch !important; }
 .cinema-range-control { max-width: none !important; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
@@ -789,3 +806,4 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     inset: 0 3mm calc(60px + 3mm + env(safe-area-inset-bottom, 0px));
   }
 }
+
