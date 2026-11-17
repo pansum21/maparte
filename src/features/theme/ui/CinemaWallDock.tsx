@@ -54,6 +54,7 @@ export default function CinemaWallDock({
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
   const [showViewBadge, setShowViewBadge] = useState(true);
   const [cameraError, setCameraError] = useState("");
+  const [mapActionsTarget, setMapActionsTarget] = useState<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -238,6 +239,7 @@ export default function CinemaWallDock({
           aria-label="Adjust poster size and position on wall"
           onClick={(e) => e.stopPropagation()}
         >
+          <div className="cinema-adjust-scroll">
           <div className="cinema-panel-popover__heading">
             <div className="cinema-panel-popover__title">
               <span aria-hidden="true">🔍</span>
@@ -262,7 +264,7 @@ export default function CinemaWallDock({
 
           <div className="cinema-map-adjustments">
             <Suspense fallback={<p role="status">Loading map controls…</p>}>
-              <EditMapPanel />
+              <EditMapPanel actionsTarget={isMobile ? mapActionsTarget : null} />
             </Suspense>
           </div>
 
@@ -380,21 +382,27 @@ export default function CinemaWallDock({
             💡 Map controls work while map movement is locked. Unlock Layout Movement to drag the poster outside the map area.
           </div>
 
-          <div className="cinema-panel-popover__actions">
-            <button
-              type="button"
-              className="cinema-btn-secondary"
-              onClick={() => onPlacementChange({ x: 0, y: 0, scale: 1.0 })}
-            >
-              Reset (1.0× Center)
-            </button>
-            <button
-              type="button"
-              className="cinema-btn-primary"
-              onClick={() => setActivePanel(null)}
-            >
-              Done
-            </button>
+          </div>
+
+          <div className="cinema-panel-popover__actions cinema-adjust-footer">
+            {isMobile ? <div className="cinema-map-actions-slot" ref={setMapActionsTarget} /> : null}
+            <div className="cinema-poster-actions">
+              <button
+                type="button"
+                className="cinema-btn-secondary"
+                onClick={() => onPlacementChange({ x: 0, y: 0, scale: 1.0 })}
+                title="Reset poster size and position"
+              >
+                Reset Poster
+              </button>
+              <button
+                type="button"
+                className="cinema-btn-primary"
+                onClick={() => setActivePanel(null)}
+              >
+                Done
+              </button>
+            </div>
           </div>
         </section>
       )}
