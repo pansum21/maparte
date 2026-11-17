@@ -393,7 +393,8 @@ export default function CinemaWallDock({
                 onClick={() => onPlacementChange({ x: 0, y: 0, scale: 1.0 })}
                 title="Reset poster size and position"
               >
-                Reset Poster
+                <span className="cinema-poster-reset-desktop">Reset (1.0× Center)</span>
+                <span className="cinema-poster-reset-mobile">Reset Poster</span>
               </button>
               <button
                 type="button"
