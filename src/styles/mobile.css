@@ -2320,3 +2320,115 @@ button.marker-picker__option--upload-tile {
     width: 100%;
   }
 }
+
+
+/* Reuse the full map adjustment controls in the mobile Edit Map sheet. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .mobile-drawer-sheet[data-mobile-tab="edit-map"] {
+    height: min(52vh, 420px);
+    max-height: min(52vh, 420px);
+  }
+
+  .mobile-drawer-content:has(.edit-map-mobile-controls) {
+    padding: 4px 12px 8px;
+  }
+
+  .edit-map-mobile-controls {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .edit-map-mobile-controls .desktop-edit-map-panel {
+    display: flex !important;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 2px 0 0;
+    overflow-y: auto;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    font-family: inherit;
+  }
+
+  .edit-map-mobile-controls .desktop-edit-map-panel__heading {
+    flex: 0 0 auto;
+    margin: 0 0 5px;
+  }
+
+  .edit-map-mobile-controls .desktop-edit-map-panel__eyebrow {
+    font-size: 0.78rem;
+  }
+
+  .edit-map-mobile-controls .desktop-edit-map-panel__hint {
+    font-size: 0.62rem;
+  }
+
+  .edit-map-mobile-controls .edit-map-control-section--stacked {
+    flex: 0 0 auto;
+    min-height: 0;
+    gap: 4px;
+    padding: 6px 0 7px;
+  }
+
+  .edit-map-mobile-controls .edit-map-control-heading-row .edit-map-title {
+    font-size: 0.61rem;
+  }
+
+  .edit-map-mobile-controls .edit-map-adjustment-row {
+    gap: 5px;
+  }
+
+  .edit-map-mobile-controls .edit-map-horizontal-step {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 32px;
+    min-height: 32px;
+  }
+
+  .edit-map-mobile-controls .edit-map-horizontal-slider {
+    flex: 1 1 0%;
+    min-width: 36px;
+    height: 28px !important;
+    min-height: 28px !important;
+  }
+
+  .edit-map-mobile-controls .edit-map-value-input {
+    height: 32px;
+    font-size: 0.68rem;
+  }
+
+  .edit-map-mobile-controls .edit-map-value-input--zoom {
+    flex: 0 0 54px;
+    width: 54px;
+  }
+
+  .edit-map-mobile-controls .edit-map-distance-field .edit-map-value-input--distance {
+    flex: 0 0 78px;
+    width: 78px;
+  }
+
+  .edit-map-mobile-controls .edit-map-angle-field .edit-map-value-input--rotation {
+    flex: 0 0 52px;
+    width: 52px;
+  }
+
+  .edit-map-mobile-controls .edit-map-bottom-actions {
+    flex: 0 0 auto;
+    gap: 8px;
+    margin-top: auto;
+    padding: 8px 0 2px;
+  }
+
+  .edit-map-mobile-controls .edit-map-action-pill {
+    min-height: 38px;
+    height: 38px;
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+}
