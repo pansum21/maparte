@@ -36,6 +36,8 @@ export default function CinemaWallDock({
   hasWallPhoto,
   placement,
   onPlacementChange,
+  isMapLocked,
+  onToggleMapLock,
   isMobile,
   cameraStream,
   onCameraStreamChange,
