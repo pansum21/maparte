@@ -48,6 +48,16 @@ export type {
 
 const EXPORT_COUNT_STORAGE_KEY = "maparte.poster.count";
 
+function getExportTextLabels(form: import("@/features/poster/application/posterReducer").PosterForm) {
+  const labels = getActivePosterLabels(form);
+  if (form.textMode === "preset") return labels;
+  return {
+    ...labels,
+    city: [form.displayTown?.trim(), labels.city].filter(Boolean).join(" · "),
+    country: [form.displayState?.trim(), labels.country].filter(Boolean).join(", "),
+  };
+}
+
 function addPpiToFilename(filename: string, ppi: number): string {
   const extensionIndex = filename.lastIndexOf(".");
   if (extensionIndex < 0) return `${filename}_${ppi}PPI`;
@@ -292,11 +302,12 @@ export function useExport() {
             exportHeight: mapRenderHeight,
             theme: effectiveTheme,
             center: { lat, lon },
-            displayCity: getActivePosterLabels(form).city,
-            displayCountry: getActivePosterLabels(form).country,
+            displayCity: getExportTextLabels(form).city,
+            displayCountry: getExportTextLabels(form).country,
             customDate: getActivePosterLabels(form).customDate,
             fontFamily: form.fontFamily.trim(),
             fontSize: Number(form.fontSize) || 16,
+            textAlign: form.textAlign ?? "center",
             showPosterText: form.showPosterText,
             showOverlay: form.showMarkers,
             overlayTop: form.overlayTop ?? form.showMarkers,
@@ -384,11 +395,12 @@ export function useExport() {
           center: { lat, lon },
           widthInches,
           heightInches,
-          displayCity: getActivePosterLabels(form).city,
-            displayCountry: getActivePosterLabels(form).country,
+          displayCity: getExportTextLabels(form).city,
+            displayCountry: getExportTextLabels(form).country,
             customDate: getActivePosterLabels(form).customDate,
           fontFamily: form.fontFamily.trim(),
           fontSize: Number(form.fontSize) || 16,
+          textAlign: form.textAlign ?? "center",
           showPosterText: form.showPosterText,
           showOverlay: form.showMarkers,
             overlayTop: form.overlayTop ?? form.showMarkers,
@@ -428,11 +440,12 @@ export function useExport() {
             exportHeight: mapRenderHeight,
             theme: effectiveTheme,
             center: { lat, lon },
-            displayCity: getActivePosterLabels(form).city,
-            displayCountry: getActivePosterLabels(form).country,
+            displayCity: getExportTextLabels(form).city,
+            displayCountry: getExportTextLabels(form).country,
             customDate: getActivePosterLabels(form).customDate,
             fontFamily: form.fontFamily.trim(),
             fontSize: Number(form.fontSize) || 16,
+            textAlign: form.textAlign ?? "center",
             showPosterText: form.showPosterText,
             showOverlay: form.showMarkers,
             overlayTop: form.overlayTop ?? form.showMarkers,

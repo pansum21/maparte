@@ -27,6 +27,7 @@ interface PosterTextOverlayProps {
   lon: number;
   fontFamily: string;
   fontSize: number;
+  textAlign: "left" | "center" | "right";
   textColor: string;
   landColor: string;
   showPosterText: boolean;
@@ -49,6 +50,7 @@ export default function PosterTextOverlay({
   lon,
   fontFamily,
   fontSize,
+  textAlign,
   textColor,
   landColor,
   showPosterText,
@@ -85,7 +87,7 @@ export default function PosterTextOverlay({
   const captionX = geometry ? (geometry.captionX / geometry.posterWidth) * 100 : 50;
   const captionY = geometry ? (geometry.captionY / geometry.posterHeight) * 100 : 75;
   const captionWidth = geometry ? (geometry.captionWidth / geometry.posterWidth) * 100 : 90;
-  const align = geometry?.captionAlign ?? "center";
+  const align = textAlign ?? geometry?.captionAlign ?? "center";
   const captionLeft = align === "left" ? captionX : align === "right" ? captionX - captionWidth : captionX - captionWidth / 2;
   const captionLineStep = geometry ? (geometry.posterHeight * 0.042 / geometry.posterHeight) * 100 : 4;
   const cityY = captionY;
@@ -96,7 +98,11 @@ export default function PosterTextOverlay({
     textAlign: align,
     paddingInline: captionVariant === "top-left" ? "0" : "0.4%",
   } as const;
-  const captionDividerLeft = align === "left" ? captionX : align === "right" ? captionX - captionWidth * 0.16 : captionX - captionWidth * 0.08;
+  const standardDividerWidth = Math.min(42, Math.max(14, Math.max(...cityLayout.lines.map((line) => line.length), 4) * 1.18));
+  const captionDividerWidth = geometry ? captionWidth * 0.16 : standardDividerWidth;
+  const captionDividerLeft = geometry
+    ? align === "left" ? captionX : align === "right" ? captionX - captionWidth * 0.16 : captionX - captionWidth * 0.08
+    : align === "left" ? 5 : align === "right" ? 95 - standardDividerWidth : 50 - standardDividerWidth / 2;
 
   return (
     <div className={`poster-text-overlay${squareCaption ? " is-square-caption-text" : ""}`} style={{ color: safeTextColor }}>
@@ -106,7 +112,7 @@ export default function PosterTextOverlay({
             className="poster-city"
             style={{
               fontFamily: titleFont,
-              ...(squareCaption ? captionTextStyle : {}),
+              ...(squareCaption ? captionTextStyle : { textAlign }),
               top: squareCaption ? `${cityY}%` : `${(cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO) * 100}%`,
               fontSize: cityFontSize,
               lineHeight: 1.08,
@@ -122,7 +128,9 @@ export default function PosterTextOverlay({
             className="poster-divider"
             style={{
               borderColor: textColor,
-              ...(squareCaption ? { left: `${captionDividerLeft}%`, right: "auto", width: `${captionWidth * 0.16}%` } : {}),
+              left: `${captionDividerLeft}%`,
+              right: "auto",
+              width: `${captionDividerWidth}%`,
               top: squareCaption ? `${cityY + captionLineStep * 0.72}%` : `${TEXT_DIVIDER_Y_RATIO * 100}%`,
             }}
           /> : null}
@@ -130,7 +138,7 @@ export default function PosterTextOverlay({
             className="poster-country"
             style={{
               fontFamily: titleFont,
-              ...(squareCaption ? captionTextStyle : {}),
+              ...(squareCaption ? captionTextStyle : { textAlign }),
               top: squareCaption ? `${cityY + captionLineStep * 1.08}%` : `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
               fontSize: countryFontSize,
             }}
@@ -142,7 +150,7 @@ export default function PosterTextOverlay({
               className="poster-tagline"
               style={{
                 fontFamily: bodyFont,
-                ...(squareCaption ? captionTextStyle : {}),
+                ...(squareCaption ? captionTextStyle : { textAlign }),
                 top: squareCaption ? `${cityY + captionLineStep * 1.52}%` : `${(country ? .918 : .89) * 100}%`,
                 fontSize: taglineFontSize,
                 letterSpacing: "0.06em",
@@ -155,7 +163,7 @@ export default function PosterTextOverlay({
             className="poster-coords"
             style={{
               fontFamily: bodyFont,
-              ...(squareCaption ? captionTextStyle : {}),
+              ...(squareCaption ? captionTextStyle : { textAlign }),
               top: squareCaption ? `${cityY + captionLineStep * (hasTagline ? 2.0 : country ? 1.58 : 1.08)}%` : `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
               fontSize: coordsFontSize,
             }}

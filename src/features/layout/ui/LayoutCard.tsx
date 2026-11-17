@@ -37,6 +37,15 @@ export default function LayoutCard({
     .join(" ");
   const symbolDataUri = getLayoutSymbolDataUri(layoutOption);
   const sizeText = formatLayoutDimensions(layoutOption);
+  const maparteFrame = layoutOption.id.includes("maparte_");
+  const landscape = layoutOption.widthCm > layoutOption.heightCm;
+  const caption = layoutOption.id.includes("corner_caption")
+    ? "corner"
+    : layoutOption.id.includes("left_caption")
+      ? "left"
+      : layoutOption.id.includes("right_caption")
+        ? "right"
+        : "center";
 
   return (
     <button
@@ -49,7 +58,25 @@ export default function LayoutCard({
         <p className="layout-card-name">{layoutOption.name}</p>
         <p className="layout-card-meta">{sizeText}</p>
       </div>
-      {symbolDataUri ? (
+      {maparteFrame ? (
+        <span
+          className={`maparte-layout-thumb${landscape ? " is-landscape" : " is-portrait"} caption-${caption}`}
+          aria-hidden="true"
+        >
+          <span className="maparte-layout-thumb__page">
+            <span className="maparte-layout-thumb__map">
+              <span className="maparte-layout-thumb__roads" />
+              <span className="maparte-layout-thumb__map-border" />
+            </span>
+            <span className="maparte-layout-thumb__caption">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span className="maparte-layout-thumb__page-border" />
+          </span>
+        </span>
+      ) : symbolDataUri ? (
         <img
           className="layout-card-symbol"
           src={symbolDataUri}

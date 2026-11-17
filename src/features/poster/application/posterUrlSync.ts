@@ -14,6 +14,7 @@ export interface ParsedUrlPosterState {
   width?: string;
   height?: string;
   fontFamily?: string;
+  textAlign?: "left" | "center" | "right";
   customDate?: string;
   displayCity?: string;
   displayCountry?: string;
@@ -64,6 +65,8 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
 
     const font = params.get("font") || params.get("fontFamily");
     if (font && font.trim()) result.fontFamily = font.trim();
+    const align = params.get("align");
+    if (align === "left" || align === "center" || align === "right") result.textAlign = align;
 
     const tagline = params.get("tagline") || params.get("date");
     if (tagline !== null && tagline !== undefined) {
@@ -140,6 +143,7 @@ export function serializePosterStateToUrl(
   if (form.fontFamily && form.fontFamily.trim().length > 0) {
     params.set("font", form.fontFamily.trim());
   }
+  if (form.textAlign && form.textAlign !== "center") params.set("align", form.textAlign);
 
   // 4. Tagline / Custom date text (if provided)
   if (form.customDate && form.customDate.trim().length > 0) {

@@ -56,7 +56,8 @@ export const DEFAULT_FORM: PosterForm = {
   width: String(DEFAULT_POSTER_WIDTH_CM),
   height: String(DEFAULT_POSTER_HEIGHT_CM),
   theme: defaultThemeName,
-  layout: "print_a4_portrait",
+  // Keep the globe/full map clean until the user explicitly chooses a frame.
+  layout: "",
   displayCity: DEFAULT_CITY,
   displayTown: "",
   displayCountry: DEFAULT_COUNTRY,
@@ -64,6 +65,7 @@ export const DEFAULT_FORM: PosterForm = {
   customDate: "",
   fontFamily: "",
   fontSize: "16",
+  textAlign: "center",
   showPosterText: true,
   includeCredits: true,
   includeLandcover: true,

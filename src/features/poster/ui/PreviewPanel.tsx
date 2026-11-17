@@ -257,8 +257,9 @@ export default function PreviewPanel({
   const aspect = widthCm / heightCm;
   const formLat = Number(form.latitude) || 0;
   const formLon = Number(form.longitude) || 0;
-  const layoutOption =
-    getLayoutOption(form.layout) ?? createCustomLayoutOption(widthCm, heightCm);
+  const layoutOption = form.layout
+    ? getLayoutOption(form.layout) ?? createCustomLayoutOption(widthCm, heightCm)
+    : createCustomLayoutOption(widthCm, heightCm);
   const posterSizeLabel = formatLayoutDimensions(layoutOption);
   const previewCanvasSize = resolveCanvasSize(widthCm / 2.54, heightCm / 2.54, 500);
   const resolutionInfoLabel = `${previewCanvasSize.width} × ${previewCanvasSize.height} px (${previewCanvasSize.effectiveDpi} PPI)`;
@@ -272,6 +273,8 @@ export default function PreviewPanel({
   const markersLabel = `${markerCount} marker${markerCount === 1 ? "" : "s"}`;
   const coordinatesLabel = `${formLat.toFixed(4)}, ${formLon.toFixed(4)}`;
   const { city: cityLabel, country: countryLabel, customDate: activeCustomDate } = getActivePosterLabels(form);
+  const displayTitle = [form.displayTown?.trim(), cityLabel].filter(Boolean).join(" · ");
+  const displaySubtitle = [form.displayState?.trim(), countryLabel].filter(Boolean).join(", ");
 
   const isSquareCaption = isMaparteSquareCaptionLayout(form.layout);
   const captionVariant = getMaparteCaptionVariant(form.layout) ?? "center-bottom";
@@ -634,12 +637,13 @@ export default function PreviewPanel({
           {isPosterLayoutOpen ? (
             <>
               <PosterTextOverlay
-                city={cityLabel}
-                country={countryLabel}
+                city={displayTitle}
+                country={displaySubtitle}
                 lat={formLat}
                 lon={formLon}
                 fontFamily={form.fontFamily}
                 fontSize={Number(form.fontSize) || 16}
+                textAlign={form.textAlign ?? "center"}
                 textColor={posterTextColor}
                 landColor={effectiveTheme.map.land}
                 showPosterText={form.showPosterText}

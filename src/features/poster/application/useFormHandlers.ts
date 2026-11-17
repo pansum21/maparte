@@ -156,6 +156,18 @@ export function useFormHandlers() {
 
   const handleLayoutChange = useCallback(
     (layoutId: string) => {
+      if (!layoutId) {
+        dispatch({
+          type: "SET_LAYOUT",
+          layoutId: "",
+          widthCm: state.form.width,
+          heightCm: state.form.height,
+        });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("maparte:disable-poster-layout"));
+        }
+        return;
+      }
       const layoutOption = getLayoutOption(layoutId);
       if (!layoutOption) return;
 
@@ -184,7 +196,7 @@ export function useFormHandlers() {
         window.dispatchEvent(new CustomEvent("maparte:enable-poster-layout"));
       }
     },
-    [dispatch, state.form.layout],
+    [dispatch, state.form.height, state.form.layout, state.form.width],
   );
 
   const handleColorChange = useCallback(
