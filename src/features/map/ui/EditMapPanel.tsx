@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { createPortal } from "react-dom";
 import {
   DEFAULT_DISTANCE_METERS,
   MAX_DISTANCE_METERS,
@@ -16,7 +17,11 @@ interface SearchedLocationInfo {
   distance: number;
 }
 
-export default function EditMapPanel() {
+interface EditMapPanelProps {
+  actionsTarget?: HTMLDivElement | null;
+}
+
+export default function EditMapPanel({ actionsTarget = null }: EditMapPanelProps) {
   const { state, dispatch, mapRef } = usePosterContext();
   const { flyToLocation } = useMapSync(state, dispatch, mapRef);
   const [bearing, setBearing] = useState(0);
@@ -173,6 +178,17 @@ export default function EditMapPanel() {
     mapRef.current?.rotateTo(0, { duration: 300 });
   };
 
+  const actions = (
+    <div className="edit-map-bottom-actions">
+      <button type="button" className="edit-map-action-pill edit-map-action-pill--recenter" onClick={handleRecenter} title="Return to the selected place and its original distance">
+        <span className="edit-map-action-glyph" aria-hidden="true">⛶</span><span>Re-center</span>
+      </button>
+      <button type="button" className="edit-map-action-pill edit-map-action-pill--reset" onClick={handleReset} title="Reset map rotation to north">
+        <RotateIcon className="edit-map-action-icon" /><span>Reset Map</span>
+      </button>
+    </div>
+  );
+
   return (
     <section className="desktop-edit-map-panel" aria-label="Edit Map controls">
       <div className="desktop-edit-map-panel__heading">
@@ -222,14 +238,7 @@ export default function EditMapPanel() {
         </div>
       </div>
 
-      <div className="edit-map-bottom-actions">
-        <button type="button" className="edit-map-action-pill edit-map-action-pill--recenter" onClick={handleRecenter} title="Recenter map to the selected place">
-          <span className="edit-map-action-glyph" aria-hidden="true">⛶</span><span>Re-center</span>
-        </button>
-        <button type="button" className="edit-map-action-pill edit-map-action-pill--reset" onClick={handleReset} title="Reset rotation to north">
-          <RotateIcon className="edit-map-action-icon" /><span>Reset</span>
-        </button>
-      </div>
+      {actionsTarget ? createPortal(actions, actionsTarget) : actions}
     </section>
   );
 }
