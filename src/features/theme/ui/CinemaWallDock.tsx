@@ -365,7 +365,7 @@ export default function CinemaWallDock({
           </div>
 
           <div className="cinema-panel-popover__tip">
-            💡 Tip: You can also drag the poster with your mouse or finger directly on the wall!
+            💡 Unlock map movement to pan the map. When it is locked, drag the poster to adjust its position on the wall.
           </div>
 
           <div className="cinema-panel-popover__actions">
