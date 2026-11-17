@@ -811,3 +811,83 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
   }
 }
 
+
+
+.app-shell.is-cinema-mode .cinema-poster-actions { display: contents; }
+.cinema-poster-reset-mobile,
+.edit-map-reset-label-mobile { display: none !important; }
+
+/* Mobile fullscreen adjustment sheet: keep it compact like Layout, with independent scrolling. */
+@media (max-width: 600px) {
+  .app-shell.is-cinema-mode .cinema-placement-popover {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: min(38dvh, 360px) !important;
+    overflow: hidden !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-scroll {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-scroll::-webkit-scrollbar { display: none; }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-footer {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    margin-top: 5px !important;
+    padding: 7px 0 0 !important;
+  }
+  .app-shell.is-cinema-mode .cinema-map-actions-slot,
+  .app-shell.is-cinema-mode .cinema-map-actions-slot .edit-map-bottom-actions,
+  .app-shell.is-cinema-mode .cinema-poster-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .app-shell.is-cinema-mode .cinema-poster-actions { display: grid !important; }
+  .app-shell.is-cinema-mode .cinema-poster-reset-desktop,
+  .app-shell.is-cinema-mode .edit-map-reset-label-desktop { display: none !important; }
+  .app-shell.is-cinema-mode .cinema-poster-reset-mobile,
+  .app-shell.is-cinema-mode .edit-map-reset-label-mobile { display: inline !important; }
+  .app-shell.is-cinema-mode .cinema-adjust-footer .edit-map-action-pill,
+  .app-shell.is-cinema-mode .cinema-adjust-footer .cinema-btn-secondary,
+  .app-shell.is-cinema-mode .cinema-adjust-footer .cinema-btn-primary {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 4px 6px !important;
+    white-space: normal !important;
+    font-size: .66rem !important;
+  }
+  .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-distance-field .edit-map-value-input--distance {
+    flex-basis: 108px !important;
+    width: 108px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-dock-upload-btn {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  .app-shell.is-cinema-mode .cinema-dock-upload-btn > span:last-child {
+    display: block !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    overflow-wrap: anywhere !important;
+    text-overflow: clip !important;
+    text-align: center !important;
+    line-height: 1.12 !important;
+  }
+}
