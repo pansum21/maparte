@@ -98,13 +98,16 @@ export const layoutGroups: LayoutGroup[] = rawCategories
     const categoryId = String(category?.id ?? `category_${categoryIndex}`);
     const categoryName = String(category?.name ?? categoryId);
     const rawLayouts = Array.isArray(category?.layouts) ? category.layouts : [];
-    const options = rawLayouts.map((layout: any, layoutIndex: number) =>
-      normalizeLayout(
-        { id: categoryId, name: categoryName },
-        layout,
-        layoutIndex,
-      ),
-    );
+    const options = rawLayouts
+      .map((layout: any, layoutIndex: number) =>
+        normalizeLayout(
+          { id: categoryId, name: categoryName },
+          layout,
+          layoutIndex,
+        ),
+      )
+      // Keep the custom MAPARTE print compositions grouped at the end.
+      .sort((a, b) => Number(a.id.includes("maparte_")) - Number(b.id.includes("maparte_")));
 
     return { id: categoryId, name: categoryName, options };
   })
@@ -192,3 +195,4 @@ export function createCustomLayoutOption(
     categoryName: "Custom",
   };
 }
+
