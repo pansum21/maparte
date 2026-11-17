@@ -184,7 +184,7 @@ export default function EditMapPanel({ actionsTarget = null }: EditMapPanelProps
         <span className="edit-map-action-glyph" aria-hidden="true">⛶</span><span>Re-center</span>
       </button>
       <button type="button" className="edit-map-action-pill edit-map-action-pill--reset" onClick={handleReset} title="Reset map rotation to north">
-        <RotateIcon className="edit-map-action-icon" /><span>Reset Map</span>
+        <RotateIcon className="edit-map-action-icon" /><span className="edit-map-reset-label-desktop">Reset</span><span className="edit-map-reset-label-mobile">Reset Map</span>
       </button>
     </div>
   );
