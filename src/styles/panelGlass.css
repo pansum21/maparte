@@ -480,6 +480,10 @@
     flex-wrap: nowrap;
     min-width: 0;
   }
+  .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-distance-field .edit-map-value-input--distance {
+    flex-basis: 102px;
+    width: 102px;
+  }
 }
 .cinema-placement-controls label { grid-template-columns: minmax(0, 1fr) max-content !important; justify-items: stretch !important; }
 .cinema-range-control { max-width: none !important; }
