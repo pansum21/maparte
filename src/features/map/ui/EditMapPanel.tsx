@@ -242,4 +242,3 @@ export default function EditMapPanel({ actionsTarget = null }: EditMapPanelProps
     </section>
   );
 }
-
