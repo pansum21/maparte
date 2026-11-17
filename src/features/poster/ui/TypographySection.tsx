@@ -513,10 +513,26 @@ export default function TypographySection({
             style={{ marginTop: "14px" }}
           >
             <div className="font-picker-toolbar">
-              <span className="font-select-label-row">
-                <span id="font-picker-label">Font</span>
-                <small className="font-count-pill">{FONT_FAMILY_COUNT} fonts</small>
-              </span>
+              <div className="font-picker-family-field">
+                <span className="font-select-label-row">
+                  <span id="font-picker-label">Font</span>
+                  <small className="font-count-pill">{FONT_FAMILY_COUNT} fonts</small>
+                </span>
+                <button
+                  aria-controls="poster-font-options"
+                  aria-expanded={fontPickerOpen}
+                  aria-haspopup="listbox"
+                  aria-label={`Font family: ${selectedFont?.label ?? "Default (Space Grotesk)"}`}
+                  className="font-picker-trigger form-control-tall"
+                  type="button"
+                  onClick={() => setFontPickerOpen((open) => !open)}
+                >
+                  <span style={{ fontFamily: form.fontFamily ? `"${form.fontFamily}", "Space Grotesk", sans-serif` : '"Space Grotesk", sans-serif' }}>
+                    {selectedFont?.label ?? "Default (Space Grotesk)"}
+                  </span>
+                  <span className={`font-picker-chevron${fontPickerOpen ? " is-open" : ""}`} aria-hidden="true">⌄</span>
+                </button>
+              </div>
               <label className="font-size-field">
                 <span>Font Size</span>
                 <input
@@ -534,31 +550,22 @@ export default function TypographySection({
                 />
               </label>
             </div>
-            <button
-              aria-controls="poster-font-options"
-              aria-expanded={fontPickerOpen}
-              aria-haspopup="listbox"
-              aria-label={`Font family: ${selectedFont?.label ?? "Default (Space Grotesk)"}`}
-              className="font-picker-trigger form-control-tall"
-              type="button"
-              onClick={() => setFontPickerOpen((open) => !open)}
-            >
-              <span
-                style={{
-                  fontFamily: form.fontFamily
-                    ? `"${form.fontFamily}", "Space Grotesk", sans-serif`
-                    : '"Space Grotesk", sans-serif',
-                }}
-              >
-                {selectedFont?.label ?? "Default (Space Grotesk)"}
-              </span>
-              <span
-                className={`font-picker-chevron${fontPickerOpen ? " is-open" : ""}`}
-                aria-hidden="true"
-              >
-                ⌄
-              </span>
-            </button>
+            <div className="poster-text-alignment" role="group" aria-label="Text alignment">
+              <span className="poster-text-alignment__label">Text alignment</span>
+              <div className="poster-text-alignment__options">
+                {(["left", "center", "right"] as const).map((alignment) => (
+                  <button
+                    key={alignment}
+                    type="button"
+                    className={`poster-text-alignment__option${(form.textAlign ?? "center") === alignment ? " is-selected" : ""}`}
+                    aria-pressed={(form.textAlign ?? "center") === alignment}
+                    onClick={() => dispatch({ type: "SET_FIELD", name: "textAlign", value: alignment })}
+                  >
+                    {alignment[0].toUpperCase() + alignment.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
             {fontPickerOpen ? (
               <div
                 className="font-picker-options"

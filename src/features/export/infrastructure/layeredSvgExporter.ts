@@ -50,6 +50,7 @@ interface LayeredSvgOptions {
   customDate?: string;
   fontFamily?: string;
   fontSize?: number;
+  textAlign?: "left" | "center" | "right";
   showPosterText: boolean;
   showOverlay: boolean;
   overlayTop?: boolean;
@@ -237,6 +238,7 @@ export async function createLayeredSvgBlobFromMap({
   customDate,
   fontFamily,
   fontSize = 16,
+  textAlign = "center",
   showPosterText,
   showOverlay,
   overlayTop = showOverlay,
@@ -562,8 +564,11 @@ export async function createLayeredSvgBlobFromMap({
       const taglineY = exportHeight * (displayCountry ? .918 : .89);
       const coordinatesY = exportHeight * (hasTagline ? (displayCountry ? .938 : .918) : (displayCountry ? TEXT_COORDS_Y_RATIO : .9));
       const lineW = Math.max(1, 3 * dimScale);
-      const lineX1 = exportWidth * 0.4;
-      const lineX2 = exportWidth * 0.6;
+      const textX = textAlign === "left" ? exportWidth * 0.05 : textAlign === "right" ? exportWidth * 0.95 : exportWidth * 0.5;
+      const textAnchor = textAlign === "left" ? "start" : textAlign === "right" ? "end" : "middle";
+      const dividerWidth = Math.min(exportWidth * 0.42, Math.max(exportWidth * 0.14, approxCityWidth * 1.12));
+      const lineX1 = textAlign === "left" ? exportWidth * 0.05 : textAlign === "right" ? exportWidth * 0.95 - dividerWidth : exportWidth * 0.5 - dividerWidth / 2;
+      const lineX2 = lineX1 + dividerWidth;
 
       if (cityLayout.isMultiLine) {
         const lineSpacing = cityFontSize * 1.08;
@@ -575,12 +580,12 @@ export async function createLayeredSvgBlobFromMap({
         const letterSpacing1 = isPrefix ? "0.22em" : "0.14em";
 
         vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${y1}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${size1}" font-weight="${weight1}" letter-spacing="${letterSpacing1}" fill="${textColor}">${escapeXml(cityLayout.lines[0])}</text>
-  <text x="${exportWidth * 0.5}" y="${y2}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" letter-spacing="0.14em" fill="${textColor}">${escapeXml(cityLayout.lines[1])}</text>
+  <text x="${textX}" y="${y1}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${size1}" font-weight="${weight1}" letter-spacing="${letterSpacing1}" fill="${textColor}">${escapeXml(cityLayout.lines[0])}</text>
+  <text x="${textX}" y="${y2}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" letter-spacing="0.14em" fill="${textColor}">${escapeXml(cityLayout.lines[1])}</text>
 `;
       } else {
         vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${cityY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" letter-spacing="0.16em" fill="${textColor}">${escapeXml(cityLayout.lines[0])}</text>
+  <text x="${textX}" y="${cityY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" letter-spacing="0.16em" fill="${textColor}">${escapeXml(cityLayout.lines[0])}</text>
 `;
       }
 
@@ -592,15 +597,15 @@ export async function createLayeredSvgBlobFromMap({
       }
 
       vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${countryY}" text-anchor="middle" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="600" letter-spacing="0.22em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
+  <text x="${textX}" y="${countryY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="600" letter-spacing="0.22em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
 `;
       if (hasTagline) {
         vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${taglineY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${taglineFontSize}" font-weight="500" letter-spacing="0.08em" opacity="0.88" fill="${textColor}">${escapeXml(customDate!.trim())}</text>
+  <text x="${textX}" y="${taglineY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${taglineFontSize}" font-weight="500" letter-spacing="0.08em" opacity="0.88" fill="${textColor}">${escapeXml(customDate!.trim())}</text>
 `;
       }
       vectorTypographySvg += `
-  <text x="${exportWidth * 0.5}" y="${coordinatesY}" text-anchor="middle" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="500" letter-spacing="0.10em" opacity="0.95" fill="${textColor}">${escapeXml(coordsText)}</text>
+  <text x="${textX}" y="${coordinatesY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="500" letter-spacing="0.10em" opacity="0.95" fill="${textColor}">${escapeXml(coordsText)}</text>
 `;
     }
 

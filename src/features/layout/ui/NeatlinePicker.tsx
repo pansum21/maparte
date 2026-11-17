@@ -646,6 +646,13 @@ export function resetNeatlineSettings(): void {
   window.localStorage.removeItem(CONFIG_STORAGE_KEY);
   window.localStorage.removeItem(LEGACY_STYLE_KEY);
   window.localStorage.removeItem(THICKNESS_STORAGE_KEY);
+  const params = new URLSearchParams(window.location.search);
+  params.delete("border");
+  params.delete("neatline");
+  params.delete("mapGap");
+  params.delete("gap");
+  const query = params.toString();
+  window.history.replaceState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
   const empty = readSelection();
   window.dispatchEvent(new Event(NEATLINE_RESET_EVENT));
   window.dispatchEvent(

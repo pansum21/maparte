@@ -506,14 +506,6 @@ export default function AppShell() {
     setAllCitiesOpen(false);
     setBackdropOpen(false);
     if (tab === desktopTab && desktopPanelOpen) {
-      if ((tab as any) === "layout" && state.form.layout !== "custom") {
-        dispatch({
-          type: "SET_LAYOUT",
-          layoutId: "custom",
-          widthCm: "20",
-          heightCm: "30",
-        });
-      }
       setDesktopPanelOpen(false);
     } else {
       setDesktopTab(tab);

@@ -692,6 +692,13 @@ a.social-badge:focus-visible {
   gap: 10px;
 }
 
+.guide-faq-search-label { display:block; margin:0 0 7px; color:#d7e1e8; font-size:.84rem; font-weight:600; }
+.guide-faq-search { width:100%; min-height:44px; margin-bottom:14px; padding:10px 13px; border:1px solid rgba(190,216,233,.28); border-radius:10px; background:rgba(5,15,25,.62); color:#f1f5f9; font:inherit; }
+.guide-faq-search::placeholder { color:#9aaab7; }
+.guide-faq-search:focus-visible { outline:2px solid rgba(223,186,115,.78); outline-offset:2px; }
+.guide-faq-empty { margin:0; padding:14px 16px; border:1px solid rgba(140,175,200,.16); border-radius:10px; color:#cbd5e1; line-height:1.6; }
+.guide-faq-empty a { color:#f0c875; }
+
 .guide-faq-item {
   background: rgba(15, 28, 44, 0.55);
   border: 1px solid rgba(140, 175, 200, 0.16);

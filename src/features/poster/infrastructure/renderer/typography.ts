@@ -35,6 +35,7 @@ export function drawPosterText(
   includeCredits: boolean = true,
   customDate?: string,
   fontSize: number = 16,
+  textAlign: CanvasTextAlign = "center",
 ): void {
   const landColor = theme.map?.land || (theme.ui as any)?.bg || "#808080";
   const rawTextColor = theme.ui?.text || "#111111";
@@ -88,8 +89,9 @@ export function drawPosterText(
     const coordinatesY = height * (hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9));
 
     ctx.fillStyle = textColor;
-    ctx.textAlign = "center";
+    ctx.textAlign = textAlign;
     ctx.textBaseline = "middle";
+    const anchorX = textAlign === "left" ? width * 0.05 : textAlign === "right" ? width * 0.95 : width * 0.5;
 
     if (cityLayout.isMultiLine) {
       const lineSpacing = cityFontSize * 1.08;
@@ -99,16 +101,16 @@ export function drawPosterText(
       const size1 = isPrefix ? Math.round(cityFontSize * 0.68) : cityFontSize;
 
       ctx.font = `${isPrefix ? "500" : "700"} ${size1}px ${titleFontFamily}`;
-      ctx.fillText(cityLayout.lines[0], width * 0.5, y1);
+      ctx.fillText(cityLayout.lines[0], anchorX, y1);
 
       ctx.font = `700 ${cityFontSize}px ${titleFontFamily}`;
-      ctx.fillText(cityLayout.lines[1], width * 0.5, y2);
+      ctx.fillText(cityLayout.lines[1], anchorX, y2);
     } else {
       ctx.font = `700 ${cityFontSize}px ${titleFontFamily}`;
       if ("letterSpacing" in ctx) {
         (ctx as any).letterSpacing = `${Math.round(cityFontSize * 0.16)}px`;
       }
-      ctx.fillText(cityLayout.lines[0], width * 0.5, cityY);
+      ctx.fillText(cityLayout.lines[0], anchorX, cityY);
     }
 
     const dividerY = cityLayout.isMultiLine ? (cityY + (cityFontSize * 0.54) + (countryY - (cityY + cityFontSize * 0.54)) * 0.4) : (height * TEXT_DIVIDER_Y_RATIO);
@@ -117,8 +119,10 @@ export function drawPosterText(
       ctx.lineWidth = Math.max(1, 1.5 * dimScale);
       ctx.globalAlpha = 0.8;
       ctx.beginPath();
-      ctx.moveTo(width * 0.42, dividerY);
-      ctx.lineTo(width * 0.58, dividerY);
+      const dividerWidth = Math.min(width * 0.42, Math.max(width * 0.14, measuredCityWidth * 1.12));
+      const dividerStart = textAlign === "left" ? width * 0.05 : textAlign === "right" ? width * 0.95 - dividerWidth : width * 0.5 - dividerWidth / 2;
+      ctx.moveTo(dividerStart, dividerY);
+      ctx.lineTo(dividerStart + dividerWidth, dividerY);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
@@ -127,7 +131,7 @@ export function drawPosterText(
       (ctx as any).letterSpacing = `${Math.round(countryFontSize * 0.22)}px`;
     }
     ctx.font = `600 ${countryFontSize}px ${titleFontFamily}`;
-    ctx.fillText(country.toUpperCase(), width * 0.5, countryY);
+    ctx.fillText(country.toUpperCase(), anchorX, countryY);
 
     if (hasTagline) {
       ctx.globalAlpha = 0.88;
@@ -135,7 +139,7 @@ export function drawPosterText(
         (ctx as any).letterSpacing = `${Math.round(taglineFontSize * 0.08)}px`;
       }
       ctx.font = `500 ${taglineFontSize}px ${bodyFontFamily}`;
-      ctx.fillText(customDate!.trim(), width * 0.5, taglineY);
+      ctx.fillText(customDate!.trim(), anchorX, taglineY);
       ctx.globalAlpha = 1;
     }
 
@@ -144,7 +148,7 @@ export function drawPosterText(
       (ctx as any).letterSpacing = `${Math.round(coordinateFontSize * 0.10)}px`;
     }
     ctx.font = `500 ${coordinateFontSize}px ${bodyFontFamily}`;
-    ctx.fillText(coordsString, width * 0.5, coordinatesY);
+    ctx.fillText(coordsString, anchorX, coordinatesY);
     ctx.globalAlpha = 1;
     if ("letterSpacing" in ctx) {
       (ctx as any).letterSpacing = "0px";
