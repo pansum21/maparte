@@ -581,6 +581,8 @@ export default function AppShell() {
         ) : null}
         <PreviewPanel
           isCinemaMode={true}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
           isPosterLayoutOpen={isPosterLayoutOpen}
           onToggleCinema={() => handleToggleCinema(false)}
           wallPhoto={cinemaWallPhoto}
