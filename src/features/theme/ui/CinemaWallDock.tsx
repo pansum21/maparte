@@ -16,6 +16,8 @@ interface CinemaWallDockProps {
   hasWallPhoto: boolean;
   placement: Placement;
   onPlacementChange: (placement: Placement) => void;
+  isMapLocked: boolean;
+  onToggleMapLock: () => void;
   isMobile: boolean;
   cameraStream: MediaStream | null;
   onCameraStreamChange: (stream: MediaStream | null) => void;
