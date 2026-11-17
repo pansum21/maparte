@@ -1715,33 +1715,26 @@ export function NeatlinePicker({
                       />
                     );
                   })}
-                </div>
-
-                {/* Custom dual gradient inputs */}
-                <div className="neatline-custom-grad-row">
-                  <span className="neatline-custom-label">Custom:</span>
-                  <div className="neatline-custom-grad-split">
-                    <label className="neatline-custom-grad-bar-half" title="Choose first gradient color">
-                      <span
-                        className="neatline-custom-grad-fill"
-                        style={{ background: selection.gradientFrom || "#f43f5e" }}
-                      />
+                  <div
+                    className={`neatline-grad-chip neatline-custom-gradient-chip ${MIX_GRADIENT_PRESETS.some((item) => item.from === selection.gradientFrom && item.to === selection.gradientTo) ? "" : "is-active"}`}
+                    title="Custom gradient"
+                    aria-label="Choose custom gradient colors"
+                  >
+                    <label title="Choose first gradient color">
                       <input
                         type="color"
                         value={selection.gradientFrom || "#f43f5e"}
+                        aria-label="Custom gradient start color"
                         onChange={(e) =>
                           updateMixGradient(e.target.value, selection.gradientTo || "#fb923c")
                         }
                       />
                     </label>
-                    <label className="neatline-custom-grad-bar-half" title="Choose second gradient color">
-                      <span
-                        className="neatline-custom-grad-fill"
-                        style={{ background: selection.gradientTo || "#fb923c" }}
-                      />
+                    <label title="Choose second gradient color">
                       <input
                         type="color"
                         value={selection.gradientTo || "#fb923c"}
+                        aria-label="Custom gradient end color"
                         onChange={(e) =>
                           updateMixGradient(selection.gradientFrom || "#f43f5e", e.target.value)
                         }
