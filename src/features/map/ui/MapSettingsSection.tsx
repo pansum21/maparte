@@ -202,6 +202,13 @@ export default function MapSettingsSection({
   const selectedLayoutOption = useMemo(() => {
     const match = layoutOptions.find((lo) => lo.id === form.layout);
     if (match) return match;
+    if (!form.layout) {
+      return {
+        ...createCustomLayoutOption(Number(form.width), Number(form.height)),
+        name: "No frame selected",
+        description: "The map stays full-screen until you choose a layout.",
+      };
+    }
     return createCustomLayoutOption(Number(form.width), Number(form.height));
   }, [form.height, form.layout, form.width, layoutOptions]);
   const selectedLayoutDescription =
@@ -310,7 +317,7 @@ export default function MapSettingsSection({
   }
 
   function handleLayoutSelectInline(layoutId: string) {
-    onLayoutChange(form.layout === layoutId ? "print_a4_portrait" : layoutId);
+    onLayoutChange(form.layout === layoutId ? "" : layoutId);
     setIsLayoutEditing(false);
   }
 

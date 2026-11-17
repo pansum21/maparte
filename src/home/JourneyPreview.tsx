@@ -417,7 +417,7 @@ export default function JourneyPreview() {
               </>}
               {index === 1 && <a className="journey-action journey-action--quiet" href="/?gallery=maps">Explore the map gallery</a>}
               {index === 2 && <a className="journey-action journey-action--quiet" href="/?gallery=borders">See the border gallery</a>}
-              {index === 4 && <div className="journey-themes" aria-label="Choose a map theme">
+              {index === 2 && <div className="journey-themes" aria-label="Choose a map theme while viewing the city map">
                 <button className="journey-glass" type="button" aria-pressed={theme === "Midnight Blue"} onClick={() => setTheme("Midnight Blue")}><i className="journey-swatch journey-swatch--blue" />Midnight Blue</button>
                 <button className="journey-glass" type="button" aria-pressed={theme === "Carrara"} onClick={() => setTheme("Carrara")}><i className="journey-swatch journey-swatch--stone" />Carrara</button>
               </div>}

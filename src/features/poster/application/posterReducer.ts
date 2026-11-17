@@ -43,6 +43,7 @@ export interface PosterForm {
   presetExtra?: string;
   fontFamily: string;
   fontSize: string;
+  textAlign?: "left" | "center" | "right";
   showPosterText: boolean;
   includeCredits: boolean;
   includeLandcover: boolean;
