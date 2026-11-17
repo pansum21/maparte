@@ -92,6 +92,7 @@ interface MapPreviewProps {
   mapRef: MapInstanceRef;
   interactive?: boolean;
   allowRotation?: boolean;
+  autoRotate?: boolean;
   minZoom?: number;
   maxZoom?: number;
   onMoveEnd?: (center: [number, number], zoom: number) => void;
@@ -116,6 +117,7 @@ export default function MapPreview({
   mapRef,
   interactive = false,
   allowRotation = false,
+  autoRotate = true,
   minZoom,
   maxZoom,
   onMoveEnd,
@@ -133,8 +135,10 @@ export default function MapPreview({
   baseGlobeZoomRef.current = baseGlobeZoom;
   const onMoveEndRef = useRef(onMoveEnd);
   const onMoveRef = useRef(onMove);
+  const autoRotateRef = useRef(autoRotate);
   onMoveEndRef.current = onMoveEnd;
   onMoveRef.current = onMove;
+  autoRotateRef.current = autoRotate;
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -230,16 +234,16 @@ export default function MapPreview({
         ? (currentZoom <= baseZoom + 0.06)
         : (currentZoom < 4.5);
 
-      if (!isUserInteracting && !isSyncing.current && isAtBaseZoom) {
+      if (autoRotateRef.current && !isUserInteracting && !isSyncing.current && isAtBaseZoom) {
         const current = map.getCenter();
         isAutoSpinning = true;
         map.jumpTo({ center: [current.lng + 0.02, current.lat] });
         isAutoSpinning = false;
       }
-      animationFrameId = requestAnimationFrame(spinGlobe);
+      if (autoRotateRef.current) animationFrameId = requestAnimationFrame(spinGlobe);
     };
 
-    animationFrameId = requestAnimationFrame(spinGlobe);
+    if (autoRotateRef.current) animationFrameId = requestAnimationFrame(spinGlobe);
 
     const onUserInteractStart = () => {
       isUserInteracting = true;

@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { usePosterContext } from "@/features/poster/ui/PosterContext";
 import { layoutGroups, getLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { LayoutIcon } from "@/shared/ui/Icons";
+
+const EditMapPanel = lazy(() => import("@/features/map/ui/EditMapPanel"));
 
 interface Placement {
   x: number;
@@ -19,6 +21,10 @@ interface CinemaWallDockProps {
   isMobile: boolean;
   cameraStream: MediaStream | null;
   onCameraStreamChange: (stream: MediaStream | null) => void;
+  mapMovementLocked: boolean;
+  layoutMovementLocked: boolean;
+  onMapMovementLockChange: (locked: boolean) => void;
+  onLayoutMovementLockChange: (locked: boolean) => void;
 }
 
 type ActivePanel = "adjust" | "layout" | "wallpaper" | null;
@@ -37,6 +43,10 @@ export default function CinemaWallDock({
   isMobile,
   cameraStream,
   onCameraStreamChange,
+  mapMovementLocked,
+  layoutMovementLocked,
+  onMapMovementLockChange,
+  onLayoutMovementLockChange,
 }: CinemaWallDockProps) {
   const { state, dispatch } = usePosterContext();
   const { form } = state;
@@ -231,9 +241,32 @@ export default function CinemaWallDock({
           <div className="cinema-panel-popover__heading">
             <div className="cinema-panel-popover__title">
               <span aria-hidden="true">🔍</span>
-              <strong>Adjust Poster Size & Position</strong>
+              <strong>Map & Poster Adjustments</strong>
             </div>
           </div>
+
+          <div className="cinema-movement-locks" aria-label="Movement locks">
+            <div className="cinema-movement-lock-row">
+              <span><strong>Map Movement</strong><small>{mapMovementLocked ? "Map stays fixed" : "Drag or touch to move map"}</small></span>
+              <button type="button" className="cinema-lock-toggle" aria-pressed={mapMovementLocked} onClick={() => onMapMovementLockChange(!mapMovementLocked)}>
+                {mapMovementLocked ? "🔒 Locked" : "🔓 Unlocked"}
+              </button>
+            </div>
+            <div className="cinema-movement-lock-row">
+              <span><strong>Layout Movement</strong><small>{layoutMovementLocked ? "Poster stays fixed" : "Drag poster outside map"}</small></span>
+              <button type="button" className="cinema-lock-toggle" aria-pressed={layoutMovementLocked} onClick={() => onLayoutMovementLockChange(!layoutMovementLocked)}>
+                {layoutMovementLocked ? "🔒 Locked" : "🔓 Unlocked"}
+              </button>
+            </div>
+          </div>
+
+          <div className="cinema-map-adjustments">
+            <Suspense fallback={<p role="status">Loading map controls…</p>}>
+              <EditMapPanel />
+            </Suspense>
+          </div>
+
+          <div className="cinema-placement-heading">Poster position & size</div>
 
           <div className="cinema-placement-controls">
             <label>
@@ -344,7 +377,7 @@ export default function CinemaWallDock({
           </div>
 
           <div className="cinema-panel-popover__tip">
-            💡 Tip: You can also drag the poster with your mouse or finger directly on the wall!
+            💡 Map controls work while map movement is locked. Unlock Layout Movement to drag the poster outside the map area.
           </div>
 
           <div className="cinema-panel-popover__actions">
