@@ -240,6 +240,23 @@ export default function CinemaWallDock({
           </div>
 
           <div className="cinema-placement-controls">
+            <div className="cinema-map-lock-row">
+              <div className="cinema-map-lock-row__label">
+                <span>Map movement</span>
+                <small>{isMapLocked ? "Prevent accidental map movement" : "Drag the map to reposition it"}</small>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                className="cinema-map-lock-toggle"
+                aria-checked={isMapLocked}
+                aria-label={isMapLocked ? "Unlock map movement" : "Lock map movement"}
+                onClick={onToggleMapLock}
+              >
+                <span className="cinema-map-lock-toggle__track" aria-hidden="true" />
+                <span>{isMapLocked ? "Locked" : "Unlocked"}</span>
+              </button>
+            </div>
             <label>
               <span>Poster Size</span>
               <output>{placement.scale.toFixed(2)}×</output>
