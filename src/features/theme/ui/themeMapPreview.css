@@ -167,3 +167,33 @@
     min-height: 188px;
   }
 }
+
+
+/* Apply the 7 cm desktop drawer grid to the real ThemeSummarySection list. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .desktop-settings-slide .theme-card-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-items: stretch;
+    gap: 8px !important;
+    max-height: min(54vh, 520px);
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 1px 3px 3px 1px !important;
+  }
+  .desktop-settings-slide .theme-card-list > .theme-card-item {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 188px !important;
+    min-height: 188px !important;
+    margin: 0 !important;
+  }
+  .desktop-settings-slide .theme-card-list > .theme-card-item > .theme-card {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: 188px !important;
+    min-height: 188px !important;
+    margin: 0 !important;
+  }
+}
