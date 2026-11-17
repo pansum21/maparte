@@ -1733,7 +1733,7 @@ export function NeatlinePicker({
                     <label title="Choose second gradient color">
                       <input
                         type="color"
-                        value={selection.gradientTo || "#fb923e"}
+                        value={selection.gradientTo || "#fb923c"}
                         aria-label="Custom gradient end color"
                         onChange={(e) =>
                           updateMixGradient(selection.gradientFrom || "#f43f5e", e.target.value)
