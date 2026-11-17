@@ -5,6 +5,7 @@ import { useLocationAutocomplete } from "@/features/location/application/useLoca
 import { useCurrentLocation } from "@/features/location/application/useCurrentLocation";
 import { useMapSync } from "@/features/map/application/useMapSync";
 import type { MobileTab } from "@/shared/ui/MobileNavBar";
+import EditMapPanel from "@/features/map/ui/EditMapPanel";
 
 import LocationSection from "@/features/location/ui/LocationSection";
 import MapSettingsSection from "@/features/map/ui/MapSettingsSection";
@@ -25,7 +26,6 @@ import {
   StyleIcon,
   ChevronDownIcon,
   SparklesIcon,
-  ScissorsIcon,
 } from "@/shared/ui/Icons";
 
 import { themeOptions } from "@/features/theme/infrastructure/themeRepository";
@@ -135,16 +135,12 @@ export default function SettingsPanel({
 
   if (mobileTab === "edit-map") {
     return (
-      <div className="edit-map-action-panel" role="group" aria-label="Edit map actions">
-        <button
-          type="button"
-          className={`edit-map-action${isEditing ? " is-active" : ""}`}
-          onClick={onToggleEditing}
-          aria-pressed={isEditing}
-        >
-          <ScissorsIcon aria-hidden="true" />
-          <span>Edit Map</span>
-        </button>
+      <div
+        className="edit-map-mobile-controls"
+        role="region"
+        aria-label={isEditing ? "Map adjustments, editing enabled" : "Map adjustments"}
+      >
+        <EditMapPanel />
       </div>
     );
   }
