@@ -2432,3 +2432,68 @@ button.marker-picker__option--upload-tile {
     font-size: 0.72rem;
   }
 }
+
+
+/* Mobile Edit Map: the shared adjustment controls use a vertical sheet. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .mobile-drawer--edit-map .mobile-drawer-sheet,
+  .mobile-drawer--edit-map .mobile-drawer-sheet.is-expanded {
+    width: 100%; height: min(52vh, 420px); min-height: 300px;
+    max-height: min(52vh, 420px); padding: 0; overflow: hidden;
+  }
+  .mobile-drawer--edit-map .mobile-drawer-content:has(.edit-map-mobile-controls) {
+    display: flex; align-items: stretch; min-height: 0;
+    padding: 10px 12px 12px; overflow: hidden;
+  }
+  .edit-map-mobile-controls {
+    width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden;
+  }
+  .edit-map-mobile-controls .desktop-edit-map-panel {
+    display: flex !important; flex-direction: column !important; align-items: stretch;
+    box-sizing: border-box; width: 100%; min-width: 0; height: 100%; min-height: 0;
+    padding: 0; overflow-x: hidden; overflow-y: auto; border: 0; border-radius: 0;
+    background: transparent; box-shadow: none; backdrop-filter: none;
+    -webkit-backdrop-filter: none; font-family: inherit;
+  }
+  .edit-map-mobile-controls .desktop-edit-map-panel__heading {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px; flex: 0 0 auto; margin: 0 0 4px;
+  }
+  .edit-map-mobile-controls .desktop-edit-map-panel__eyebrow { font-size: 0.78rem; }
+  .edit-map-mobile-controls .desktop-edit-map-panel__hint { font-size: 0.62rem; }
+  .edit-map-mobile-controls .edit-map-control-section--stacked {
+    display: flex; flex-direction: column; align-items: stretch; flex: 0 0 auto;
+    width: 100%; min-width: 0; min-height: 0; gap: 2px; padding: 4px 0;
+  }
+  .edit-map-mobile-controls .edit-map-control-heading-row { min-height: 14px; }
+  .edit-map-mobile-controls .edit-map-control-heading-row .edit-map-title { font-size: 0.61rem; }
+  .edit-map-mobile-controls .edit-map-adjustment-row {
+    display: flex; flex-direction: row; align-items: center;
+    width: 100%; min-width: 0; gap: 5px;
+  }
+  .edit-map-mobile-controls .edit-map-horizontal-step {
+    display: inline-flex; flex: 0 0 28px; width: 28px; height: 32px; min-height: 32px;
+    align-items: center; justify-content: center;
+  }
+  .edit-map-mobile-controls .edit-map-horizontal-slider {
+    display: block; flex: 1 1 0%; width: 0; min-width: 30px;
+    height: 28px !important; min-height: 28px !important;
+  }
+  .edit-map-mobile-controls .edit-map-value-input {
+    box-sizing: border-box; flex: 0 0 auto; height: 32px; min-width: 0; font-size: 0.68rem;
+  }
+  .edit-map-mobile-controls .edit-map-value-input--zoom { width: 54px; }
+  .edit-map-mobile-controls .edit-map-distance-field,
+  .edit-map-mobile-controls .edit-map-angle-field {
+    display: flex; flex: 0 0 auto; align-items: center; gap: 3px;
+  }
+  .edit-map-mobile-controls .edit-map-distance-field .edit-map-value-input--distance { width: 78px; }
+  .edit-map-mobile-controls .edit-map-angle-field .edit-map-value-input--rotation { width: 52px; }
+  .edit-map-mobile-controls .edit-map-bottom-actions {
+    display: flex; flex: 0 0 auto; justify-content: flex-start;
+    gap: 8px; margin-top: 4px; padding: 4px 0 2px;
+  }
+  .edit-map-mobile-controls .edit-map-action-pill {
+    min-height: 38px; height: 38px; padding: 6px 8px; font-size: 0.72rem;
+  }
+}
