@@ -980,3 +980,29 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     padding-top: 6px !important;
   }
 }
+
+@media (min-width: 601px) {
+  .app-shell.is-cinema-mode .cinema-placement-popover {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-scroll {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-footer {
+    flex: 0 0 auto !important;
+    margin-top: 6px !important;
+    padding-top: 6px !important;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(10, 22, 34, .96);
+  }
+}
