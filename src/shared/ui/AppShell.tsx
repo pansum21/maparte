@@ -262,7 +262,7 @@ export default function AppShell() {
   const [isPosterLayoutOpen, setIsPosterLayoutOpen] = useState(() => {
     if (typeof window === "undefined") return false;
     const params = new URLSearchParams(window.location.search);
-    return params.has("layout") || params.has("city");
+    return params.has("layout");
   });
 
   useEffect(() => {
@@ -828,4 +828,5 @@ export default function AppShell() {
     </div>
   );
 }
+
 
