@@ -600,6 +600,8 @@ export default function AppShell() {
           onCameraStreamChange={setCinemaCameraStream}
           placement={cinemaPosterPlacement}
           onPlacementChange={setCinemaPosterPlacement}
+          isMapLocked={!isEditing}
+          onToggleMapLock={() => setIsEditing((previous) => !previous)}
         />
       </div>
     );
