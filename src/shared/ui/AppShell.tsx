@@ -740,7 +740,10 @@ export default function AppShell() {
       {mobileDrawerOpen ? (
         <SettingsDrawer
           mobileTab={mobileTab}
-          onClose={() => setMobileDrawerOpen(false)}
+          onClose={() => {
+            setMobileDrawerOpen(false);
+            if (mobileTab === "edit-map") setIsEditing(false);
+          }}
           isEditing={isEditing}
           onToggleEditing={() => setIsEditing((prev) => !prev)}
           isPosterLayoutOpen={isPosterLayoutOpen}
@@ -786,8 +789,15 @@ export default function AppShell() {
         isEditing={isEditing}
         onEditMapToggle={() => {
           setBackdropOpen(false);
-          setMobileDrawerOpen(false);
-          setIsEditing((prev) => !prev);
+          setMobileLocationRowVisible(false);
+          if (mobileDrawerOpen && mobileTab === "edit-map") {
+            setMobileDrawerOpen(false);
+            setIsEditing(false);
+          } else {
+            setMobileTab("edit-map");
+            setMobileDrawerOpen(true);
+            setIsEditing(true);
+          }
         }}
       />
       {isPosterLayoutOpen ? (
