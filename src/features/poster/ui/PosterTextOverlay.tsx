@@ -221,9 +221,9 @@ export default function PosterTextOverlay({
       width: "100%",
     };
     dividerStyle = {
-      left: align === "left" ? "5%" : align === "right" ? `${95 - standardDividerWidth}%` : "50%",
+      left: align === "left" ? "5%" : align === "right" ? `${95 - dividerWidth}%` : "50%",
       right: "auto",
-      width: `${standardDividerWidth}%`,
+      width: `${dividerWidth}%`,
       transform: align === "center" ? "translate(-50%, -50%)" : "translateY(-50%)",
     };
   }

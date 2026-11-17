@@ -4,6 +4,7 @@ import AppShell from "@/shared/ui/AppShell";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { checkPaymentReturnUrl } from "@/features/export/infrastructure/planTier";
+import { ErrorBoundary } from "@/shared/ui/ErrorBoundary";
 import JourneyPreview from "@/home/JourneyPreview";
 import GalleryLanding from "@/home/GalleryLanding";
 
@@ -24,11 +25,13 @@ export default function App() {
   if (pathname === "/" && !hasEditorQuery) return <JourneyPreview />;
 
   return (
-    <AppProviders>
-      <AppShell />
-      <Analytics />
-      <SpeedInsights />
-    </AppProviders>
+    <ErrorBoundary name="AppRoot">
+      <AppProviders>
+        <AppShell />
+        <Analytics />
+        <SpeedInsights />
+      </AppProviders>
+    </ErrorBoundary>
   );
 }
 

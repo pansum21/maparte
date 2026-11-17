@@ -19,6 +19,7 @@ import RouteOverlay from "@/features/routes/ui/RouteOverlay";
 import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
 import GradientFades from "./GradientFades";
 import PosterTextOverlay from "./PosterTextOverlay";
+import ErrorBoundary from "@/shared/ui/ErrorBoundary";
 import PosterGridOverlay from "./PosterGridOverlay";
 import { GridIcon } from "@/shared/ui/Icons";
 import SettingsInfo from "./SettingsInfo";
@@ -643,24 +644,26 @@ export default function PreviewPanel({
           {/* PosterTextOverlay rendered at poster-frame level only in Poster Layout mode */}
           {isPosterLayoutOpen ? (
             <>
-              <PosterTextOverlay
-                city={displayTitle}
-                country={displaySubtitle}
-                lat={formLat}
-                lon={formLon}
-                fontFamily={form.fontFamily}
-                fontSize={Number(form.fontSize) || 16}
-                textAlign={form.textAlign ?? "center"}
-                textColor={posterTextColor}
-                landColor={effectiveTheme.map.land}
-                showPosterText={form.showPosterText}
-                includeCredits={form.includeCredits}
-                showOverlay={form.overlayBottom ?? form.showMarkers}
-                customDate={activeCustomDate}
-                squareCaption={isSquareCaption}
-                squareCaptionGeometry={squareCaptionGeometry}
-                isCustomColor={Boolean(form.posterTextColor)}
-              />
+              <ErrorBoundary name="PosterTextOverlay" fallback={null}>
+                <PosterTextOverlay
+                  city={displayTitle}
+                  country={displaySubtitle}
+                  lat={formLat}
+                  lon={formLon}
+                  fontFamily={form.fontFamily}
+                  fontSize={Number(form.fontSize) || 16}
+                  textAlign={form.textAlign ?? "center"}
+                  textColor={posterTextColor}
+                  landColor={effectiveTheme.map.land}
+                  showPosterText={form.showPosterText}
+                  includeCredits={form.includeCredits}
+                  showOverlay={form.overlayBottom ?? form.showMarkers}
+                  customDate={activeCustomDate}
+                  squareCaption={isSquareCaption}
+                  squareCaptionGeometry={squareCaptionGeometry}
+                  isCustomColor={Boolean(form.posterTextColor)}
+                />
+              </ErrorBoundary>
               <NeatlineArtwork
                 selection={neatlineSelection}
                 className="preview-neatline"
