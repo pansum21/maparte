@@ -813,6 +813,10 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
 
 
 
+.app-shell.is-cinema-mode .cinema-poster-actions { display: contents; }
+.cinema-poster-reset-mobile,
+.edit-map-reset-label-mobile { display: none !important; }
+
 /* Mobile fullscreen adjustment sheet: keep it compact like Layout, with independent scrolling. */
 @media (max-width: 600px) {
   .app-shell.is-cinema-mode .cinema-placement-popover {
@@ -850,6 +854,11 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     margin: 0 !important;
     padding: 0 !important;
   }
+  .app-shell.is-cinema-mode .cinema-poster-actions { display: grid !important; }
+  .app-shell.is-cinema-mode .cinema-poster-reset-desktop,
+  .app-shell.is-cinema-mode .edit-map-reset-label-desktop { display: none !important; }
+  .app-shell.is-cinema-mode .cinema-poster-reset-mobile,
+  .app-shell.is-cinema-mode .edit-map-reset-label-mobile { display: inline !important; }
   .app-shell.is-cinema-mode .cinema-adjust-footer .edit-map-action-pill,
   .app-shell.is-cinema-mode .cinema-adjust-footer .cinema-btn-secondary,
   .app-shell.is-cinema-mode .cinema-adjust-footer .cinema-btn-primary {
