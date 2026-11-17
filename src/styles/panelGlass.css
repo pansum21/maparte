@@ -325,7 +325,7 @@
   height: 30px;
 }
 .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-value-input--zoom { flex: 0 0 58px; width: 58px; }
-.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 78px; width: 78px; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 108px; width: 108px; }
 .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-angle-field .edit-map-value-input--rotation { flex: 0 0 54px; width: 54px; }
 .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-title {
   color: rgba(220, 241, 255, .9);
@@ -384,7 +384,7 @@
 .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-horizontal-slider { flex: 1 1 auto; width: 0; min-width: 24px; accent-color: #55b8e8; }
 .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-horizontal-step { flex: 0 0 30px; width: 30px; height: 30px; }
 .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-value-input--zoom { flex: 0 0 58px; width: 58px; }
-.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 78px; width: 78px; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 108px; width: 108px; }
 .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-angle-field .edit-map-value-input--rotation { flex: 0 0 54px; width: 54px; }
 .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-title { color: rgba(220,241,255,.9); font-size: .65rem; letter-spacing: .1em; }
 .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-value-input { color: #e4f5ff; }
