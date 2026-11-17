@@ -12,13 +12,15 @@ export interface SquareCaptionGeometry {
   captionX: number;
   captionY: number;
   captionWidth: number;
+  captionXStart: number;
   captionAlign: "left" | "center" | "right";
   variant: "center-bottom" | "left-bottom" | "right-bottom" | "top-left";
 }
 
 /**
  * Calculates exact, scale-independent geometry for square map and caption layouts.
- * Enforces clean 1.5 cm safe margins from poster edges or custom neatline insets.
+ * Enforces clean 1.5 cm safe margins from poster edges or custom neatline insets,
+ * and guarantees balanced vertical and horizontal centering of the caption typography.
  */
 export function getSquareCaptionGeometry(
   posterWidth: number,
@@ -33,8 +35,9 @@ export function getSquareCaptionGeometry(
   const pxPerCmY = posterHeight / Math.max(1, heightCm);
   const isLandscape = widthCm > heightCm;
 
-  // Margin is at least 1.5 cm, or larger if user chose a thicker border inset
-  const baseMarginCm = Math.max(1.5, mapInsetCm);
+  // Margin is at least 1.5 cm, and respects neatline border inset + gap
+  const effectiveGapCm = Math.max(0.15, gapCm || 0.15);
+  const baseMarginCm = Math.max(1.5, mapInsetCm + effectiveGapCm);
   const safeInsetX = baseMarginCm * pxPerCmX;
   const safeInsetY = baseMarginCm * pxPerCmY;
 
@@ -44,19 +47,27 @@ export function getSquareCaptionGeometry(
     // ── PORTRAIT OR SQUARE (e.g. A4 Portrait: 21 x 29.7 cm) ──
     const availableWidth = Math.max(1, posterWidth - safeInsetX * 2);
     // Height reserved for caption block (City, divider, country, coords, credits)
-    const captionHeight = (topCaption ? 3.8 : 7.2) * pxPerCmY;
-    const captionGap = 0.9 * pxPerCmY;
+    const captionHeight = (topCaption ? 4.2 : 7.6) * pxPerCmY;
 
-    // Size is the available width (18cm on A4 with 1.5cm margins)
+    // Size is the available width (e.g. 18cm on A4 with 1.5cm margins)
     const maxSquareHeight = posterHeight - safeInsetY * 2 - captionHeight;
     const size = Math.min(availableWidth, maxSquareHeight);
 
     const x = (posterWidth - size) / 2;
-    const y = topCaption ? safeInsetY + captionHeight + captionGap : safeInsetY;
+    // Map is at top (or bottom if corner caption)
+    const y = topCaption ? posterHeight - safeInsetY - size : safeInsetY;
 
+    // Center the caption block vertically in the lower white band
+    const mapBottom = y + size;
+    const contentBottom = posterHeight - safeInsetY;
+    const lowerAreaHeight = contentBottom - mapBottom;
+    const lowerCenterY = mapBottom + lowerAreaHeight / 2;
+    // .poster-city is translateY(-50%), and coords end at ~1.58 * lineStep
+    // Centering the whole block around lowerCenterY gives equal gaps top and bottom
+    const lineStep = posterHeight * 0.042;
     const captionY = topCaption
-      ? safeInsetY + 0.9 * pxPerCmY
-      : y + size + captionGap;
+      ? safeInsetY + (y - safeInsetY) / 2
+      : lowerCenterY - lineStep * 0.85;
 
     const captionWidth = topCaption ? availableWidth * 0.74 : availableWidth;
     const captionAlign = variant === "left-bottom" || topCaption
@@ -82,21 +93,34 @@ export function getSquareCaptionGeometry(
       captionX,
       captionY,
       captionWidth,
+      captionXStart: x,
       captionAlign,
       variant,
     };
   } else {
     // ── LANDSCAPE (e.g. A4 Landscape: 29.7 x 21 cm) ──
-    // In landscape, height is 21 cm -> square map is 18 x 18 cm on left, caption on right
+    // In landscape, height is 21 cm -> square map is on left, caption in right column
     const size = Math.max(1, posterHeight - safeInsetY * 2);
     const x = safeInsetX;
     const y = safeInsetY;
 
     const captionXStart = x + size + 1.2 * pxPerCmX;
     const captionWidth = Math.max(1, posterWidth - safeInsetX - captionXStart);
-    const captionY = y + size * 0.35; // vertically centered in right column
-    const captionAlign = variant === "right-bottom" ? "right" : "left";
-    const captionX = captionAlign === "right" ? posterWidth - safeInsetX : captionXStart;
+
+    // Center text vertically in the right column alongside the center of the square map
+    const captionY = y + size / 2 - 1.6 * pxPerCmY;
+
+    const captionAlign = variant === "left-bottom"
+      ? "left"
+      : variant === "right-bottom"
+        ? "right"
+        : "center";
+
+    const captionX = captionAlign === "left"
+      ? captionXStart
+      : captionAlign === "right"
+        ? posterWidth - safeInsetX
+        : captionXStart + captionWidth / 2;
 
     return {
       posterWidth,
@@ -109,6 +133,7 @@ export function getSquareCaptionGeometry(
       captionX,
       captionY,
       captionWidth,
+      captionXStart,
       captionAlign,
       variant,
     };

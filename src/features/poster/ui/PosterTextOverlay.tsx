@@ -83,26 +83,116 @@ export default function PosterTextOverlay({
   const attributionOpacity = showOverlay ? 0.65 : 0.95;
   const hasTagline = Boolean(customDate && customDate.trim());
   const geometry = squareCaptionGeometry;
-  const captionVariant = geometry?.variant ?? "center-bottom";
-  const captionX = geometry ? (geometry.captionX / geometry.posterWidth) * 100 : 50;
+  const isLandscape = geometry ? geometry.posterWidth > geometry.posterHeight : false;
+  const align = squareCaption ? (geometry?.captionAlign ?? "center") : (textAlign ?? "center");
   const captionY = geometry ? (geometry.captionY / geometry.posterHeight) * 100 : 75;
-  const captionWidth = geometry ? (geometry.captionWidth / geometry.posterWidth) * 100 : 90;
-  const align = textAlign ?? geometry?.captionAlign ?? "center";
-  const captionLeft = align === "left" ? captionX : align === "right" ? captionX - captionWidth : captionX - captionWidth / 2;
   const captionLineStep = geometry ? (geometry.posterHeight * 0.042 / geometry.posterHeight) * 100 : 4;
   const cityY = captionY;
-  const captionTextStyle = {
-    left: `${captionLeft}%`,
-    right: "auto",
-    width: `${captionWidth}%`,
-    textAlign: align,
-    paddingInline: captionVariant === "top-left" ? "0" : "0.4%",
-  } as const;
+
   const standardDividerWidth = Math.min(42, Math.max(14, Math.max(...cityLayout.lines.map((line) => line.length), 4) * 1.18));
-  const captionDividerWidth = geometry ? captionWidth * 0.16 : standardDividerWidth;
-  const captionDividerLeft = geometry
-    ? align === "left" ? captionX : align === "right" ? captionX - captionWidth * 0.16 : captionX - captionWidth * 0.08
-    : align === "left" ? 5 : align === "right" ? 95 - standardDividerWidth : 50 - standardDividerWidth / 2;
+  const dividerWidth = geometry
+    ? (isLandscape ? (geometry.captionWidth / geometry.posterWidth) * 100 * 0.22 : (geometry.size / geometry.posterWidth) * 100 * 0.16)
+    : standardDividerWidth;
+
+  let captionTextStyle: React.CSSProperties;
+  let dividerStyle: React.CSSProperties;
+
+  if (squareCaption && geometry) {
+    if (!isLandscape) {
+      const mapXPercent = (geometry.x / geometry.posterWidth) * 100;
+      const mapWidthPercent = (geometry.size / geometry.posterWidth) * 100;
+
+      if (align === "center") {
+        captionTextStyle = {
+          left: 0,
+          right: 0,
+          width: "100%",
+          textAlign: "center",
+          margin: "0 auto",
+        };
+        dividerStyle = {
+          left: "50%",
+          right: "auto",
+          width: `${dividerWidth}%`,
+          transform: "translate(-50%, -50%)",
+        };
+      } else if (align === "left") {
+        captionTextStyle = {
+          left: `${mapXPercent}%`,
+          right: "auto",
+          width: `${mapWidthPercent}%`,
+          textAlign: "left",
+        };
+        dividerStyle = {
+          left: `${mapXPercent}%`,
+          right: "auto",
+          width: `${dividerWidth}%`,
+          transform: "translateY(-50%)",
+        };
+      } else {
+        // align === "right"
+        captionTextStyle = {
+          left: `${mapXPercent}%`,
+          right: "auto",
+          width: `${mapWidthPercent}%`,
+          textAlign: "right",
+        };
+        dividerStyle = {
+          left: `${mapXPercent + mapWidthPercent - dividerWidth}%`,
+          right: "auto",
+          width: `${dividerWidth}%`,
+          transform: "translateY(-50%)",
+        };
+      }
+    } else {
+      // Landscape: right column
+      const rightColLeftPercent = (geometry.captionXStart / geometry.posterWidth) * 100;
+      const rightColWidthPercent = (geometry.captionWidth / geometry.posterWidth) * 100;
+
+      captionTextStyle = {
+        left: `${rightColLeftPercent}%`,
+        right: "auto",
+        width: `${rightColWidthPercent}%`,
+        textAlign: align,
+      };
+
+      if (align === "center") {
+        dividerStyle = {
+          left: `${rightColLeftPercent + rightColWidthPercent / 2}%`,
+          right: "auto",
+          width: `${dividerWidth}%`,
+          transform: "translate(-50%, -50%)",
+        };
+      } else if (align === "left") {
+        dividerStyle = {
+          left: `${rightColLeftPercent}%`,
+          right: "auto",
+          width: `${dividerWidth}%`,
+          transform: "translateY(-50%)",
+        };
+      } else {
+        dividerStyle = {
+          left: `${rightColLeftPercent + rightColWidthPercent - dividerWidth}%`,
+          right: "auto",
+          width: `${dividerWidth}%`,
+          transform: "translateY(-50%)",
+        };
+      }
+    }
+  } else {
+    captionTextStyle = {
+      textAlign,
+      left: 0,
+      right: 0,
+      width: "100%",
+    };
+    dividerStyle = {
+      left: align === "left" ? "5%" : align === "right" ? `${95 - standardDividerWidth}%` : "50%",
+      right: "auto",
+      width: `${standardDividerWidth}%`,
+      transform: align === "center" ? "translate(-50%, -50%)" : "translateY(-50%)",
+    };
+  }
 
   return (
     <div className={`poster-text-overlay${squareCaption ? " is-square-caption-text" : ""}`} style={{ color: safeTextColor }}>
@@ -112,7 +202,7 @@ export default function PosterTextOverlay({
             className="poster-city"
             style={{
               fontFamily: titleFont,
-              ...(squareCaption ? captionTextStyle : { textAlign }),
+              ...captionTextStyle,
               top: squareCaption ? `${cityY}%` : `${(cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO) * 100}%`,
               fontSize: cityFontSize,
               lineHeight: 1.08,
@@ -128,9 +218,7 @@ export default function PosterTextOverlay({
             className="poster-divider"
             style={{
               borderColor: textColor,
-              left: `${captionDividerLeft}%`,
-              right: "auto",
-              width: `${captionDividerWidth}%`,
+              ...dividerStyle,
               top: squareCaption ? `${cityY + captionLineStep * 0.72}%` : `${TEXT_DIVIDER_Y_RATIO * 100}%`,
             }}
           /> : null}
@@ -138,7 +226,7 @@ export default function PosterTextOverlay({
             className="poster-country"
             style={{
               fontFamily: titleFont,
-              ...(squareCaption ? captionTextStyle : { textAlign }),
+              ...captionTextStyle,
               top: squareCaption ? `${cityY + captionLineStep * 1.08}%` : `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
               fontSize: countryFontSize,
             }}
@@ -150,7 +238,7 @@ export default function PosterTextOverlay({
               className="poster-tagline"
               style={{
                 fontFamily: bodyFont,
-                ...(squareCaption ? captionTextStyle : { textAlign }),
+                ...captionTextStyle,
                 top: squareCaption ? `${cityY + captionLineStep * 1.52}%` : `${(country ? .918 : .89) * 100}%`,
                 fontSize: taglineFontSize,
                 letterSpacing: "0.06em",
@@ -163,7 +251,7 @@ export default function PosterTextOverlay({
             className="poster-coords"
             style={{
               fontFamily: bodyFont,
-              ...(squareCaption ? captionTextStyle : { textAlign }),
+              ...captionTextStyle,
               top: squareCaption ? `${cityY + captionLineStep * (hasTagline ? 2.0 : country ? 1.58 : 1.08)}%` : `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
               fontSize: coordsFontSize,
             }}
@@ -183,8 +271,8 @@ export default function PosterTextOverlay({
             fontSize: maparteFontSize,
             fontWeight: 600,
             letterSpacing: "0.08em",
-            bottom: squareCaption ? "var(--square-safe-y, 1.7%)" : "calc(2.5% + 0.2mm)",
-            left: squareCaption ? "var(--square-safe-x, 2.4%)" : "calc(2.5% + 0.2mm)",
+            bottom: squareCaption && geometry ? `${(geometry.safeInsetY / geometry.posterHeight) * 100}%` : "calc(2.5% + 0.2mm)",
+            left: squareCaption && geometry ? `${(geometry.safeInsetX / geometry.posterWidth) * 100}%` : "calc(2.5% + 0.2mm)",
             right: squareCaption ? "auto" : undefined,
             textAlign: squareCaption ? "left" : undefined,
           }}

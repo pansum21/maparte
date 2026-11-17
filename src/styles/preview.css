@@ -1194,15 +1194,14 @@
 }
 
 .poster-frame.is-maparte-square-caption .poster-divider {
-  left: 44%;
-  right: 44%;
+  border-top: 1.5px solid currentcolor;
+  margin: 0;
 }
 
 .poster-frame.is-maparte-square-caption .poster-city,
 .poster-frame.is-maparte-square-caption .poster-country,
 .poster-frame.is-maparte-square-caption .poster-tagline,
 .poster-frame.is-maparte-square-caption .poster-coords {
-  padding-inline: 6%;
   box-sizing: border-box;
 }
 
