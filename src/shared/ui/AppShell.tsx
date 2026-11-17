@@ -202,6 +202,8 @@ export default function AppShell() {
   const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">("about");
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [isCinemaMode, setIsCinemaMode] = useState(false);
+  const [cinemaMapMovementLocked, setCinemaMapMovementLocked] = useState(true);
+  const [cinemaLayoutMovementLocked, setCinemaLayoutMovementLocked] = useState(true);
   const cinemaHistoryEntryRef = useRef(false);
   const [isEditing, setIsEditing] = useState(false);
   const [cinemaWallPhoto, setCinemaWallPhoto] = useState<string | null>(null);
@@ -579,6 +581,8 @@ export default function AppShell() {
           cameraStream={cinemaCameraStream}
           cinemaPosterPlacement={cinemaPosterPlacement}
           onCinemaPosterPlacementChange={setCinemaPosterPlacement}
+          cinemaMapMovementLocked={cinemaMapMovementLocked}
+          cinemaLayoutMovementLocked={cinemaLayoutMovementLocked}
         />
 
         <CinemaWallDock
@@ -590,6 +594,10 @@ export default function AppShell() {
           onCameraStreamChange={setCinemaCameraStream}
           placement={cinemaPosterPlacement}
           onPlacementChange={setCinemaPosterPlacement}
+          mapMovementLocked={cinemaMapMovementLocked}
+          layoutMovementLocked={cinemaLayoutMovementLocked}
+          onMapMovementLockChange={setCinemaMapMovementLocked}
+          onLayoutMovementLockChange={setCinemaLayoutMovementLocked}
         />
       </div>
     );
