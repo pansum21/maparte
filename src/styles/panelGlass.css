@@ -891,3 +891,51 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     line-height: 1.12 !important;
   }
 }
+
+/* Desktop fullscreen adjustment panel: 7 cm at the user's 75% browser zoom.
+   Keep the phone sheet on its existing full-width layout. */
+@media (min-width: 601px) {
+  .app-shell.is-cinema-mode .cinema-placement-popover {
+    width: min(350px, calc(100vw - 32px)) !important;
+    padding: 12px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-panel-popover__heading {
+    margin-bottom: 8px !important;
+    padding-bottom: 6px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-movement-locks {
+    gap: 5px !important;
+    margin-bottom: 8px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-movement-lock-row {
+    gap: 8px !important;
+    padding: 6px 8px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-control-section--stacked {
+    gap: 5px !important;
+    padding: 5px 0 !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-adjustment-row {
+    gap: 4px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-horizontal-step {
+    flex-basis: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-value-input--zoom {
+    flex-basis: 54px !important;
+    width: 54px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-distance-field .edit-map-value-input--distance {
+    flex-basis: 96px !important;
+    width: 96px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-angle-field .edit-map-value-input--rotation {
+    flex-basis: 50px !important;
+    width: 50px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-placement-heading {
+    margin: 8px 0 4px !important;
+  }
+}
