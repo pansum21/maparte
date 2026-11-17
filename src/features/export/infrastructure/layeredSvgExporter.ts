@@ -566,7 +566,7 @@ export async function createLayeredSvgBlobFromMap({
       const lineW = Math.max(1, 3 * dimScale);
       const textX = textAlign === "left" ? exportWidth * 0.05 : textAlign === "right" ? exportWidth * 0.95 : exportWidth * 0.5;
       const textAnchor = textAlign === "left" ? "start" : textAlign === "right" ? "end" : "middle";
-      const dividerWidth = Math.min(exportWidth * 0.42, Math.max(exportWidth * 0.14, approxCityWidth * 1.12));
+      const dividerWidth = Math.min(exportWidth * 0.92, Math.max(exportWidth * 0.08, approxCityWidth));
       const lineX1 = textAlign === "left" ? exportWidth * 0.05 : textAlign === "right" ? exportWidth * 0.95 - dividerWidth : exportWidth * 0.5 - dividerWidth / 2;
       const lineX2 = lineX1 + dividerWidth;
 
@@ -677,7 +677,7 @@ export async function createLayeredSvgBlobFromMap({
           const coordsY = dateY + (customDate?.trim() ? pageHeight * 0.028 : 0);
           const base = Math.min(pageWidth, pageHeight) / 1000 * fontScale;
           const creditY = pageHeight - g.safeInsetY;
-          const dividerWidth = Math.min(pageWidth * 0.14, g.captionWidth * 0.2);
+          const dividerWidth = Math.min(g.captionWidth * 0.92, Math.max(pageWidth * 0.08, approxCityWidth));
           const dividerX1 = g.captionAlign === "left" ? anchorX : g.captionAlign === "right" ? anchorX - dividerWidth : anchorX - dividerWidth / 2;
           const dividerX2 = dividerX1 + dividerWidth;
           const captionSvg = showPosterText ? `

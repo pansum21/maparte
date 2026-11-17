@@ -190,18 +190,18 @@
   [data-mobile-tab="layout"] .layout-inline-group { display: block; margin-bottom: 12px; }
   [data-mobile-tab="layout"] .layout-inline-group h3 { display: block; }
   [data-mobile-tab="layout"] .layout-inline-list {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
     overflow-x: hidden; white-space: normal;
   }
   [data-layout-group="wallpaper"] .layout-inline-list,
   [data-layout-group="iphone_wallpaper"] .layout-inline-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   [data-mobile-tab="layout"] .layout-card {
-    min-width: 0; width: 100%; height: auto; min-height: 90px; margin: 0; padding: 6px;
-    white-space: normal; display: flex; flex-direction: column; justify-content: space-between;
+    min-width: 0; width: 100%; height: auto; min-height: 86px; margin: 0; padding: 8px 6px;
+    white-space: normal; display: flex; flex-direction: column; justify-content: space-between; align-items: center;
   }
-  [data-mobile-tab="layout"] .layout-card-name { font-size: .7rem; line-height: 1.25; white-space: normal; overflow-wrap: anywhere; }
-  [data-mobile-tab="layout"] .layout-card-meta { font-size: .61rem; white-space: normal; }
-  [data-mobile-tab="layout"] .layout-inline-groups .layout-card .layout-card-symbol { width: 34px; height: 26px; }
+  [data-mobile-tab="layout"] .layout-card-name { font-size: .74rem; line-height: 1.25; white-space: normal; overflow-wrap: anywhere; text-align: center; }
+  [data-mobile-tab="layout"] .layout-card-meta { font-size: .63rem; white-space: normal; text-align: center; }
+  [data-mobile-tab="layout"] .layout-inline-groups .layout-card .layout-card-symbol { width: 100%; max-width: 52px; height: 32px; object-fit: contain; margin: 4px auto 0; }
   [data-mobile-tab="frames"] .neatline-borders-box .neatline-options { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
   [data-mobile-tab="frames"] .neatline-card-name { font-size: .65rem; white-space: normal; overflow-wrap: anywhere; }
   [data-mobile-tab="templates"] .occasion-templates-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }

@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from "react";
 import { formatCoordinates } from "@/shared/geo/posterBounds";
 import { APP_CREDIT_URL } from "@/core/config";
 import type { SquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
@@ -36,6 +37,7 @@ interface PosterTextOverlayProps {
   customDate?: string;
   squareCaption?: boolean;
   squareCaptionGeometry?: SquareCaptionGeometry | null;
+  isCustomColor?: boolean;
 }
 
 /**
@@ -59,6 +61,7 @@ export default function PosterTextOverlay({
   customDate,
   squareCaption = false,
   squareCaptionGeometry,
+  isCustomColor = false,
 }: PosterTextOverlayProps) {
   const toCqMin = (px: number) => (px / TEXT_DIMENSION_REFERENCE_PX) * 100;
   const fontScale = getPosterFontScale(fontSize);
@@ -72,13 +75,14 @@ export default function PosterTextOverlay({
     : (fontFamily ? `"${fontFamily}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace');
 
   const cityLayout = resolveCityDisplay(city);
-  const cityFontSize = `${toCqMin(CITY_FONT_BASE_PX * fontScale) * (cityLayout.isMultiLine ? 0.85 : computeCityFontScale(city))}cqmin`;
+  const cityFontScale = computeCityFontScale(city, cityLayout.lines);
+  const cityFontSize = `${toCqMin(CITY_FONT_BASE_PX * fontScale) * cityFontScale}cqmin`;
   const countryFontSize = `${toCqMin(COUNTRY_FONT_BASE_PX * fontScale)}cqmin`;
   const coordsFontSize = `${toCqMin(COORDS_FONT_BASE_PX * fontScale)}cqmin`;
   const taglineFontSize = `${toCqMin(68 * fontScale)}cqmin`;
   const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX * fontScale)}cqmin`;
   const maparteFontSize = `${toCqMin(80 * fontScale)}cqmin`;
-  const safeTextColor = ensureContrastTextColor(textColor, landColor);
+  const safeTextColor = ensureContrastTextColor(textColor, landColor, isCustomColor);
   const attributionColor = computeAttributionColor(safeTextColor, landColor, showOverlay);
   const attributionOpacity = showOverlay ? 0.65 : 0.95;
   const hasTagline = Boolean(customDate && customDate.trim());
@@ -89,10 +93,40 @@ export default function PosterTextOverlay({
   const captionLineStep = geometry ? (geometry.posterHeight * 0.042 / geometry.posterHeight) * 100 : 4;
   const cityY = captionY;
 
-  const standardDividerWidth = Math.min(42, Math.max(14, Math.max(...cityLayout.lines.map((line) => line.length), 4) * 1.18));
-  const dividerWidth = geometry
-    ? (isLandscape ? (geometry.captionWidth / geometry.posterWidth) * 100 * 0.22 : (geometry.size / geometry.posterWidth) * 100 * 0.16)
-    : standardDividerWidth;
+  const cityRef = useRef<HTMLDivElement | null>(null);
+  const [cityTextWidthPercent, setCityTextWidthPercent] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    const el = cityRef.current;
+    if (!el) return;
+    // Measure the widest rendered line of the city title
+    const lineSpans = el.querySelectorAll<HTMLElement>(".poster-city-line");
+    let maxLineWidth = 0;
+    if (lineSpans.length > 0) {
+      lineSpans.forEach((span) => {
+        const w = span.getBoundingClientRect().width;
+        if (w > maxLineWidth) maxLineWidth = w;
+      });
+    } else {
+      maxLineWidth = el.getBoundingClientRect().width;
+    }
+
+    const parent = el.closest(".poster-text-overlay");
+    if (!parent) return;
+    const parentWidth = parent.getBoundingClientRect().width;
+
+    if (parentWidth > 0 && maxLineWidth > 0) {
+      const pct = (maxLineWidth / parentWidth) * 100;
+      setCityTextWidthPercent(Math.min(92, Math.max(8, Number(pct.toFixed(2)))));
+    }
+  }, [city, cityLayout, fontFamily, fontSize, squareCaption, isLandscape, align]);
+
+  const approxCharUnits = Math.max(...cityLayout.lines.map((line) => line.length), 4);
+  const fallbackDividerWidth = squareCaption
+    ? (isLandscape ? 22 : 18)
+    : Math.min(38, Math.max(12, approxCharUnits * 1.5));
+  const dividerWidth = cityTextWidthPercent ?? fallbackDividerWidth;
 
   let captionTextStyle: React.CSSProperties;
   let dividerStyle: React.CSSProperties;
@@ -199,6 +233,7 @@ export default function PosterTextOverlay({
       {showPosterText && (
         <>
           <div
+            ref={cityRef}
             className="poster-city"
             style={{
               fontFamily: titleFont,
@@ -209,15 +244,25 @@ export default function PosterTextOverlay({
             }}
           >
             {cityLayout.lines.map((line, idx) => (
-              <span key={idx} style={{ display: "block", fontSize: idx === 0 && line.includes("CITY OF") ? "0.68em" : undefined, fontWeight: idx === 0 && line.includes("CITY OF") ? 500 : 700 }}>
+              <span
+                key={idx}
+                className="poster-city-line"
+                style={{
+                  display: "inline-block",
+                  maxWidth: "100%",
+                  fontSize: idx === 0 && line.includes("CITY OF") ? "0.68em" : undefined,
+                  fontWeight: idx === 0 && line.includes("CITY OF") ? 500 : 700,
+                }}
+              >
                 {line}
+                {idx < cityLayout.lines.length - 1 ? <br /> : null}
               </span>
             ))}
           </div>
-          {city && country ? <hr
+          {city ? <hr
             className="poster-divider"
             style={{
-              borderColor: textColor,
+              borderColor: safeTextColor,
               ...dividerStyle,
               top: squareCaption ? `${cityY + captionLineStep * 0.72}%` : `${TEXT_DIVIDER_Y_RATIO * 100}%`,
             }}

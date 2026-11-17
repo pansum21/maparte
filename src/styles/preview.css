@@ -696,6 +696,9 @@
   letter-spacing: 0.16em;
   transform: translateY(-50%);
   white-space: pre-wrap;
+  max-width: 94%;
+  margin-inline: auto;
+  box-sizing: border-box;
 }
 
 .poster-divider {

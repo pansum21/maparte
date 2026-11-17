@@ -99,8 +99,18 @@ export function resolveCityDisplay(
     };
   }
 
-  // 3. Multi-word city names in portrait / narrow layouts
-  const words = trimmed.split(/\s+/);
+  // 3. Multi-word or long hyphenated city names in portrait / narrow layouts
+  let words = trimmed.split(/\s+/);
+  if (words.length === 1 && trimmed.includes("-") && trimmed.length > 14) {
+    const parts = trimmed.split("-");
+    if (parts.length === 2) {
+      words = [`${parts[0]}-`, parts[1]];
+    } else if (parts.length >= 3) {
+      const mid = Math.ceil(parts.length / 2);
+      words = [`${parts.slice(0, mid).join("-")}-`, parts.slice(mid).join("-")];
+    }
+  }
+
   if (words.length >= 2 && trimmed.length > 8) {
     if (words.length === 2) {
       return {
@@ -138,23 +148,36 @@ export function resolveCityDisplay(
  * Returns a multiplier (≤1) to shrink the city font for long names.
  * Callers apply it to their own base font size.
  */
-export function computeCityFontScale(city: string): number {
-  const len = Math.max(city.length, 1);
-  if (len <= CITY_TEXT_SHRINK_THRESHOLD) {
+export function computeCityFontScale(city: string, lines?: string[]): number {
+  const maxLineLen = lines && lines.length > 0
+    ? Math.max(...lines.map((l) => l.length))
+    : Math.max(city.length, 1);
+
+  if (maxLineLen <= 9) {
     return 1;
   }
   return Math.max(
-    CITY_FONT_MIN_PX / CITY_FONT_BASE_PX,
-    CITY_TEXT_SHRINK_THRESHOLD / len,
+    0.42,
+    9 / maxLineLen,
   );
 }
 
 /**
  * Ensures strict contrast between text and background.
+ * When forceCustom is true (user explicitly picked a color), the user's choice is respected.
+ * Otherwise:
  * Dark background (< 0.5 luma) -> text MUST be light (fallback #FFFFFF).
  * Light background (>= 0.5 luma) -> text MUST be dark (fallback #111111).
  */
-export function ensureContrastTextColor(textColor: string, bgHex: string): string {
+export function ensureContrastTextColor(
+  textColor: string,
+  bgHex: string,
+  forceCustom: boolean = false,
+): string {
+  if (forceCustom) {
+    // Honor explicit user color selection
+    return textColor;
+  }
   const bgRgb = parseHex(bgHex);
   const bgLuma = bgRgb ? (0.2126 * bgRgb.r + 0.7152 * bgRgb.g + 0.0722 * bgRgb.b) / 255 : 0.5;
   const txtRgb = parseHex(textColor);

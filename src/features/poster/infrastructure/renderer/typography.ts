@@ -119,7 +119,7 @@ export function drawPosterText(
       ctx.lineWidth = Math.max(1, 1.5 * dimScale);
       ctx.globalAlpha = 0.8;
       ctx.beginPath();
-      const dividerWidth = Math.min(width * 0.42, Math.max(width * 0.14, measuredCityWidth * 1.12));
+      const dividerWidth = Math.min(width * 0.92, Math.max(width * 0.08, measuredCityWidth));
       const dividerStart = textAlign === "left" ? width * 0.05 : textAlign === "right" ? width * 0.95 - dividerWidth : width * 0.5 - dividerWidth / 2;
       ctx.moveTo(dividerStart, dividerY);
       ctx.lineTo(dividerStart + dividerWidth, dividerY);

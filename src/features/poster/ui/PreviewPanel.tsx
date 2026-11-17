@@ -628,6 +628,12 @@ export default function PreviewPanel({
               overzoomScale={overzoomScale}
             />
           ) : null}
+          {state.showGrid ? (
+            <PosterGridOverlay
+              backgroundColor={effectiveTheme.map.land}
+              textColor={posterTextColor}
+            />
+          ) : null}
           </div>
 
           
@@ -653,6 +659,7 @@ export default function PreviewPanel({
                 customDate={activeCustomDate}
                 squareCaption={isSquareCaption}
                 squareCaptionGeometry={squareCaptionGeometry}
+                isCustomColor={Boolean(form.posterTextColor)}
               />
               <NeatlineArtwork
                 selection={neatlineSelection}
@@ -661,12 +668,6 @@ export default function PreviewPanel({
                 heightCm={form.height}
               />
             </>
-          ) : null}
-          {state.showGrid ? (
-            <PosterGridOverlay
-              backgroundColor={posterBg}
-              textColor={posterTextColor}
-            />
           ) : null}
         </div>
       </div>
