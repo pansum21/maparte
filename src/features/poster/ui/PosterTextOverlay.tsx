@@ -85,13 +85,23 @@ export default function PosterTextOverlay({
   const safeTextColor = ensureContrastTextColor(textColor, landColor, isCustomColor);
   const attributionColor = computeAttributionColor(safeTextColor, landColor, showOverlay);
   const attributionOpacity = showOverlay ? 0.65 : 0.95;
-  const hasTagline = Boolean(customDate && customDate.trim());
   const geometry = squareCaptionGeometry;
   const isLandscape = geometry ? geometry.posterWidth > geometry.posterHeight : false;
   const align = squareCaption ? (geometry?.captionAlign ?? "center") : (textAlign ?? "center");
   const captionY = geometry ? (geometry.captionY / geometry.posterHeight) * 100 : 75;
-  const captionLineStep = geometry ? (geometry.posterHeight * 0.042 / geometry.posterHeight) * 100 : 4;
   const cityY = captionY;
+  const hasTagline = Boolean(customDate && customDate.trim());
+  const titleHeightPercent =
+    toCqMin(CITY_FONT_BASE_PX * fontScale) * cityFontScale * 1.08 * cityLayout.lines.length;
+  const dividerOffsetPercent = titleHeightPercent / 2 + 1;
+  const countryHeightPercent = toCqMin(COUNTRY_FONT_BASE_PX * fontScale) * 1.2;
+  const coordsHeightPercent = toCqMin(COORDS_FONT_BASE_PX * fontScale) * 1.2;
+  const taglineHeightPercent = toCqMin(68 * fontScale) * 1.2;
+  const countryOffsetPercent = dividerOffsetPercent + countryHeightPercent / 2 + 1;
+  const taglineOffsetPercent = countryOffsetPercent + countryHeightPercent / 2 + taglineHeightPercent / 2 + 1;
+  const coordsOffsetPercent = hasTagline
+    ? taglineOffsetPercent + taglineHeightPercent / 2 + coordsHeightPercent / 2 + 1
+    : countryOffsetPercent + countryHeightPercent / 2 + coordsHeightPercent / 2 + 1.2;
 
   const cityRef = useRef<HTMLDivElement | null>(null);
   const [cityTextWidthPercent, setCityTextWidthPercent] = useState<number | null>(null);
@@ -264,7 +274,7 @@ export default function PosterTextOverlay({
             style={{
               borderColor: safeTextColor,
               ...dividerStyle,
-              top: squareCaption ? `${cityY + captionLineStep * 0.72}%` : `${TEXT_DIVIDER_Y_RATIO * 100}%`,
+              top: squareCaption ? `${cityY + dividerOffsetPercent}%` : `${TEXT_DIVIDER_Y_RATIO * 100}%`,
             }}
           /> : null}
           {country ? <p
@@ -272,7 +282,7 @@ export default function PosterTextOverlay({
             style={{
               fontFamily: titleFont,
               ...captionTextStyle,
-              top: squareCaption ? `${cityY + captionLineStep * 1.08}%` : `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
+              top: squareCaption ? `${cityY + countryOffsetPercent}%` : `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
               fontSize: countryFontSize,
             }}
           >
@@ -284,7 +294,7 @@ export default function PosterTextOverlay({
               style={{
                 fontFamily: bodyFont,
                 ...captionTextStyle,
-                top: squareCaption ? `${cityY + captionLineStep * 1.52}%` : `${(country ? .918 : .89) * 100}%`,
+                top: squareCaption ? `${cityY + taglineOffsetPercent}%` : `${(country ? .918 : .89) * 100}%`,
                 fontSize: taglineFontSize,
                 letterSpacing: "0.06em",
               }}
@@ -297,7 +307,7 @@ export default function PosterTextOverlay({
             style={{
               fontFamily: bodyFont,
               ...captionTextStyle,
-              top: squareCaption ? `${cityY + captionLineStep * (hasTagline ? 2.0 : country ? 1.58 : 1.08)}%` : `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
+              top: squareCaption ? `${cityY + coordsOffsetPercent}%` : `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
               fontSize: coordsFontSize,
             }}
           >
