@@ -72,7 +72,6 @@ const sectionMap = Object.fromEntries(
 export default function SettingsPanel({
   mobileTab,
   isEditing = false,
-  onToggleEditing,
   isPosterLayoutOpen: _isPosterLayoutOpen,
 }: {
   mobileTab?: MobileTab;
