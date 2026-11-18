@@ -1,0 +1,104 @@
+.maparte-tunnel{
+	--tunnel-progress:0;
+	position:relative;
+	height:285svh;
+	min-height:1700px;
+	color:#f2f2ed;
+	background:transparent;
+	isolation:isolate;
+}
+.maparte-tunnel__stage{
+	position:sticky;
+	top:0;
+	width:100%;
+	height:100svh;
+	min-height:600px;
+	overflow:hidden;
+	background:radial-gradient(ellipse at 50% 48%,rgba(36,88,99,.42),rgba(5,17,24,.12) 40%,rgba(3,12,18,.56) 82%);
+	perspective:1050px;
+	transform-style:preserve-3d;
+}
+.maparte-tunnel__grid{
+	position:absolute;
+	inset:0;
+	background-image:radial-gradient(rgba(177,226,231,.22) 1px,transparent 1px);
+	background-size:30px 30px;
+	mask-image:radial-gradient(ellipse 65% 75% at 50% 50%,#000 38%,transparent 100%);
+	opacity:.35;
+	pointer-events:none;
+}
+.maparte-tunnel__stage:after{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:radial-gradient(ellipse at center,transparent 24%,rgba(3,12,18,.36) 100%);
+	pointer-events:none;
+}
+.maparte-tunnel__cards{
+	position:absolute;
+	inset:0;
+	transform-style:preserve-3d;
+	pointer-events:none;
+}
+.maparte-tunnel__card{
+	position:absolute;
+	left:50%;
+	top:50%;
+	width:clamp(155px,17vw,258px);
+	aspect-ratio:4/5;
+	margin:0;
+	overflow:hidden;
+	border:1px solid rgba(237,247,244,.24);
+	border-radius:14px;
+	background:#17252a;
+	box-shadow:0 24px 60px rgba(0,0,0,.35),0 0 36px rgba(83,184,194,.1);
+	transform-style:preserve-3d;
+	will-change:transform,opacity;
+	backface-visibility:hidden;
+}
+.maparte-tunnel__card img{display:block;width:100%;height:100%;object-fit:cover;user-select:none}
+.maparte-tunnel__card:after{content:"";position:absolute;inset:36% 0 0;background:linear-gradient(transparent,rgba(2,8,12,.78))}
+.maparte-tunnel__card figcaption{position:absolute;z-index:1;left:14px;right:10px;bottom:13px;color:rgba(255,255,255,.92);font:600 9px "Spline Sans Mono",monospace;letter-spacing:.11em;text-transform:uppercase}
+.maparte-tunnel__title{
+	position:absolute;
+	z-index:4;
+	top:50%;
+	left:50%;
+	width:min(620px,calc(100% - 36px));
+	text-align:center;
+	transform:translate(-50%,-50%);
+	transform-origin:center;
+	will-change:transform,opacity;
+}
+.maparte-tunnel__eyebrow{margin:0 0 20px;color:#a6e6e4;font:600 10px "Spline Sans Mono",monospace;letter-spacing:.24em}
+.maparte-tunnel__title h2{margin:0;font:800 clamp(48px,8vw,108px)/.84 "Space Grotesk",Arial,sans-serif;letter-spacing:-.085em;color:#f5f5f1;text-shadow:0 7px 30px rgba(0,0,0,.28)}
+.maparte-tunnel__title h2 span{color:#b2e6e2}
+.maparte-tunnel__lead{max-width:34ch;margin:24px auto 0;color:rgba(242,245,239,.9);font:500 clamp(16px,2vw,22px)/1.4 "DM Serif Display",Georgia,serif}
+.maparte-tunnel__body{max-width:47ch;margin:12px auto 0;color:rgba(226,236,235,.72);font:13px/1.65 "Instrument Sans",Arial,sans-serif}
+.maparte-tunnel__cta{display:inline-flex;align-items:center;gap:18px;margin-top:22px;padding:12px 17px;border:1px solid rgba(198,243,236,.48);border-radius:999px;background:rgba(16,56,65,.43);color:#f4f5f0;font:600 11px "Instrument Sans",Arial,sans-serif;backdrop-filter:blur(10px);transition:background .2s,border-color .2s,transform .2s}
+.maparte-tunnel__cta span{color:#b4ede7;font-size:16px}
+.maparte-tunnel__cta:hover{transform:translateY(-2px);border-color:#b4ede7;background:rgba(22,83,91,.66)}
+.maparte-tunnel__cta:focus-visible{outline:2px solid #b4ede7;outline-offset:4px}
+.maparte-tunnel__prompt{position:absolute;z-index:5;bottom:28px;left:50%;display:flex;align-items:center;gap:13px;transform:translateX(-50%);color:rgba(225,239,237,.64);font:9px "Spline Sans Mono",monospace;letter-spacing:.2em;white-space:nowrap;transition:opacity .15s}
+.maparte-tunnel__prompt span{color:#b2e6e2;font-size:15px}
+@media(max-width:767px){
+	.maparte-tunnel{height:245svh;min-height:1460px}
+	.maparte-tunnel__stage{min-height:520px}
+	.maparte-tunnel__card{width:clamp(128px,37vw,176px);border-radius:12px}
+	.maparte-tunnel__card figcaption{left:10px;bottom:10px;font-size:7px;letter-spacing:.08em}
+	.maparte-tunnel__title{width:min(440px,calc(100% - 30px))}
+	.maparte-tunnel__eyebrow{font-size:8px;letter-spacing:.16em;margin-bottom:16px}
+	.maparte-tunnel__title h2{font-size:clamp(49px,13vw,76px)}
+	.maparte-tunnel__lead{font-size:17px;margin-top:20px}
+	.maparte-tunnel__body{max-width:36ch;font-size:12px}
+	.maparte-tunnel__prompt{bottom:calc(18px + env(safe-area-inset-bottom));font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){
+	.maparte-tunnel{height:auto;min-height:0;padding:48px 0}
+	.maparte-tunnel__stage{position:relative;min-height:620px;perspective:none}
+	.maparte-tunnel__cards{inset:14% 5% 13%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-content:center;transform:none}
+	.maparte-tunnel__card{position:relative;inset:auto;width:100%;aspect-ratio:4/5;transform:none!important;opacity:.56!important}
+	.maparte-tunnel__card figcaption{display:none}
+	.maparte-tunnel__title{width:min(560px,calc(100% - 36px))}
+	.maparte-tunnel__prompt{display:none}
+}
