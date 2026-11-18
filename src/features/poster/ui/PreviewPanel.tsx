@@ -662,6 +662,8 @@ export default function PreviewPanel({
                   squareCaption={isSquareCaption}
                   squareCaptionGeometry={squareCaptionGeometry}
                   isCustomColor={Boolean(form.posterTextColor)}
+                  posterWidthCm={widthCm}
+                  posterHeightCm={heightCm}
                 />
               </ErrorBoundary>
               <NeatlineArtwork
