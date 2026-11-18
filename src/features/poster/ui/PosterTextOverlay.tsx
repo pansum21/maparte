@@ -92,7 +92,6 @@ export default function PosterTextOverlay({
       ? `"${family}", ${isSerif ? "'Times New Roman', Times, serif" : '"Space Grotesk", sans-serif'}`
       : '"Space Grotesk", sans-serif';
   };
-  const titleFont = fontStack(fontFamily);
   const headingFont = fontStack(headingFamily);
   const midlineFont = fontStack(midlineFamily);
   const bottomLineFont = fontStack(bottomLineFamily, true);
