@@ -483,6 +483,28 @@ export default function MapSettingsSection({
       options: group.options.filter((layoutOption) => !framePaperLayoutIds.has(layoutOption.id)),
     }))
     .filter((group) => group.options.length > 0);
+  const printGroup = standardLayoutGroups.find((group) => group.id === "print");
+  const wallpaperGroups = standardLayoutGroups.filter(
+    (group) => group.id === "wallpaper" || group.id === "iphone_wallpaper",
+  );
+  const wallpaperGroup = wallpaperGroups.length
+    ? {
+        id: "wallpaper",
+        name: "Wallpaper",
+        options: wallpaperGroups.flatMap((group) => group.options),
+      }
+    : null;
+  const otherLayoutGroups = standardLayoutGroups.filter(
+    (group) =>
+      group.id !== "print" &&
+      group.id !== "wallpaper" &&
+      group.id !== "iphone_wallpaper",
+  );
+  const displayLayoutGroups = [
+    ...(printGroup ? [printGroup] : []),
+    ...(wallpaperGroup ? [wallpaperGroup] : []),
+    ...otherLayoutGroups,
+  ];
 
   return (
     <section className="panel-block">
@@ -597,7 +619,7 @@ export default function MapSettingsSection({
         ) : (
           <div className="layout-inline-groups" ref={layoutGroupsRef}>
             <section className="layout-inline-group frame-layout-group" aria-label="Frame layouts">
-              <h3>Frame Layouts</h3>
+              <h3>Print · Frame Layouts</h3>
               <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
                 {framePaperLayouts.map((layoutOption) => (
                   <LayoutCard
@@ -629,7 +651,7 @@ export default function MapSettingsSection({
                 ))}
               </div>
             </section>
-            {standardLayoutGroups.map((group) => (
+            {displayLayoutGroups.map((group) => (
               <section key={group.id} className="layout-inline-group" data-layout-group={group.id}>
                 <h3>{group.name}</h3>
                 <div className="layout-inline-list card-scroll-list">
