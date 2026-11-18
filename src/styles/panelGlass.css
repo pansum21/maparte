@@ -1042,3 +1042,22 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     display: none !important;
   }
 }
+
+
+/* Slightly denser text fields in the mobile style sheet; preserve touch targets. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .mobile-drawer-content .typography-panel-block .form-control-tall {
+    min-height: 40px;
+    padding-block: 7px;
+  }
+
+  .mobile-drawer-content .typography-panel-block textarea.form-control-tall {
+    min-height: 68px;
+  }
+
+  .poster-grid-toggle-btn {
+    z-index: 80;
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
+}
