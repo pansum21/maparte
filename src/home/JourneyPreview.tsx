@@ -7,11 +7,11 @@ import { getTheme } from "@/features/theme/infrastructure/themeRepository";
 import { SEO_CITIES } from "@/features/location/domain/cityRouteResolver";
 import { EARTH_CIRCUMFERENCE_M, TILE_SIZE_PX } from "@/core/config";
 import { helpFaqs } from "@/shared/help/helpFaqs";
-import { MinimalFooter } from "@/components/ui/minimal-footer";
+import { DoodleCrewFooter } from "@/components/ui/doodle-crew-footer";
 import "@fontsource/dm-serif-display/400.css";
 import "@fontsource/dm-serif-display/400-italic.css";
 import "./journeyPreview.css";
-import "@/components/ui/minimal-footer.css";
+import "@/components/ui/doodle-crew-footer.css";
 
 setWorkerUrl(workerUrl);
 
@@ -490,7 +490,7 @@ export default function JourneyPreview() {
           </nav>
         </div>
       </section>
-      <MinimalFooter />
+      <DoodleCrewFooter />
       <div className="journey-scrollhint" aria-hidden="true" style={{ opacity: hasScrolled ? 0 : 1 }}>SCROLL TO TRAVEL <span>↓</span></div>
     </div>
   );
