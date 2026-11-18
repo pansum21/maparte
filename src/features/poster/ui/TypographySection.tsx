@@ -550,6 +550,50 @@ export default function TypographySection({
                 />
               </label>
             </div>
+            <div className="poster-line-typography" role="group" aria-label="Line typography">
+              {([
+                ["heading", "Heading"],
+                ["midline", "Midline"],
+                ["bottomLine", "Bottom line"],
+              ] as const).map(([key, label]) => {
+                const familyName = `${key}FontFamily` as const;
+                const sizeName = `${key}FontSize` as const;
+                const familyValue = form[familyName] || form.fontFamily;
+                const sizeValue = form[sizeName] || form.fontSize;
+                return (
+                  <div className="poster-line-typography__row" key={key}>
+                    <label htmlFor={`poster-${key}-font`}>{label} font</label>
+                    <select
+                      id={`poster-${key}-font`}
+                      className="poster-line-typography__family"
+                      name={familyName}
+                      value={familyValue}
+                      onChange={onChange}
+                      aria-label={`${label} font family`}
+                    >
+                      {uniqueFontOptions.map((option) => (
+                        <option key={option.value || "default"} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      className="poster-line-typography__size"
+                      type="number"
+                      name={sizeName}
+                      min={MIN_POSTER_FONT_SIZE}
+                      max={MAX_POSTER_FONT_SIZE}
+                      step={1}
+                      inputMode="numeric"
+                      value={sizeValue}
+                      onChange={onChange}
+                      onBlur={onNumericBlur}
+                      aria-label={`${label} font size`}
+                    />
+                  </div>
+                );
+              })}
+            </div>
             <div className="poster-text-alignment" role="group" aria-label="Text alignment">
               <span className="poster-text-alignment__label">Text alignment</span>
               <div className="poster-text-alignment__options">
