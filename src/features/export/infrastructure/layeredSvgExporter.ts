@@ -677,6 +677,9 @@ export async function createLayeredSvgBlobFromMap({
           const coordsY = dateY + (customDate?.trim() ? pageHeight * 0.028 : 0);
           const base = Math.min(pageWidth, pageHeight) / 1000 * fontScale;
           const creditY = pageHeight - g.safeInsetY;
+          const cityLines = resolveCityDisplay(displayCity, pageWidth / Math.max(1, pageHeight)).lines;
+          const longestCityLine = cityLines.reduce((longest, line) => line.length > longest.length ? line : longest, "");
+          const approxCityWidth = longestCityLine.length * Math.max(20, 48 * base) * 0.65;
           const dividerWidth = Math.min(g.captionWidth * 0.92, Math.max(pageWidth * 0.08, approxCityWidth));
           const dividerX1 = g.captionAlign === "left" ? anchorX : g.captionAlign === "right" ? anchorX - dividerWidth : anchorX - dividerWidth / 2;
           const dividerX2 = dividerX1 + dividerWidth;
