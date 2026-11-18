@@ -216,8 +216,14 @@ export function useExport() {
 
       try {
         // Ensure font is loaded before compositing text
-        if (form.showPosterText && form.fontFamily.trim()) {
-          await ensureFont(form.fontFamily.trim());
+        if (form.showPosterText) {
+          const selectedFonts = [
+            form.fontFamily,
+            form.headingFontFamily,
+            form.midlineFontFamily,
+            form.bottomLineFontFamily,
+          ].map((family) => family?.trim()).filter((family): family is string => Boolean(family));
+          await Promise.all([...new Set(selectedFonts)].map((family) => ensureFont(family)));
         }
         await document.fonts.ready;
 
