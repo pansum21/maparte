@@ -47,6 +47,7 @@ import {
   getMaparteCaptionVariant,
 } from "@/features/layout/infrastructure/layoutRepository";
 import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import {
@@ -226,13 +227,14 @@ export default function PreviewPanel({
 
   useEffect(() => {
     if (!form.showPosterText) return;
-    const family = form.fontFamily.trim();
-    if (!family) return;
-
-    void ensureFont(family).catch(() => {
-      // Ignore font loading failures; fallback stack remains in place.
-    });
-  }, [form.fontFamily, form.showPosterText]);
+    const families = [
+      form.fontFamily,
+      form.headingFontFamily,
+      form.midlineFontFamily,
+      form.bottomLineFontFamily,
+    ].map((family) => family?.trim()).filter((family): family is string => Boolean(family));
+    void Promise.all(families.map((family) => ensureFont(family).catch(() => undefined)));
+  }, [form.fontFamily, form.headingFontFamily, form.midlineFontFamily, form.bottomLineFontFamily, form.showPosterText]);
 
   useEffect(() => {
     const map = mapInstance || mapRef.current;
@@ -281,7 +283,17 @@ export default function PreviewPanel({
   const displayTitle = [form.displayTown?.trim(), cityLabel].filter(Boolean).join(" · ");
   const displaySubtitle = [form.displayState?.trim(), countryLabel].filter(Boolean).join(", ");
 
-  const isSquareCaption = isMaparteSquareCaptionLayout(form.layout);
+  const frameLayoutIds: FrameLayoutId[] = ["classic", "left", "right", "center", "dark", "box", "title", "full-map"];
+  const selectedFrameLayout = frameLayoutIds.includes(form.frameLayout as FrameLayoutId)
+    ? (form.frameLayout as FrameLayoutId)
+    : null;
+  const isSquareCaption = !selectedFrameLayout && isMaparteSquareCaptionLayout(form.layout);
+  const previewFrameLayoutGeometry = useMemo(() => {
+    if (!selectedFrameLayout) return null;
+    const previewWidth = 1000;
+    const previewHeight = previewWidth * heightCm / Math.max(1, widthCm);
+    return getFrameLayoutGeometry(previewWidth, previewHeight, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, selectedFrameLayout);
+  }, [selectedFrameLayout, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm]);
   const captionVariant = getMaparteCaptionVariant(form.layout) ?? "center-bottom";
   const squareCaptionGeometry = useMemo(() => {
     if (!isSquareCaption) return null;
@@ -530,7 +542,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}${previewFrameLayoutGeometry ? ` frame-layout-preview frame-layout-preview--${previewFrameLayoutGeometry.style}` : ""}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || cinemaLayoutMovementLocked || !onCinemaPosterPlacementChange || event.button !== 0) return;
             if (mapWindowRef.current?.contains(event.target as Node)) return;
@@ -560,7 +572,7 @@ export default function PreviewPanel({
           style={
             {
               "--poster-aspect": `${aspect}`,
-              "--poster-bg": posterBg,
+              "--poster-bg": previewFrameLayoutGeometry?.style === "full-map" ? posterBg : "#fff",
               "--map-inset-x": borderMetrics.mapInsetX,
               "--map-inset-y": borderMetrics.mapInsetY,
               "--mat-inset-x": borderMetrics.matInsetX,
@@ -582,7 +594,17 @@ export default function PreviewPanel({
           
 
 
-          <div ref={mapWindowRef} className="poster-map-window">
+          <div
+            ref={mapWindowRef}
+            className="poster-map-window"
+            style={previewFrameLayoutGeometry ? {
+              inset: "auto",
+              left: `${(previewFrameLayoutGeometry.x / previewFrameLayoutGeometry.posterWidth) * 100}%`,
+              top: `${(previewFrameLayoutGeometry.y / previewFrameLayoutGeometry.posterHeight) * 100}%`,
+              width: `${(previewFrameLayoutGeometry.width / previewFrameLayoutGeometry.posterWidth) * 100}%`,
+              height: `${(previewFrameLayoutGeometry.height / previewFrameLayoutGeometry.posterHeight) * 100}%`,
+            } : undefined}
+          >
           <Suspense
             fallback={
               <div className="map-container map-preview-loading" role="status" aria-live="polite">
@@ -639,7 +661,7 @@ export default function PreviewPanel({
           {state.showGrid ? (
             <PosterGridOverlay
               backgroundColor={effectiveTheme.map.land}
-              textColor={posterTextColor}
+              textColor={previewFrameLayoutGeometry?.style === "dark" ? "#fff" : posterTextColor}
             />
           ) : null}
           </div>
@@ -648,6 +670,25 @@ export default function PreviewPanel({
 
           
 
+          {previewFrameLayoutGeometry && previewFrameLayoutGeometry.style !== "full-map" ? (
+            <div className={`frame-layout-caption-band frame-layout-caption-band--${previewFrameLayoutGeometry.style}`}
+              aria-hidden="true"
+              style={{
+                top: `${((previewFrameLayoutGeometry.y + previewFrameLayoutGeometry.height) / previewFrameLayoutGeometry.posterHeight) * 100}%`,
+                height: `${(previewFrameLayoutGeometry.captionHeight / previewFrameLayoutGeometry.posterHeight) * 100}%`,
+              }}
+            />
+          ) : null}
+          {previewFrameLayoutGeometry?.style === "box" ? (
+            <div className="frame-layout-caption-card" aria-hidden="true"
+              style={{
+                left: `${((previewFrameLayoutGeometry.captionX - previewFrameLayoutGeometry.captionWidth / 2) / previewFrameLayoutGeometry.posterWidth) * 100}%`,
+                top: `${((previewFrameLayoutGeometry.y + previewFrameLayoutGeometry.height - previewFrameLayoutGeometry.posterHeight * 0.075) / previewFrameLayoutGeometry.posterHeight) * 100}%`,
+                width: `${(previewFrameLayoutGeometry.captionWidth / previewFrameLayoutGeometry.posterWidth) * 100}%`,
+                height: "12%",
+              }}
+            />
+          ) : null}
           {/* PosterTextOverlay rendered at poster-frame level only in Poster Layout mode */}
           {isPosterLayoutOpen ? (
             <>
@@ -659,10 +700,16 @@ export default function PreviewPanel({
                   lon={formLon}
                   fontFamily={form.fontFamily}
                   fontSize={Number(form.fontSize) || 16}
-                  textAlign={form.textAlign ?? "center"}
+                  headingFontFamily={form.headingFontFamily}
+                  headingFontSize={Number(form.headingFontSize) || undefined}
+                  midlineFontFamily={form.midlineFontFamily}
+                  midlineFontSize={Number(form.midlineFontSize) || undefined}
+                  bottomLineFontFamily={form.bottomLineFontFamily}
+                  bottomLineFontSize={Number(form.bottomLineFontSize) || undefined}
+                  textAlign={previewFrameLayoutGeometry?.style === "left" || previewFrameLayoutGeometry?.style === "right" ? previewFrameLayoutGeometry.style : (form.textAlign ?? "center")}
                   textColor={posterTextColor}
                   landColor={effectiveTheme.map.land}
-                  showPosterText={form.showPosterText}
+                  showPosterText={form.showPosterText && previewFrameLayoutGeometry?.style !== "full-map"}
                   includeCredits={form.includeCredits}
                   showOverlay={form.overlayBottom ?? form.showMarkers}
                   customDate={activeCustomDate}

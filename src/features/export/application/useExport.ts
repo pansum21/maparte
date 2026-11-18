@@ -216,8 +216,14 @@ export function useExport() {
 
       try {
         // Ensure font is loaded before compositing text
-        if (form.showPosterText && form.fontFamily.trim()) {
-          await ensureFont(form.fontFamily.trim());
+        if (form.showPosterText) {
+          const selectedFonts = [
+            form.fontFamily,
+            form.headingFontFamily,
+            form.midlineFontFamily,
+            form.bottomLineFontFamily,
+          ].map((family) => family?.trim()).filter((family): family is string => Boolean(family));
+          await Promise.all([...new Set(selectedFonts)].map((family) => ensureFont(family)));
         }
         await document.fonts.ready;
 
@@ -283,7 +289,7 @@ export function useExport() {
               form.textAlign,
             )
           : undefined;
-        const frameLayoutGeometry = form.frameLayout && form.frameLayout !== "none" && !squareCaptionGeometry
+        const frameLayoutGeometry = form.frameLayout && form.frameLayout !== "none"
           ? getFrameLayoutGeometry(
               size.width, size.height, widthCm, heightCm,
               borderMetrics.mapInsetCm, borderMetrics.gapCm,
@@ -401,6 +407,12 @@ export function useExport() {
             customDate: getActivePosterLabels(form).customDate,
           fontFamily: form.fontFamily.trim(),
           fontSize: Number(form.fontSize) || 16,
+          headingFontFamily: form.headingFontFamily || form.fontFamily,
+          headingFontSize: Number(form.headingFontSize) || Number(form.fontSize) || 16,
+          midlineFontFamily: form.midlineFontFamily || form.fontFamily,
+          midlineFontSize: Number(form.midlineFontSize) || Number(form.fontSize) || 16,
+          bottomLineFontFamily: form.bottomLineFontFamily || form.fontFamily,
+          bottomLineFontSize: Number(form.bottomLineFontSize) || Number(form.fontSize) || 16,
           textAlign: form.textAlign ?? "center",
           showPosterText: form.showPosterText,
           showOverlay: form.showMarkers,

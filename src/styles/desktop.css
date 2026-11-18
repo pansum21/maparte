@@ -3469,3 +3469,44 @@ button.all-cities-clear-btn:not(:disabled):hover {
     box-sizing: border-box !important;
   }
 }
+
+
+/* Desktop drawer calibrated for roughly 6.5 cm at 80% browser zoom. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .desktop-left-panel,
+  .app-shell[data-desktop-tab="layout"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="theme"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="frames"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="templates"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="edit-map"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="style"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="layers"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="markers"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="routes"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="settings"] .desktop-left-panel {
+    width: 307px !important;
+  }
+  .desktop-left-panel .desktop-settings-slide,
+  .desktop-left-panel .desktop-edit-map-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+
+/* Numeric controls in fullscreen share one legible type scale. */
+.desktop-edit-map-panel .edit-map-adjustment-row { min-width: 0; gap: 6px; }
+.desktop-edit-map-panel .edit-map-value-input,
+.desktop-edit-map-panel .edit-map-distance-field,
+.desktop-edit-map-panel .edit-map-angle-field {
+  font-family: "Spline Sans Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+.desktop-edit-map-panel .edit-map-value-input {
+  height: 32px;
+  padding-inline: 5px;
+  font-size: .68rem;
+  line-height: 1;
+}
+.desktop-edit-map-panel .edit-map-distance-field .edit-map-value-input--distance { font-size: .66rem; }

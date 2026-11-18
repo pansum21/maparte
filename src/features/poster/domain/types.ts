@@ -42,6 +42,12 @@ export interface ExportOptions {
   customDate?: string;
   fontFamily: string;
   fontSize: number;
+  headingFontFamily?: string;
+  headingFontSize?: number;
+  midlineFontFamily?: string;
+  midlineFontSize?: number;
+  bottomLineFontFamily?: string;
+  bottomLineFontSize?: number;
   textAlign?: "left" | "center" | "right";
   showPosterText: boolean;
   showOverlay?: boolean;
