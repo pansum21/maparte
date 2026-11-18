@@ -289,7 +289,7 @@ export function useExport() {
               form.textAlign,
             )
           : undefined;
-        const frameLayoutGeometry = form.frameLayout && form.frameLayout !== "none" && !squareCaptionGeometry
+        const frameLayoutGeometry = form.frameLayout && form.frameLayout !== "none"
           ? getFrameLayoutGeometry(
               size.width, size.height, widthCm, heightCm,
               borderMetrics.mapInsetCm, borderMetrics.gapCm,
