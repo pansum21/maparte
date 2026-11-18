@@ -2368,3 +2368,24 @@ button.marker-picker__option--upload-tile {
     height: 37px;
   }
 }
+
+
+@media (max-width: 768px) {
+  .mobile-location-row-wrap .dsk-loc-bar .location-search-row {
+    min-height: 36px;
+    align-items: center;
+  }
+
+  .mobile-location-row-wrap .dsk-loc-bar .location-input-wrap input {
+    height: 30px;
+    min-height: 30px;
+    line-height: 1.2;
+  }
+
+  .poster-grid-toggle-btn {
+    right: 52px;
+    z-index: 80;
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
+}
