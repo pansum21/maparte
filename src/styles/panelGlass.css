@@ -1008,56 +1008,77 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
 }
 
 
-/* Four compact square map thumbnails per mobile row. This final override
-   also supersedes the older three-column theme-card sizing rules above. */
+
+/* Phone theme thumbnails: four square map previews, with their name in the active-theme heading. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   [data-mobile-tab="theme"] .theme-card-list {
+    display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    grid-auto-rows: auto !important;
-    align-items: stretch;
     gap: 5px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    max-height: min(42vh, 340px);
+    padding-right: 1px;
+    align-content: start;
+    touch-action: pan-y;
   }
-
   [data-mobile-tab="theme"] .theme-card-list > .theme-card-item {
+    display: block !important;
     width: 100% !important;
     min-width: 0 !important;
-    max-width: 100%;
+  }
+  [data-mobile-tab="theme"] .theme-card-list .theme-card {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
     height: auto !important;
     min-height: 0 !important;
-    aspect-ratio: 1 / 1;
-    flex: none !important;
+    aspect-ratio: 1 / 1 !important;
     margin: 0 !important;
   }
-
-  [data-mobile-tab="theme"] .theme-card-list > .theme-card-item > .theme-card {
-    width: 100% !important;
+  [data-mobile-tab="theme"] .theme-card-palette {
     height: 100% !important;
     min-height: 0 !important;
-    aspect-ratio: 1 / 1;
-    padding: 0 !important;
+  }
+  [data-mobile-tab="theme"] .theme-card-name { display: none !important; }
+
+  .mobile-location-row-wrap .dsk-loc-bar .location-search-main-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+  .mobile-location-row-wrap .dsk-loc-bar .location-search-row {
+    gap: 4px;
+    min-height: 36px;
+    padding: 2px 5px;
+  }
+  .mobile-location-row-wrap .dsk-loc-bar .location-input-wrap {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .mobile-location-row-wrap .dsk-loc-bar .location-input-wrap input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    padding-inline: 6px;
+  }
+  .mobile-location-row-wrap .dsk-loc-bar .location-search-icons {
+    gap: 4px;
+    flex: 0 0 auto;
   }
 
-  [data-mobile-tab="theme"] .theme-card-list > .theme-card-item .theme-card-name,
-  [data-mobile-tab="theme"] .theme-card-list > .theme-card-item .theme-card-name-shadow {
-    display: none !important;
-  }
-}
-
-
-/* Slightly denser text fields in the mobile style sheet; preserve touch targets. */
-@media (max-width: 768px), (hover: none) and (pointer: coarse) {
   .mobile-drawer-content .typography-panel-block .form-control-tall {
     min-height: 40px;
     padding-block: 7px;
   }
-
   .mobile-drawer-content .typography-panel-block textarea.form-control-tall {
     min-height: 68px;
   }
 
   .poster-grid-toggle-btn {
-    z-index: 80;
-    pointer-events: auto;
+    right: 52px !important;
+    z-index: 80 !important;
+    pointer-events: auto !important;
     touch-action: manipulation;
   }
 }
