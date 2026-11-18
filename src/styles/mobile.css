@@ -1858,11 +1858,11 @@
     max-height: min(84vh, calc(100dvh - 64px - env(safe-area-inset-bottom, 0px)));
   }
 
-  /* Compact four-across square theme thumbnails; the active theme name stays in the panel header. */
+  /* Compact two-column theme cards; keep vertical scrolling and readable names. */
   [data-mobile-tab="theme"] .theme-card-list {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 5px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
     align-content: start;
     overflow-x: hidden;
     overflow-y: auto;
@@ -1870,27 +1870,31 @@
     white-space: normal;
     touch-action: pan-y;
     scroll-snap-type: none;
-    padding-right: 1px;
+    padding-right: 2px;
   }
 
   [data-mobile-tab="theme"] .theme-card-list .theme-card {
-    box-sizing: border-box;
     width: 100%;
     min-width: 0;
-    height: auto;
-    min-height: 0;
-    aspect-ratio: 1 / 1;
+    height: 72px;
+    min-height: 72px;
     margin: 0;
-    border-radius: 7px;
+    border-radius: 8px;
   }
 
   [data-mobile-tab="theme"] .theme-card-palette {
-    height: 100%;
-    min-height: 0;
+    min-height: 72px;
   }
 
   [data-mobile-tab="theme"] .theme-card-name {
-    display: none;
+    left: 7px;
+    right: 7px;
+    bottom: 6px;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   /* Marker controls use the same compact sheet as the other tools. */
@@ -2315,77 +2319,5 @@ button.marker-picker__option--upload-tile {
     grid-column: auto;
     justify-self: stretch;
     width: 100%;
-  }
-}
-
-/* MAPARTE responsive fixes: compact search controls, square theme choices, clear grid action. */
-@media (max-width: 768px) {
-  .mobile-location-row-wrap .dsk-loc-bar .location-search-main-row {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 4px;
-  }
-
-  .mobile-location-row-wrap .dsk-loc-bar .location-search-row {
-    gap: 4px;
-    padding-inline: 4px;
-    min-width: 0;
-  }
-
-  .mobile-location-row-wrap .dsk-loc-bar .location-input-wrap {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-
-  .mobile-location-row-wrap .dsk-loc-bar .location-search-icons {
-    gap: 4px;
-    flex: 0 0 auto;
-  }
-
-  .poster-grid-toggle-btn {
-    top: 10px;
-    right: 52px;
-    z-index: 35;
-    height: 30px;
-    padding-inline: 9px;
-  }
-
-  .frame-layout-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 5px;
-  }
-
-  .frame-layout-option {
-    min-height: 78px;
-    padding: 6px 3px;
-    gap: 4px;
-    font-size: .62rem;
-    line-height: 1.15;
-    overflow-wrap: anywhere;
-  }
-
-  .frame-layout-swatch {
-    width: 27px;
-    height: 37px;
-  }
-}
-
-
-@media (max-width: 768px) {
-  .mobile-location-row-wrap .dsk-loc-bar .location-search-row {
-    min-height: 36px;
-    align-items: center;
-  }
-
-  .mobile-location-row-wrap .dsk-loc-bar .location-input-wrap input {
-    height: 30px;
-    min-height: 30px;
-    line-height: 1.2;
-  }
-
-  .poster-grid-toggle-btn {
-    right: 52px;
-    z-index: 80;
-    pointer-events: auto;
-    touch-action: manipulation;
   }
 }
