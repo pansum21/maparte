@@ -226,13 +226,14 @@ export default function PreviewPanel({
 
   useEffect(() => {
     if (!form.showPosterText) return;
-    const family = form.fontFamily.trim();
-    if (!family) return;
-
-    void ensureFont(family).catch(() => {
-      // Ignore font loading failures; fallback stack remains in place.
-    });
-  }, [form.fontFamily, form.showPosterText]);
+    const families = [
+      form.fontFamily,
+      form.headingFontFamily,
+      form.midlineFontFamily,
+      form.bottomLineFontFamily,
+    ].map((family) => family?.trim()).filter((family): family is string => Boolean(family));
+    void Promise.all(families.map((family) => ensureFont(family).catch(() => undefined)));
+  }, [form.fontFamily, form.headingFontFamily, form.midlineFontFamily, form.bottomLineFontFamily, form.showPosterText]);
 
   useEffect(() => {
     const map = mapInstance || mapRef.current;
@@ -659,6 +660,12 @@ export default function PreviewPanel({
                   lon={formLon}
                   fontFamily={form.fontFamily}
                   fontSize={Number(form.fontSize) || 16}
+                  headingFontFamily={form.headingFontFamily}
+                  headingFontSize={Number(form.headingFontSize) || undefined}
+                  midlineFontFamily={form.midlineFontFamily}
+                  midlineFontSize={Number(form.midlineFontSize) || undefined}
+                  bottomLineFontFamily={form.bottomLineFontFamily}
+                  bottomLineFontSize={Number(form.bottomLineFontSize) || undefined}
                   textAlign={form.textAlign ?? "center"}
                   textColor={posterTextColor}
                   landColor={effectiveTheme.map.land}
