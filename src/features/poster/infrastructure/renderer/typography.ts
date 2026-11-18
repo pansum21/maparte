@@ -36,19 +36,33 @@ export function drawPosterText(
   customDate?: string,
   fontSize: number = 16,
   textAlign: CanvasTextAlign = "center",
+  lineTypography?: { headingFontFamily?: string; headingFontSize?: number; midlineFontFamily?: string; midlineFontSize?: number; bottomLineFontFamily?: string; bottomLineFontSize?: number },
 ): void {
   const landColor = theme.map?.land || (theme.ui as any)?.bg || "#808080";
   const rawTextColor = theme.ui?.text || "#111111";
   const textColor = ensureContrastTextColor(rawTextColor, landColor);
   const fontScale = getPosterFontScale(fontSize);
+  const headingScale = getPosterFontScale(lineTypography?.headingFontSize ?? fontSize);
+  const midlineScale = getPosterFontScale(lineTypography?.midlineFontSize ?? fontSize);
+  const bottomLineScale = getPosterFontScale(lineTypography?.bottomLineFontSize ?? fontSize);
+  const headingFamily = lineTypography?.headingFontFamily?.trim() || fontFamily || "Times New Roman";
+  const midlineFamily = lineTypography?.midlineFontFamily?.trim() || fontFamily || "Times New Roman";
+  const bottomLineFamily = lineTypography?.bottomLineFontFamily?.trim() || fontFamily || "Times New Roman";
   const attributionColor = computeAttributionColor(textColor, landColor, showOverlay);
   const attributionAlpha = showOverlay ? 0.65 : 0.95;
 
-  const cleanFont = (fontFamily || "Times New Roman").replace(/['"]/g, "").trim();
-  const isSerif = /serif|times|cormorant|baskerville|lora|merriweather|playfair/i.test(cleanFont);
-  const fontFallback = isSerif ? "'Times New Roman', Times, serif" : "'Space Grotesk', sans-serif";
-  const titleFontFamily = cleanFont ? `"${cleanFont}", ${fontFallback}` : "'Times New Roman', Times, serif";
-  const bodyFontFamily = isSerif ? `"${cleanFont}", 'Times New Roman', Times, serif` : '"IBM Plex Mono", monospace';
+  const getFontStacks = (family: string) => {
+    const clean = family.replace(/['"]/g, "").trim();
+    const serif = /serif|times|cormorant|baskerville|lora|merriweather|playfair/i.test(clean);
+    return {
+      title: clean ? `"${clean}", ${serif ? "'Times New Roman', Times, serif" : "'Space Grotesk', sans-serif"}` : "'Space Grotesk', sans-serif",
+      body: serif ? `"${clean}", 'Times New Roman', Times, serif` : (clean ? `"${clean}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace'),
+    };
+  };
+  const titleFontFamily = getFontStacks(headingFamily).title;
+  const midlineFontFamily = getFontStacks(midlineFamily).title;
+  const bottomLineFonts = getFontStacks(bottomLineFamily);
+  const bodyFontFamily = getFontStacks(fontFamily || "Times New Roman").body;
 
   const dimScale = Math.min(width, height) / TEXT_DIMENSION_REFERENCE_PX;
   const maxContentWidth = width * 0.88;
@@ -56,7 +70,7 @@ export function drawPosterText(
   if (showPosterText) {
     const aspectRatio = width / Math.max(1, height);
     const cityLayout = resolveCityDisplay(city, aspectRatio);
-    let cityFontSize = CITY_FONT_BASE_PX * dimScale * fontScale * (cityLayout.isMultiLine ? 0.85 : computeCityFontScale(city));
+    let cityFontSize = CITY_FONT_BASE_PX * dimScale * headingScale * (cityLayout.isMultiLine ? 0.85 : computeCityFontScale(city));
 
     // Auto-fit city label: measure text and ensure it never overflows canvas edges
     ctx.font = `700 ${cityFontSize}px ${titleFontFamily}`;
@@ -67,22 +81,22 @@ export function drawPosterText(
     }
 
     const hasTagline = Boolean(customDate && customDate.trim());
-    let countryFontSize = COUNTRY_FONT_BASE_PX * dimScale * fontScale;
-    ctx.font = `600 ${countryFontSize}px ${titleFontFamily}`;
+    let countryFontSize = COUNTRY_FONT_BASE_PX * dimScale * midlineScale;
+    ctx.font = `600 ${countryFontSize}px ${midlineFontFamily}`;
     const measuredCountryWidth = ctx.measureText(country.toUpperCase()).width;
     if (measuredCountryWidth > maxContentWidth && measuredCountryWidth > 0) {
       countryFontSize = Math.max(10 * dimScale * fontScale, countryFontSize * (maxContentWidth / measuredCountryWidth));
     }
 
     const coordsString = formatCoordinates(center.lat, center.lon);
-    let coordinateFontSize = COORDS_FONT_BASE_PX * dimScale * fontScale;
-    ctx.font = `500 ${coordinateFontSize}px ${bodyFontFamily}`;
+    let coordinateFontSize = COORDS_FONT_BASE_PX * dimScale * bottomLineScale;
+    ctx.font = `500 ${coordinateFontSize}px ${bottomLineFonts.body}`;
     const measuredCoordsWidth = ctx.measureText(coordsString).width;
     if (measuredCoordsWidth > maxContentWidth && measuredCoordsWidth > 0) {
       coordinateFontSize = Math.max(8 * dimScale * fontScale, coordinateFontSize * (maxContentWidth / measuredCoordsWidth));
     }
 
-    const taglineFontSize = 68 * dimScale * fontScale;
+    const taglineFontSize = 68 * dimScale * bottomLineScale;
     const cityY = height * TEXT_CITY_Y_RATIO;
     const countryY = height * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
     const taglineY = height * (country ? .918 : .89);
@@ -130,7 +144,7 @@ export function drawPosterText(
     if ("letterSpacing" in ctx) {
       (ctx as any).letterSpacing = `${Math.round(countryFontSize * 0.22)}px`;
     }
-    ctx.font = `600 ${countryFontSize}px ${titleFontFamily}`;
+    ctx.font = `600 ${countryFontSize}px ${midlineFontFamily}`;
     ctx.fillText(country.toUpperCase(), anchorX, countryY);
 
     if (hasTagline) {
@@ -138,7 +152,7 @@ export function drawPosterText(
       if ("letterSpacing" in ctx) {
         (ctx as any).letterSpacing = `${Math.round(taglineFontSize * 0.08)}px`;
       }
-      ctx.font = `500 ${taglineFontSize}px ${bodyFontFamily}`;
+      ctx.font = `500 ${taglineFontSize}px ${bottomLineFonts.body}`;
       ctx.fillText(customDate!.trim(), anchorX, taglineY);
       ctx.globalAlpha = 1;
     }
@@ -147,7 +161,7 @@ export function drawPosterText(
     if ("letterSpacing" in ctx) {
       (ctx as any).letterSpacing = `${Math.round(coordinateFontSize * 0.10)}px`;
     }
-    ctx.font = `500 ${coordinateFontSize}px ${bodyFontFamily}`;
+    ctx.font = `500 ${coordinateFontSize}px ${bottomLineFonts.body}`;
     ctx.fillText(coordsString, anchorX, coordinatesY);
     ctx.globalAlpha = 1;
     if ("letterSpacing" in ctx) {
