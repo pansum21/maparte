@@ -1006,3 +1006,39 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
     background: rgba(10, 22, 34, .96);
   }
 }
+
+
+/* Four compact square map thumbnails per mobile row. This final override
+   also supersedes the older three-column theme-card sizing rules above. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  [data-mobile-tab="theme"] .theme-card-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-auto-rows: auto !important;
+    align-items: stretch;
+    gap: 5px !important;
+  }
+
+  [data-mobile-tab="theme"] .theme-card-list > .theme-card-item {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 1 / 1;
+    flex: none !important;
+    margin: 0 !important;
+  }
+
+  [data-mobile-tab="theme"] .theme-card-list > .theme-card-item > .theme-card {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    aspect-ratio: 1 / 1;
+    padding: 0 !important;
+  }
+
+  [data-mobile-tab="theme"] .theme-card-list > .theme-card-item .theme-card-name,
+  [data-mobile-tab="theme"] .theme-card-list > .theme-card-item .theme-card-name-shadow {
+    display: none !important;
+  }
+}
