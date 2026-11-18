@@ -24,10 +24,15 @@ import {
   COUNTRY_FONT_BASE_PX,
   COORDS_FONT_BASE_PX,
   ATTRIBUTION_FONT_BASE_PX,
+  PHYSICAL_DIVIDER_GAP_MM,
+  PHYSICAL_COUNTRY_GAP_MM,
+  PHYSICAL_TAGLINE_GAP_MM,
+  PHYSICAL_COORDS_GAP_MM,
   getPosterFontScale,
   formatCityLabel,
   resolveCityDisplay,
   computeCityFontScale,
+  computeCityLetterSpacing,
   computeAttributionColor,
   ensureContrastTextColor,
 } from "@/features/poster/domain/textLayout";
@@ -534,9 +539,10 @@ export async function createLayeredSvgBlobFromMap({
     if (showPosterText && !squareCaptionGeometry) {
       const hasTagline = Boolean(customDate && customDate.trim().length > 0);
       const aspectRatio = exportWidth / Math.max(1, exportHeight);
-      const cityLayout = resolveCityDisplay(displayCity, aspectRatio);
+      const cityLayout = resolveCityDisplay(displayCity, aspectRatio, false);
+      const cityFontScale = computeCityFontScale(displayCity, cityLayout.lines, false);
       
-      let cityFontSize = CITY_FONT_BASE_PX * dimScale * fontScale * (cityLayout.isMultiLine ? 0.85 : computeCityFontScale(displayCity));
+      let cityFontSize = CITY_FONT_BASE_PX * dimScale * fontScale * cityFontScale;
 
       // SVG auto-fit: ensure city name never overflows export width
       const longestCityLine = cityLayout.lines.reduce((max, l) => l.length > max.length ? l : max, "");
@@ -559,10 +565,12 @@ export async function createLayeredSvgBlobFromMap({
       }
 
       const taglineFontSize = Math.max(12 * dimScale * fontScale, Math.round(countryFontSize * 0.88));
-      const cityY = exportHeight * TEXT_CITY_Y_RATIO;
-      const countryY = exportHeight * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
-      const taglineY = exportHeight * (displayCountry ? .918 : .89);
-      const coordinatesY = exportHeight * (hasTagline ? (displayCountry ? .938 : .918) : (displayCountry ? TEXT_COORDS_Y_RATIO : .9));
+      const pxPerMm = exportHeight / (29.7 * 10);
+      const gapDividerPx = PHYSICAL_DIVIDER_GAP_MM * pxPerMm; // Strictly 2.5 mm
+      const gapCountryPx = PHYSICAL_COUNTRY_GAP_MM * pxPerMm; // Strictly 2.8 mm
+      const gapTaglinePx = PHYSICAL_TAGLINE_GAP_MM * pxPerMm;
+      const gapCoordsPx = PHYSICAL_COORDS_GAP_MM * pxPerMm;
+
       const lineW = Math.max(1, 3 * dimScale);
       const textX = textAlign === "left" ? exportWidth * 0.05 : textAlign === "right" ? exportWidth * 0.95 : exportWidth * 0.5;
       const textAnchor = textAlign === "left" ? "start" : textAlign === "right" ? "end" : "middle";
@@ -570,10 +578,12 @@ export async function createLayeredSvgBlobFromMap({
       const lineX1 = textAlign === "left" ? exportWidth * 0.05 : textAlign === "right" ? exportWidth * 0.95 - dividerWidth : exportWidth * 0.5 - dividerWidth / 2;
       const lineX2 = lineX1 + dividerWidth;
 
+      const cityStartY = exportHeight * (cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO);
+      const lineSpacing = cityFontSize * 1.08;
+
       if (cityLayout.isMultiLine) {
-        const lineSpacing = cityFontSize * 1.08;
-        const y1 = cityY - (lineSpacing * 0.46);
-        const y2 = cityY + (lineSpacing * 0.54);
+        const y1 = cityStartY - (lineSpacing * 0.46);
+        const y2 = cityStartY + (lineSpacing * 0.54);
         const isPrefix = cityLayout.lines[0].includes("CITY OF");
         const size1 = isPrefix ? Math.round(cityFontSize * 0.68) : cityFontSize;
         const weight1 = isPrefix ? "500" : "700";
@@ -585,27 +595,36 @@ export async function createLayeredSvgBlobFromMap({
 `;
       } else {
         vectorTypographySvg += `
-  <text x="${textX}" y="${cityY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" letter-spacing="0.16em" fill="${textColor}">${escapeXml(cityLayout.lines[0])}</text>
+  <text x="${textX}" y="${cityStartY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${cityFontSize}" font-weight="700" letter-spacing="0.16em" fill="${textColor}">${escapeXml(cityLayout.lines[0])}</text>
 `;
       }
 
-      const dividerY = cityLayout.isMultiLine ? (cityY + (cityFontSize * 0.54) + (countryY - (cityY + cityFontSize * 0.54)) * 0.4) : (exportHeight * TEXT_DIVIDER_Y_RATIO);
+      const cityBottomY = cityLayout.isMultiLine ? (cityStartY + lineSpacing * 0.54 + cityFontSize * 0.4) : (cityStartY + cityFontSize * 0.45);
+      const dividerY = cityBottomY + gapDividerPx;
+
       if (displayCity && displayCountry) {
         vectorTypographySvg += `
   <line x1="${lineX1}" y1="${dividerY}" x2="${lineX2}" y2="${dividerY}" stroke="${textColor}" stroke-width="${lineW}" stroke-linecap="round" opacity="0.8" />
 `;
       }
 
+      const countryY = dividerY + gapCountryPx + countryFontSize * 0.45;
       vectorTypographySvg += `
   <text x="${textX}" y="${countryY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="600" letter-spacing="0.22em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>
 `;
+      let nextY = countryY + countryFontSize * 0.5;
+
       if (hasTagline) {
+        nextY += gapTaglinePx + taglineFontSize * 0.45;
         vectorTypographySvg += `
-  <text x="${textX}" y="${taglineY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${taglineFontSize}" font-weight="500" letter-spacing="0.08em" opacity="0.88" fill="${textColor}">${escapeXml(customDate!.trim())}</text>
+  <text x="${textX}" y="${nextY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${taglineFontSize}" font-weight="500" letter-spacing="0.08em" opacity="0.88" fill="${textColor}">${escapeXml(customDate!.trim())}</text>
 `;
+        nextY += taglineFontSize * 0.5;
       }
+
+      nextY += gapCoordsPx + coordinateFontSize * 0.45;
       vectorTypographySvg += `
-  <text x="${textX}" y="${coordinatesY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="500" letter-spacing="0.10em" opacity="0.95" fill="${textColor}">${escapeXml(coordsText)}</text>
+  <text x="${textX}" y="${nextY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordinateFontSize}" font-weight="500" letter-spacing="0.10em" opacity="0.95" fill="${textColor}">${escapeXml(coordsText)}</text>
 `;
     }
 
@@ -669,26 +688,74 @@ export async function createLayeredSvgBlobFromMap({
     const squareCaptionSvg = squareCaptionGeometry
       ? (() => {
           const g = squareCaptionGeometry;
+          const isLandscapeSquare = g.posterWidth > g.posterHeight;
           const anchorX = g.captionX;
           const textAnchor = g.captionAlign === "left" ? "start" : g.captionAlign === "right" ? "end" : "middle";
-          const captionY = g.captionY;
-          const countryY = captionY + pageHeight * 0.044;
-          const dateY = countryY + pageHeight * 0.032;
-          const coordsY = dateY + (customDate?.trim() ? pageHeight * 0.028 : 0);
+          const pxPerMm = pageHeight / (isLandscapeSquare ? 210 : 297);
+          const gapDividerPx = PHYSICAL_DIVIDER_GAP_MM * pxPerMm; // Strictly 2.5 mm
+          const gapCountryPx = PHYSICAL_COUNTRY_GAP_MM * pxPerMm; // Strictly 2.8 mm
+          const gapTaglinePx = PHYSICAL_TAGLINE_GAP_MM * pxPerMm;
+          const gapCoordsPx = PHYSICAL_COORDS_GAP_MM * pxPerMm;
+
           const base = Math.min(pageWidth, pageHeight) / 1000 * fontScale;
           const creditY = pageHeight - g.safeInsetY;
-          const cityLines = resolveCityDisplay(displayCity, pageWidth / Math.max(1, pageHeight)).lines;
-          const longestCityLine = cityLines.reduce((longest, line) => line.length > longest.length ? line : longest, "");
-          const approxCityWidth = longestCityLine.length * Math.max(20, 48 * base) * 0.65;
-          const dividerWidth = Math.min(g.captionWidth * 0.92, Math.max(pageWidth * 0.08, approxCityWidth));
+
+          // City resolution with multi-line wrap
+          const cityLayout = resolveCityDisplay(displayCity, pageWidth / pageHeight, isLandscapeSquare);
+          const cityFontScaleFactor = computeCityFontScale(displayCity, cityLayout.lines, isLandscapeSquare);
+          const baseCityFontSize = Math.max(16, 48 * base) * cityFontScaleFactor;
+          const maxLineLength = Math.max(...cityLayout.lines.map((l) => l.length), 1);
+          const letterSpacingEm = computeCityLetterSpacing(maxLineLength, isLandscapeSquare);
+
+          const countryFontSize = Math.max(13, 25 * base);
+          const taglineFontSize = Math.max(11, 19 * base);
+          const coordsFontSize = Math.max(10, 16 * base);
+          const lineW = Math.max(1, pageWidth / 1000 * 2);
+
+          // Divider width matching city text width
+          const longestLine = cityLayout.lines.reduce((a, b) => a.length >= b.length ? a : b, "");
+          const estimatedCityTextWidth = longestLine.length * baseCityFontSize * (0.60 + parseFloat(letterSpacingEm));
+          const dividerWidth = Math.min(g.captionWidth * 0.92, Math.max(pageWidth * 0.08, estimatedCityTextWidth));
           const dividerX1 = g.captionAlign === "left" ? anchorX : g.captionAlign === "right" ? anchorX - dividerWidth : anchorX - dividerWidth / 2;
           const dividerX2 = dividerX1 + dividerWidth;
+
+          // Sequential Y flow starting around g.captionY
+          const lineSpacing = baseCityFontSize * 1.15;
+          const totalCityHeight = cityLayout.isMultiLine ? lineSpacing * 1.8 : baseCityFontSize;
+          const cityStartY = g.captionY - totalCityHeight / 2;
+
+          let citySvg = "";
+          if (cityLayout.isMultiLine) {
+            cityLayout.lines.forEach((line, idx) => {
+              const y = cityStartY + (idx * lineSpacing);
+              citySvg += `\n  <text x="${anchorX}" y="${y}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${baseCityFontSize}" font-weight="600" letter-spacing="${letterSpacingEm}" fill="${textColor}">${escapeXml(line)}</text>`;
+            });
+          } else {
+            citySvg = `\n  <text x="${anchorX}" y="${cityStartY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${baseCityFontSize}" font-weight="600" letter-spacing="${letterSpacingEm}" fill="${textColor}">${escapeXml(cityLayout.lines[0] || displayCity)}</text>`;
+          }
+
+          const cityBottomY = cityLayout.isMultiLine ? (cityStartY + lineSpacing * 0.54 + baseCityFontSize * 0.4) : (cityStartY + baseCityFontSize * 0.45);
+          const dividerY = cityBottomY + gapDividerPx;
+          const countryY = dividerY + gapCountryPx + countryFontSize * 0.45;
+          let nextY = countryY + countryFontSize * 0.5;
+
+          let taglineSvg = "";
+          if (customDate?.trim()) {
+            nextY += gapTaglinePx + taglineFontSize * 0.45;
+            taglineSvg = `\n  <text x="${anchorX}" y="${nextY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${taglineFontSize}" fill="${textColor}">${escapeXml(customDate.trim())}</text>`;
+            nextY += taglineFontSize * 0.5;
+          }
+
+          nextY += gapCoordsPx + coordsFontSize * 0.45;
+          const coordsSvg = `\n  <text x="${anchorX}" y="${nextY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${coordsFontSize}" opacity="0.72" fill="${textColor}">${escapeXml(formatCoordinates(center.lat, center.lon))}</text>`;
+
           const captionSvg = showPosterText ? `
-  <text x="${anchorX}" y="${captionY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(20, 48 * base)}" font-weight="600" fill="${textColor}">${escapeXml(formatCityLabel(displayCity))}</text>
-  ${displayCity && displayCountry ? `<line x1="${dividerX1}" y1="${captionY + pageHeight * 0.018}" x2="${dividerX2}" y2="${captionY + pageHeight * 0.018}" stroke="${textColor}" stroke-opacity="0.55" stroke-width="${Math.max(1, pageWidth / 1000 * 2)}" />` : ""}
-  ${displayCountry ? `<text x="${anchorX}" y="${countryY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${Math.max(13, 25 * base)}" font-weight="400" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>` : ""}
-  ${customDate?.trim() ? `<text x="${anchorX}" y="${dateY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(11, 19 * base)}" fill="${textColor}">${escapeXml(customDate.trim())}</text>` : ""}
-  <text x="${anchorX}" y="${coordsY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${bodyFontFamily}" font-size="${Math.max(10, 16 * base)}" opacity="0.72" fill="${textColor}">${escapeXml(formatCoordinates(center.lat, center.lon))}</text>` : "";
+  ${citySvg}
+  ${displayCity && displayCountry ? `<line x1="${dividerX1}" y1="${dividerY}" x2="${dividerX2}" y2="${dividerY}" stroke="${textColor}" stroke-opacity="0.8" stroke-width="${lineW}" stroke-linecap="round" />` : ""}
+  ${displayCountry ? `<text x="${anchorX}" y="${countryY}" text-anchor="${textAnchor}" dominant-baseline="central" font-family="${titleFontFamily}" font-size="${countryFontSize}" font-weight="400" letter-spacing="0.1em" fill="${textColor}">${escapeXml(displayCountry.toUpperCase())}</text>` : ""}
+  ${taglineSvg}
+  ${coordsSvg}` : "";
+
           return `<g id="square-caption-typography">${captionSvg}</g>
 <g id="square-caption-credits" font-family="${bodyFontFamily}" font-size="${Math.max(9, 13 * Math.min(pageWidth, pageHeight) / 1000)}" opacity="0.68">
 <text x="${pageWidth - g.safeInsetX}" y="${creditY}" text-anchor="end" fill="${attributionColor}">© OpenStreetMap contributors</text>

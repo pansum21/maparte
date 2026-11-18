@@ -44,6 +44,8 @@ interface PosterTextOverlayProps {
   squareCaption?: boolean;
   squareCaptionGeometry?: SquareCaptionGeometry | null;
   isCustomColor?: boolean;
+  posterWidthCm?: number;
+  posterHeightCm?: number;
 }
 
 /**

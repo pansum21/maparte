@@ -684,6 +684,60 @@
   box-shadow: 0 0 0 1px rgba(7, 16, 24, 0.68);
 }
 
+/* ── Unified Caption Stack: flow layout guaranteeing exact physical mm gaps ── */
+.poster-caption-stack {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.poster-caption-stack .poster-city {
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  transform: none;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  line-height: 1.08;
+  box-sizing: border-box;
+}
+
+.poster-caption-stack .poster-divider {
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  transform: none;
+  height: 0;
+  border: 0;
+  border-top: 1.5px solid;
+  opacity: 0.85;
+  box-sizing: border-box;
+}
+
+.poster-caption-stack .poster-country,
+.poster-caption-stack .poster-tagline,
+.poster-caption-stack .poster-coords {
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  transform: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .poster-city {
   position: absolute;
   left: 0;

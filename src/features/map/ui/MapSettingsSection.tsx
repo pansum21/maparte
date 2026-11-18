@@ -317,8 +317,21 @@ export default function MapSettingsSection({
   }
 
   function handleLayoutSelectInline(layoutId: string) {
+    // A regular paper/wallpaper layout takes precedence over frame compositions.
+    // Clear any previously selected frame so the newly tapped layout is visible.
+    onFrameLayoutChange?.("none");
     onLayoutChange(form.layout === layoutId ? "" : layoutId);
     setIsLayoutEditing(false);
+  }
+
+  function handleFrameLayoutSelectInline(frameLayoutId: string) {
+    const nextFrameLayout = form.frameLayout === frameLayoutId ? "none" : frameLayoutId;
+    onFrameLayoutChange?.(nextFrameLayout);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent(nextFrameLayout === "none"
+        ? "maparte:disable-poster-layout"
+        : "maparte:enable-poster-layout"));
+    }
   }
 
   function handleSwatchClick(key: ThemeColorKey) {
@@ -648,7 +661,7 @@ export default function MapSettingsSection({
                     type="button"
                     className={`frame-layout-option${(form.frameLayout ?? "none") === id ? " is-selected" : ""}`}
                     aria-pressed={(form.frameLayout ?? "none") === id}
-                    onClick={() => onFrameLayoutChange?.(id)}
+                    onClick={() => handleFrameLayoutSelectInline(id)}
                   >
                     <span className={`frame-layout-swatch frame-layout-swatch--${id}`} aria-hidden="true">
                       <i /><b /><em />

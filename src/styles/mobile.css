@@ -1103,7 +1103,7 @@
   .mobile-location-row-wrap {
     display: block;
     position: relative;
-    margin: 3px 8px 0;
+    margin: 0 8px 0;
     z-index: 30;
     pointer-events: auto;
   }
