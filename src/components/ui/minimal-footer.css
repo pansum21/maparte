@@ -1,0 +1,26 @@
+.minimal-footer{height:auto;min-height:0;display:block;padding:clamp(28px,5vw,58px) clamp(22px,6vw,88px) 18px;letter-spacing:normal;font-family:"Instrument Sans",Arial,sans-serif;color:var(--ink)}
+.minimal-footer__main{display:grid;grid-template-columns:minmax(0,1.7fr) repeat(2,minmax(130px,.62fr));gap:clamp(24px,5vw,72px);max-width:1200px;margin:0 auto;padding-bottom:34px}
+.minimal-footer__brand{max-width:360px}
+.minimal-footer__mark{display:inline-flex;align-items:center;gap:10px;font-size:15px;font-weight:700;letter-spacing:.16em}
+.minimal-footer__mark svg{width:25px;height:25px;color:#9fe1d8;stroke-width:1.6}
+.minimal-footer__brand p{max-width:30ch;margin:14px 0 20px;color:rgba(233,241,232,.68);font-size:13px;line-height:1.6;letter-spacing:.01em}
+.minimal-footer__contact{display:inline-flex;align-items:center;gap:8px;color:rgba(233,241,232,.78);font-size:12px;letter-spacing:.01em;transition:color .18s ease}
+.minimal-footer__contact svg{width:14px;height:14px}
+.minimal-footer__contact svg:last-child{width:12px;height:12px;opacity:.65}
+.minimal-footer__contact:hover,.minimal-footer__links a:hover,.minimal-footer__bottom a:hover{color:#b8f4e8}
+.minimal-footer__links{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.minimal-footer__links h2{margin:2px 0 5px;color:rgba(233,241,232,.48);font:600 9px "Spline Sans Mono",monospace;letter-spacing:.15em;text-transform:uppercase}
+.minimal-footer__links a{display:inline-flex;align-items:center;gap:5px;color:rgba(233,241,232,.84);font-size:12px;line-height:1.4;transition:color .18s ease}
+.minimal-footer__links a svg{width:11px;height:11px;opacity:0;transform:translate(-3px,3px);transition:opacity .18s ease,transform .18s ease}
+.minimal-footer__links a:hover svg,.minimal-footer__links a:focus-visible svg{opacity:.8;transform:translate(0,0)}
+.minimal-footer__bottom{display:flex;justify-content:space-between;align-items:center;gap:16px;max-width:1200px;margin:0 auto;padding-top:15px;border-top:1px solid rgba(233,241,232,.16);color:rgba(233,241,232,.48);font:9px "Spline Sans Mono",monospace;letter-spacing:.045em}
+.minimal-footer__bottom a{color:rgba(233,241,232,.7);transition:color .18s ease}
+.minimal-footer a:focus-visible{outline:2px solid #b8f4e8;outline-offset:4px;border-radius:3px}
+@media(max-width:700px){.minimal-footer{padding:28px 22px 16px}.minimal-footer__main{grid-template-columns:1fr 1fr;gap:26px 18px;padding-bottom:24px}.minimal-footer__brand{grid-column:1/-1}.minimal-footer__bottom{align-items:flex-start;flex-direction:column;gap:9px;font-size:8px}}
+@media(prefers-reduced-motion:reduce){.minimal-footer__contact,.minimal-footer__links a,.minimal-footer__links a svg,.minimal-footer__bottom a{transition:none}}
+.journey-footer.minimal-footer{height:auto;min-height:0;display:block;align-items:initial;justify-content:initial;flex-wrap:initial;gap:0;padding:clamp(28px,5vw,58px) clamp(22px,6vw,88px) 18px;font:inherit;letter-spacing:normal}
+.journey-footer.minimal-footer .minimal-footer__links{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.journey-footer.minimal-footer .minimal-footer__links a{font:400 12px/1.4 "Instrument Sans",Arial,sans-serif;letter-spacing:normal;color:rgba(233,241,232,.84)}
+.journey-footer.minimal-footer .minimal-footer__links a:hover{color:#b8f4e8}
+.journey-footer.minimal-footer .minimal-footer__mark span{padding-left:0;color:inherit;font-weight:700;letter-spacing:.16em}
+@media(max-width:700px){.journey-footer.minimal-footer{padding:28px 22px 16px}}
