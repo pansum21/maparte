@@ -28,6 +28,12 @@ interface PosterTextOverlayProps {
   lon: number;
   fontFamily: string;
   fontSize: number;
+  headingFontFamily?: string;
+  headingFontSize?: number;
+  midlineFontFamily?: string;
+  midlineFontSize?: number;
+  bottomLineFontFamily?: string;
+  bottomLineFontSize?: number;
   textAlign: "left" | "center" | "right";
   textColor: string;
   landColor: string;
@@ -52,6 +58,12 @@ export default function PosterTextOverlay({
   lon,
   fontFamily,
   fontSize,
+  headingFontFamily: headingFontFamilyProp,
+  headingFontSize: headingFontSizeProp,
+  midlineFontFamily: midlineFontFamilyProp,
+  midlineFontSize: midlineFontSizeProp,
+  bottomLineFontFamily: bottomLineFontFamilyProp,
+  bottomLineFontSize: bottomLineFontSizeProp,
   textAlign,
   textColor,
   landColor,
@@ -65,21 +77,33 @@ export default function PosterTextOverlay({
 }: PosterTextOverlayProps) {
   const toCqMin = (px: number) => (px / TEXT_DIMENSION_REFERENCE_PX) * 100;
   const fontScale = getPosterFontScale(fontSize);
-
-  const isSerif = /serif|times|cormorant|baskerville|lora|merriweather|playfair/i.test(fontFamily || "");
-  const titleFont = fontFamily
-    ? `"${fontFamily}", ${isSerif ? "'Times New Roman', Times, serif" : '"Space Grotesk", sans-serif'}`
-    : '"Space Grotesk", sans-serif';
-  const bodyFont = isSerif
-    ? `"${fontFamily}", 'Times New Roman', Times, serif`
-    : (fontFamily ? `"${fontFamily}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace');
+  const headingScale = getPosterFontScale(headingFontSizeProp ?? fontSize);
+  const midlineScale = getPosterFontScale(midlineFontSizeProp ?? fontSize);
+  const bottomLineScale = getPosterFontScale(bottomLineFontSizeProp ?? fontSize);
+  const headingFamily = headingFontFamilyProp?.trim() || fontFamily;
+  const midlineFamily = midlineFontFamilyProp?.trim() || fontFamily;
+  const bottomLineFamily = bottomLineFontFamilyProp?.trim() || fontFamily;
+  const fontStack = (family: string, body = false) => {
+    const isSerif = /serif|times|cormorant|baskerville|lora|merriweather|playfair/i.test(family || "");
+    if (body) return isSerif
+      ? `"${family}", 'Times New Roman', Times, serif`
+      : (family ? `"${family}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace');
+    return family
+      ? `"${family}", ${isSerif ? "'Times New Roman', Times, serif" : '"Space Grotesk", sans-serif'}`
+      : '"Space Grotesk", sans-serif';
+  };
+  const titleFont = fontStack(fontFamily);
+  const headingFont = fontStack(headingFamily);
+  const midlineFont = fontStack(midlineFamily);
+  const bottomLineFont = fontStack(bottomLineFamily, true);
+  const bodyFont = fontStack(fontFamily, true);
 
   const cityLayout = resolveCityDisplay(city);
   const cityFontScale = computeCityFontScale(city, cityLayout.lines);
-  const cityFontSize = `${toCqMin(CITY_FONT_BASE_PX * fontScale) * cityFontScale}cqmin`;
-  const countryFontSize = `${toCqMin(COUNTRY_FONT_BASE_PX * fontScale)}cqmin`;
-  const coordsFontSize = `${toCqMin(COORDS_FONT_BASE_PX * fontScale)}cqmin`;
-  const taglineFontSize = `${toCqMin(68 * fontScale)}cqmin`;
+  const cityFontSize = `${toCqMin(CITY_FONT_BASE_PX * headingScale) * cityFontScale}cqmin`;
+  const countryFontSize = `${toCqMin(COUNTRY_FONT_BASE_PX * midlineScale)}cqmin`;
+  const coordsFontSize = `${toCqMin(COORDS_FONT_BASE_PX * bottomLineScale)}cqmin`;
+  const taglineFontSize = `${toCqMin(68 * bottomLineScale)}cqmin`;
   const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX * fontScale)}cqmin`;
   const maparteFontSize = `${toCqMin(80 * fontScale)}cqmin`;
   const safeTextColor = ensureContrastTextColor(textColor, landColor, isCustomColor);
@@ -92,11 +116,11 @@ export default function PosterTextOverlay({
   const cityY = captionY;
   const hasTagline = Boolean(customDate && customDate.trim());
   const titleHeightPercent =
-    toCqMin(CITY_FONT_BASE_PX * fontScale) * cityFontScale * 1.08 * cityLayout.lines.length;
+    toCqMin(CITY_FONT_BASE_PX * headingScale) * cityFontScale * 1.08 * cityLayout.lines.length;
   const dividerOffsetPercent = titleHeightPercent / 2 + 1;
-  const countryHeightPercent = toCqMin(COUNTRY_FONT_BASE_PX * fontScale) * 1.2;
-  const coordsHeightPercent = toCqMin(COORDS_FONT_BASE_PX * fontScale) * 1.2;
-  const taglineHeightPercent = toCqMin(68 * fontScale) * 1.2;
+  const countryHeightPercent = toCqMin(COUNTRY_FONT_BASE_PX * midlineScale) * 1.2;
+  const coordsHeightPercent = toCqMin(COORDS_FONT_BASE_PX * bottomLineScale) * 1.2;
+  const taglineHeightPercent = toCqMin(68 * bottomLineScale) * 1.2;
   const countryOffsetPercent = dividerOffsetPercent + countryHeightPercent / 2 + 1;
   const taglineOffsetPercent = countryOffsetPercent + countryHeightPercent / 2 + taglineHeightPercent / 2 + 1;
   const coordsOffsetPercent = hasTagline
@@ -130,7 +154,7 @@ export default function PosterTextOverlay({
       const pct = (maxLineWidth / parentWidth) * 100;
       setCityTextWidthPercent(Math.min(92, Math.max(8, Number(pct.toFixed(2)))));
     }
-  }, [city, cityLayout, fontFamily, fontSize, squareCaption, isLandscape, align]);
+  }, [city, cityLayout, fontFamily, fontSize, headingFamily, headingScale, squareCaption, isLandscape, align]);
 
   const approxCharUnits = Math.max(...cityLayout.lines.map((line) => line.length), 4);
   const fallbackDividerWidth = squareCaption
@@ -246,7 +270,7 @@ export default function PosterTextOverlay({
             ref={cityRef}
             className="poster-city"
             style={{
-              fontFamily: titleFont,
+              fontFamily: headingFont,
               ...captionTextStyle,
               top: squareCaption ? `${cityY}%` : `${(cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO) * 100}%`,
               fontSize: cityFontSize,
@@ -280,7 +304,7 @@ export default function PosterTextOverlay({
           {country ? <p
             className="poster-country"
             style={{
-              fontFamily: titleFont,
+              fontFamily: midlineFont,
               ...captionTextStyle,
               top: squareCaption ? `${cityY + countryOffsetPercent}%` : `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
               fontSize: countryFontSize,
@@ -292,7 +316,7 @@ export default function PosterTextOverlay({
             <p
               className="poster-tagline"
               style={{
-                fontFamily: bodyFont,
+                fontFamily: bottomLineFont,
                 ...captionTextStyle,
                 top: squareCaption ? `${cityY + taglineOffsetPercent}%` : `${(country ? .918 : .89) * 100}%`,
                 fontSize: taglineFontSize,
@@ -305,7 +329,7 @@ export default function PosterTextOverlay({
           <p
             className="poster-coords"
             style={{
-              fontFamily: bodyFont,
+              fontFamily: bottomLineFont,
               ...captionTextStyle,
               top: squareCaption ? `${cityY + coordsOffsetPercent}%` : `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
               fontSize: coordsFontSize,
