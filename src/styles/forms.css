@@ -3861,3 +3861,50 @@ button.route-card__endpoint-option.is-selected {
 }
 
 
+
+
+.poster-line-typography {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.poster-line-typography__row {
+  display: grid;
+  grid-template-columns: minmax(68px, .72fr) minmax(0, 1.55fr) 60px;
+  align-items: center;
+  gap: 6px;
+}
+
+.poster-line-typography__row > label {
+  min-width: 0;
+  margin: 0;
+  color: var(--text-secondary, #a9c0d2);
+  font-size: .72rem;
+  line-height: 1.15;
+}
+
+.poster-line-typography__family,
+.poster-line-typography__size {
+  min-width: 0;
+  width: 100%;
+  height: 34px;
+  padding: 4px 7px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--item-bg);
+  color: var(--ink);
+  font: 500 .78rem/1.2 "Spline Sans Mono", monospace;
+}
+
+.poster-line-typography__size {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 768px) {
+  .poster-line-typography { gap: 5px; margin-top: 8px; }
+  .poster-line-typography__row { grid-template-columns: minmax(62px, .72fr) minmax(0, 1.5fr) 54px; gap: 5px; }
+  .poster-line-typography__family,
+  .poster-line-typography__size { height: 32px; padding: 3px 5px; font-size: .72rem; }
+}
