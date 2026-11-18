@@ -245,15 +245,29 @@ export async function compositeExport(
     ctx.restore();
 
     const textColor = theme.ui.text || "#171717";
-    const font = fontFamily ? `"${fontFamily}", "Space Grotesk", sans-serif` : '"Space Grotesk", sans-serif';
-    const mono = fontFamily ? `"${fontFamily}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace';
+    const headingFamily = headingFontFamily?.trim() || fontFamily;
+    const midlineFamily = midlineFontFamily?.trim() || fontFamily;
+    const bottomLineFamily = bottomLineFontFamily?.trim() || fontFamily;
+    const fontFor = (family: string | undefined, body = false) => {
+      const clean = (family || "").replace(/['"]/g, "").trim();
+      const serif = /serif|times|cormorant|baskerville|lora|merriweather|playfair/i.test(clean);
+      if (body) return serif ? `"${clean}", 'Times New Roman', Times, serif` : (clean ? `"${clean}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace');
+      return clean ? `"${clean}", ${serif ? "'Times New Roman', Times, serif" : "'Space Grotesk", sans-serif"}` : '"Space Grotesk", sans-serif';
+    };
+    const headingFont = fontFor(headingFamily);
+    const midlineFont = fontFor(midlineFamily);
+    const bottomLineFont = fontFor(bottomLineFamily, true);
+    const creditFont = fontFor(fontFamily, true);
+    const headingScale = getPosterFontScale(headingFontSize ?? fontSize);
+    const midlineScale = getPosterFontScale(midlineFontSize ?? fontSize);
+    const bottomLineScale = getPosterFontScale(bottomLineFontSize ?? fontSize);
     const base = Math.min(posterWidth, posterHeight) / 1000;
     const captionY = squareCaptionGeometry.captionY;
     ctx.fillStyle = textColor;
     ctx.textAlign = squareCaptionGeometry.captionAlign;
     ctx.textBaseline = "middle";
     if (showPosterText) {
-      ctx.font = `600 ${Math.max(20, 48 * base * getPosterFontScale(fontSize))}px ${font}`;
+      ctx.font = `600 ${Math.max(20, 48 * base * headingScale)}px ${headingFont}`;
       ctx.fillText(formatCityLabel(displayCity), squareCaptionGeometry.captionX, captionY, squareCaptionGeometry.captionWidth);
       if (displayCity && displayCountry) {
         ctx.globalAlpha = 0.55;
@@ -268,24 +282,24 @@ export async function compositeExport(
       }
       let lineY = captionY + posterHeight * 0.044;
       if (displayCountry) {
-        ctx.font = `400 ${Math.max(13, 25 * base * getPosterFontScale(fontSize))}px ${font}`;
+        ctx.font = `400 ${Math.max(13, 25 * base * midlineScale)}px ${midlineFont}`;
         ctx.fillText(displayCountry.toUpperCase(), squareCaptionGeometry.captionX, lineY, squareCaptionGeometry.captionWidth);
         lineY += posterHeight * 0.032;
       }
       if (customDate?.trim()) {
-        ctx.font = `400 ${Math.max(11, 19 * base * getPosterFontScale(fontSize))}px ${mono}`;
+        ctx.font = `400 ${Math.max(11, 19 * base * bottomLineScale)}px ${bottomLineFont}`;
         ctx.fillText(customDate.trim(), squareCaptionGeometry.captionX, lineY, squareCaptionGeometry.captionWidth);
         lineY += posterHeight * 0.028;
       }
       ctx.globalAlpha = 0.72;
-      ctx.font = `400 ${Math.max(10, 16 * base * getPosterFontScale(fontSize))}px ${mono}`;
+      ctx.font = `400 ${Math.max(10, 16 * base * bottomLineScale)}px ${bottomLineFont}`;
       ctx.fillText(formatCoordinates(center.lat, center.lon), squareCaptionGeometry.captionX, lineY, squareCaptionGeometry.captionWidth);
       ctx.globalAlpha = 1;
     }
 
     const creditY = posterHeight - safeInsetY;
     const creditSize = Math.max(9, 13 * base);
-    ctx.font = `300 ${creditSize}px ${mono}`;
+    ctx.font = `300 ${creditSize}px ${creditFont}`;
     ctx.textBaseline = "bottom";
     ctx.globalAlpha = 0.68;
     ctx.textAlign = "right";
