@@ -475,6 +475,7 @@ export async function compositeExport(
         customDate,
         fontSize,
         textAlign,
+        { headingFontFamily, headingFontSize, midlineFontFamily, midlineFontSize, bottomLineFontFamily, bottomLineFontSize },
       );
 
       ctx.restore();
@@ -540,6 +541,7 @@ export async function compositeExport(
         customDate,
         fontSize,
         textAlign,
+        { headingFontFamily, headingFontSize, midlineFontFamily, midlineFontSize, bottomLineFontFamily, bottomLineFontSize },
       );
     }
 
