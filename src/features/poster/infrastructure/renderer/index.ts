@@ -69,6 +69,12 @@ export async function compositeExport(
     customDate,
     fontFamily,
     fontSize = 16,
+    headingFontFamily,
+    headingFontSize,
+    midlineFontFamily,
+    midlineFontSize,
+    bottomLineFontFamily,
+    bottomLineFontSize,
     textAlign = "center",
     showPosterText = true,
     showOverlay = true,
@@ -129,9 +135,23 @@ export async function compositeExport(
     pageCtx.restore();
 
     const textColor = g.style === "dark" ? "#fff" : (theme.ui.text || "#171717");
-    const font = fontFamily ? `"${fontFamily}", "Space Grotesk", sans-serif` : '"Space Grotesk", sans-serif';
-    const mono = fontFamily ? `"${fontFamily}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace';
+    const headingFamily = headingFontFamily?.trim() || fontFamily;
+    const midlineFamily = midlineFontFamily?.trim() || fontFamily;
+    const bottomLineFamily = bottomLineFontFamily?.trim() || fontFamily;
+    const fontFor = (family: string | undefined, body = false) => {
+      const clean = (family || "").replace(/['"]/g, "").trim();
+      const serif = /serif|times|cormorant|baskerville|lora|merriweather|playfair/i.test(clean);
+      if (body) return serif ? `"${clean}", 'Times New Roman', Times, serif` : (clean ? `"${clean}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace');
+      return clean ? `"${clean}", ${serif ? "'Times New Roman', Times, serif" : "'Space Grotesk", sans-serif"}` : '"Space Grotesk", sans-serif';
+    };
+    const headingFont = fontFor(headingFamily);
+    const midlineFont = fontFor(midlineFamily);
+    const bottomLineFont = fontFor(bottomLineFamily, true);
+    const headingScale = getPosterFontScale(headingFontSize ?? fontSize);
+    const midlineScale = getPosterFontScale(midlineFontSize ?? fontSize);
+    const bottomLineScale = getPosterFontScale(bottomLineFontSize ?? fontSize);
     const scale = Math.min(page.width, page.height) / 1000 * getPosterFontScale(fontSize);
+    const creditFont = fontFor(fontFamily, true);
     const box = g.style === "box";
     const captionY = box ? g.y + g.height - page.height * .047 : g.captionY;
     const captionX = g.captionX;
@@ -139,29 +159,29 @@ export async function compositeExport(
     pageCtx.textAlign = g.captionAlign;
     pageCtx.textBaseline = "middle";
     if (showPosterText && g.style !== "full-map") {
-      pageCtx.font = `600 ${Math.max(18, (g.style === "title" ? 66 : 42) * scale)}px ${font}`;
+      pageCtx.font = `600 ${Math.max(18, (g.style === "title" ? 66 : 42) * Math.min(page.width, page.height) / 1000 * headingScale)}px ${headingFont}`;
       pageCtx.fillText(formatCityLabel(displayCity), captionX, captionY, g.captionWidth);
       let lineY = captionY + page.height * .041;
       if (displayCountry) {
-        pageCtx.font = `400 ${Math.max(12, 23 * scale)}px ${font}`;
+        pageCtx.font = `400 ${Math.max(12, 23 * Math.min(page.width, page.height) / 1000 * midlineScale)}px ${midlineFont}`;
         pageCtx.fillText(displayCountry.toUpperCase(), captionX, lineY, g.captionWidth);
         lineY += page.height * .03;
       }
       if (customDate?.trim()) {
-        pageCtx.font = `400 ${Math.max(10, 17 * scale)}px ${mono}`;
+        pageCtx.font = `400 ${Math.max(10, 17 * Math.min(page.width, page.height) / 1000 * bottomLineScale)}px ${bottomLineFont}`;
         pageCtx.fillText(customDate.trim(), captionX, lineY, g.captionWidth);
         lineY += page.height * .026;
       }
       pageCtx.globalAlpha = .72;
-      pageCtx.font = `400 ${Math.max(9, 14 * scale)}px ${mono}`;
+      pageCtx.font = `400 ${Math.max(9, 14 * Math.min(page.width, page.height) / 1000 * bottomLineScale)}px ${bottomLineFont}`;
       pageCtx.fillText(formatCoordinates(center.lat, center.lon), captionX, lineY, g.captionWidth);
       pageCtx.globalAlpha = 1;
     } else if (showPosterText) {
-      drawPosterText(pageCtx, page.width, page.height, theme, center, displayCity, displayCountry, fontFamily, true, overlayBottom, includeCredits, customDate, fontSize, textAlign);
+      drawPosterText(pageCtx, page.width, page.height, theme, center, displayCity, displayCountry, fontFamily, true, overlayBottom, includeCredits, customDate, fontSize, textAlign, { headingFontFamily, headingFontSize, midlineFontFamily, midlineFontSize, bottomLineFontFamily, bottomLineFontSize });
     }
     pageCtx.textBaseline = "bottom";
     pageCtx.globalAlpha = .68;
-    pageCtx.font = `300 ${Math.max(9, 12 * scale)}px ${mono}`;
+    pageCtx.font = `300 ${Math.max(9, 12 * scale)}px ${creditFont}`;
     pageCtx.textAlign = "left";
     pageCtx.fillStyle = g.style === "dark" ? "#fff" : textColor;
     pageCtx.fillText(APP_CREDIT_URL, g.safeInsetX, page.height - g.safeInsetY, page.width * .42);
@@ -372,6 +392,7 @@ export async function compositeExport(
       customDate,
       fontSize,
       textAlign,
+      { headingFontFamily, headingFontSize, midlineFontFamily, midlineFontSize, bottomLineFontFamily, bottomLineFontSize },
     );
     ctx.restore();
 
