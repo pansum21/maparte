@@ -500,10 +500,17 @@ export default function MapSettingsSection({
       group.id !== "wallpaper" &&
       group.id !== "iphone_wallpaper",
   );
+  const otherGroup = otherLayoutGroups.length
+    ? {
+        id: "other",
+        name: "Other",
+        options: otherLayoutGroups.flatMap((group) => group.options),
+      }
+    : null;
   const displayLayoutGroups = [
     ...(printGroup ? [printGroup] : []),
     ...(wallpaperGroup ? [wallpaperGroup] : []),
-    ...otherLayoutGroups,
+    ...(otherGroup ? [otherGroup] : []),
   ];
 
   return (
