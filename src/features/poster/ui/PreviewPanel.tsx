@@ -71,6 +71,8 @@ interface PreviewPanelProps {
   cameraStream?: MediaStream | null;
   cinemaPosterPlacement?: { x: number; y: number; scale: number };
   onCinemaPosterPlacementChange?: (placement: { x: number; y: number; scale: number }) => void;
+  cinemaMapMovementLocked?: boolean;
+  cinemaLayoutMovementLocked?: boolean;
   isPosterLayoutOpen?: boolean;
   onTogglePosterLayout?: () => void;
 }
@@ -87,6 +89,8 @@ export default function PreviewPanel({
   cameraStream = null,
   cinemaPosterPlacement = { x: 0, y: 0, scale: 1 },
   onCinemaPosterPlacementChange,
+  cinemaMapMovementLocked = true,
+  cinemaLayoutMovementLocked = true,
   isPosterLayoutOpen: propIsPosterLayoutOpen,
   onTogglePosterLayout,
 }: PreviewPanelProps) {
@@ -528,7 +532,9 @@ export default function PreviewPanel({
           ref={frameRef}
           className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}`}
           onPointerDown={(event) => {
-            if (!isCinemaMode || !onCinemaPosterPlacementChange || event.button !== 0) return;
+            if (!isCinemaMode || cinemaLayoutMovementLocked || !onCinemaPosterPlacementChange || event.button !== 0) return;
+            if (mapWindowRef.current?.contains(event.target as Node)) return;
+            event.preventDefault();
             posterDragRef.current = {
               pointerId: event.pointerId,
               startX: event.clientX,
@@ -590,8 +596,9 @@ export default function PreviewPanel({
               zoom={(!form.displayCity && mapZoom < 3.5) ? baseGlobeZoom : mapZoom}
               baseGlobeZoom={baseGlobeZoom}
               mapRef={mapRef}
-              interactive={((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing) && !isMarkerEditorActive}
-              allowRotation={(!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing}
+              interactive={isCinemaMode ? !cinemaMapMovementLocked && !isMarkerEditorActive : (((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
+              allowRotation={isCinemaMode ? !cinemaMapMovementLocked : ((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing)}
+              autoRotate={!isCinemaMode}
               minZoom={mapMinZoom}
               maxZoom={mapMaxZoom}
               overzoomScale={1}

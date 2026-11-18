@@ -235,6 +235,170 @@
   .cinema-range-control > button:last-child { grid-column: 3 !important; grid-row: 1 !important; }
 }
 
+/* Fullscreen map controls reuse the editor's established controls without
+   changing their map state or drawing a second opaque panel inside the sheet. */
+.app-shell.is-cinema-mode .cinema-movement-locks {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 10px;
+}
+.app-shell.is-cinema-mode .cinema-movement-lock-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .045);
+}
+.app-shell.is-cinema-mode .cinema-movement-lock-row > span {
+  display: grid;
+  gap: 2px;
+  color: #f1f5f9;
+  font-size: .76rem;
+}
+.app-shell.is-cinema-mode .cinema-movement-lock-row small {
+  color: rgba(226, 232, 240, .65);
+  font-size: .65rem;
+}
+.app-shell.is-cinema-mode .cinema-lock-toggle {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 5px 10px;
+  border: 1px solid rgba(125, 211, 252, .28);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .08);
+  color: #e0f2fe;
+  font: inherit;
+  font-size: .68rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.app-shell.is-cinema-mode .cinema-lock-toggle[aria-pressed="true"] {
+  background: rgba(14, 116, 144, .25);
+  border-color: rgba(56, 189, 248, .42);
+}
+.app-shell.is-cinema-mode .cinema-map-adjustments .desktop-edit-map-panel {
+  display: flex;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  font-family: inherit;
+}
+.app-shell.is-cinema-mode .cinema-map-adjustments .desktop-edit-map-panel__heading {
+  display: none;
+}
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-control-section--stacked {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-height: 0;
+  gap: 6px;
+  padding: 7px 0;
+}
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-control-heading-row,
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-adjustment-row { width: 100%; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-adjustment-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-horizontal-slider {
+  flex: 1 1 auto;
+  width: 0;
+  min-width: 24px;
+  accent-color: #55b8e8;
+}
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-horizontal-step {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+}
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-value-input--zoom { flex: 0 0 58px; width: 58px; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 108px; width: 108px; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-angle-field .edit-map-value-input--rotation { flex: 0 0 54px; width: 54px; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-title {
+  color: rgba(220, 241, 255, .9);
+  font-size: .65rem;
+  letter-spacing: .1em;
+}
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-value-input { color: #e4f5ff; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-bottom-actions {
+  margin: 0;
+  padding: 9px 0 4px;
+}
+.app-shell.is-cinema-mode .cinema-placement-heading {
+  margin: 10px 0 6px;
+  color: rgba(220, 241, 255, .9);
+  font-size: .74rem;
+  font-weight: 700;
+}
+.app-shell.is-cinema-mode .cinema-placement-popover {
+  max-height: calc(100svh - 110px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+}
+@media (max-width: 600px) {
+  .app-shell.is-cinema-mode .cinema-placement-popover {
+    bottom: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
+    max-height: calc(100svh - 100px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .app-shell.is-cinema-mode .cinema-movement-lock-row { padding: 7px 8px; }
+}
+
+/* Fullscreen movement locks and map controls reuse the editor's existing inputs. */
+.app-shell.is-cinema-mode .cinema-movement-locks { display: grid; gap: 7px; margin: 0 0 10px; }
+.app-shell.is-cinema-mode .cinema-movement-lock-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 8px 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 10px;
+  background: rgba(255,255,255,.045);
+}
+.app-shell.is-cinema-mode .cinema-movement-lock-row > span { display: grid; gap: 2px; color: #f1f5f9; font-size: .76rem; }
+.app-shell.is-cinema-mode .cinema-movement-lock-row small { color: rgba(226,232,240,.65); font-size: .65rem; }
+.app-shell.is-cinema-mode .cinema-lock-toggle {
+  flex: 0 0 auto; min-height: 34px; padding: 5px 10px; border: 1px solid rgba(125,211,252,.28);
+  border-radius: 9px; background: rgba(255,255,255,.08); color: #e0f2fe; font: inherit;
+  font-size: .68rem; font-weight: 700; cursor: pointer;
+}
+.app-shell.is-cinema-mode .cinema-lock-toggle[aria-pressed="true"] { background: rgba(14,116,144,.25); border-color: rgba(56,189,248,.42); }
+.app-shell.is-cinema-mode .cinema-map-adjustments .desktop-edit-map-panel {
+  display: flex; width: 100%; height: auto; min-height: 0; overflow: visible; padding: 0;
+  border: 0; border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none;
+  -webkit-backdrop-filter: none; font-family: inherit;
+}
+.app-shell.is-cinema-mode .cinema-map-adjustments .desktop-edit-map-panel__heading { display: none; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-control-section--stacked {
+  display: flex; flex-direction: column; align-items: stretch; width: 100%; min-height: 0; gap: 6px; padding: 7px 0;
+}
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-control-heading-row,
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-adjustment-row { width: 100%; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-adjustment-row { display: flex; align-items: center; gap: 6px; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-horizontal-slider { flex: 1 1 auto; width: 0; min-width: 24px; accent-color: #55b8e8; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-horizontal-step { flex: 0 0 30px; width: 30px; height: 30px; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-value-input--zoom { flex: 0 0 58px; width: 58px; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 108px; width: 108px; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-angle-field .edit-map-value-input--rotation { flex: 0 0 54px; width: 54px; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-title { color: rgba(220,241,255,.9); font-size: .65rem; letter-spacing: .1em; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-value-input { color: #e4f5ff; }
+.app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-bottom-actions { margin: 0; padding: 9px 0 4px; }
+.app-shell.is-cinema-mode .cinema-placement-heading { margin: 10px 0 6px; color: rgba(220,241,255,.9); font-size: .74rem; font-weight: 700; }
+.app-shell.is-cinema-mode .cinema-placement-popover { max-height: calc(100svh - 110px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)) !important; }
+@media (max-width: 600px) {
+  .app-shell.is-cinema-mode .cinema-placement-popover {
+    bottom: calc(62px + env(safe-area-inset-bottom,0px)) !important;
+    max-height: calc(100svh - 100px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)) !important;
+  }
+  .app-shell.is-cinema-mode .cinema-movement-lock-row { padding: 7px 8px; }
+}
+
 /* Three marker sources also stay together in the desktop panel. */
 .marker-picker-mode-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
@@ -300,6 +464,27 @@
 .app-shell.is-cinema-mode .cinema-layout-list { scrollbar-width: none !important; }
 .app-shell.is-cinema-mode .cinema-panel-popover::-webkit-scrollbar,
 .app-shell.is-cinema-mode .cinema-layout-list::-webkit-scrollbar { display: none !important; width: 0 !important; }
+
+/* Keep fullscreen map controls readable in the narrow phone dock. */
+@media (max-width: 600px) {
+  .app-shell.is-cinema-mode .cinema-map-adjustments .desktop-edit-map-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-control-section--stacked {
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+  }
+  .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-adjustment-row {
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+  .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-distance-field .edit-map-value-input--distance {
+    flex-basis: 108px;
+    width: 108px;
+  }
+}
 .cinema-placement-controls label { grid-template-columns: minmax(0, 1fr) max-content !important; justify-items: stretch !important; }
 .cinema-range-control { max-width: none !important; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
@@ -623,5 +808,201 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 1px s
   }
   .mobile-drawer:not(.mobile-drawer--edit-map) {
     inset: 0 3mm calc(60px + 3mm + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+
+
+.app-shell.is-cinema-mode .cinema-poster-actions { display: contents; }
+.cinema-poster-reset-mobile,
+.edit-map-reset-label-mobile { display: none !important; }
+
+/* Mobile fullscreen adjustment sheet: keep it compact like Layout, with independent scrolling. */
+@media (max-width: 600px) {
+  .app-shell.is-cinema-mode .cinema-placement-popover {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: min(38dvh, 360px) !important;
+    overflow: hidden !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-scroll {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-scroll::-webkit-scrollbar { display: none; }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-footer {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    margin-top: 5px !important;
+    padding: 7px 0 0 !important;
+  }
+  .app-shell.is-cinema-mode .cinema-map-actions-slot,
+  .app-shell.is-cinema-mode .cinema-map-actions-slot .edit-map-bottom-actions,
+  .app-shell.is-cinema-mode .cinema-poster-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .app-shell.is-cinema-mode .cinema-poster-actions { display: grid !important; }
+  .app-shell.is-cinema-mode .cinema-poster-reset-desktop,
+  .app-shell.is-cinema-mode .edit-map-reset-label-desktop { display: none !important; }
+  .app-shell.is-cinema-mode .cinema-poster-reset-mobile,
+  .app-shell.is-cinema-mode .edit-map-reset-label-mobile { display: inline !important; }
+  .app-shell.is-cinema-mode .cinema-adjust-footer .edit-map-action-pill,
+  .app-shell.is-cinema-mode .cinema-adjust-footer .cinema-btn-secondary,
+  .app-shell.is-cinema-mode .cinema-adjust-footer .cinema-btn-primary {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 4px 6px !important;
+    white-space: normal !important;
+    font-size: .66rem !important;
+  }
+  .app-shell.is-cinema-mode .cinema-map-adjustments .edit-map-distance-field .edit-map-value-input--distance {
+    flex-basis: 108px !important;
+    width: 108px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-dock-upload-btn {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  .app-shell.is-cinema-mode .cinema-dock-upload-btn > span:last-child {
+    display: block !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    overflow-wrap: anywhere !important;
+    text-overflow: clip !important;
+    text-align: center !important;
+    line-height: 1.12 !important;
+  }
+}
+
+/* Desktop fullscreen adjustment panel: 7 cm at the user's 75% browser zoom.
+   Keep the phone sheet on its existing full-width layout. */
+@media (min-width: 601px) {
+  .app-shell.is-cinema-mode .cinema-placement-popover {
+    width: min(350px, calc(100vw - 32px)) !important;
+    padding: 12px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-panel-popover__heading {
+    margin-bottom: 8px !important;
+    padding-bottom: 6px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-movement-locks {
+    gap: 5px !important;
+    margin-bottom: 8px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-movement-lock-row {
+    gap: 8px !important;
+    padding: 6px 8px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-control-section--stacked {
+    gap: 5px !important;
+    padding: 5px 0 !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-adjustment-row {
+    gap: 4px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-horizontal-step {
+    flex-basis: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-value-input--zoom {
+    flex-basis: 54px !important;
+    width: 54px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-distance-field .edit-map-value-input--distance {
+    flex-basis: 96px !important;
+    width: 96px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-angle-field .edit-map-value-input--rotation {
+    flex-basis: 50px !important;
+    width: 50px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-placement-heading {
+    margin: 8px 0 4px !important;
+  }
+}
+
+@media (min-width: 601px) {
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-movement-locks {
+    gap: 4px !important;
+    margin-bottom: 6px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-movement-lock-row {
+    gap: 6px !important;
+    padding: 4px 7px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-control-section--stacked {
+    gap: 4px !important;
+    padding: 3px 0 !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .edit-map-bottom-actions {
+    padding: 5px 0 2px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-placement-controls {
+    gap: 8px !important;
+    margin-bottom: 2px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-placement-controls label > .cinema-range-control {
+    gap: 5px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-range-control > button {
+    flex-basis: 42px !important;
+    width: 42px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-panel-popover__tip {
+    margin: 6px 0 !important;
+    padding: 6px 9px !important;
+    font-size: 11.5px !important;
+    line-height: 1.35 !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-footer {
+    margin-top: 8px !important;
+    padding-top: 6px !important;
+  }
+}
+
+@media (min-width: 601px) {
+  .app-shell.is-cinema-mode .cinema-placement-popover {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-scroll {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .app-shell.is-cinema-mode .cinema-placement-popover .cinema-adjust-footer {
+    flex: 0 0 auto !important;
+    margin-top: 6px !important;
+    padding-top: 6px !important;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(10, 22, 34, .96);
   }
 }

@@ -69,7 +69,9 @@ export const RAINBOW_COLORS: ColorCapsuleItem[] = [
 export const SINGLE_COLOR_SWATCHES: { id: string; hex: string; name: string }[] = [
   { id: "black", hex: "#000000", name: "Black" },
   { id: "gray", hex: "#6b7280", name: "Gray" },
-  { id: "light-gray", hex: "#d1d5db", name: "Light Gray" },
+  { id: "white", hex: "#f8fafc", name: "White" },
+  { id: "ocean-blue", hex: "#2563eb", name: "Ocean Blue" },
+  { id: "copper", hex: "#c47a42", name: "Copper" },
 ];
 
 export const MIX_GRADIENT_PRESETS: MixGradientPreset[] = [
@@ -77,6 +79,7 @@ export const MIX_GRADIENT_PRESETS: MixGradientPreset[] = [
   { id: "charcoal-silver", from: "#0f172a", to: "#94a3b8" },
   { id: "onyx-white", from: "#000000", to: "#e2e8f0" },
   { id: "black-gold", from: "#0a0a0a", to: "#d4af37" },
+  { id: "ocean-blue", from: "#0ea5e9", to: "#1e3a8a" },
 ];
 
 export type NeatlineSelection = {
@@ -1715,33 +1718,26 @@ export function NeatlinePicker({
                       />
                     );
                   })}
-                </div>
-
-                {/* Custom dual gradient inputs */}
-                <div className="neatline-custom-grad-row">
-                  <span className="neatline-custom-label">Custom:</span>
-                  <div className="neatline-custom-grad-split">
-                    <label className="neatline-custom-grad-bar-half" title="Choose first gradient color">
-                      <span
-                        className="neatline-custom-grad-fill"
-                        style={{ background: selection.gradientFrom || "#f43f5e" }}
-                      />
+                  <div
+                    className={`neatline-grad-chip neatline-custom-gradient-chip ${MIX_GRADIENT_PRESETS.some((item) => item.from === selection.gradientFrom && item.to === selection.gradientTo) ? "" : "is-active"}`}
+                    title="Custom gradient"
+                    aria-label="Choose custom gradient colors"
+                  >
+                    <label title="Choose first gradient color">
                       <input
                         type="color"
                         value={selection.gradientFrom || "#f43f5e"}
+                        aria-label="Custom gradient start color"
                         onChange={(e) =>
                           updateMixGradient(e.target.value, selection.gradientTo || "#fb923c")
                         }
                       />
                     </label>
-                    <label className="neatline-custom-grad-bar-half" title="Choose second gradient color">
-                      <span
-                        className="neatline-custom-grad-fill"
-                        style={{ background: selection.gradientTo || "#fb923c" }}
-                      />
+                    <label title="Choose second gradient color">
                       <input
                         type="color"
                         value={selection.gradientTo || "#fb923c"}
+                        aria-label="Custom gradient end color"
                         onChange={(e) =>
                           updateMixGradient(selection.gradientFrom || "#f43f5e", e.target.value)
                         }

@@ -1114,7 +1114,7 @@
     top: 50px;
     bottom: 32px;
     left: 60px;
-    width: 374px;
+    width: 307px;
     z-index: 85;
     pointer-events: none;
     overflow: hidden;
@@ -1140,7 +1140,7 @@
     right: auto;
     bottom: 32px;
     left: 60px;
-    width: 374px;
+    width: 307px;
     max-height: none;
   }
 
@@ -1179,7 +1179,7 @@
     position: fixed;
     top: 76px;
     left: 82px; /* 64px nav + 18px gap */
-    width: 440px;
+    width: 307px;
     z-index: 46;
     pointer-events: none;
   }
@@ -3216,7 +3216,7 @@ button.all-cities-clear-btn:not(:disabled):hover {
     right: auto;
     bottom: 32px;
     left: 60px;
-    width: 374px;
+    width: 307px;
     height: auto;
     max-height: none;
     overflow: visible;
@@ -3445,3 +3445,27 @@ button.all-cities-clear-btn:not(:disabled):hover {
 .desktop-edit-map-panel .edit-map-distance-field .edit-map-value-input--distance { flex: 0 0 86px; width: 86px; }
 .desktop-edit-map-panel .edit-map-angle-field .edit-map-value-input--rotation { flex: 0 0 56px; width: 56px; }
 
+
+
+/* Desktop drawer calibrated for roughly 6.5 cm at 80% browser zoom. */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  .desktop-left-panel,
+  .app-shell[data-desktop-tab="layout"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="theme"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="frames"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="templates"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="edit-map"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="style"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="layers"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="markers"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="routes"] .desktop-left-panel,
+  .app-shell[data-desktop-tab="settings"] .desktop-left-panel {
+    width: 307px !important;
+  }
+  .desktop-left-panel .desktop-settings-slide,
+  .desktop-left-panel .desktop-edit-map-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}

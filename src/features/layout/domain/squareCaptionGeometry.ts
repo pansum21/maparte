@@ -38,7 +38,7 @@ export function getSquareCaptionGeometry(
 
   // Margin is at least 1.5 cm, and respects neatline border inset + gap
   const effectiveGapCm = Math.max(0.15, gapCm || 0.15);
-  const baseMarginCm = Math.max(1.5, mapInsetCm + effectiveGapCm);
+  const baseMarginCm = Math.max(1.0, mapInsetCm + effectiveGapCm);
   const safeInsetX = baseMarginCm * pxPerCmX;
   const safeInsetY = baseMarginCm * pxPerCmY;
 
