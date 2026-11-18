@@ -8,6 +8,7 @@ import { SEO_CITIES } from "@/features/location/domain/cityRouteResolver";
 import { EARTH_CIRCUMFERENCE_M, TILE_SIZE_PX } from "@/core/config";
 import { helpFaqs } from "@/shared/help/helpFaqs";
 import { DoodleCrewFooter } from "@/components/ui/doodle-crew-footer";
+import PerspectiveTunnelHero from "@/home/PerspectiveTunnelHero";
 import "@fontsource/dm-serif-display/400.css";
 import "@fontsource/dm-serif-display/400-italic.css";
 import "./journeyPreview.css";
@@ -450,6 +451,7 @@ export default function JourneyPreview() {
           </section>
         ))}
       </main>
+      <PerspectiveTunnelHero />
       <section className="journey-faq" id="help" aria-labelledby="journey-faq-title">
         <div className="journey-faq__intro">
           <span>HELP · QUICK ANSWERS</span>
