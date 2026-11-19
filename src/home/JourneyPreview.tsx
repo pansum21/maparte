@@ -42,17 +42,18 @@ function quietJourneyRoads(map: MapLibreMap) {
     const casing = id.includes("casing");
     const major = id.includes("major");
     const path = id.includes("path");
+    // Keep the overview quiet but retain enough road weight to read on a phone.
     const widths = casing
-      ? [[0, 0.035], [4, 0.055], [7, 0.075], [10, 0.1], [13, 0.14], [16, 0.19]]
+      ? [[0, 0.05], [4, 0.08], [7, 0.12], [10, 0.16], [13, 0.22], [16, 0.3]]
       : major
-        ? [[0, 0.05], [4, 0.075], [7, 0.1], [10, 0.135], [13, 0.18], [16, 0.24]]
+        ? [[0, 0.09], [4, 0.14], [7, 0.2], [10, 0.28], [13, 0.38], [16, 0.52]]
         : path
-          ? [[0, 0.04], [4, 0.06], [7, 0.08], [10, 0.11], [13, 0.15], [16, 0.2]]
-          : [[0, 0.05], [4, 0.075], [7, 0.1], [10, 0.135], [13, 0.18], [16, 0.24]];
+          ? [[0, 0.07], [4, 0.1], [7, 0.14], [10, 0.2], [13, 0.28], [16, 0.38]]
+          : [[0, 0.09], [4, 0.14], [7, 0.2], [10, 0.28], [13, 0.38], [16, 0.52]];
     try {
       map.setPaintProperty(id, "line-width", ["interpolate", ["linear"], ["zoom"], ...widths.flat()]);
       map.setPaintProperty(id, "line-color", casing ? "#193038" : major ? "#687975" : "#91a78f");
-      map.setPaintProperty(id, "line-opacity", casing ? 0.22 : major ? 0.32 : 0.38);
+      map.setPaintProperty(id, "line-opacity", casing ? 0.26 : major ? 0.44 : 0.48);
     } catch { /* Keep the source map style if a layer cannot be adjusted. */ }
   }
 }
@@ -366,10 +367,7 @@ export default function JourneyPreview() {
         const pageProgress = clamp((window.scrollY - top) / pageSpan);
         // Start the globe's eastward trip behind the opening title, then hand
         // the same continuous camera journey to the map-story chapters.
-        // Ease into the destination early enough for land to be visible by
-        // “Follow what matters”, then let the later chapters finish the city zoom.
-        const storyFlight = 1 - Math.pow(1 - storyProgress, 2.2);
-        const mapProgress = heroProgress * 0.18 + storyFlight * 0.82;
+        const mapProgress = heroProgress * 0.18 + storyProgress * 0.82;
         if (mapProgress > 0.025 && !hasScrolledRef.current) {
           hasScrolledRef.current = true;
           setHasScrolled(true);
