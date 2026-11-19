@@ -1,19 +1,19 @@
 import { useEffect, useRef } from "react";
 import "./perspectiveTunnelHero.css";
 
-const images = [
-	{ src: "https://cdn.21st.dev/assets/mirror/c3/c3fbd2afa140223999a441b32ed986f61d473930002708df805a81532a326aac.jpg", title: "A place that stays" },
-	{ src: "https://cdn.21st.dev/assets/mirror/9d/9d8b2f675a5814476ada3736ce439bcda23c5c389e0ebf9b25d8a0c09f3bbcfe.jpg", title: "Your city, your view" },
-	{ src: "https://cdn.21st.dev/assets/mirror/8b/8bb738bf2f00d7f7ed3c3ec034adb9938ad38f4be4ac191d632a6a11ad525574.jpg", title: "Made around a memory" },
-	{ src: "https://cdn.21st.dev/assets/mirror/ac/ac5ac700b188d7ef16ee9dab868098b59f15c440db3f71d4e8c03262a3287577.jpg", title: "From earth to street" },
-	{ src: "https://cdn.21st.dev/assets/mirror/ef/ef25eff6ce655fba459b3b7e7711524dc92499aa18f6c7dbea9a0fcc56a8f908.jpg", title: "A map with meaning" },
-	{ src: "https://cdn.21st.dev/assets/mirror/f2/f28b370a5dcbf76240f1504579c4b05fc0ff0bb990a42aff8dc2f73a5dc46072.jpg", title: "One city, your style" },
-	{ src: "https://cdn.21st.dev/assets/mirror/f2/f26a1eac85704dda924820392dedfb72d51d8261d35354f83b35d683617295f3.jpg", title: "Keep your coordinates" },
-	{ src: "https://cdn.21st.dev/assets/mirror/77/7755d23eaaa0aa5b403343f44afa7a29b2d06d3065fe54c602b14ba01d00f2aa.jpg", title: "A story in every street" },
-	{ src: "https://cdn.21st.dev/assets/mirror/65/657317761fe9058a1d43711b13c543a71eb5199b7a5d9abf4c28479674e39cf7.jpg", title: "Your place on the map" },
+const slides = [
+	{ title: "A place that stays" },
+	{ title: "Your city, your view" },
+	{ title: "Made around a memory" },
+	{ title: "From earth to street" },
+	{ title: "A map with meaning" },
+	{ title: "One city, your style" },
+	{ title: "Keep your coordinates" },
+	{ title: "A story in every street" },
+	{ title: "Your place on the map" },
 ];
 
-const cards = images.map((item, index) => {
+const cards = slides.map((item, index) => {
 	const angle = index * 137.5 * (Math.PI / 180);
 	return {
 		...item,
@@ -122,8 +122,8 @@ export default function PerspectiveTunnelHero() {
 				<div className="maparte-tunnel__grid" aria-hidden="true" />
 				<div className="maparte-tunnel__cards" aria-hidden="true">
 					{cards.map((card) => (
-						<figure className="maparte-tunnel__card" key={card.src}>
-							<img src={card.src} alt="" loading="lazy" draggable={false} />
+						<figure className="maparte-tunnel__card" key={card.title}>
+							<div className="maparte-tunnel__art" aria-hidden="true"><i /><i /><i /><i /></div>
 							<figcaption>{card.title}</figcaption>
 						</figure>
 					))}
