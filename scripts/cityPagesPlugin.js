@@ -98,7 +98,7 @@ export function transformHtmlForCity(html, city) {
             "@type": "BreadcrumbList",
             "itemListElement": [
               { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://maparte.com/" },
-              { "@type": "ListItem", "position": 2, "name": "Cities", "item": "https://maparte.com/#popular-cities" },
+              { "@type": "ListItem", "position": 2, "name": "Cities", "item": "https://maparte.com/cities" },
               { "@type": "ListItem", "position": 3, "name": ${JSON.stringify(`${city.city} Map Poster`)}, "item": "${cityUrl}" }
             ]
           },
@@ -136,7 +136,7 @@ export function transformHtmlForCity(html, city) {
         <section id="hero" style="margin-bottom: 52px; text-align: center;">
           <nav aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.86rem; color: #94a3b8;">
             <a href="/" style="color: #cbd5e1; text-decoration: none;">Home</a> &rsaquo; 
-            <a href="/#popular-cities" style="color: #cbd5e1; text-decoration: none;">Cities</a> &rsaquo; 
+            <a href="/cities" style="color: #cbd5e1; text-decoration: none;">All cities</a> &rsaquo; 
             <span style="color: #dfba73; font-weight: 600;">${escapeAttr(city.city)} Map Poster</span>
           </nav>
           <h1 style="font-size: 2.3rem; color: #f8fafc; margin-bottom: 12px; font-weight: 700; letter-spacing: -0.01em;">Custom Map Poster of ${escapeAttr(city.city)}, ${escapeAttr(city.country)}</h1>
@@ -146,7 +146,7 @@ export function transformHtmlForCity(html, city) {
           </p>
           <div style="display: inline-flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
             <a href="/cities/${city.slug}" style="background: linear-gradient(135deg, #dfba73, #c49d56); color: #0b1722; font-weight: 700; padding: 13px 28px; border-radius: 8px; text-decoration: none; font-size: 1rem; box-shadow: 0 4px 14px rgba(223, 186, 115, 0.35);">🎨 Customize a map of ${escapeAttr(city.city)}</a>
-            <a href="#popular-cities" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; padding: 13px 26px; border-radius: 8px; text-decoration: none; font-size: 0.95rem;">Browse Other Cities</a>
+            <a href="/cities" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; padding: 13px 26px; border-radius: 8px; text-decoration: none; font-size: 0.95rem;">Browse All Cities</a>
           </div>
           <div style="margin-top: 24px; font-size: 0.88rem; color: #94a3b8;">
             Map location: <strong>${Number(city.lat).toFixed(4)}, ${Number(city.lon).toFixed(4)}</strong> • Use the editor's Download panel to check current output choices.
@@ -162,6 +162,50 @@ export function transformHtmlForCity(html, city) {
   );
 
   return result;
+}
+
+function renderCityDirectoryPage(cities) {
+  const sortedCities = [...cities].sort((a, b) =>
+    String(a.continent || "Other").localeCompare(String(b.continent || "Other")) ||
+    String(a.country || "").localeCompare(String(b.country || "")) ||
+    String(a.city || "").localeCompare(String(b.city || "")),
+  );
+  const groups = new Map();
+  for (const city of sortedCities) {
+    const region = city.continent || "Other";
+    const country = city.country || "Other places";
+    const key = region + " — " + country;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(city);
+  }
+  const sections = [...groups.entries()].map(([label, entries]) =>
+    '<section class="country"><h2>' + escapeAttr(label) + '</h2><ul>' +
+    entries.map((city) =>
+      '<li><a href="/cities/' + escapeAttr(city.slug) + '">' +
+      escapeAttr(city.city) + ', ' + escapeAttr(city.country) + '</a></li>',
+    ).join("") + '</ul></section>',
+  ).join("");
+
+  return [
+    '<!doctype html>',
+    '<html lang="en"><head>',
+    '<meta charset="utf-8" />',
+    '<meta name="viewport" content="width=device-width, initial-scale=1" />',
+    '<title>City Map Posters | Browse ' + cities.length + ' Places | MAPARTE</title>',
+    '<meta name="description" content="Browse custom map poster pages for ' + cities.length + ' cities and places. Choose a location, personalize its map, and make a digital map design with MAPARTE." />',
+    '<meta name="robots" content="index,follow" />',
+    '<link rel="canonical" href="https://maparte.com/cities" />',
+    '<style>body{margin:0;background:#f6f4ed;color:#182523;font:16px/1.55 Arial,sans-serif}main{max-width:1180px;margin:0 auto;padding:clamp(24px,5vw,64px) clamp(18px,4vw,48px)}a{color:#148b78}header{max-width:800px;margin-bottom:32px}h1{font-size:clamp(2rem,4vw,3.25rem);line-height:1.08;margin:0 0 14px;letter-spacing:-.04em}header p{color:#60706b;font-size:1.1rem;max-width:65ch}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0 36px}.action{display:inline-flex;padding:11px 16px;border-radius:12px;border:1px solid #d9ded5;background:#fffdf8;font-weight:700;text-decoration:none}.action.primary{background:#173c37;color:white;border-color:#173c37}.country{border-top:1px solid #d9ded5;padding:18px 0}.country h2{font-size:1rem;margin:0 0 12px}ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px 18px;margin:0;padding:0}li a{display:block;padding:7px 9px;border-radius:8px;text-decoration:none}li a:hover,li a:focus-visible{background:#e8eee7;text-decoration:underline}footer{margin-top:48px;padding-top:20px;border-top:1px solid #d9ded5;color:#60706b;font-size:.9rem}</style>',
+    '</head><body><main><header>',
+    '<a href="/" aria-label="MAPARTE home">MAPARTE</a>',
+    '<h1>Find a place for your map</h1>',
+    '<p>Explore map poster pages by region and city. Open a place to preview its map, adjust the design, and create a personal digital map.</p>',
+    '<div class="actions"><a class="action primary" href="/?editor=true">Create a custom map</a><a class="action" href="/">Back to MAPARTE</a></div>',
+    '</header>',
+    sections,
+    '<footer>Showing ' + cities.length + ' place pages. MAPARTE creates digital map designs; printing and shipping are not provided.</footer>',
+    '</main></body></html>',
+  ].join("\n");
 }
 
 export function cityPagesPlugin() {
@@ -245,9 +289,19 @@ export function cityPagesPlugin() {
         count++;
       }
 
-      // Generate sitemap.xml for the editor, legal pages, alternative pages, and city pages
+      // Generate a crawlable city directory while keeping every existing city URL.
+      const cityDirectoryDir = path.join(outDir, 'cities');
+      fs.mkdirSync(cityDirectoryDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(cityDirectoryDir, 'index.html'),
+        renderCityDirectoryPage(cities),
+        'utf8',
+      );
+
+      // Generate sitemap.xml for the editor, directory, legal pages, alternatives, and city pages.
       const sitemapEntries = [
         `  <url>\n    <loc>https://maparte.com</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Custom Map Poster &amp; Wallpaper Maker</image:title>\n    </image:image>\n  </url>`,
+        '  <url>\n    <loc>https://maparte.com/cities</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.9</priority>\n  </url>',
         `  <url>\n    <loc>https://maparte.com/mapiful-alternative</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>The #1 Mapiful Alternative in 2026 | MAPARTE</image:title>\n    </image:image>\n  </url>`,
         `  <url>\n    <loc>https://maparte.com/where-we-met-map</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.95</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>Where We Met Custom Map Poster &amp; Wall Art | MAPARTE</image:title>\n    </image:image>\n  </url>`,
         `  <url>\n    <loc>https://maparte.com/privacy</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
