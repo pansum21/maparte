@@ -1,133 +1,55 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+"use client";
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { themeOptions } from "@/features/theme/infrastructure/themeRepository";
 import { layoutGroups } from "@/features/layout/infrastructure/layoutRepository";
 import { lineStyles } from "@/features/layout/ui/NeatlinePicker";
-import { OCCASION_TEMPLATES } from "@/features/poster/domain/occasionTemplates";
 import "./galleryLanding.css";
 
-const mapArt = [
-  { title: "Where We Met", place: "Paris · France", file: "where-we-met.png" },
-  { title: "Hometown Roots", place: "Dehradun · India", file: "hometown-roots.png" },
-  { title: "Travel Memories", place: "Tokyo · Japan", file: "travel-memories.png" },
-  { title: "She Said Yes", place: "Amalfi Coast · Italy", file: "she-said-yes.png" },
-  { title: "Our First Home", place: "Brooklyn · New York", file: "first-home.png" },
-  { title: "The Day You Were Born", place: "London · United Kingdom", file: "baby-arrival.png" },
-  { title: "Wedding Day", place: "A place to remember", file: "wedding-day.png" },
-  { title: "Marathon Finish", place: "A route worth keeping", file: "marathon-race.png" },
-  { title: "Mountain Summit", place: "The view from the top", file: "mountain-summit.png" },
-];
+type GalleryKey = "maps" | "themes" | "layouts" | "borders";
+type GalleryItem = { id: string; title: string; detail: string; href: string; colors?: string[]; ratio?: number; border?: string };
 
-const presetArtById: Record<string, string> = {
-  where_we_met: "where-we-met.png",
-  she_said_yes: "she-said-yes.png",
-  our_wedding_day: "wedding-day.png",
-  our_first_home: "first-home.png",
-  travel_memories: "travel-memories.png",
-  marathon_race: "marathon-race.png",
-  baby_arrival: "baby-arrival.png",
-  hometown_roots: "hometown-roots.png",
-  mountain_summit: "mountain-summit.png",
+const collectionInfo: Record<GalleryKey, { number: string; label: string; title: string; italic: string; description: string; motion: string }> = {
+  maps: { number: "01", label: "MAP ART", title: "Map gallery", italic: "Real places, kept close.", description: "Scroll or swipe to move through MAPARTE map stories.", motion: "coverflow" },
+  borders: { number: "02", label: "FRAME THE VIEW", title: "Border gallery", italic: "A finer edge for your map.", description: "Scroll or swipe through the border styles in the editor.", motion: "helix" },
+  themes: { number: "03", label: "COLOUR THE MAP", title: "Theme gallery", italic: "Same streets, a different mood.", description: "Scroll or swipe through the colour palettes in MAPARTE.", motion: "warp" },
+  layouts: { number: "04", label: "FIND YOUR FORMAT", title: "Layout gallery", italic: "Give the map room to breathe.", description: "Scroll or swipe through print and screen formats.", motion: "curve" },
 };
 
-const collectionInfo = {
-  maps: { number: "01", label: "MAP ART", title: "Map gallery", italic: "Real places, kept close.", description: "A few real MAPARTE designs, each made around a place and the story attached to it." },
-  borders: { number: "02", label: "FRAME THE VIEW", title: "Border gallery", italic: "A finer edge for your map.", description: "Compare the border styles available in the editor, from a single line to a wider gallery frame." },
-  themes: { number: "03", label: "COLOUR THE MAP", title: "Theme gallery", italic: "Same streets, a different mood.", description: "Browse the colour palettes already in MAPARTE. Choose one to open the editor with that theme selected." },
-  layouts: { number: "04", label: "FIND YOUR FORMAT", title: "Layout gallery", italic: "Give the map room to breathe.", description: "See the print and screen formats available in the editor, grouped by their intended use." },
-  presets: { number: "05", label: "START WITH A STORY", title: "Preset gallery", italic: "A thoughtful place to begin.", description: "Begin with an occasion, then change the location, words and details to make the design yours." },
-} as const;
-
-type GalleryKey = keyof typeof collectionInfo;
-
-type GalleryPreviewItem = { title: string; subtitle: string; image: string; href: string };
-
-function GalleryShowcase({ items, label }: { items: GalleryPreviewItem[]; label: string }) {
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const stageRef = useRef<HTMLElement>(null);
-  const reducedMotion = useRef(false);
-  const inView = useRef(false);
-
-  useEffect(() => {
-    reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const stage = stageRef.current;
-    if (!stage) return;
-    const observer = new IntersectionObserver(([entry]) => { inView.current = entry.isIntersecting; }, { threshold: 0.25 });
-    observer.observe(stage);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (paused || items.length < 2) return;
-    const timer = window.setInterval(() => {
-      if (!reducedMotion.current && inView.current && document.visibilityState === "visible") {
-        setActive((current) => (current + 1) % items.length);
-      }
-    }, 4600);
-    return () => window.clearInterval(timer);
-  }, [paused, items.length]);
-
-  if (!items.length) return null;
-  const selected = items[active % items.length];
-  return <section className="gallery-showcase" ref={stageRef} aria-label={`${label} image preview`} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(false); }}>
-    <a className="gallery-showcase__image" href={selected.href} aria-label={`Open ${selected.title} in the MAPARTE editor`}>
-      <img src={selected.image} alt={`${selected.title} — MAPARTE ${label.toLowerCase()} example`} loading="eager" fetchPriority="high" />
-      <span className="gallery-showcase__image-caption"><small>{selected.subtitle}</small><strong>{selected.title}</strong><i aria-hidden="true">↗</i></span>
-    </a>
-    <div className="gallery-showcase__controls" aria-label="Choose a preview image">
-      <button type="button" aria-label="Previous preview" onClick={() => setActive((active + items.length - 1) % items.length)}>←</button>
-      <div className="gallery-showcase__dots">{items.map((item, index) => <button key={`${item.title}-${index}`} className={index === active ? "is-active" : ""} aria-label={`Show ${item.title}`} aria-pressed={index === active} type="button" onClick={() => setActive(index)} />)}</div>
-      <button type="button" aria-label="Next preview" onClick={() => setActive((active + 1) % items.length)}>→</button>
-      <span>{String(active + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}</span>
-    </div>
-    <p className="gallery-showcase__note">Images rotate while this preview is in view. Hover, focus or tap to explore at your pace.</p>
-  </section>;
-}
+const mapItems: GalleryItem[] = [
+  { id: "where-we-met", title: "Where We Met", detail: "PARIS · FRANCE", href: "/?dist=5235000&city=Paris&country=France&title=Where%20We%20Met" },
+  { id: "hometown-roots", title: "Hometown Roots", detail: "DEHRADUN · INDIA", href: "/?dist=5235000&city=Dehradun&country=India&title=Hometown%20Roots" },
+  { id: "travel-memories", title: "Travel Memories", detail: "TOKYO · JAPAN", href: "/?dist=5235000&city=Tokyo&country=Japan&title=Travel%20Memories" },
+  { id: "she-said-yes", title: "She Said Yes", detail: "AMALFI COAST · ITALY", href: "/?dist=5235000&city=Amalfi%20Coast&title=She%20Said%20Yes" },
+  { id: "first-home", title: "Our First Home", detail: "BROOKLYN · NEW YORK", href: "/?dist=5235000&city=Brooklyn&title=Our%20First%20Home" },
+  { id: "baby-arrival", title: "The Day You Were Born", detail: "LONDON · UNITED KINGDOM", href: "/?dist=5235000&city=London&country=United%20Kingdom&title=The%20Day%20You%20Were%20Born" },
+];
 
 function editorUrl(params: Record<string, string>) {
-  const query = new URLSearchParams({ dist: "5235000", ...params });
-  return `/?${query.toString()}`;
+  return `/?${new URLSearchParams({ dist: "5235000", ...params }).toString()}`;
 }
 
-function GalleryCards({ category }: { category: GalleryKey }) {
-  if (category === "maps") return <div className="gallery-landing__grid gallery-landing__grid--maps">
-    {mapArt.map((item) => <a className="gallery-landing__card gallery-landing__card--map" href={editorUrl({ city: item.place.split(" · ")[0], title: item.title })} key={item.file}>
-      <img src={`/assets/map-posters/${item.file}`} alt={`${item.title} MAPARTE map artwork`} loading="lazy" />
-      <span>{item.place}</span><h2>{item.title}</h2><small>Open this idea in the editor</small>
-    </a>)}
-  </div>;
+function getItems(category: GalleryKey): GalleryItem[] {
+  if (category === "maps") return mapItems;
+  if (category === "themes") return themeOptions.map((theme) => ({
+    id: theme.id, title: theme.name, detail: "MAP THEME", href: editorUrl({ theme: theme.id }), colors: theme.palette.slice(0, 6),
+  }));
+  if (category === "layouts") return layoutGroups.flatMap((group) => group.options.map((layout) => ({
+    id: layout.id, title: layout.name, detail: `${group.name.toUpperCase()} · ${layout.widthCm} × ${layout.heightCm} CM`,
+    href: editorUrl({ layout: layout.id }), ratio: layout.widthCm / layout.heightCm,
+  })));
+  return lineStyles.map((style) => ({
+    id: style.id, title: style.name, detail: `${style.pattern.toUpperCase()} · BORDER STYLE`,
+    href: editorUrl({ border: style.id }), border: style.pattern,
+  }));
+}
 
-  if (category === "themes") return <div className="gallery-landing__grid gallery-landing__grid--themes">
-    {themeOptions.map((theme) => <a className="gallery-landing__card gallery-landing__card--theme" href={editorUrl({ theme: theme.id })} key={theme.id}>
-      <img className="gallery-landing__theme-art" src={`/theme-previews/${theme.id}.webp`} alt={`${theme.name} city-map theme preview`} loading="lazy" />
-      <span className="gallery-landing__palette" aria-hidden="true">{theme.palette.slice(0, 6).map((color, index) => <i key={`${color}-${index}`} style={{ background: color }} />)}</span>
-      <h2>{theme.name}</h2><p>{theme.description}</p><small>Try this theme</small>
-    </a>)}
-  </div>;
-
-  if (category === "layouts") return <div className="gallery-landing__layout-groups">
-    {layoutGroups.map((group) => <section className="gallery-landing__layout-group" key={group.id}>
-      <h2>{group.name}</h2><div className="gallery-landing__grid gallery-landing__grid--layouts">
-        {group.options.map((layout) => <a className="gallery-landing__card gallery-landing__card--layout" href={editorUrl({ layout: layout.id })} key={layout.id}>
-          <span className="gallery-landing__layout-shape" style={{ aspectRatio: `${layout.widthCm} / ${layout.heightCm}` }} aria-hidden="true"><img src={`/assets/map-posters/${mapArt[group.options.indexOf(layout) % mapArt.length].file}`} alt="" loading="lazy" /><i /></span>
-          <h3>{layout.name}</h3><p>{layout.description || `${layout.widthCm} × ${layout.heightCm} cm`}</p><small>Use this layout</small>
-        </a>)}
-      </div>
-    </section>)}
-  </div>;
-
-  if (category === "borders") return <div className="gallery-landing__grid gallery-landing__grid--borders">
-    {lineStyles.map((style, index) => <a className="gallery-landing__card gallery-landing__card--border" href={editorUrl({ border: style.id })} key={style.id}>
-      <span className={`gallery-landing__border-sample gallery-landing__border-sample--${style.pattern}`} aria-hidden="true" style={{ backgroundImage: `url(/assets/map-posters/${mapArt[index % mapArt.length].file})` }}><i /></span>
-      <h2>{style.name}</h2><p>Preview this frame around your map in the editor.</p><small>Try this border</small>
-    </a>)}
-  </div>;
-
-  return <div className="gallery-landing__grid gallery-landing__grid--maps">
-    {OCCASION_TEMPLATES.map((preset) => <a className="gallery-landing__card gallery-landing__card--map" href={editorUrl({ title: preset.cityText, tagline: preset.countryText, theme: preset.themeId })} key={preset.id}>
-      <img src={`/assets/map-posters/${presetArtById[preset.id] || "hometown-roots.png"}`} alt={`${preset.title} MAPARTE map example`} loading="lazy" />
-      <span>{preset.badge.replace(/[^\p{L}\p{N} ·&]/gu, "").trim()}</span><h2>{preset.title}</h2><p>{preset.tagline}</p><small>Start with this idea</small>
-    </a>)}
+function SlideArtwork({ category, item }: { category: GalleryKey; item: GalleryItem }) {
+  return <div className={`gallery-art gallery-art--${category}`} aria-hidden="true">
+    {category === "themes" && <div className="gallery-art__palette">{(item.colors || []).map((color, index) => <i key={`${color}-${index}`} style={{ background: color }} />)}</div>}
+    {category === "layouts" && <div className="gallery-art__paper" style={{ aspectRatio: String(item.ratio || 1) }}><i /></div>}
+    {category === "borders" && <div className={`gallery-art__frame gallery-art__frame--${item.border || "single"}`}><i /></div>}
+    {category === "maps" && <div className="gallery-art__streets"><i /><i /><i /><i /><i /><i /></div>}
+    <span className="gallery-art__index">{item.id.replaceAll("-", " ").toUpperCase()}</span>
   </div>;
 }
 
@@ -136,39 +58,104 @@ export default function GalleryLanding() {
   const requested = search.get("gallery") as GalleryKey | null;
   const category: GalleryKey = requested && requested in collectionInfo ? requested : "maps";
   const info = collectionInfo[category];
+  const items = useMemo(() => getItems(category), [category]);
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [inView, setInView] = useState(false);
+  const stageRef = useRef<HTMLElement>(null);
+  const pointerStart = useRef<{ x: number; y: number } | null>(null);
+  const lastWheel = useRef(0);
+  const current = items[active % Math.max(items.length, 1)];
 
-  const showcaseItems = useMemo<GalleryPreviewItem[]>(() => {
-    if (category === "maps") return mapArt.slice(0, 6).map((item) => ({ title: item.title, subtitle: item.place, image: `/assets/map-posters/${item.file}`, href: editorUrl({ city: item.place.split(" · ")[0], title: item.title }) }));
-    if (category === "themes") return themeOptions.map((theme) => ({ title: theme.name, subtitle: "MAP THEME", image: `/theme-previews/${theme.id}.webp`, href: editorUrl({ theme: theme.id }) }));
-    if (category === "layouts") return layoutGroups.flatMap((group) => group.options).slice(0, 12).map((layout, index) => ({ title: layout.name, subtitle: `${layout.widthCm} × ${layout.heightCm} CM`, image: `/assets/map-posters/${mapArt[index % mapArt.length].file}`, href: editorUrl({ layout: layout.id }) }));
-    if (category === "borders") return lineStyles.map((style, index) => ({ title: style.name, subtitle: "BORDER STYLE", image: `/assets/map-posters/${mapArt[index % mapArt.length].file}`, href: editorUrl({ border: style.id }) }));
-    return OCCASION_TEMPLATES.map((preset) => ({ title: preset.title, subtitle: preset.badge.replace(/[^\p{L}\p{N} ·&]/gu, "").trim(), image: `/assets/map-posters/${presetArtById[preset.id] || "hometown-roots.png"}`, href: editorUrl({ title: preset.cityText, tagline: preset.countryText, theme: preset.themeId }) }));
-  }, [category]);
+  const advance = (direction: number) => setActive((index) => (index + direction + items.length) % items.length);
 
   useEffect(() => {
     document.title = `${info.title} — MAPARTE`;
     return () => { document.title = "MAPARTE | Create Digital Map Art & Phone Wallpapers"; };
   }, [info.title]);
 
-  return <main className="gallery-landing">
-    <header className="gallery-landing__header">
-      <a className="gallery-landing__brand" href="/">MAPARTE</a>
-      <a className="gallery-landing__back" href="/">Back to the journey</a>
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage || !("IntersectionObserver" in window)) return;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.2 });
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (paused || !inView || items.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") setActive((index) => (index + 1) % items.length);
+    }, 4200);
+    return () => window.clearInterval(timer);
+  }, [paused, inView, items.length]);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) < 18) return;
+      event.preventDefault();
+      const now = performance.now();
+      if (now - lastWheel.current < 620) return;
+      lastWheel.current = now;
+      advance(event.deltaY > 0 ? 1 : -1);
+    };
+    stage.addEventListener("wheel", onWheel, { passive: false });
+    return () => stage.removeEventListener("wheel", onWheel);
+  }, [items.length]);
+
+  const onPointerDown = (event: PointerEvent<HTMLElement>) => { pointerStart.current = { x: event.clientX, y: event.clientY }; };
+  const onPointerUp = (event: PointerEvent<HTMLElement>) => {
+    if (!pointerStart.current) return;
+    const dx = event.clientX - pointerStart.current.x;
+    const dy = event.clientY - pointerStart.current.y;
+    pointerStart.current = null;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 34) return;
+    advance(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 1 : -1) : (dy < 0 ? 1 : -1));
+  };
+
+  return <main className={`gallery-page gallery-page--${category}`}>
+    <header className="gallery-page__header">
+      <a className="gallery-page__brand" href="/">MAPARTE</a>
+      <a className="gallery-page__back" href="/">← Back</a>
     </header>
-    <section className="gallery-landing__content" aria-labelledby="gallery-title">
-      <div className="gallery-landing__intro">
-        <span className="gallery-landing__eyebrow">{info.number} / {info.label}</span>
+    <section className="gallery-page__content" aria-labelledby="gallery-title">
+      <div className="gallery-page__intro">
+        <span className="gallery-page__eyebrow">{info.number} / {info.label}</span>
         <h1 id="gallery-title">{info.title}<br /><em>{info.italic}</em></h1>
-        <p className="gallery-landing__description">{info.description}</p>
+        <p>{info.description}</p>
       </div>
-      <nav className="gallery-landing__switcher" aria-label="Browse MAPARTE galleries">
-        {(Object.keys(collectionInfo) as GalleryKey[]).map((key) => <a className={key === category ? "is-active" : ""} aria-current={key === category ? "page" : undefined} href={`/?gallery=${key}`} key={key}>{collectionInfo[key].title}</a>)}
-      </nav>
-      <GalleryShowcase items={showcaseItems} label={info.title} />
-      <GalleryCards category={category} />
-      <a className="gallery-landing__make" href={editorUrl({})}>Start with a place</a>
+      {current && <section
+        className={`gallery-stage gallery-stage--${info.motion}`}
+        ref={stageRef}
+        aria-label={`${info.title} slide ${active + 1} of ${items.length}`}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerCancel={() => { pointerStart.current = null; }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocusCapture={() => setPaused(true)}
+        onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(false); }}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowRight" || event.key === "ArrowDown") { event.preventDefault(); advance(1); }
+          if (event.key === "ArrowLeft" || event.key === "ArrowUp") { event.preventDefault(); advance(-1); }
+        }}
+        tabIndex={0}
+      >
+        <div className="gallery-stage__slide" key={current.id}>
+          <SlideArtwork category={category} item={current} />
+          <div className="gallery-stage__caption">
+            <span>{current.detail}</span>
+            <h2>{current.title}</h2>
+            <a href={current.href}>Open this in the editor <i aria-hidden="true">↗</i></a>
+          </div>
+        </div>
+        <div className="gallery-stage__progress" aria-hidden="true">
+          {items.map((item, index) => <i key={item.id} className={index === active ? "is-active" : ""} />)}
+        </div>
+        <p className="gallery-stage__hint">{String(active + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")} <span>Scroll or swipe to explore</span></p>
+      </section>}
     </section>
-    <footer className="gallery-landing__footer"><a href="/">MAPARTE.COM</a><span>Map it. Make it yours.</span></footer>
   </main>;
 }
-
