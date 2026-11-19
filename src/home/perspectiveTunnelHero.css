@@ -6,6 +6,7 @@
 	color:#f2f2ed;
 	background:transparent;
 	isolation:isolate;
+	z-index:1;
 }
 .maparte-tunnel__stage{
 	position:sticky;
@@ -14,7 +15,7 @@
 	height:100svh;
 	min-height:600px;
 	overflow:hidden;
-	background:radial-gradient(ellipse at 50% 48%,rgba(36,88,99,.42),rgba(5,17,24,.12) 40%,rgba(3,12,18,.56) 82%);
+	background:radial-gradient(ellipse at 72% 48%,rgba(36,88,99,.16),rgba(5,17,24,.06) 42%,rgba(3,12,18,.26) 82%);
 	perspective:1050px;
 	transform-style:preserve-3d;
 }
@@ -63,19 +64,24 @@
 	position:absolute;
 	z-index:4;
 	top:50%;
-	left:50%;
-	width:min(620px,calc(100% - 36px));
-	text-align:center;
-	transform:translate(-50%,-50%);
+	left:clamp(24px,7vw,108px);
+	width:min(500px,38vw);
+	text-align:left;
+	transform:translateY(-50%);
 	transform-origin:center;
 	will-change:transform,opacity;
 }
-.maparte-tunnel__eyebrow{margin:0 0 20px;color:#a6e6e4;font:600 10px "Spline Sans Mono",monospace;letter-spacing:.24em}
+.maparte-tunnel__eyebrow{margin:0 0 16px;color:#a6e6e4;font:600 9px "Spline Sans Mono",monospace;letter-spacing:.16em}
 .maparte-tunnel__title h2{margin:0;font:800 clamp(48px,8vw,108px)/.84 "Space Grotesk",Arial,sans-serif;letter-spacing:-.085em;color:#f5f5f1;text-shadow:0 7px 30px rgba(0,0,0,.28)}
 .maparte-tunnel__title h2 span{color:#b2e6e2}
-.maparte-tunnel__lead{max-width:34ch;margin:24px auto 0;color:rgba(242,245,239,.9);font:500 clamp(16px,2vw,22px)/1.4 "DM Serif Display",Georgia,serif}
-.maparte-tunnel__body{max-width:47ch;margin:12px auto 0;color:rgba(226,236,235,.72);font:13px/1.65 "Instrument Sans",Arial,sans-serif}
+.maparte-tunnel__lead{max-width:34ch;margin:19px 0 0;color:rgba(242,245,239,.9);font:500 clamp(16px,1.7vw,22px)/1.4 "DM Serif Display",Georgia,serif}
+.maparte-tunnel__body{max-width:45ch;margin:12px 0 0;color:rgba(226,236,235,.76);font:12px/1.65 "Instrument Sans",Arial,sans-serif}
+.maparte-tunnel__facts{display:grid;gap:6px;margin:17px 0 0;color:rgba(223,238,233,.63);font:8px/1.5 "Spline Sans Mono",monospace;letter-spacing:.08em}
+.maparte-tunnel__actions{display:flex;align-items:center;flex-wrap:wrap;gap:14px 20px;margin-top:20px}
 .maparte-tunnel__cta{display:inline-flex;align-items:center;gap:18px;margin-top:22px;padding:12px 17px;border:1px solid rgba(198,243,236,.48);border-radius:999px;background:rgba(16,56,65,.43);color:#f4f5f0;font:600 11px "Instrument Sans",Arial,sans-serif;backdrop-filter:blur(10px);transition:background .2s,border-color .2s,transform .2s}
+.maparte-tunnel__actions .maparte-tunnel__cta{margin-top:0}
+.maparte-tunnel__gallery{color:rgba(235,244,239,.8);font:600 10px "Instrument Sans",Arial,sans-serif;border-bottom:1px solid rgba(194,231,222,.45);padding:0 0 5px;transition:color .2s,border-color .2s}
+.maparte-tunnel__gallery:hover{color:#b4ede7;border-color:#b4ede7}
 .maparte-tunnel__cta span{color:#b4ede7;font-size:16px}
 .maparte-tunnel__cta:hover{transform:translateY(-2px);border-color:#b4ede7;background:rgba(22,83,91,.66)}
 .maparte-tunnel__cta:focus-visible{outline:2px solid #b4ede7;outline-offset:4px}
@@ -86,11 +92,13 @@
 	.maparte-tunnel__stage{min-height:520px}
 	.maparte-tunnel__card{width:clamp(128px,37vw,176px);border-radius:12px}
 	.maparte-tunnel__card figcaption{left:10px;bottom:10px;font-size:7px;letter-spacing:.08em}
-	.maparte-tunnel__title{width:min(440px,calc(100% - 30px))}
-	.maparte-tunnel__eyebrow{font-size:8px;letter-spacing:.16em;margin-bottom:16px}
+	.maparte-tunnel__title{left:50%;width:min(440px,calc(100% - 30px));text-align:center}
+	.maparte-tunnel__eyebrow{font-size:7px;letter-spacing:.12em;margin-bottom:16px}
 	.maparte-tunnel__title h2{font-size:clamp(49px,13vw,76px)}
-	.maparte-tunnel__lead{font-size:17px;margin-top:20px}
-	.maparte-tunnel__body{max-width:36ch;font-size:12px}
+	.maparte-tunnel__lead{font-size:17px;margin:20px auto 0}
+	.maparte-tunnel__body{max-width:36ch;margin:12px auto 0;font-size:12px}
+	.maparte-tunnel__facts{font-size:7px}
+	.maparte-tunnel__actions{justify-content:center;gap:13px 15px}
 	.maparte-tunnel__prompt{bottom:calc(18px + env(safe-area-inset-bottom));font-size:8px}
 }
 @media(prefers-reduced-motion:reduce){
@@ -102,3 +110,4 @@
 	.maparte-tunnel__title{width:min(560px,calc(100% - 36px))}
 	.maparte-tunnel__prompt{display:none}
 }
+
