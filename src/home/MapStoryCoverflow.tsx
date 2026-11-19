@@ -56,7 +56,7 @@ export function MapStoryCoverflow({ items }: { items: MapStoryCoverflowItem[] })
   }, [items.length]);
 
   return (
-    <div className="journey-coverflow" ref={rootRef} aria-label="Scroll through MAPARTE city map examples">
+    <div className="journey-coverflow" id="map-stories" ref={rootRef} aria-label="Scroll through MAPARTE city map examples">
       <div className="journey-coverflow__stage">
         {items.map((item, index) => (
           <a
@@ -79,4 +79,3 @@ export function MapStoryCoverflow({ items }: { items: MapStoryCoverflowItem[] })
     </div>
   );
 }
-
