@@ -7,7 +7,13 @@
 .journey-map .maplibregl-canvas{outline:0!important;filter:brightness(1.65) saturate(1.24)}
 .journey-map .maplibregl-ctrl-attrib{background:rgba(5,15,18,.5)!important;color:rgba(233,241,232,.48)!important;font:9px "Spline Sans Mono",monospace!important;pointer-events:auto}
 .journey-map .maplibregl-ctrl-attrib a{color:rgba(233,241,232,.62)!important}
-.journey-map .maplibregl-ctrl-attrib-button{display:none!important}
+.journey-map .maplibregl-ctrl-attrib-button{display:block!important;opacity:.86!important}
+.journey-page .journey-map .maplibregl-ctrl-attrib:not(.maplibregl-compact-show){
+  width:28px!important;min-width:28px!important;max-width:28px!important;min-height:28px!important;
+  padding:0!important;border:1px solid rgba(233,241,232,.28)!important;border-radius:50%!important;
+  background:rgba(4,12,14,.84)!important;
+}
+.journey-page .journey-map .maplibregl-ctrl-attrib:not(.maplibregl-compact-show) .maplibregl-ctrl-attrib-inner{display:none!important}
 .journey-header{position:fixed;top:0;left:0;right:0;z-index:5;height:88px;padding:0 clamp(22px,5vw,82px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(230,242,232,.11)}
 .journey-wordmark{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:800;letter-spacing:.2em}
 .journey-mark{width:32px;height:32px;border:1px solid rgba(214,255,107,.75);border-radius:50%;display:grid;place-items:center;color:var(--acid);font-family:"Playfair Display",serif;font-size:20px;font-weight:500;letter-spacing:0}
@@ -426,3 +432,6 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
     background:linear-gradient(90deg,rgba(7,19,24,.68) 0%,rgba(7,19,24,.46) 42%,rgba(7,19,24,.12) 73%,transparent 100%),linear-gradient(0deg,rgba(5,14,18,.36),transparent 48%,rgba(5,14,18,.08));
   }
 }
+
+/* Lift the transformed MapLibre layer above its decorative veil so its credit stays visible. */
+.journey-world .journey-map{z-index:3}

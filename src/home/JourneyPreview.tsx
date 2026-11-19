@@ -201,6 +201,11 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
     });
     map.on("load", () => {
       try { map.setProjection({ type: "globe" }); } catch { /* retain default */ }
+      const attribution = map.getContainer().querySelector(".maplibregl-ctrl-attrib");
+      if (attribution instanceof HTMLDetailsElement) {
+        attribution.open = false;
+        attribution.classList.remove("maplibregl-compact-show");
+      }
     });
 
     const animate = (now: number) => {
@@ -457,6 +462,11 @@ export default function JourneyPreview() {
         </div>
       </section>
       <DoodleCrewFooter />
+      <div className="journey-map-credit" aria-label="Map data credits">
+        Map data © <a href="https://openfreemap.org/" target="_blank" rel="noreferrer">OpenFreeMap</a> ·
+        © <a href="https://openmaptiles.org/" target="_blank" rel="noreferrer">OpenMapTiles</a> ·
+        <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a>
+      </div>
       <div className="journey-scrollhint" aria-hidden="true" style={{ opacity: hasScrolled ? 0 : 1 }}>SCROLL TO TRAVEL <span>↓</span></div>
     </div>
   );

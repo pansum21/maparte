@@ -119,3 +119,8 @@
 	.maparte-tunnel__title{width:min(560px,calc(100% - 36px))}
 	.maparte-tunnel__prompt{display:none}
 }
+
+/* Leave a clear gap between the mobile scroll prompt and the map attribution. */
+@media(max-width:767px){
+  .maparte-tunnel__prompt{bottom:calc(90px + env(safe-area-inset-bottom))}
+}
