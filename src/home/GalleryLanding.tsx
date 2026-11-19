@@ -71,7 +71,7 @@ function GalleryShowcase({ items, label }: { items: GalleryPreviewItem[]; label:
   const selected = items[active % items.length];
   return <section className="gallery-showcase" ref={stageRef} aria-label={`${label} image preview`} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(false); }}>
     <a className="gallery-showcase__image" href={selected.href} aria-label={`Open ${selected.title} in the MAPARTE editor`}>
-      <img src={selected.image} alt={`${selected.title} — MAPARTE ${label.toLowerCase()} example`} loading="lazy" />
+      <img src={selected.image} alt={`${selected.title} — MAPARTE ${label.toLowerCase()} example`} loading="eager" fetchPriority="high" />
       <span className="gallery-showcase__image-caption"><small>{selected.subtitle}</small><strong>{selected.title}</strong><i aria-hidden="true">↗</i></span>
     </a>
     <div className="gallery-showcase__controls" aria-label="Choose a preview image">
