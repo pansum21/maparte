@@ -368,7 +368,9 @@ export default function JourneyPreview() {
         const pageSpan = Math.max(storySpan, page.offsetHeight - window.innerHeight);
         const storyProgress = clamp((window.scrollY - top) / storySpan);
         const pageProgress = clamp((window.scrollY - top) / pageSpan);
-        const mapProgress = pageProgress;
+        // Keep the cinematic map travel inside the map-story chapters. The new
+        // top-of-page tunnel and the FAQ/footer then show the finished city view.
+        const mapProgress = storyProgress;
         if (mapProgress > 0.025 && !hasScrolledRef.current) {
           hasScrolledRef.current = true;
           setHasScrolled(true);
@@ -403,6 +405,7 @@ export default function JourneyPreview() {
         <a className="journey-wordmark" href="#start" aria-label="MapArte home"><img src="/assets/logo.svg" alt="" /><span>MAPARTE</span></a>
         <div className="journey-header__right"><span>MAPS FOR THE PLACES THAT STAY</span><a className="journey-glass" href="/?dist=5235000">Make your map</a></div>
       </header>
+      <PerspectiveTunnelHero />
       <main id="start" ref={storyRef} className="journey-track">
         {chapters.map((chapter, index) => (
           <section id={index === 1 ? "chapter-2" : undefined} className={`journey-chapter journey-chapter--${chapter.side}`} key={chapter.tag} data-step={index + 1}>
@@ -451,7 +454,6 @@ export default function JourneyPreview() {
           </section>
         ))}
       </main>
-      <PerspectiveTunnelHero />
       <section className="journey-faq" id="help" aria-labelledby="journey-faq-title">
         <div className="journey-faq__intro">
           <span>HELP · QUICK ANSWERS</span>
