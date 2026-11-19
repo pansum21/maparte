@@ -136,7 +136,7 @@ export default function PerspectiveTunnelHero() {
 					<p className="maparte-tunnel__facts"><span>800 CITY ENTRIES · SEARCH PLACES OR COORDINATES</span><span>DIGITAL DOWNLOAD · NO PRINTING OR SHIPPING</span></p>
 					<div className="maparte-tunnel__actions">
 						<a className="maparte-tunnel__cta" href="/?dist=5235000">Start with a place <span aria-hidden="true">↗</span></a>
-						<a className="maparte-tunnel__gallery" href="#map-stories">Explore real map designs</a>
+						<a className="maparte-tunnel__gallery" href="/?gallery=maps">Explore the map gallery</a>
 					</div>
 				</div>
 				<div className="maparte-tunnel__prompt" aria-hidden="true">SCROLL TO FIND YOUR PLACE <span>↓</span></div>
