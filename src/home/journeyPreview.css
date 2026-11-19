@@ -379,35 +379,9 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 .journey-chapter:first-child{padding-top:88px}
 @media(max-width:900px){.journey-chapter:first-child{padding-top:64px}}
 
-/* Keep the map credit compact on the map, and repeat full attribution at page end. */
-.journey-map .maplibregl-ctrl-bottom-right{
-  right:12px!important;
-  bottom:calc(12px + env(safe-area-inset-bottom))!important;
+/* Keep the city map legible behind the mobile story copy. */
+@media(max-width:900px){
+  .journey-world:after{
+    background:linear-gradient(90deg,rgba(7,19,24,.68) 0%,rgba(7,19,24,.46) 42%,rgba(7,19,24,.12) 73%,transparent 100%),linear-gradient(0deg,rgba(5,14,18,.36),transparent 48%,rgba(5,14,18,.08));
+  }
 }
-.journey-map .maplibregl-ctrl-attrib{
-  box-sizing:border-box;
-  width:min(224px,calc(100vw - 24px));
-  max-width:calc(100vw - 24px);
-  padding:4px 8px!important;
-  border:1px solid rgba(233,241,232,.16);
-  border-radius:12px!important;
-  background:rgba(4,12,14,.76)!important;
-  color:rgba(233,241,232,.72)!important;
-  font-size:8px!important;
-  line-height:1.35!important;
-  white-space:normal;
-}
-.journey-map .maplibregl-ctrl-attrib a{color:rgba(233,241,232,.82)!important}
-.journey-world{
-  background:radial-gradient(ellipse at 69% 47%,#172d29 0,#10211f 23%,#071318 64%);
-}
-.journey-map-credit{
-  position:relative;
-  z-index:3;
-  padding:10px 16px calc(12px + env(safe-area-inset-bottom));
-  background:#071318;
-  color:rgba(233,241,232,.62);
-  text-align:center;
-  font:8px/1.6 "Spline Sans Mono",monospace;
-}
-.journey-map-credit a{color:rgba(233,241,232,.84);text-decoration:underline!important;text-underline-offset:2px}
