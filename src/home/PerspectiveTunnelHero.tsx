@@ -63,7 +63,8 @@ export default function PerspectiveTunnelHero() {
 					const fadeOut = clamp((1 - local) / 0.12);
 					const opacity = Math.min(fadeIn, fadeOut);
 					const pan = window.innerWidth < 768 ? 16 : 34;
-					const offsetX = card.x * section.clientWidth - pointerX * pan;
+					const heroOffset = window.innerWidth < 768 ? 0 : section.clientWidth * 0.23;
+					const offsetX = heroOffset + card.x * section.clientWidth * (window.innerWidth < 768 ? 0.62 : 0.55) - pointerX * pan;
 					const offsetY = card.y * window.innerHeight - pointerY * pan;
 					element.style.transform = `translate3d(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px), ${z}px) rotateZ(${card.rotation}deg)`;
 					element.style.opacity = String(opacity);
@@ -73,7 +74,8 @@ export default function PerspectiveTunnelHero() {
 					const opacity = reduceMotion.matches ? 1 : clamp(Math.min(progress / 0.1, (1 - progress) / 0.12));
 					const scale = reduceMotion.matches ? 1 : 0.9 + progress * 0.24;
 					title.style.opacity = String(opacity);
-						title.style.transform = `translate(-50%, -50%) scale(${scale})`;
+						const titlePosition = window.innerWidth < 768 ? "translate(-50%, -50%)" : "translateY(-50%)";
+						title.style.transform = `${titlePosition} scale(${scale})`;
 				}
 				if (prompt) prompt.style.opacity = String(reduceMotion.matches ? 0 : clamp(1 - progress * 9));
 			});
@@ -102,7 +104,7 @@ export default function PerspectiveTunnelHero() {
 	}, []);
 
 	return (
-		<section ref={sectionRef} className="maparte-tunnel" aria-labelledby="maparte-tunnel-title">
+		<section id="top" ref={sectionRef} className="maparte-tunnel" aria-labelledby="maparte-tunnel-title">
 			<div className="maparte-tunnel__stage">
 				<div className="maparte-tunnel__grid" aria-hidden="true" />
 				<div className="maparte-tunnel__cards" aria-hidden="true">
@@ -114,14 +116,19 @@ export default function PerspectiveTunnelHero() {
 					))}
 				</div>
 				<div className="maparte-tunnel__title">
-					<p className="maparte-tunnel__eyebrow">MAPARTE · DIGITAL CITY MAP ART</p>
+					<p className="maparte-tunnel__eyebrow">INTO THE EARTH · A PLACE IS A BEGINNING</p>
 					<h2 id="maparte-tunnel-title">INTO THE<br /><span>EARTH.</span></h2>
-					<p className="maparte-tunnel__lead">From the whole world to the one place that feels like yours.</p>
-					<p className="maparte-tunnel__body">Choose a city, style its streets, and make a digital map poster or wallpaper with your own words and details.</p>
-					<a className="maparte-tunnel__cta" href="/?dist=5235000">Create your map <span aria-hidden="true">↗</span></a>
+					<p className="maparte-tunnel__lead">The world is wide. Your place is here.</p>
+					<p className="maparte-tunnel__body">Turn a hometown, a shared moment, a journey or a finish line into digital map art. Design it in your browser, download the file and print it yourself if you like. MAPARTE does not print or ship posters.</p>
+					<p className="maparte-tunnel__facts"><span>800 CITY ENTRIES · SEARCH PLACES OR COORDINATES</span><span>DIGITAL DOWNLOAD · NO PRINTING OR SHIPPING</span></p>
+					<div className="maparte-tunnel__actions">
+						<a className="maparte-tunnel__cta" href="/?dist=5235000">Start with a place <span aria-hidden="true">↗</span></a>
+						<a className="maparte-tunnel__gallery" href="#map-stories">Explore real map designs</a>
+					</div>
 				</div>
 				<div className="maparte-tunnel__prompt" aria-hidden="true">SCROLL TO FIND YOUR PLACE <span>↓</span></div>
 			</div>
 		</section>
 	);
 }
+

@@ -2,6 +2,7 @@ import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { ArrowUpRight, MoveUpRight } from "lucide-react";
 
 type ParticleKind = "star" | "ring" | "spark" | "route" | "dot";
+type CharacterKind = "yeti" | "kid" | "ghost" | "cat";
 
 const particles: { kind: ParticleKind; x: number; y: number; color: string; duration: number; delay: number; drift: number; size: number }[] = [
 	{ kind: "star", x: 5, y: 38, color: "#ef6a5b", duration: 7.4, delay: -5.2, drift: 28, size: 1 },
@@ -41,18 +42,23 @@ const footerGroups = [
 		title: "STUDIO",
 		links: [
 			{ label: "Contact support", href: "mailto:support@maparte.com" },
-			{ label: "Privacy", href: "/privacy" },
-			{ label: "Terms", href: "/terms" },
-			{ label: "Refunds", href: "/refund" },
+			{ label: "Privacy Policy", href: "/privacy" },
+			{ label: "Terms of Service", href: "/terms" },
+			{ label: "Refund Policy", href: "/refund" },
 		],
 	},
 ];
 
+const crew: { id: CharacterKind; left: string; bottom: string; width: string; delay: string; color: string; note: string }[] = [
+	{ id: "yeti", left: "1%", bottom: "6%", width: "10%", delay: "-.8s", color: "#174b70", note: "Your place is out there." },
+	{ id: "kid", left: "26%", bottom: "16%", width: "7%", delay: "-.2s", color: "#c25e48", note: "Pick a city. Make it yours." },
+	{ id: "ghost", left: "56%", bottom: "20%", width: "7%", delay: "-1.4s", color: "#297d83", note: "A little map magic." },
+	{ id: "cat", left: "84%", bottom: "7%", width: "10%", delay: "-.5s", color: "#71458f", note: "Every good story has a somewhere." },
+];
+
 export function DoodleCrewFooter() {
 	const artRef = useRef<HTMLDivElement>(null);
-	const [buddyMessage, setBuddyMessage] = useState("");
-	const messageIndex = useRef(0);
-	const messages = ["Your favourite place called.", "Every good story has a somewhere.", "Pick a place. Make it yours."];
+	const [activeCharacter, setActiveCharacter] = useState<CharacterKind | null>(null);
 
 	const movePointer = (event: PointerEvent<HTMLDivElement>) => {
 		if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -94,23 +100,17 @@ export function DoodleCrewFooter() {
 		});
 	};
 
-	const speak = () => {
-		setBuddyMessage(messages[messageIndex.current % messages.length]);
-		messageIndex.current += 1;
-	};
+	const speak = (kind: CharacterKind) => setActiveCharacter((current) => current === kind ? null : kind);
 
 	return (
 		<footer className="journey-footer doodle-footer">
 			<div className="doodle-footer__top">
 				<div className="doodle-footer__intro">
-					<a className="doodle-footer__brand" href="#start" aria-label="MAPARTE home">
+					<a className="doodle-footer__brand" href="#top" aria-label="MAPARTE home">
 						<img src="/assets/logo.svg" alt="" />
 						<span>MAPARTE</span>
 					</a>
 					<p>We turn the places you love into maps you can make your own.</p>
-					<a className="doodle-footer__email" href="mailto:support@maparte.com">
-						Support is one note away <ArrowUpRight aria-hidden="true" />
-					</a>
 				</div>
 				{footerGroups.map((group) => (
 					<nav className="doodle-footer__group" aria-label={group.title} key={group.title}>
@@ -145,10 +145,20 @@ export function DoodleCrewFooter() {
 						<span className="doodle-footer__particle"><ParticleGlyph kind={particle.kind} /></span>
 					</span>
 				))}
-				<button className="doodle-footer__buddy" type="button" onClick={speak} aria-label="Hear a note from the MAPARTE map buddy" aria-expanded={Boolean(buddyMessage)}>
-					<MapBuddy />
-					{buddyMessage && <span className="doodle-footer__speech" role="status">{buddyMessage}</span>}
-				</button>
+				{crew.map((member) => (
+					<button
+						key={member.id}
+						className={`doodle-footer__character doodle-footer__character--${member.id}`}
+						type="button"
+						onClick={() => speak(member.id)}
+						aria-label={`Show a note from the MAPARTE ${member.id}`}
+						aria-expanded={activeCharacter === member.id}
+						style={{ "--character-left": member.left, "--character-bottom": member.bottom, "--character-width": member.width, "--character-delay": member.delay, "--character-color": member.color } as CSSProperties}
+					>
+						<DoodleCharacter kind={member.id} />
+						{activeCharacter === member.id && <span className="doodle-footer__speech" role="status">{member.note}</span>}
+					</button>
+				))}
 				<svg className="doodle-footer__ground" viewBox="0 0 1400 46" preserveAspectRatio="none" aria-hidden="true">
 					<path d="M7 19 C180 10 300 26 440 18 S690 21 810 16 1050 24 1393 14" />
 					<path d="M35 27c25-4 41 4 67 0m115 3c12-3 21-3 31 0m283-4c8-4 17-4 25 0m158 5c16-3 25-2 39 0m187-4c10-3 19-2 27 0m126 3c7-3 14-3 20-1" />
@@ -159,10 +169,7 @@ export function DoodleCrewFooter() {
 			<div className="doodle-footer__bottom">
 				<span>© {new Date().getFullYear()} MAPARTE. Made for places that stay with you.</span>
 				<div className="doodle-footer__bottom-links">
-					<a href="/privacy">Privacy</a>
-					<a href="/terms">Terms</a>
-					<a href="/refund">Refunds</a>
-					<a className="doodle-footer__back" href="#start">Back to top <MoveUpRight aria-hidden="true" /></a>
+					<a className="doodle-footer__back" href="#top">Back to top <MoveUpRight aria-hidden="true" /></a>
 				</div>
 			</div>
 		</footer>
@@ -171,39 +178,46 @@ export function DoodleCrewFooter() {
 
 function MaparteWordmark() {
 	return (
-		<svg className="doodle-footer__wordmark" viewBox="0 0 1400 300" role="img" aria-labelledby="maparte-wordmark-title">
-			<title id="maparte-wordmark-title">MAPARTE</title>
-			<defs>
-				<linearGradient id="maparte-wordmark-gradient" x1="0%" y1="50%" x2="100%" y2="50%">
-					<stop offset="0%" stopColor="#e85e55" />
-					<stop offset="19%" stopColor="#e7a43b" />
-					<stop offset="38%" stopColor="#23a88d" />
-					<stop offset="58%" stopColor="#3387cb" />
-					<stop offset="77%" stopColor="#596ed0" />
-					<stop offset="100%" stopColor="#a057b7" />
-				</linearGradient>
-				<mask id="maparte-wordmark-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1400" height="300">
-					<rect width="1400" height="300" fill="black" />
-					<text x="55" y="235" fill="white" fontFamily="Arial Black, Impact, sans-serif" fontSize="238" fontWeight="900" letterSpacing="-6">MAPARTE</text>
-					<g stroke="black" strokeWidth="4" opacity=".88">
-						<path d="M95 72h48m116 44h34m71-56h72m102 92h56m66-67h38m92 40h72m93-65h53m31 109h42m66-57h60m39 84h38m55-114h51m29 33h33m51 98h40" />
-						<path d="M162 168h27m153 41h24m122-75h32m133 99h36m95-124h25m72 80h49m132-88h27m42 93h31m69-43h44m26 72h26" />
-						<path d="M87 219h18m236-112h24m270 72h24m168-115h18m180 96h24m154-59h28m51 121h18" />
-					</g>
-				</mask>
-				<filter id="maparte-wordmark-rough" x="-2%" y="-10%" width="104%" height="125%">
-					<feTurbulence type="fractalNoise" baseFrequency=".015 .16" numOctaves="2" seed="12" result="grain" />
-					<feDisplacementMap in="SourceGraphic" in2="grain" scale="1.6" xChannelSelector="R" yChannelSelector="G" />
-				</filter>
-			</defs>
-			<text x="55" y="235" fill="url(#maparte-wordmark-gradient)" fontFamily="Arial Black, Impact, sans-serif" fontSize="238" fontWeight="900" letterSpacing="-6" mask="url(#maparte-wordmark-mask)" filter="url(#maparte-wordmark-rough)">MAPARTE</text>
-		</svg>
+		<span className="doodle-footer__typeword" role="img" aria-label="MAPARTE">
+			<span className="doodle-footer__typeword-letters" aria-hidden="true">MAPARTE</span>
+			<span className="doodle-footer__typeword-caret" aria-hidden="true" />
+		</span>
 	);
 }
 
-function MapBuddy() {
+function DoodleCharacter({ kind }: { kind: CharacterKind }) {
+	if (kind === "ghost") return (
+		<svg viewBox="0 0 110 150" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+			<path d="M20 127V66C20 29 35 12 55 12s35 17 35 54v61l-13-9-12 13-12-12-13 12-10-13-10 9Z" fill="#fffdf6" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" />
+			<g className="doodle-footer__eyes" fill="#173c58"><ellipse cx="43" cy="66" rx="3.8" ry="5.5" /><ellipse cx="67" cy="66" rx="3.8" ry="5.5" /></g>
+			<path d="M47 82c5 5 11 5 16 0" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+			<path d="m23 39-11-6m78 6 11-6M18 86l-9 3m83-3 9 3" stroke="#45a8ad" strokeWidth="3" strokeLinecap="round" />
+		</svg>
+	);
+	if (kind === "kid") return (
+		<svg viewBox="0 0 110 150" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+			<path d="M22 59c0-27 14-43 33-43 21 0 34 16 34 43v20H22V59Z" fill="#f5c7a4" stroke="currentColor" strokeWidth="4" />
+			<path d="m23 44 5-24 18 13 11-20 12 20 20-10-1 28c-14-8-24-17-32-27-8 13-19 21-33 27Z" fill="#4d3541" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" />
+			<path d="M30 89c3-11 12-17 25-17s22 6 25 17l9 42H21l9-42Z" fill="#f08c5b" stroke="currentColor" strokeWidth="4" />
+			<g className="doodle-footer__eyes" fill="#173c58"><circle cx="43" cy="60" r="3" /><circle cx="67" cy="60" r="3" /></g>
+			<path d="M48 68c4 4 8 4 12 0" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+			<path d="M34 131v9m41-9v9" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+			<path d="m50 92 6 15 7-15" stroke="#fff3de" strokeWidth="3" strokeLinecap="round" />
+		</svg>
+	);
+	if (kind === "cat") return (
+		<svg viewBox="0 0 140 155" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+			<path d="M28 75 19 20l39 25c10-4 21-4 31 0l34-25-6 62c8 23-3 50-26 58-24 8-53-4-61-27-4-12-3-26-2-38Z" fill="#fffdf6" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" />
+			<path d="m31 40 22 14-18 5Zm81 0L91 54l19 5Z" fill="#e58a7c" />
+			<g className="doodle-footer__eyes" fill="#173c58"><ellipse cx="51" cy="77" rx="4" ry="5" /><ellipse cx="91" cy="77" rx="4" ry="5" /></g>
+			<path d="m63 91 8 6 8-6m-8 6v7m-9 5c6 5 13 5 18 0m-54-6-20-5m21 14-21 2m100-12 20-5m-20 14 21 2" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+			<path d="M41 73c4-8 17-9 21-2" stroke="#202528" strokeWidth="8" strokeLinecap="round" />
+			<path d="M41 71h20m-10-3v9" stroke="#fffdf6" strokeWidth="2" />
+			<path d="M30 125c-15 12-11 23 2 18" stroke="#e18156" strokeWidth="5" strokeLinecap="round" />
+		</svg>
+	);
 	return (
-		<svg viewBox="0 0 150 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<svg viewBox="0 0 150 190" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 			<g stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4">
 				<path d="M35 84c-14 3-21 15-20 35l5 25c2 9 10 12 18 7l14-13" fill="#f6f4ed" />
 				<path d="M106 87c18 0 27 13 25 33l-4 24c-2 10-10 12-18 7l-13-14" fill="#f6f4ed" />
@@ -219,6 +233,7 @@ function MapBuddy() {
 				<path d="m65 137 1 17m16-10v16" strokeDasharray="4 5" />
 				<path d="m31 29 6-13m-19 29-13 3m116-26 9-11m-1 31 14 2" strokeWidth="3" />
 			</g>
+			<path d="M46 31 35 15l-7 21m61-6 10-17 9 23" fill="#fbfaf5" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" />
 			<circle cx="89" cy="149" r="5" fill="#f29b58" stroke="currentColor" strokeWidth="2" />
 		</svg>
 	);
@@ -231,3 +246,4 @@ function ParticleGlyph({ kind }: { kind: ParticleKind }) {
 	if (kind === "route") return <svg viewBox="0 0 30 24"><path d="M2 17c7-16 9 10 16-5s7-1 10-7" /><circle cx="3" cy="18" r="2" /><circle cx="27" cy="5" r="2" /></svg>;
 	return <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><circle cx="12" cy="12" r="8" strokeDasharray="1.5 4" /></svg>;
 }
+

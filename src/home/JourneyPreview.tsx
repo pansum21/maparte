@@ -407,20 +407,15 @@ export default function JourneyPreview() {
       </header>
       <PerspectiveTunnelHero />
       <main id="start" ref={storyRef} className="journey-track">
-        {chapters.map((chapter, index) => (
+        {chapters.slice(1).map((chapter, visibleIndex) => {
+          const index = visibleIndex + 1;
+          return (
           <section id={index === 1 ? "chapter-2" : undefined} className={`journey-chapter journey-chapter--${chapter.side}`} key={chapter.tag} data-step={index + 1}>
             <div className={`journey-copy${index === 5 ? " journey-copy--plate" : ""}`}>
               <span className="journey-kicker"><i />{chapter.kicker}</span>
               <div className="journey-copy__tag">{index === chapters.length - 1 ? `07 / ${destination.city.toUpperCase()} · ${destination.country.toUpperCase()}` : chapter.tag}</div>
               {index === 0 ? <h1>{chapter.title}</h1> : <h2>{chapter.title}</h2>}
               <p>{chapter.body}</p>
-              {index === 0 && <>
-                <div className="journey-facts"><span>800 CITY ENTRIES · SEARCH PLACES OR COORDINATES</span><span>DIGITAL DOWNLOAD · NO PRINTING OR SHIPPING</span></div>
-                <div className="journey-actions">
-                  <a className="journey-action journey-action--glass" href="/?dist=5235000">Start with a place</a>
-                  <a className="journey-action journey-action--quiet" href="#map-stories">Explore real map designs</a>
-                </div>
-              </>}
               {index === 1 && <a className="journey-action journey-action--quiet" href="/?gallery=maps">Explore the map gallery</a>}
               {index === 2 && <a className="journey-action journey-action--quiet" href="/?gallery=borders">See the border gallery</a>}
               {index === 2 && <div className="journey-themes" aria-label="Choose a map theme while viewing the city map">
@@ -452,15 +447,14 @@ export default function JourneyPreview() {
               {index === 6 && <a className="journey-action journey-action--bright" href="/?dist=5235000">Create your map</a>}
             </div>
           </section>
-        ))}
+          );
+        })}
       </main>
       <section className="journey-faq" id="help" aria-labelledby="journey-faq-title">
         <div className="journey-faq__intro">
-          <span>HELP · QUICK ANSWERS</span>
-          <h2 id="journey-faq-title">Good to know.</h2>
-          <p>Most asked questions, clear answers, and a real map to start from.</p>
-          <img className="journey-faq__map" src="/assets/map-posters/hometown-roots.png" alt="MAPARTE Hometown Roots map artwork" loading="lazy" />
-          <span className="journey-faq__map-caption">HOMETOWN ROOTS · DEHRADUN, INDIA</span>
+          <span>MAPARTE · HELP & ANSWERS</span>
+          <h2 id="journey-faq-title">Frequently asked questions.</h2>
+          <p>Clear answers about creating, customizing and downloading your digital map.</p>
         </div>
         <div className="journey-faq__content">
           <label className="journey-faq__search-label" htmlFor="journey-help-search">Search a question</label>
@@ -483,15 +477,6 @@ export default function JourneyPreview() {
           {!normalizedHelpSearch && <button className="journey-faq__more" type="button" onClick={() => setShowAllHelp((show) => !show)}>
             {showAllHelp ? "Show the most asked questions" : `See all ${helpFaqs.length} answers`}
           </button>}
-          <aside className="journey-faq__support">
-            <div><strong>Still stuck?</strong><span>Send us a screenshot and the file that isn’t working. We’ll acknowledge your email within 24 hours and send an update within 48.</span></div>
-            <a href="mailto:support@maparte.com?subject=Help%20with%20my%20MAPARTE%20map">Email MAPARTE support</a>
-          </aside>
-          <nav className="journey-faq__policies" aria-label="Policies and account choices">
-            <a href="/privacy">Privacy</a>
-            <a href="/terms">Terms</a>
-            <a href="/refund">Refunds</a>
-          </nav>
         </div>
       </section>
       <DoodleCrewFooter />
@@ -499,5 +484,6 @@ export default function JourneyPreview() {
     </div>
   );
 }
+
 
 
