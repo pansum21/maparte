@@ -239,10 +239,9 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
       const idleSeconds = Math.max(0, idleMs / 1000 - 0.75);
       if (idleMs > 0 || Math.abs(progress - lastAppliedProgress) > 0.0005) {
         const closeZoom = smooth(clamp((responsiveZoom - 6.5) / 5.5));
-        // Keep the dark theme legible without washing the globe into a bright blue haze.
-        const brightness = 1.22 - closeZoom * 0.06;
-        const contrast = 1.08 + closeZoom * 0.05;
-        const saturation = 1.06 - closeZoom * 0.03;
+        const brightness = 1.65 - closeZoom * 0.28;
+        const contrast = 1 + closeZoom * 0.16;
+        const saturation = 1.24 - closeZoom * 0.06;
         map.getCanvas().style.filter = `brightness(${brightness}) contrast(${contrast}) saturate(${saturation})`;
         // Keep one continuous globe projection through the zoom; swapping to Mercator mid-flight clears the scene on some desktop GPUs.
         const shouldUseGlobe = true;
@@ -361,17 +360,16 @@ export default function JourneyPreview() {
         const storySpan = Math.max(1, story.offsetHeight - window.innerHeight);
         const pageSpan = Math.max(storySpan, page.offsetHeight - window.innerHeight);
         const hero = document.querySelector<HTMLElement>(".maparte-tunnel");
-        // Keep the globe moving across the hero's full scroll range. The hero
-        // title itself finishes its sticky animation earlier, but the globe
-        // must not pause for a viewport while the next chapter enters.
-        const heroStart = hero ? hero.getBoundingClientRect().top + window.scrollY : 0;
-        const heroSpan = hero ? Math.max(1, hero.offsetHeight) : 1;
-        const heroProgress = hero ? clamp((window.scrollY - heroStart) / heroSpan) : 0;
+        const heroSpan = hero ? Math.max(1, hero.offsetHeight - window.innerHeight) : 1;
+        const heroProgress = hero ? clamp(-hero.getBoundingClientRect().top / heroSpan) : 0;
         const storyProgress = clamp((window.scrollY - top) / storySpan);
         const pageProgress = clamp((window.scrollY - top) / pageSpan);
         // Start the globe's eastward trip behind the opening title, then hand
         // the same continuous camera journey to the map-story chapters.
-        const mapProgress = heroProgress * 0.18 + storyProgress * 0.82;
+        // Ease into the destination early enough for land to be visible by
+        // “Follow what matters”, then let the later chapters finish the city zoom.
+        const storyFlight = 1 - Math.pow(1 - storyProgress, 2.2);
+        const mapProgress = heroProgress * 0.18 + storyFlight * 0.82;
         if (mapProgress > 0.025 && !hasScrolledRef.current) {
           hasScrolledRef.current = true;
           setHasScrolled(true);
@@ -461,11 +459,6 @@ export default function JourneyPreview() {
         </div>
       </section>
       <DoodleCrewFooter />
-      <div className="journey-map-credit" aria-label="Map data attribution">
-        Map data &amp; tiles: <a href="https://openfreemap.org/" target="_blank" rel="noreferrer">OpenFreeMap</a>
-        {" · © "}<a href="https://openmaptiles.org/" target="_blank" rel="noreferrer">OpenMapTiles</a>
-        {" · © "}<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a>
-      </div>
       <div className="journey-scrollhint" aria-hidden="true" style={{ opacity: hasScrolled ? 0 : 1 }}>SCROLL TO TRAVEL <span>↓</span></div>
     </div>
   );
