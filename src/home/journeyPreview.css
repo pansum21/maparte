@@ -301,6 +301,8 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 .journey-preview-shelf__item span{display:block;margin-top:8px;color:var(--acid);font:8px "Spline Sans Mono",monospace;letter-spacing:.09em}
 .journey-preview-shelf__item strong{display:block;margin-top:4px;font:500 14px "DM Serif Display",Georgia,serif}
 .journey-preview-shelf--layouts img{object-fit:contain;padding:5px;background:#eae8e1}
+.journey-preview-shelf--borders .journey-preview-shelf__item:nth-child(2) img{border:3px double rgba(233,241,232,.55);padding:3px}
+.journey-preview-shelf--borders .journey-preview-shelf__item:nth-child(3) img{border:3px solid rgba(233,241,232,.48);padding:5px;box-shadow:inset 0 0 0 1px rgba(214,255,107,.25)}
 .journey-preview-shelf--presets img{object-position:center 40%}
 @media(max-width:900px){.journey-preview-shelf{width:100%;gap:8px;margin-top:16px}.journey-preview-shelf__item img{height:clamp(84px,23vw,128px)}.journey-preview-shelf__item strong{font-size:12px}.journey-preview-shelf__item span{font-size:7px}}
 @media(max-width:500px){.journey-preview-shelf{gap:7px}.journey-preview-shelf__item img{height:76px}.journey-preview-shelf__item strong{font-size:11px}}

@@ -304,7 +304,7 @@ const layoutStories = [
   { title: "Made for your screen", place: "WALLPAPER · PHONE", image: "hometown-roots.png" },
 ];
 
-function PreviewShelf({ items, kind }: { items: Array<{ title: string; place: string; image: string }>; kind: "themes" | "layouts" | "presets" }) {
+function PreviewShelf({ items, kind }: { items: Array<{ title: string; place: string; image: string }>; kind: "borders" | "themes" | "layouts" | "presets" }) {
   return <div className={`journey-preview-shelf journey-preview-shelf--${kind}`} aria-label={`${kind} preview examples`}>
     {items.map((item) => <a className="journey-preview-shelf__item" href={`/?gallery=${kind}`} key={item.title}>
       <img src={item.image.startsWith("/") ? item.image : `/assets/map-posters/${item.image}`} alt={`${item.title} MAPARTE preview`} loading="lazy" />
@@ -436,6 +436,11 @@ export default function JourneyPreview() {
               <p>{chapter.body}</p>
               {index === 1 && <MapStoryCoverflow items={mapStories} />}
               {index === 2 && <a className="journey-action journey-action--quiet" href="/?gallery=borders">See the border gallery</a>}
+              {index === 2 && <PreviewShelf kind="borders" items={[
+                { title: "Fine line", place: "SINGLE · SUBTLE", image: "where-we-met.png" },
+                { title: "Double frame", place: "DOUBLE · EDITORIAL", image: "travel-memories.png" },
+                { title: "Wide gallery", place: "WIDE · BOLD", image: "hometown-roots.png" },
+              ]} />}
               {index === 2 && <div className="journey-themes" aria-label="Choose a map theme while viewing the city map">
                 <button className="journey-glass" type="button" aria-pressed={theme === "Midnight Blue"} onClick={() => setTheme("Midnight Blue")}><i className="journey-swatch journey-swatch--blue" />Midnight Blue</button>
                 <button className="journey-glass" type="button" aria-pressed={theme === "Carrara"} onClick={() => setTheme("Carrara")}><i className="journey-swatch journey-swatch--stone" />Carrara</button>
