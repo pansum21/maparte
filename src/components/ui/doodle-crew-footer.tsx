@@ -1,5 +1,20 @@
 import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
-import { ArrowUpRight, MoveUpRight } from "lucide-react";
+
+function ArrowUpRight(props: { "aria-hidden"?: string | boolean }) {
+	return (
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+			<path d="M7 17 17 7m0 0H7m10 0v10" />
+		</svg>
+	);
+}
+
+function MoveUpRight(props: { "aria-hidden"?: string | boolean }) {
+	return (
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+			<path d="M13 5h6v6m0-6L5 19" />
+		</svg>
+	);
+}
 
 type ParticleKind = "star" | "ring" | "spark" | "route" | "dot";
 type CharacterKind = "yeti" | "kid" | "ghost" | "cat";

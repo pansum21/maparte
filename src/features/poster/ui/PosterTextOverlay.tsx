@@ -5,18 +5,18 @@ import type { SquareCaptionGeometry } from "@/features/layout/domain/squareCapti
 import {
   TEXT_DIMENSION_REFERENCE_PX,
   TEXT_CITY_Y_RATIO,
-  TEXT_DIVIDER_Y_RATIO,
-  TEXT_COUNTRY_Y_RATIO,
-  TEXT_COORDS_Y_RATIO,
-  TEXT_EDGE_MARGIN_RATIO,
   CITY_FONT_BASE_PX,
   COUNTRY_FONT_BASE_PX,
   COORDS_FONT_BASE_PX,
   ATTRIBUTION_FONT_BASE_PX,
-  formatCityLabel,
+  PHYSICAL_DIVIDER_GAP_MM,
+  PHYSICAL_COUNTRY_GAP_MM,
+  PHYSICAL_TAGLINE_GAP_MM,
+  PHYSICAL_COORDS_GAP_MM,
   resolveCityDisplay,
   getPosterFontScale,
   computeCityFontScale,
+  computeCityLetterSpacing,
   computeAttributionColor,
   ensureContrastTextColor,
 } from "@/features/poster/domain/textLayout";
@@ -34,7 +34,7 @@ interface PosterTextOverlayProps {
   midlineFontSize?: number;
   bottomLineFontFamily?: string;
   bottomLineFontSize?: number;
-  textAlign: "left" | "center" | "right";
+  textAlign?: "left" | "center" | "right";
   textColor: string;
   landColor: string;
   showPosterText: boolean;
@@ -50,8 +50,8 @@ interface PosterTextOverlayProps {
 
 /**
  * DOM-based poster text overlay (sharp at any resolution, GPU-composited).
- * Renders city name, divider, country, coordinates, and attribution
- * positioned to match the canvas export layout exactly.
+ * Uses a unified `.poster-caption-stack` flow layout guaranteeing exact physical mm gaps
+ * (strictly 2.5 mm between words and underline) across all world cities and layouts.
  */
 export default function PosterTextOverlay({
   city,
@@ -66,7 +66,7 @@ export default function PosterTextOverlay({
   midlineFontSize: midlineFontSizeProp,
   bottomLineFontFamily: bottomLineFontFamilyProp,
   bottomLineFontSize: bottomLineFontSizeProp,
-  textAlign,
+  textAlign = "center",
   textColor,
   landColor,
   showPosterText,
@@ -76,31 +76,51 @@ export default function PosterTextOverlay({
   squareCaption = false,
   squareCaptionGeometry,
   isCustomColor = false,
+  posterWidthCm = 21,
+  posterHeightCm = 29.7,
 }: PosterTextOverlayProps) {
   const toCqMin = (px: number) => (px / TEXT_DIMENSION_REFERENCE_PX) * 100;
   const fontScale = getPosterFontScale(fontSize);
   const headingScale = getPosterFontScale(headingFontSizeProp ?? fontSize);
   const midlineScale = getPosterFontScale(midlineFontSizeProp ?? fontSize);
   const bottomLineScale = getPosterFontScale(bottomLineFontSizeProp ?? fontSize);
+
   const headingFamily = headingFontFamilyProp?.trim() || fontFamily;
   const midlineFamily = midlineFontFamilyProp?.trim() || fontFamily;
   const bottomLineFamily = bottomLineFontFamilyProp?.trim() || fontFamily;
+
   const fontStack = (family: string, body = false) => {
     const isSerif = /serif|times|cormorant|baskerville|lora|merriweather|playfair/i.test(family || "");
-    if (body) return isSerif
-      ? `"${family}", 'Times New Roman', Times, serif`
-      : (family ? `"${family}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace');
+    if (body) {
+      return isSerif
+        ? `"${family}", 'Times New Roman', Times, serif`
+        : (family ? `"${family}", "IBM Plex Mono", monospace` : '"IBM Plex Mono", monospace');
+    }
     return family
       ? `"${family}", ${isSerif ? "'Times New Roman', Times, serif" : '"Space Grotesk", sans-serif'}`
       : '"Space Grotesk", sans-serif';
   };
+
   const headingFont = fontStack(headingFamily);
   const midlineFont = fontStack(midlineFamily);
   const bottomLineFont = fontStack(bottomLineFamily, true);
   const bodyFont = fontStack(fontFamily, true);
 
-  const cityLayout = resolveCityDisplay(city);
-  const cityFontScale = computeCityFontScale(city, cityLayout.lines);
+  const geometry = squareCaptionGeometry;
+  const isLandscape = geometry ? geometry.posterWidth > geometry.posterHeight : posterWidthCm > posterHeightCm;
+  const isNarrowBox = Boolean(squareCaption && isLandscape);
+  const captionVariant = geometry?.variant ?? "center-bottom";
+
+  const align: "left" | "center" | "right" = squareCaption
+    ? (geometry?.captionAlign ?? textAlign ?? "center")
+    : (textAlign ?? "center");
+
+  const aspectRatio = posterWidthCm && posterHeightCm ? posterWidthCm / Math.max(0.1, posterHeightCm) : 0.707;
+  const cityLayout = resolveCityDisplay(city, aspectRatio, isNarrowBox);
+  const cityFontScale = computeCityFontScale(city, cityLayout.lines, isNarrowBox);
+  const maxLineLength = Math.max(...cityLayout.lines.map((l) => l.length), 1);
+  const cityLetterSpacing = computeCityLetterSpacing(maxLineLength, isNarrowBox);
+
   const cityFontSize = `${toCqMin(CITY_FONT_BASE_PX * headingScale) * cityFontScale}cqmin`;
   const countryFontSize = `${toCqMin(COUNTRY_FONT_BASE_PX * midlineScale)}cqmin`;
   const coordsFontSize = `${toCqMin(COORDS_FONT_BASE_PX * bottomLineScale)}cqmin`;
@@ -110,23 +130,15 @@ export default function PosterTextOverlay({
   const safeTextColor = ensureContrastTextColor(textColor, landColor, isCustomColor);
   const attributionColor = computeAttributionColor(safeTextColor, landColor, showOverlay);
   const attributionOpacity = showOverlay ? 0.65 : 0.95;
-  const geometry = squareCaptionGeometry;
-  const isLandscape = geometry ? geometry.posterWidth > geometry.posterHeight : false;
-  const align = squareCaption ? (geometry?.captionAlign ?? "center") : (textAlign ?? "center");
-  const captionY = geometry ? (geometry.captionY / geometry.posterHeight) * 100 : 75;
-  const cityY = captionY;
   const hasTagline = Boolean(customDate && customDate.trim());
-  const titleHeightPercent =
-    toCqMin(CITY_FONT_BASE_PX * headingScale) * cityFontScale * 1.08 * cityLayout.lines.length;
-  const dividerOffsetPercent = titleHeightPercent / 2 + 1;
-  const countryHeightPercent = toCqMin(COUNTRY_FONT_BASE_PX * midlineScale) * 1.2;
-  const coordsHeightPercent = toCqMin(COORDS_FONT_BASE_PX * bottomLineScale) * 1.2;
-  const taglineHeightPercent = toCqMin(68 * bottomLineScale) * 1.2;
-  const countryOffsetPercent = dividerOffsetPercent + countryHeightPercent / 2 + 1;
-  const taglineOffsetPercent = countryOffsetPercent + countryHeightPercent / 2 + taglineHeightPercent / 2 + 1;
-  const coordsOffsetPercent = hasTagline
-    ? taglineOffsetPercent + taglineHeightPercent / 2 + coordsHeightPercent / 2 + 1
-    : countryOffsetPercent + countryHeightPercent / 2 + coordsHeightPercent / 2 + 1.2;
+
+  // Physical calibrated gaps in container query height (cqh) units:
+  // 100cqh = poster height. Therefore, gap in cqh = (gap_cm / posterHeightCm) * 100cqh.
+  const hCm = Math.max(1, posterHeightCm);
+  const dividerGapCqh = `${Number(((PHYSICAL_DIVIDER_GAP_MM / 10) / hCm * 100).toFixed(4))}cqh`;
+  const countryGapCqh = `${Number(((PHYSICAL_COUNTRY_GAP_MM / 10) / hCm * 100).toFixed(4))}cqh`;
+  const taglineGapCqh = `${Number(((PHYSICAL_TAGLINE_GAP_MM / 10) / hCm * 100).toFixed(4))}cqh`;
+  const coordsGapCqh = `${Number(((PHYSICAL_COORDS_GAP_MM / 10) / hCm * 100).toFixed(4))}cqh`;
 
   const cityRef = useRef<HTMLDivElement | null>(null);
   const [cityTextWidthPercent, setCityTextWidthPercent] = useState<number | null>(null);
@@ -135,6 +147,7 @@ export default function PosterTextOverlay({
     if (typeof window === "undefined") return;
     const el = cityRef.current;
     if (!el) return;
+
     // Measure the widest rendered line of the city title
     const lineSpans = el.querySelectorAll<HTMLElement>(".poster-city-line");
     let maxLineWidth = 0;
@@ -159,58 +172,36 @@ export default function PosterTextOverlay({
 
   const approxCharUnits = Math.max(...cityLayout.lines.map((line) => line.length), 4);
   const fallbackDividerWidth = squareCaption
-    ? (isLandscape ? 22 : 18)
-    : Math.min(38, Math.max(12, approxCharUnits * 1.5));
+    ? (isLandscape ? 28 : 22)
+    : Math.min(48, Math.max(12, approxCharUnits * 2.2));
   const dividerWidth = cityTextWidthPercent ?? fallbackDividerWidth;
 
-  let captionTextStyle: React.CSSProperties;
-  let dividerStyle: React.CSSProperties;
+  let stackPositionStyle: React.CSSProperties;
 
   if (squareCaption && geometry) {
     if (!isLandscape) {
-      const mapXPercent = (geometry.x / geometry.posterWidth) * 100;
-      const mapWidthPercent = (geometry.size / geometry.posterWidth) * 100;
-
-      if (align === "center") {
-        captionTextStyle = {
-          left: 0,
-          right: 0,
-          width: "100%",
-          textAlign: "center",
-          margin: "0 auto",
-        };
-        dividerStyle = {
-          left: "50%",
-          right: "auto",
-          width: `${dividerWidth}%`,
-          transform: "translate(-50%, -50%)",
-        };
-      } else if (align === "left") {
-        captionTextStyle = {
-          left: `${mapXPercent}%`,
-          right: "auto",
-          width: `${mapWidthPercent}%`,
+      if (captionVariant === "top-left") {
+        stackPositionStyle = {
+          top: `${(geometry.captionY / geometry.posterHeight) * 100}%`,
+          left: `${(geometry.safeInsetX / geometry.posterWidth) * 100}%`,
+          width: `${(geometry.captionWidth / geometry.posterWidth) * 100}%`,
+          transform: "none",
+          alignItems: "flex-start",
           textAlign: "left",
         };
-        dividerStyle = {
-          left: `${mapXPercent}%`,
-          right: "auto",
-          width: `${dividerWidth}%`,
-          transform: "translateY(-50%)",
-        };
       } else {
-        // align === "right"
-        captionTextStyle = {
-          left: `${mapXPercent}%`,
-          right: "auto",
-          width: `${mapWidthPercent}%`,
-          textAlign: "right",
-        };
-        dividerStyle = {
-          left: `${mapXPercent + mapWidthPercent - dividerWidth}%`,
-          right: "auto",
-          width: `${dividerWidth}%`,
+        const mapBottom = geometry.y + geometry.size;
+        const contentBottom = geometry.posterHeight - geometry.safeInsetY;
+        const lowerAreaHeight = contentBottom - mapBottom;
+        const lowerCenterY = mapBottom + lowerAreaHeight / 2;
+
+        stackPositionStyle = {
+          top: `${(lowerCenterY / geometry.posterHeight) * 100}%`,
           transform: "translateY(-50%)",
+          left: `${(geometry.x / geometry.posterWidth) * 100}%`,
+          width: `${(geometry.size / geometry.posterWidth) * 100}%`,
+          alignItems: align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center",
+          textAlign: align,
         };
       }
     } else {
@@ -218,64 +209,45 @@ export default function PosterTextOverlay({
       const rightColLeftPercent = (geometry.captionXStart / geometry.posterWidth) * 100;
       const rightColWidthPercent = (geometry.captionWidth / geometry.posterWidth) * 100;
 
-      captionTextStyle = {
+      stackPositionStyle = {
         left: `${rightColLeftPercent}%`,
-        right: "auto",
         width: `${rightColWidthPercent}%`,
+        top: "50%",
+        transform: "translateY(-50%)",
+        alignItems: align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center",
         textAlign: align,
+        paddingInline: "4px",
       };
-
-      if (align === "center") {
-        dividerStyle = {
-          left: `${rightColLeftPercent + rightColWidthPercent / 2}%`,
-          right: "auto",
-          width: `${dividerWidth}%`,
-          transform: "translate(-50%, -50%)",
-        };
-      } else if (align === "left") {
-        dividerStyle = {
-          left: `${rightColLeftPercent}%`,
-          right: "auto",
-          width: `${dividerWidth}%`,
-          transform: "translateY(-50%)",
-        };
-      } else {
-        dividerStyle = {
-          left: `${rightColLeftPercent + rightColWidthPercent - dividerWidth}%`,
-          right: "auto",
-          width: `${dividerWidth}%`,
-          transform: "translateY(-50%)",
-        };
-      }
     }
   } else {
-    captionTextStyle = {
-      textAlign,
-      left: 0,
-      right: 0,
-      width: "100%",
-    };
-    dividerStyle = {
-      left: align === "left" ? "5%" : align === "right" ? `${95 - dividerWidth}%` : "50%",
-      right: "auto",
-      width: `${dividerWidth}%`,
-      transform: align === "center" ? "translate(-50%, -50%)" : "translateY(-50%)",
+    // Standard Layouts (Portrait / Landscape / Social)
+    const standardTopPercent = (cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO) * 100;
+    stackPositionStyle = {
+      top: `${standardTopPercent}%`,
+      transform: "translateY(-50%)",
+      left: align === "left" ? "5%" : align === "right" ? "5%" : 0,
+      width: align === "center" ? "100%" : "90%",
+      marginInline: align === "center" ? "auto" : undefined,
+      alignItems: align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center",
+      textAlign: align,
+      paddingInline: align === "center" ? "4%" : 0,
     };
   }
+
+  const dividerMarginLeft = align === "right" ? "auto" : align === "center" ? "auto" : 0;
+  const dividerMarginRight = align === "left" ? "auto" : align === "center" ? "auto" : 0;
 
   return (
     <div className={`poster-text-overlay${squareCaption ? " is-square-caption-text" : ""}`} style={{ color: safeTextColor }}>
       {showPosterText && (
-        <>
+        <div className="poster-caption-stack" style={stackPositionStyle}>
           <div
             ref={cityRef}
             className="poster-city"
             style={{
               fontFamily: headingFont,
-              ...captionTextStyle,
-              top: squareCaption ? `${cityY}%` : `${(cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO) * 100}%`,
               fontSize: cityFontSize,
-              lineHeight: 1.08,
+              textAlign: align,
             }}
           >
             {cityLayout.lines.map((line, idx) => (
@@ -283,62 +255,74 @@ export default function PosterTextOverlay({
                 key={idx}
                 className="poster-city-line"
                 style={{
-                  display: "inline-block",
+                  display: "block",
                   maxWidth: "100%",
                   fontSize: idx === 0 && line.includes("CITY OF") ? "0.68em" : undefined,
                   fontWeight: idx === 0 && line.includes("CITY OF") ? 500 : 700,
+                  letterSpacing: cityLetterSpacing,
                 }}
               >
                 {line}
-                {idx < cityLayout.lines.length - 1 ? <br /> : null}
               </span>
             ))}
           </div>
-          {city ? <hr
-            className="poster-divider"
-            style={{
-              borderColor: safeTextColor,
-              ...dividerStyle,
-              top: squareCaption ? `${cityY + dividerOffsetPercent}%` : `${TEXT_DIVIDER_Y_RATIO * 100}%`,
-            }}
-          /> : null}
-          {country ? <p
-            className="poster-country"
-            style={{
-              fontFamily: midlineFont,
-              ...captionTextStyle,
-              top: squareCaption ? `${cityY + countryOffsetPercent}%` : `${(hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) * 100}%`,
-              fontSize: countryFontSize,
-            }}
-          >
-            {country.toUpperCase()}
-          </p> : null}
+
+          {city ? (
+            <hr
+              className="poster-divider"
+              style={{
+                borderColor: safeTextColor,
+                width: `${dividerWidth}%`,
+                marginTop: dividerGapCqh,
+                marginLeft: dividerMarginLeft,
+                marginRight: dividerMarginRight,
+              }}
+            />
+          ) : null}
+
+          {country ? (
+            <p
+              className="poster-country"
+              style={{
+                fontFamily: midlineFont,
+                fontSize: countryFontSize,
+                marginTop: countryGapCqh,
+                textAlign: align,
+                letterSpacing: "0.22em",
+              }}
+            >
+              {country.toUpperCase()}
+            </p>
+          ) : null}
+
           {hasTagline && (
             <p
               className="poster-tagline"
               style={{
                 fontFamily: bottomLineFont,
-                ...captionTextStyle,
-                top: squareCaption ? `${cityY + taglineOffsetPercent}%` : `${(country ? .918 : .89) * 100}%`,
                 fontSize: taglineFontSize,
-                letterSpacing: "0.06em",
+                marginTop: taglineGapCqh,
+                textAlign: align,
+                letterSpacing: "0.08em",
               }}
             >
               {customDate}
             </p>
           )}
+
           <p
             className="poster-coords"
             style={{
               fontFamily: bottomLineFont,
-              ...captionTextStyle,
-              top: squareCaption ? `${cityY + coordsOffsetPercent}%` : `${(hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) * 100}%`,
               fontSize: coordsFontSize,
+              marginTop: coordsGapCqh,
+              textAlign: align,
+              letterSpacing: "0.08em",
             }}
           >
             {formatCoordinates(lat, lon)}
           </p>
-        </>
+        </div>
       )}
 
       {includeCredits && (

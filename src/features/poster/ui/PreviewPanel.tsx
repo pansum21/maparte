@@ -338,10 +338,21 @@ export default function PreviewPanel({
     const frameH = rect.height;
     if (frameW <= 0 || frameH <= 0) return;
 
+    if (previewFrameLayoutGeometry) {
+      const mapWCm = (previewFrameLayoutGeometry.width / previewFrameLayoutGeometry.posterWidth) * widthCm;
+      const mapHCm = (previewFrameLayoutGeometry.height / previewFrameLayoutGeometry.posterHeight) * heightCm;
+      const minDimCm = Math.min(mapWCm, mapHCm);
+      const targetDiameterCm = Math.max(1, minDimCm - 3.0);
+      const ratio = targetDiameterCm / widthCm;
+      const targetDiameterPx = frameW * ratio;
+      const targetZoom = Math.log2((Math.PI * targetDiameterPx) / 512);
+      setBaseGlobeZoom(Number(targetZoom.toFixed(4)));
+      return;
+    }
+
     if (isSquareCaption && squareCaptionGeometry) {
       const squareSizeCm = (squareCaptionGeometry.size / squareCaptionGeometry.posterWidth) * widthCm;
-      const marginCm = Math.min(1.5, squareSizeCm * 0.1);
-      const targetDiameterCm = Math.max(1, squareSizeCm - marginCm * 2);
+      const targetDiameterCm = Math.max(1, squareSizeCm - 3.0);
       const ratio = targetDiameterCm / widthCm;
       const targetDiameterPx = frameW * ratio;
       const targetZoom = Math.log2((Math.PI * targetDiameterPx) / 512);
@@ -362,7 +373,7 @@ export default function PreviewPanel({
 
     const targetZoom = Math.log2((Math.PI * targetDiameterPx) / 512);
     setBaseGlobeZoom(Number(targetZoom.toFixed(4)));
-  }, [isPosterLayoutOpen, widthCm, heightCm, isSquareCaption, squareCaptionGeometry]);
+  }, [isPosterLayoutOpen, widthCm, heightCm, isSquareCaption, squareCaptionGeometry, previewFrameLayoutGeometry]);
 
   useEffect(() => {
     updateBaseGlobeZoom();

@@ -25,7 +25,7 @@ import LocationSuggestionsDropdown from "./LocationSuggestionsDropdown";
 import type { SearchResult } from "@/features/location/domain/types";
 
 const CLOSE_ANIMATION_MS = 220;
-const DEFAULT_LOCATION_LABEL = "Dehradun, Uttarakhand, India";
+const DEFAULT_LOCATION_LABEL = "";
 
 interface PendingLocation {
   label: string;

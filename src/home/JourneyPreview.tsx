@@ -405,7 +405,7 @@ export default function JourneyPreview() {
       <div className="journey-world" aria-hidden="true"><JourneyMap theme={theme} progressRef={progressRef} destinationRef={destinationRef} /></div>
       <header className="journey-header">
         <a className="journey-wordmark" href="#start" aria-label="MapArte home"><img src="/assets/logo.svg" alt="" /><span>MAPARTE</span></a>
-        <div className="journey-header__right"><span>MAPS FOR THE PLACES THAT STAY</span><a className="journey-glass" href="/?dist=5235000">Make your map</a></div>
+        <div className="journey-header__right"><span>MAPS FOR THE PLACES THAT STAY</span><a className="journey-glass" href="/?editor=true">Make your map</a></div>
       </header>
       <PerspectiveTunnelHero />
       <main id="start" ref={storyRef} className="journey-track">
@@ -426,7 +426,7 @@ export default function JourneyPreview() {
               </div>}
               {index === 4 && <a className="journey-action journey-action--quiet" href="/?gallery=themes">Browse the theme gallery</a>}
               {index === 5 && <a className="journey-action journey-action--quiet" href="/?gallery=layouts">Explore map layouts</a>}
-              {index === 6 && <a className="journey-action journey-action--bright" href="/?dist=5235000">Create your map</a>}
+              {index === 6 && <a className="journey-action journey-action--bright" href="/?editor=true">Create your map</a>}
             </div>
           </section>
           );

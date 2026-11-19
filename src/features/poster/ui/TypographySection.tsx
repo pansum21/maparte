@@ -73,9 +73,9 @@ export default function TypographySection({
     const defaultCity =
       state.selectedLocation?.city ||
       state.form.location.split(",")[0]?.trim() ||
-      "Dehradun";
+      "";
     const defaultCountry =
-      state.selectedLocation?.country || "India";
+      state.selectedLocation?.country || "";
 
     dispatch({
       type: "SET_FORM_FIELDS",
