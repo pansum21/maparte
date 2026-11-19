@@ -8,6 +8,7 @@ import { SEO_CITIES } from "@/features/location/domain/cityRouteResolver";
 import { EARTH_CIRCUMFERENCE_M, TILE_SIZE_PX } from "@/core/config";
 import { helpFaqs } from "@/shared/help/helpFaqs";
 import { DoodleCrewFooter } from "@/components/ui/doodle-crew-footer";
+import { MapStoryCoverflow } from "@/home/MapStoryCoverflow";
 import PerspectiveTunnelHero from "@/home/PerspectiveTunnelHero";
 import "@fontsource/dm-serif-display/400.css";
 import "@fontsource/dm-serif-display/400-italic.css";
@@ -205,11 +206,10 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
     const animate = (now: number) => {
       if (disposed) return;
       const dt = Math.min(50, now - last);
-      if (dt < 16) { animationFrame = requestAnimationFrame(animate); return; }
       last = now;
       const requestedProgress = progressRef.current;
       const compactView = window.innerWidth <= 900;
-      const follow = 1 - Math.exp(-dt / (compactView ? 52 : 76));
+      const follow = 1 - Math.exp(-dt / (compactView ? 72 : 92));
       renderedProgress += (requestedProgress - renderedProgress) * follow;
       if (Math.abs(requestedProgress - renderedProgress) < 0.00025) renderedProgress = requestedProgress;
       const progress = renderedProgress;
@@ -419,7 +419,7 @@ export default function JourneyPreview() {
               <div className="journey-copy__tag">{index === chapters.length - 1 ? `07 / ${destination.city.toUpperCase()} · ${destination.country.toUpperCase()}` : chapter.tag}</div>
               {index === 0 ? <h1>{chapter.title}</h1> : <h2>{chapter.title}</h2>}
               <p>{chapter.body}</p>
-              {index === 1 && <a className="journey-action journey-action--quiet" href="/?gallery=maps">Explore the map gallery</a>}
+              {index === 1 && <MapStoryCoverflow items={mapStories} />}
               {index === 2 && <a className="journey-action journey-action--quiet" href="/?gallery=borders">See the border gallery</a>}
               {index === 2 && <div className="journey-themes" aria-label="Choose a map theme while viewing the city map">
                 <button className="journey-glass" type="button" aria-pressed={theme === "Midnight Blue"} onClick={() => setTheme("Midnight Blue")}><i className="journey-swatch journey-swatch--blue" />Midnight Blue</button>
@@ -427,12 +427,6 @@ export default function JourneyPreview() {
               </div>}
               {index === 4 && <a className="journey-action journey-action--quiet" href="/?gallery=themes">Browse the theme gallery</a>}
               {index === 5 && <a className="journey-action journey-action--quiet" href="/?gallery=layouts">Explore map layouts</a>}
-              {index === 5 && <div className="journey-samples" id="map-stories" aria-label="MAPARTE map ideas">
-                {mapStories.map((story) => <a className="journey-sample" href={story.href} key={story.title}>
-                  <img src={`/assets/map-posters/${story.image}`} alt={`${story.title} MAPARTE digital map design for ${story.place}`} loading="lazy" />
-                  <span>{story.place}</span><b>{story.title}</b>
-                </a>)}
-              </div>}
               {index === 5 && <div className="journey-place-film" aria-label="A cinematic story scene with authentic MAPARTE map artwork">
                 <div className="journey-place-film__visual">
                   <img className="journey-place-film__photo" src="/assets/homepage-story/city-story-window.webp" alt="A woman looking out across a city at dusk" loading="lazy" />
