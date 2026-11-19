@@ -91,6 +91,17 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 .journey-sample img{display:block;width:100%;height:clamp(78px,9vw,116px);object-fit:cover;border:1px solid rgba(233,241,232,.22);border-radius:2px;box-shadow:0 9px 24px rgba(0,0,0,.18)}
 .journey-sample span{margin-top:3px;color:rgba(233,241,232,.52);font:7px "Spline Sans Mono",monospace;letter-spacing:.08em}
 .journey-sample b{font:600 12px "Instrument Sans",Arial,sans-serif}
+.journey-chapter--right .journey-copy:has(.journey-coverflow){width:min(47vw,620px)}
+.journey-coverflow{width:100%;margin-top:24px;perspective:1000px;}
+.journey-coverflow__stage{position:relative;height:clamp(220px,24vw,310px);transform-style:preserve-3d;}
+.journey-coverflow__card{position:absolute;top:50%;left:50%;display:block;width:min(66%,300px);height:88%;overflow:hidden;border:1px solid rgba(233,241,232,.28);border-radius:8px;background:#0b1b20;box-shadow:0 22px 52px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.18);transform-origin:center center;backface-visibility:hidden;will-change:transform,opacity;transition:filter .3s ease,border-color .3s ease;}
+.journey-coverflow__card[aria-current="true"]{border-color:rgba(214,255,107,.7);box-shadow:0 28px 64px rgba(0,0,0,.48),0 0 28px rgba(214,255,107,.08),inset 0 1px 0 rgba(255,255,255,.2)}
+.journey-coverflow__card img{display:block;width:100%;height:100%;object-fit:cover;}
+.journey-coverflow__caption{position:absolute;inset:auto 0 0;padding:38px 16px 14px;display:flex;flex-direction:column;gap:5px;background:linear-gradient(0deg,rgba(3,11,14,.94),rgba(3,11,14,.55) 68%,transparent);}
+.journey-coverflow__caption span{color:rgba(233,241,232,.67);font:8px "Spline Sans Mono",monospace;letter-spacing:.11em;}
+.journey-coverflow__caption strong{color:#f0f4e8;font-size:15px;letter-spacing:-.02em;}
+.journey-coverflow__hint{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:4px;color:rgba(233,241,232,.47);font:8px "Spline Sans Mono",monospace;letter-spacing:.15em;}
+.journey-coverflow__hint i{width:5px;height:5px;border-radius:50%;background:var(--acid);box-shadow:0 0 10px rgba(214,255,107,.75);}
 .journey-faq{position:relative;z-index:2;display:grid;grid-template-columns:minmax(220px,.7fr) minmax(0,1.3fr);gap:clamp(28px,7vw,100px);padding:76px clamp(26px,10vw,154px);border-top:1px solid var(--line);background:rgba(7,19,24,.76)}
 .journey-faq__intro>span{color:var(--acid);font:9px "Spline Sans Mono",monospace;letter-spacing:.16em}
 .journey-faq__intro h2{margin:13px 0 0;font-size:clamp(34px,4.2vw,56px);line-height:1;letter-spacing:-.055em;font-weight:500}
@@ -104,7 +115,7 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 .journey-footer nav{display:flex;flex-wrap:wrap;gap:10px 20px}
 .journey-footer nav a{color:var(--muted);font:8px "Spline Sans Mono",monospace;letter-spacing:.08em}
 .journey-footer nav a:hover{color:var(--acid)}
-@media(max-width:900px){.journey-facts{gap:7px 14px;font-size:7px}.journey-actions{gap:7px 16px}.journey-action--glass{margin-top:22px;padding:12px 15px}.journey-samples{max-width:520px;margin-top:18px;gap:9px}.journey-sample img{height:clamp(84px,20vw,126px)}.journey-sample span{font-size:6px}.journey-sample b{font-size:11px}.journey-faq{grid-template-columns:1fr;gap:22px;padding:54px 26px}.journey-faq__list summary{font-size:13px}.journey-footer{gap:15px}.journey-footer nav{gap:10px 14px}.journey-scrollhint{display:none}}
+@media(max-width:900px){.journey-facts{gap:7px 14px;font-size:7px}.journey-actions{gap:7px 16px}.journey-action--glass{margin-top:22px;padding:12px 15px}.journey-samples{max-width:520px;margin-top:18px;gap:9px}.journey-sample img{height:clamp(84px,20vw,126px)}.journey-sample span{font-size:6px}.journey-sample b{font-size:11px}.journey-chapter--right .journey-copy:has(.journey-coverflow){width:min(100%,520px)}.journey-coverflow{margin-top:18px}.journey-coverflow__stage{height:clamp(240px,54vw,340px)}.journey-coverflow__card{width:min(62%,260px);height:86%}.journey-coverflow__caption{padding:32px 12px 11px}.journey-coverflow__caption strong{font-size:13px}.journey-coverflow__caption span{font-size:7px}.journey-faq{grid-template-columns:1fr;gap:22px;padding:54px 26px}.journey-faq__list summary{font-size:13px}.journey-footer{gap:15px}.journey-footer nav{gap:10px 14px}.journey-scrollhint{display:none}}
 @media(max-width:500px){.journey-wordmark img{width:27px;height:27px}.journey-header__right .journey-glass{padding:8px 10px}.journey-facts{margin-top:14px;display:grid;gap:5px;font-size:6px}.journey-actions{gap:4px 13px}.journey-action--glass{font-size:10px}.journey-samples{gap:7px}.journey-sample img{height:74px}.journey-sample span{font-size:5px;letter-spacing:.04em}.journey-sample b{font-size:10px}.journey-faq{padding:46px 20px}.journey-faq__intro h2{font-size:38px}.journey-footer{padding:18px 20px}.journey-footer nav{gap:9px 12px}}
 .journey-world:after{z-index:2}
 .journey-map{z-index:0}
@@ -282,6 +293,30 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 .journey-faq__policies{display:flex;flex-wrap:wrap;gap:9px 18px;margin-top:20px}
 .journey-faq__policies a{color:rgba(233,241,232,.56);font:10px "Spline Sans Mono",monospace;letter-spacing:.07em}
 .journey-faq__policies a:hover{color:var(--acid)}
+.journey-preview-shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(100%,620px);margin:20px 0 4px}
+.journey-preview-shelf__item{min-width:0;overflow:hidden;color:var(--ink);text-decoration:none;transition:transform .28s ease,opacity .28s ease}
+.journey-preview-shelf__item:hover{transform:translateY(-3px)}
+.journey-preview-shelf__item img{display:block;width:100%;height:clamp(86px,12vw,148px);object-fit:cover;border:1px solid rgba(233,241,232,.22);border-radius:6px;background:#102026;transition:filter .3s,transform .45s}
+.journey-preview-shelf__item:hover img{filter:brightness(1.08);transform:scale(1.015)}
+.journey-preview-shelf__item span{display:block;margin-top:8px;color:var(--acid);font:8px "Spline Sans Mono",monospace;letter-spacing:.09em}
+.journey-preview-shelf__item strong{display:block;margin-top:4px;font:500 14px "DM Serif Display",Georgia,serif}
+.journey-preview-shelf--layouts img{object-fit:contain;padding:5px;background:#eae8e1}
+.journey-preview-shelf--borders .journey-preview-shelf__item:nth-child(2) img{border:3px double rgba(233,241,232,.55);padding:3px}
+.journey-preview-shelf--borders .journey-preview-shelf__item:nth-child(3) img{border:3px solid rgba(233,241,232,.48);padding:5px;box-shadow:inset 0 0 0 1px rgba(214,255,107,.25)}
+.journey-preview-shelf--presets img{object-position:center 40%}
+@media(max-width:900px){.journey-preview-shelf{width:100%;gap:8px;margin-top:16px}.journey-preview-shelf__item img{height:clamp(84px,23vw,128px)}.journey-preview-shelf__item strong{font-size:12px}.journey-preview-shelf__item span{font-size:7px}}
+@media(max-width:500px){.journey-preview-shelf{gap:7px}.journey-preview-shelf__item img{height:76px}.journey-preview-shelf__item strong{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.journey-preview-shelf__item,.journey-preview-shelf__item img{transition:none}}
+/* FAQ: restrained liquid-glass rows with a clear plus/minus affordance. */
+.journey-faq__list details{position:relative;margin:0 0 10px;overflow:hidden;border:1px solid rgba(216,240,232,.16);border-radius:12px;background:linear-gradient(130deg,rgba(222,247,239,.065),rgba(106,157,157,.025) 65%,rgba(255,255,255,.018));box-shadow:inset 0 1px rgba(255,255,255,.06);backdrop-filter:blur(14px) saturate(145%);-webkit-backdrop-filter:blur(14px) saturate(145%);transition:border-color .22s,background .22s,box-shadow .22s}
+.journey-faq__list details:hover,.journey-faq__list details[open]{border-color:rgba(214,255,107,.3);background:linear-gradient(130deg,rgba(222,247,239,.085),rgba(106,157,157,.045) 65%,rgba(255,255,255,.025));box-shadow:inset 0 1px rgba(255,255,255,.09),0 10px 30px rgba(0,0,0,.08)}
+.journey-faq__list summary{display:flex;min-height:58px;align-items:center;justify-content:space-between;gap:18px;padding:13px 15px;color:var(--ink);font-size:14px;font-weight:600;line-height:1.45;cursor:pointer;list-style:none}
+.journey-faq__list summary:after{display:grid;flex:0 0 27px;width:27px;height:27px;float:none;place-items:center;border:1px solid rgba(214,255,107,.36);border-radius:50%;background:rgba(214,255,107,.07);color:var(--acid);font-size:17px;font-weight:400;line-height:1;content:"+";transition:transform .2s,background .2s}
+.journey-faq__list details[open] summary:after{content:"−";transform:rotate(180deg);background:rgba(214,255,107,.13)}
+.journey-faq__list summary:focus-visible{outline:2px solid var(--acid);outline-offset:-3px;border-radius:12px}
+.journey-faq__list p{max-width:70ch;margin:0;padding:0 56px 17px 15px;color:var(--muted);font-size:13px;line-height:1.7}
+@media(max-width:900px){.journey-faq__list summary{min-height:54px;padding:12px 13px;font-size:13px}.journey-faq__list p{padding:0 46px 15px 13px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){.journey-faq__list details,.journey-faq__list summary:after{transition:none}}
 @media(max-width:900px){.journey-map{transform:translate3d(0,-2cm,0)}.journey-faq{grid-template-columns:minmax(0,1fr);gap:28px;padding:52px 26px}.journey-faq__map{width:min(100%,460px);max-height:340px;margin-top:18px}.journey-faq__support{align-items:flex-start;flex-direction:column;gap:14px}}
 @media(max-width:500px){.journey-faq{padding:44px 20px}.journey-faq__intro h2{font-size:38px}.journey-faq__intro>p{font-size:14px}.journey-faq__search{font-size:13px}.journey-faq__support>a{width:100%}}
 
@@ -340,32 +375,6 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 @media(max-width:500px){.journey-chapter:first-child{padding-top:clamp(62px,calc(16vh - 0.7cm),112px)}}
 @media(max-width:900px){.journey-map{transform:translate3d(0,-2.6cm,0)}}
 
-/* Start the first story chapter just below the fixed header when the hero ends. */
+/* Start the first story chapter directly below the fixed header as the hero ends. */
 .journey-chapter:first-child{padding-top:88px}
 @media(max-width:900px){.journey-chapter:first-child{padding-top:64px}}
-
-
-/* Scroll-scrubbed 3D map gallery in the Half a world away chapter. */
-.journey-chapter--right .journey-copy:has(.journey-coverflow){width:min(47vw,620px)}
-.journey-coverflow{width:100%;margin-top:24px;perspective:1000px}
-.journey-coverflow__stage{position:relative;height:clamp(220px,24vw,310px);transform-style:preserve-3d}
-.journey-coverflow__card{position:absolute;top:50%;left:50%;display:block;width:min(66%,300px);height:88%;overflow:hidden;border:1px solid rgba(233,241,232,.28);border-radius:8px;background:#0b1b20;box-shadow:0 22px 52px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.18);transform-origin:center center;backface-visibility:hidden;will-change:transform,opacity;transition:filter .3s ease,border-color .3s ease}
-.journey-coverflow__card[aria-current="true"]{border-color:rgba(214,255,107,.7);box-shadow:0 28px 64px rgba(0,0,0,.48),0 0 28px rgba(214,255,107,.08),inset 0 1px 0 rgba(255,255,255,.2)}
-.journey-coverflow__card img{display:block;width:100%;height:100%;object-fit:cover}
-.journey-coverflow__caption{position:absolute;inset:auto 0 0;padding:38px 16px 14px;display:flex;flex-direction:column;gap:5px;background:linear-gradient(0deg,rgba(3,11,14,.94),rgba(3,11,14,.55) 68%,transparent)}
-.journey-coverflow__caption span{color:rgba(233,241,232,.67);font:8px "Spline Sans Mono",monospace;letter-spacing:.11em}
-.journey-coverflow__caption strong{color:#f0f4e8;font-size:15px;letter-spacing:-.02em}
-.journey-coverflow__hint{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:4px;color:rgba(233,241,232,.47);font:8px "Spline Sans Mono",monospace;letter-spacing:.15em}
-.journey-coverflow__hint i{width:5px;height:5px;border-radius:50%;background:var(--acid);box-shadow:0 0 10px rgba(214,255,107,.75)}
-@media(max-width:900px){
- .journey-chapter--right .journey-copy:has(.journey-coverflow){width:min(100%,520px)}
- .journey-coverflow{margin-top:18px}
- .journey-coverflow__stage{height:clamp(240px,54vw,340px)}
- .journey-coverflow__card{width:min(62%,260px);height:86%}
- .journey-coverflow__caption{padding:32px 12px 11px}
- .journey-coverflow__caption strong{font-size:13px}
- .journey-coverflow__caption span{font-size:7px}
-}
-@media(prefers-reduced-motion:reduce){
- .journey-coverflow__card{transition:none}
-}

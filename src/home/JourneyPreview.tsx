@@ -298,6 +298,21 @@ const mapStories = [
   { title: "Travel Memories", place: "TOKYO · JAPAN", image: "travel-memories.png", href: "/?dist=5235000&city=Tokyo&country=Japan&title=Travel%20Memories" },
 ];
 
+const layoutStories = [
+  { title: "Portrait with room to breathe", place: "PRINT · PORTRAIT", image: "where-we-met.png" },
+  { title: "A wider view", place: "PRINT · LANDSCAPE", image: "travel-memories.png" },
+  { title: "Made for your screen", place: "WALLPAPER · PHONE", image: "hometown-roots.png" },
+];
+
+function PreviewShelf({ items, kind }: { items: Array<{ title: string; place: string; image: string }>; kind: "borders" | "themes" | "layouts" | "presets" }) {
+  return <div className={`journey-preview-shelf journey-preview-shelf--${kind}`} aria-label={`${kind} preview examples`}>
+    {items.map((item) => <a className="journey-preview-shelf__item" href={`/?gallery=${kind}`} key={item.title}>
+      <img src={item.image.startsWith("/") ? item.image : `/assets/map-posters/${item.image}`} alt={`${item.title} MAPARTE preview`} loading="lazy" />
+      <span>{item.place}</span><strong>{item.title}</strong>
+    </a>)}
+  </div>;
+}
+
 export default function JourneyPreview() {
   const storyRef = useRef<HTMLElement>(null);
   const progressRef = useRef(0);
@@ -421,12 +436,23 @@ export default function JourneyPreview() {
               <p>{chapter.body}</p>
               {index === 1 && <MapStoryCoverflow items={mapStories} />}
               {index === 2 && <a className="journey-action journey-action--quiet" href="/?gallery=borders">See the border gallery</a>}
+              {index === 2 && <PreviewShelf kind="borders" items={[
+                { title: "Fine line", place: "SINGLE · SUBTLE", image: "where-we-met.png" },
+                { title: "Double frame", place: "DOUBLE · EDITORIAL", image: "travel-memories.png" },
+                { title: "Wide gallery", place: "WIDE · BOLD", image: "hometown-roots.png" },
+              ]} />}
               {index === 2 && <div className="journey-themes" aria-label="Choose a map theme while viewing the city map">
                 <button className="journey-glass" type="button" aria-pressed={theme === "Midnight Blue"} onClick={() => setTheme("Midnight Blue")}><i className="journey-swatch journey-swatch--blue" />Midnight Blue</button>
                 <button className="journey-glass" type="button" aria-pressed={theme === "Carrara"} onClick={() => setTheme("Carrara")}><i className="journey-swatch journey-swatch--stone" />Carrara</button>
               </div>}
               {index === 4 && <a className="journey-action journey-action--quiet" href="/?gallery=themes">Browse the theme gallery</a>}
+              {index === 4 && <PreviewShelf kind="themes" items={[
+                { title: "Midnight Blue", place: "DEEP · NIGHT", image: "/theme-previews/midnight_blue.webp" },
+                { title: "Carrara", place: "STONE · LIGHT", image: "/theme-previews/carrara.webp" },
+                { title: "Blue Water", place: "COAST · CALM", image: "/theme-previews/blue_water.webp" },
+              ]} />}
               {index === 5 && <a className="journey-action journey-action--quiet" href="/?gallery=layouts">Explore map layouts</a>}
+              {index === 5 && <PreviewShelf kind="layouts" items={layoutStories} />}
               {index === 5 && <div className="journey-place-film" aria-label="A cinematic story scene with authentic MAPARTE map artwork">
                 <div className="journey-place-film__visual">
                   <img className="journey-place-film__photo" src="/assets/homepage-story/city-story-window.webp" alt="A woman looking out across a city at dusk" loading="lazy" />
@@ -441,6 +467,7 @@ export default function JourneyPreview() {
                 </div>
               </div>}
               {index === 5 && <a className="journey-action journey-action--quiet" href="/?gallery=presets">Browse story presets</a>}
+              {index === 6 && <PreviewShelf kind="presets" items={mapStories.map(({ title, place, image }) => ({ title, place, image }))} />}
               {index === 6 && <a className="journey-action journey-action--bright" href="/?dist=5235000">Create your map</a>}
             </div>
           </section>
