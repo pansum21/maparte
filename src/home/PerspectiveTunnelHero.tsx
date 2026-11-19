@@ -37,6 +37,9 @@ export default function PerspectiveTunnelHero() {
 		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 		const cardElements = Array.from(section.querySelectorAll<HTMLElement>(".maparte-tunnel__card"));
 		const title = section.querySelector<HTMLElement>(".maparte-tunnel__title");
+		const heading = section.querySelector<HTMLElement>(".maparte-tunnel__title h2");
+		const headingInto = section.querySelector<HTMLElement>(".maparte-tunnel__heading-into");
+		const headingEarth = section.querySelector<HTMLElement>(".maparte-tunnel__heading-earth");
 		const prompt = section.querySelector<HTMLElement>(".maparte-tunnel__prompt");
 		let frame = 0;
 		let pointerX = 0;
@@ -71,11 +74,21 @@ export default function PerspectiveTunnelHero() {
 				});
 
 				if (title) {
-					const opacity = reduceMotion.matches ? 1 : 1 - smooth(clamp((progress - 0.45) / 0.14));
-					const scale = reduceMotion.matches ? 1 : 0.9 + progress * 0.24;
+					const opacity = reduceMotion.matches ? 1 : 1 - smooth(clamp((progress - 0.58) / 0.18));
 					title.style.opacity = String(opacity);
-						const titlePosition = window.innerWidth < 768 ? "translate(-50%, -50%)" : "translateY(-50%)";
-						title.style.transform = `${titlePosition} scale(${scale})`;
+					const titlePosition = window.innerWidth < 768 ? "translate(-50%, -50%)" : "translateY(-50%)";
+					title.style.transform = titlePosition;
+				}
+				if (heading && headingInto && headingEarth) {
+					const flight = reduceMotion.matches ? 0 : smooth(clamp(progress / 0.78));
+					const scale = 1 + flight * 0.52;
+					const mobile = window.innerWidth < 768;
+					heading.style.transform = `scale(${scale})`;
+					heading.style.transformOrigin = mobile ? "center center" : "left center";
+					headingInto.style.transform = `translate3d(${flight * (mobile ? 8 : 17)}vw, 0, 0)`;
+					headingInto.style.opacity = String(reduceMotion.matches ? 1 : 1 - smooth(clamp((progress - 0.64) / 0.2)));
+					headingEarth.style.transform = `translate3d(${flight * (mobile ? -4 : -8)}vw, 0, 0)`;
+					headingEarth.style.opacity = String(reduceMotion.matches ? 1 : 1 - smooth(clamp((progress - 0.48) / 0.22)));
 				}
 				if (prompt) prompt.style.opacity = String(reduceMotion.matches ? 0 : clamp(1 - progress * 9));
 			});
@@ -117,7 +130,7 @@ export default function PerspectiveTunnelHero() {
 				</div>
 				<div className="maparte-tunnel__title">
 					<p className="maparte-tunnel__eyebrow">INTO THE EARTH · A PLACE IS A BEGINNING</p>
-					<h2 id="maparte-tunnel-title">INTO THE<br /><span>EARTH.</span></h2>
+					<h2 id="maparte-tunnel-title"><span className="maparte-tunnel__heading-into">INTO THE</span><span className="maparte-tunnel__heading-earth">EARTH.</span></h2>
 					<p className="maparte-tunnel__lead">The world is wide. Your place is here.</p>
 					<p className="maparte-tunnel__body">Turn a hometown, a shared moment, a journey or a finish line into digital map art. Design it in your browser, download the file and print it yourself if you like. MAPARTE does not print or ship posters.</p>
 					<p className="maparte-tunnel__facts"><span>800 CITY ENTRIES · SEARCH PLACES OR COORDINATES</span><span>DIGITAL DOWNLOAD · NO PRINTING OR SHIPPING</span></p>
@@ -131,4 +144,3 @@ export default function PerspectiveTunnelHero() {
 		</section>
 	);
 }
-
