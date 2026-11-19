@@ -76,7 +76,7 @@ export default function PerspectiveTunnelHero() {
 				if (title) {
 					const opacity = reduceMotion.matches ? 1 : 1 - smooth(clamp((progress - 0.58) / 0.18));
 					title.style.opacity = String(opacity);
-					const titlePosition = window.innerWidth < 768 ? "translate(-50%, -50%)" : "translateY(-50%)";
+					const titlePosition = window.innerWidth < 768 ? "translate(-50%, calc(-50% - 3cm))" : "translateY(-50%)";
 					title.style.transform = titlePosition;
 				}
 				if (heading && headingInto && headingEarth) {
