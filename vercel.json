@@ -62,6 +62,10 @@
   ],
   "rewrites": [
     {
+      "source": "/cities",
+      "destination": "/cities/index.html"
+    },
+    {
       "source": "/api/nominatim/(.*)",
       "destination": "https://nominatim.openstreetmap.org/$1"
     },

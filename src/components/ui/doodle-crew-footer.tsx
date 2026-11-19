@@ -41,6 +41,7 @@ const footerGroups = [
 		title: "DISCOVER",
 		links: [
 			{ label: "Map Art", href: "/?gallery=maps" },
+			{ label: "Cities & places", href: "/cities" },
 			{ label: "How it works", href: "#start" },
 			{ label: "Help & answers", href: "#help" },
 			{ label: "Maparte Blogs", href: "/mapiful-alternative" },
