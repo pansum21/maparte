@@ -388,6 +388,7 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 
 /* Keep map attribution compact, readable, and below mobile story copy. */
 .journey-page .journey-map .maplibregl-ctrl-bottom-right{
+  z-index:3!important;
   right:12px!important;
   left:auto!important;
   bottom:calc(12px - 2.6cm + env(safe-area-inset-bottom))!important;
