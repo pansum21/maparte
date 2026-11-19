@@ -426,3 +426,6 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
     background:linear-gradient(90deg,rgba(7,19,24,.68) 0%,rgba(7,19,24,.46) 42%,rgba(7,19,24,.12) 73%,transparent 100%),linear-gradient(0deg,rgba(5,14,18,.36),transparent 48%,rgba(5,14,18,.08));
   }
 }
+
+/* Lift the transformed MapLibre layer above its decorative veil so its credit stays visible. */
+.journey-world .journey-map{z-index:3}
