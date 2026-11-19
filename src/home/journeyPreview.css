@@ -333,3 +333,9 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
   .journey-glass:hover,.journey-action--glass:hover,.journey-action--bright:hover,.journey-themes button.journey-glass:hover{transform:translateY(-2px)}
 }
 @media(prefers-reduced-motion:reduce){.journey-glass,.journey-action--glass,.journey-action--bright,.journey-themes button.journey-glass{transition:none;transform:none}}
+
+/* Tighten the handoff from the animated hero into the first story chapter. */
+.journey-chapter:first-child{padding-top:clamp(112px,calc(19vh - 1cm),198px)}
+@media(max-width:900px){.journey-chapter:first-child{padding-top:clamp(70px,calc(17vh - 1cm),132px)}}
+@media(max-width:500px){.journey-chapter:first-child{padding-top:clamp(62px,calc(16vh - 0.7cm),112px)}}
+@media(max-width:900px){.journey-map{transform:translate3d(0,-2.6cm,0)}}

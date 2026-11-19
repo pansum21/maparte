@@ -234,7 +234,7 @@ function JourneyMap({ theme, progressRef, destinationRef }: { theme: "Midnight B
       const padding = hasReachedLayoutView
         ? { top: 0, right: 0, bottom: 0, left: 0 }
         : window.innerWidth > 900
-        ? { left: Math.round(window.innerWidth * 0.5) + globeShiftX, top: Math.round(window.innerHeight * 0.34 * heroAlign), bottom: globeShiftY }
+        ? { left: Math.round(window.innerWidth * 0.5) + globeShiftX, top: Math.round(window.innerHeight * 0.22 * heroAlign), bottom: globeShiftY }
         : { left: Math.round(window.innerWidth * 0.2), bottom: Math.round(window.innerHeight * (progress < 0.48 ? 0.04 + 0.31 * (1 - heroAlign) : 0.18)) };
       const idleMs = reduced ? 0 : Math.max(0, now - lastScrollAt - 3000);
       const idleSeconds = Math.max(0, idleMs / 1000 - 0.75);
@@ -366,11 +366,14 @@ export default function JourneyPreview() {
         const top = story.getBoundingClientRect().top + window.scrollY;
         const storySpan = Math.max(1, story.offsetHeight - window.innerHeight);
         const pageSpan = Math.max(storySpan, page.offsetHeight - window.innerHeight);
+        const hero = document.querySelector<HTMLElement>(".maparte-tunnel");
+        const heroSpan = hero ? Math.max(1, hero.offsetHeight - window.innerHeight) : 1;
+        const heroProgress = hero ? clamp(-hero.getBoundingClientRect().top / heroSpan) : 0;
         const storyProgress = clamp((window.scrollY - top) / storySpan);
         const pageProgress = clamp((window.scrollY - top) / pageSpan);
-        // Keep the cinematic map travel inside the map-story chapters. The new
-        // top-of-page tunnel and the FAQ/footer then show the finished city view.
-        const mapProgress = storyProgress;
+        // Start the globe's eastward trip behind the opening title, then hand
+        // the same continuous camera journey to the map-story chapters.
+        const mapProgress = heroProgress * 0.18 + storyProgress * 0.82;
         if (mapProgress > 0.025 && !hasScrolledRef.current) {
           hasScrolledRef.current = true;
           setHasScrolled(true);
@@ -484,6 +487,5 @@ export default function JourneyPreview() {
     </div>
   );
 }
-
 
 
