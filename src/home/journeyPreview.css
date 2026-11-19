@@ -379,9 +379,9 @@ html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height
 .journey-chapter:first-child{padding-top:88px}
 @media(max-width:900px){.journey-chapter:first-child{padding-top:64px}}
 
-/* Keep the city map legible behind the mobile story copy. */
 @media(max-width:900px){
-  .journey-world:after{
-    background:linear-gradient(90deg,rgba(7,19,24,.68) 0%,rgba(7,19,24,.46) 42%,rgba(7,19,24,.12) 73%,transparent 100%),linear-gradient(0deg,rgba(5,14,18,.36),transparent 48%,rgba(5,14,18,.08));
+  /* The canvas is shifted upward for the composition; keep its credit at screen bottom. */
+  .journey-map .maplibregl-ctrl-bottom-right{
+    bottom:calc(12px - 2.6cm + env(safe-area-inset-bottom))!important;
   }
 }
