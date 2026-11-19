@@ -28,7 +28,7 @@ const footerGroups = [
 			{ label: "Map Art", href: "/?gallery=maps" },
 			{ label: "How it works", href: "#start" },
 			{ label: "Help & answers", href: "#help" },
-			{ label: "Maparte Blogs", href: "/mapiful-alternative" },
+			{ label: "Maparte Blogs", href: "/blog" },
 		],
 	},
 	{

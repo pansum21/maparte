@@ -245,11 +245,31 @@ export function cityPagesPlugin() {
         count++;
       }
 
-      // Generate sitemap.xml for the editor, legal pages, alternative pages, and city pages
+      const blogSlugs = [
+        'map-poster-layouts-and-sizes',
+        'map-poster-themes-colour-palettes',
+        'personalised-map-art-gift-ideas',
+        'how-to-choose-a-custom-map-poster-maker',
+        'how-to-make-a-city-map-poster-online',
+        'city-map-wallpaper-phone-desktop',
+        'where-we-met-map-gift',
+        'first-anniversary-map-gift',
+        'marathon-gpx-route-poster',
+      ];
+      const blogEntries = [
+        `  <url>\n    <loc>https://maparte.com/blog</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`,
+        ...blogSlugs.map(
+          (slug) =>
+            `  <url>\n    <loc>https://maparte.com/blog/${slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`,
+        ),
+      ];
+
+      // Generate sitemap.xml for the editor, legal pages, blog pages, and city pages
       const sitemapEntries = [
         `  <url>\n    <loc>https://maparte.com</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Custom Map Poster &amp; Wallpaper Maker</image:title>\n    </image:image>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.com/mapiful-alternative</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>The #1 Mapiful Alternative in 2026 | MAPARTE</image:title>\n    </image:image>\n  </url>`,
+        `  <url>\n    <loc>https://maparte.com/mapiful-alternative</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>Maparte custom map poster and wallpaper maker</image:title>\n    </image:image>\n  </url>`,
         `  <url>\n    <loc>https://maparte.com/where-we-met-map</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.95</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>Where We Met Custom Map Poster &amp; Wall Art | MAPARTE</image:title>\n    </image:image>\n  </url>`,
+        ...blogEntries,
         `  <url>\n    <loc>https://maparte.com/privacy</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
         `  <url>\n    <loc>https://maparte.com/terms</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
         `  <url>\n    <loc>https://maparte.com/refund</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,

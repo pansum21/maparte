@@ -15,7 +15,7 @@
     <priority>0.9</priority>
     <image:image>
       <image:loc>https://maparte.com/assets/banner.jpg</image:loc>
-      <image:title>The #1 Mapiful Alternative in 2026 | MAPARTE</image:title>
+      <image:title>Maparte custom map poster and wallpaper maker</image:title>
     </image:image>
   </url>
   <url>
@@ -26,6 +26,56 @@
       <image:loc>https://maparte.com/assets/banner.jpg</image:loc>
       <image:title>Where We Met Custom Map Poster &amp; Wall Art | MAPARTE</image:title>
     </image:image>
+  </url>
+  <url>
+    <loc>https://maparte.com/blog</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://maparte.com/blog/map-poster-layouts-and-sizes</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://maparte.com/blog/map-poster-themes-colour-palettes</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://maparte.com/blog/personalised-map-art-gift-ideas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://maparte.com/blog/how-to-choose-a-custom-map-poster-maker</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://maparte.com/blog/how-to-make-a-city-map-poster-online</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://maparte.com/blog/city-map-wallpaper-phone-desktop</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://maparte.com/blog/where-we-met-map-gift</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://maparte.com/blog/first-anniversary-map-gift</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://maparte.com/blog/marathon-gpx-route-poster</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://maparte.com/privacy</loc>

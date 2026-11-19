@@ -66,6 +66,14 @@
       "destination": "https://nominatim.openstreetmap.org/$1"
     },
     {
+      "source": "/blog",
+      "destination": "/blog/index.html"
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/blog/:slug/index.html"
+    },
+    {
       "source": "/where-we-met",
       "destination": "/where-we-met/index.html"
     },
@@ -106,7 +114,7 @@
       "destination": "/mountain-summit/index.html"
     },
     {
-      "source": "/((?!api/|assets/|docs/|privacy|imprint|terms|refund|cities/|where-we-met|she-said-yes|our-wedding-day|our-first-home|travel-memories|marathon-race|baby-arrival|hometown-roots|mountain-summit|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|google.*|BingSiteAuth.*|favicon|icon).*)$",
+      "source": "/((?!api/|assets/|docs/|privacy|imprint|terms|refund|cities/|blog|where-we-met|she-said-yes|our-wedding-day|our-first-home|travel-memories|marathon-race|baby-arrival|hometown-roots|mountain-summit|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|google.*|BingSiteAuth.*|favicon|icon).*)$",
       "destination": "/index.html"
     }
   ]
