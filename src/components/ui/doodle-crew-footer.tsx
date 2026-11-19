@@ -25,9 +25,10 @@ const footerGroups = [
 	{
 		title: "DISCOVER",
 		links: [
-			{ label: "Map gallery", href: "#map-stories" },
+			{ label: "Map Art", href: "/?gallery=maps" },
 			{ label: "How it works", href: "#start" },
 			{ label: "Help & answers", href: "#help" },
+			{ label: "Maparte Blogs", href: "/mapiful-alternative" },
 		],
 	},
 	{
