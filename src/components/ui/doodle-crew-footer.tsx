@@ -44,7 +44,7 @@ const footerGroups = [
 			{ label: "Cities & places", href: "/cities" },
 			{ label: "How it works", href: "#start" },
 			{ label: "Help & answers", href: "#help" },
-			{ label: "Maparte Blogs", href: "/mapiful-alternative" },
+			{ label: "Maparte Blogs", href: "/blog" },
 		],
 	},
 	{

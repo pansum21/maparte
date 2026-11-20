@@ -23,6 +23,20 @@ function escapeXml(str) {
     .replace(/>/g, '&gt;');
 }
 
+// Blog pages are static files in public/blog; list them here so the generated sitemap keeps them.
+const BLOG_PAGES = [
+  { path: '', freq: 'weekly', priority: '0.8' },
+  { path: '/map-poster-layouts-and-sizes', freq: 'monthly', priority: '0.7' },
+  { path: '/map-poster-themes-colour-palettes', freq: 'monthly', priority: '0.7' },
+  { path: '/personalised-map-art-gift-ideas', freq: 'monthly', priority: '0.7' },
+  { path: '/how-to-choose-a-custom-map-poster-maker', freq: 'monthly', priority: '0.7' },
+  { path: '/how-to-make-a-city-map-poster-online', freq: 'monthly', priority: '0.7' },
+  { path: '/city-map-wallpaper-phone-desktop', freq: 'monthly', priority: '0.7' },
+  { path: '/where-we-met-map-gift', freq: 'monthly', priority: '0.7' },
+  { path: '/first-anniversary-map-gift', freq: 'monthly', priority: '0.7' },
+  { path: '/marathon-gpx-route-poster', freq: 'monthly', priority: '0.7' },
+];
+
 export function transformHtmlForCity(html, city) {
   const cityTitle = `${escapeAttr(city.city)} Map Poster &amp; Wall Art | MAPARTE`;
   const cityDesc = String(city.description ?? '');
@@ -298,11 +312,11 @@ export function cityPagesPlugin() {
         'utf8',
       );
 
-      // Generate sitemap.xml for the editor, directory, legal pages, alternatives, and city pages.
+      // Generate sitemap.xml for the editor, directory, legal pages, blog pages, and city pages.
       const sitemapEntries = [
         `  <url>\n    <loc>https://maparte.com</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Custom Map Poster &amp; Wallpaper Maker</image:title>\n    </image:image>\n  </url>`,
         '  <url>\n    <loc>https://maparte.com/cities</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.9</priority>\n  </url>',
-        `  <url>\n    <loc>https://maparte.com/mapiful-alternative</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>The #1 Mapiful Alternative in 2026 | MAPARTE</image:title>\n    </image:image>\n  </url>`,
+        ...BLOG_PAGES.map((page) => `  <url>\n    <loc>https://www.maparte.com/blog${page.path}</loc>\n    <lastmod>2026-11-20</lastmod>\n    <changefreq>${page.freq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`),
         `  <url>\n    <loc>https://maparte.com/where-we-met-map</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.95</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>Where We Met Custom Map Poster &amp; Wall Art | MAPARTE</image:title>\n    </image:image>\n  </url>`,
         `  <url>\n    <loc>https://maparte.com/privacy</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
         `  <url>\n    <loc>https://maparte.com/terms</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
