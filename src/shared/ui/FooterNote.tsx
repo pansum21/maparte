@@ -65,6 +65,8 @@ export default function FooterNote() {
             </a>
           )}
           {contactEmail && " | "}
+          <a className="source-link" href="/blog">Maparte Blogs</a>
+          {" | "}
           <a
             className="source-link"
             href={LEGAL_DOC_PAGES.privacy}
