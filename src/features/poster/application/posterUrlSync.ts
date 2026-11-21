@@ -15,6 +15,12 @@ export interface ParsedUrlPosterState {
   height?: string;
   fontFamily?: string;
   textAlign?: "left" | "center" | "right";
+  circleTextSide?: "left" | "right";
+  minimapRing?: boolean;
+  minimapRoute?: boolean;
+  navMarker?: boolean;
+  navMarkerSize?: number;
+  navMarkerColor?: string;
   customDate?: string;
   displayCity?: string;
   displayCountry?: string;
@@ -67,6 +73,21 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
     if (font && font.trim()) result.fontFamily = font.trim();
     const align = params.get("align");
     if (align === "left" || align === "center" || align === "right") result.textAlign = align;
+
+    const side = params.get("textside");
+    if (side === "left" || side === "right") result.circleTextSide = side;
+    const ring = params.get("ring");
+    if (ring === "0" || ring === "1") result.minimapRing = ring === "1";
+    const route = params.get("mroute");
+    if (route === "0" || route === "1") result.minimapRoute = route === "1";
+    const arrow = params.get("arrow");
+    if (arrow === "0" || arrow === "1") result.navMarker = arrow === "1";
+    const arrowSize = Number(params.get("arrowsize"));
+    if (params.get("arrowsize") && Number.isFinite(arrowSize) && arrowSize >= 0.5 && arrowSize <= 2) {
+      result.navMarkerSize = arrowSize;
+    }
+    const arrowColor = params.get("arrowcolor");
+    if (arrowColor && /^[0-9a-fA-F]{6}$/.test(arrowColor)) result.navMarkerColor = `#${arrowColor}`;
 
     const tagline = params.get("tagline") || params.get("date");
     if (tagline !== null && tagline !== undefined) {
@@ -144,6 +165,16 @@ export function serializePosterStateToUrl(
     params.set("font", form.fontFamily.trim());
   }
   if (form.textAlign && form.textAlign !== "center") params.set("align", form.textAlign);
+  if (form.circleTextSide === "left") params.set("textside", "left");
+  if (form.minimapRing === false) params.set("ring", "0");
+  if (form.minimapRoute) params.set("mroute", "1");
+  if (form.navMarker) {
+    params.set("arrow", "1");
+    if (form.navMarkerSize && form.navMarkerSize !== 1) params.set("arrowsize", String(form.navMarkerSize));
+    if (form.navMarkerColor && form.navMarkerColor.toLowerCase() !== "#2f7bff") {
+      params.set("arrowcolor", form.navMarkerColor.replace("#", ""));
+    }
+  }
 
   // 4. Tagline / Custom date text (if provided)
   if (form.customDate && form.customDate.trim().length > 0) {

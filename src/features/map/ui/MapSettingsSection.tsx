@@ -1,3 +1,4 @@
+import MinimapControls from "@/features/poster/ui/MinimapControls";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createCustomLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import {
@@ -686,6 +687,7 @@ export default function MapSettingsSection({
                 </div>
               </section>
             ))}
+            <MinimapControls />
           </div>
         )}
       </div>
