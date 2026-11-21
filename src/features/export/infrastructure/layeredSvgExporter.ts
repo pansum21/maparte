@@ -8,6 +8,12 @@ import type {
 import { drawMarkersOnCanvas } from "@/features/markers/infrastructure/rendering";
 import type { Route } from "@/features/routes/domain/types";
 import type { SquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import {
+  MINIMAP_GRID,
+  buildMinimapOverlayInner,
+  hasMinimapContent,
+  type MinimapOverlayOptions,
+} from "@/features/poster/domain/minimapOverlay";
 import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
 import { applyFades } from "@/features/poster/infrastructure/renderer/layers";
@@ -72,6 +78,8 @@ interface LayeredSvgOptions {
   mapInsetYRatio?: number;
   squareCaptionGeometry?: SquareCaptionGeometry;
   frameLayoutGeometry?: any;
+  /** Circle ring, route line and navigation arrow over the map window. */
+  minimapOverlay?: MinimapOverlayOptions;
 }
 
 function renderMapCanvasToDataUrl(
@@ -259,6 +267,7 @@ export async function createLayeredSvgBlobFromMap({
   mapInsetXRatio,
   mapInsetYRatio,
   squareCaptionGeometry,
+  minimapOverlay,
 }: LayeredSvgOptions): Promise<Blob> {
   await waitForMapIdle(map);
 
@@ -714,8 +723,19 @@ export async function createLayeredSvgBlobFromMap({
 
           // Divider width matching city text width
           const longestLine = cityLayout.lines.reduce((a, b) => a.length >= b.length ? a : b, "");
-          const estimatedCityTextWidth = longestLine.length * baseCityFontSize * (0.60 + parseFloat(letterSpacingEm));
-          const dividerWidth = Math.min(g.captionWidth * 0.92, Math.max(pageWidth * 0.08, estimatedCityTextWidth));
+          const lsPx = parseFloat(letterSpacingEm) * baseCityFontSize;
+          let measuredCityTextWidth = longestLine.length * baseCityFontSize * 0.6;
+          try {
+            const measureCtx = document.createElement("canvas").getContext("2d");
+            if (measureCtx) {
+              measureCtx.font = `600 ${baseCityFontSize}px ${titleFontFamily}`;
+              // Visible width: glyphs plus the gaps between letters (no trailing gap).
+              measuredCityTextWidth = measureCtx.measureText(longestLine).width + lsPx * Math.max(0, longestLine.length - 1);
+            }
+          } catch {
+            // keep the character-count estimate
+          }
+          const dividerWidth = Math.min(g.captionWidth, Math.max(pageWidth * 0.02, measuredCityTextWidth));
           const dividerX1 = g.captionAlign === "left" ? anchorX : g.captionAlign === "right" ? anchorX - dividerWidth : anchorX - dividerWidth / 2;
           const dividerX2 = dividerX1 + dividerWidth;
 
@@ -764,12 +784,22 @@ ${includeCredits ? `<text x="${g.safeInsetX}" y="${creditY}" text-anchor="start"
         })()
       : "";
 
+    const isCircleMap = squareCaptionGeometry?.shape === "circle";
+    const circleClipDefs = isCircleMap
+      ? `<defs><clipPath id="circle-map-clip"><ellipse cx="${exportWidth / 2}" cy="${exportHeight / 2}" rx="${exportWidth / 2}" ry="${exportHeight / 2}"/></clipPath></defs>\n`
+      : "";
+    const circleClipAttr = isCircleMap ? ` clip-path="url(#circle-map-clip)"` : "";
+    const minimapLayerSvg =
+      squareCaptionGeometry && minimapOverlay && hasMinimapContent(minimapOverlay)
+        ? `<g id="minimap-overlay" transform="translate(${squareCaptionGeometry.x} ${squareCaptionGeometry.y}) scale(${squareCaptionGeometry.size / MINIMAP_GRID})">${buildMinimapOverlayInner(minimapOverlay)}</g>`
+        : "";
+
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${pageWidth}" height="${pageHeight}" viewBox="0 0 ${pageWidth} ${pageHeight}">
 ${matRect}
 ${captionBackdropSvg}
 <g ${placementTransform}>
-<g ${groupTransform}>
+${circleClipDefs}<g ${groupTransform}${circleClipAttr}>
 ${vectorLayersSvg}
 ${routesSvg}
 ${fadesSvg}
@@ -778,7 +808,7 @@ ${squareCaptionGeometry ? "" : `<g id="vector-typography">`}
 ${vectorTypographySvg}
 ${squareCaptionGeometry ? "" : `</g>`}
 </g>
-${squareCaptionGeometry ? `</g>${squareCaptionSvg}` : ""}
+${squareCaptionGeometry ? `</g>${minimapLayerSvg}${squareCaptionSvg}` : ""}
 ${neatlineLayerSvg}
 </svg>`;
 

@@ -7,6 +7,7 @@ import { formatCoordinates } from "@/shared/geo/posterBounds";
 import { withAlpha } from "@/shared/utils/color";
 import { APP_CREDIT_URL } from "@/core/config";
 import { formatCityLabel, getPosterFontScale } from "@/features/poster/domain/textLayout";
+import { buildMinimapOverlaySvg, hasMinimapContent } from "../../domain/minimapOverlay";
 import type { ExportOptions, CanvasSize } from "../../domain/types";
 
 async function drawNeatlineSvg(
@@ -16,6 +17,7 @@ async function drawNeatlineSvg(
   svgMarkup?: string,
   insetXRatio = 0.025,
   insetYRatio = 0.025,
+  rect?: { x: number; y: number; w: number; h: number },
 ) {
   if (!svgMarkup) return;
   const objectUrl = URL.createObjectURL(
@@ -28,10 +30,10 @@ async function drawNeatlineSvg(
       image.onload = () => resolve();
       image.onerror = () => reject(new Error("Could not render the selected border."));
     });
-    const x = width * insetXRatio;
-    const y = height * insetYRatio;
-    const w = width * (1 - insetXRatio * 2);
-    const h = height * (1 - insetYRatio * 2);
+    const x = rect ? rect.x : width * insetXRatio;
+    const y = rect ? rect.y : height * insetYRatio;
+    const w = rect ? rect.w : width * (1 - insetXRatio * 2);
+    const h = rect ? rect.h : height * (1 - insetYRatio * 2);
     ctx.drawImage(image, x, y, w, h);
   } finally {
     URL.revokeObjectURL(objectUrl);
@@ -91,6 +93,7 @@ export async function compositeExport(
     neatlineSvg,
     squareCaptionGeometry,
     frameLayoutGeometry,
+    minimapOverlay,
   } = options;
 
   const width = mapCanvas.width;
@@ -228,6 +231,12 @@ export async function compositeExport(
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(size / width, size / height);
+    if (squareCaptionGeometry.shape === "circle") {
+      ctx.beginPath();
+      ctx.ellipse(width / 2, height / 2, width / 2, height / 2, 0, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+    }
     ctx.drawImage(mapCanvas, 0, 0, width, height);
     if (overlayTop || overlayBottom) {
       applyFades(ctx, width, height, theme.ui.bg, overlayTop, overlayBottom);
@@ -243,6 +252,18 @@ export async function compositeExport(
       await drawMarkersOnCanvas(ctx, markers, markerIcons, markerProjection, markerScaleX, markerScaleY, markerSizeScale);
     }
     ctx.restore();
+
+    if (minimapOverlay && hasMinimapContent(minimapOverlay)) {
+      await drawNeatlineSvg(
+        ctx,
+        1,
+        1,
+        buildMinimapOverlaySvg(minimapOverlay, Math.min(2400, Math.max(600, Math.round(size)))),
+        0,
+        0,
+        { x, y, w: size, h: size },
+      );
+    }
 
     const textColor = theme.ui.text || "#171717";
     const headingFamily = headingFontFamily?.trim() || fontFamily;
@@ -271,7 +292,13 @@ export async function compositeExport(
       ctx.fillText(formatCityLabel(displayCity), squareCaptionGeometry.captionX, captionY, squareCaptionGeometry.captionWidth);
       if (displayCity && displayCountry) {
         ctx.globalAlpha = 0.55;
-        const dividerWidth = Math.min(posterWidth * 0.14, squareCaptionGeometry.captionWidth * 0.2);
+        // The rule matches the printed width of the city name, so it is short for
+        // short names and never wider than the name itself.
+        const nameInk = Math.min(
+          ctx.measureText(formatCityLabel(displayCity)).width,
+          squareCaptionGeometry.captionWidth,
+        );
+        const dividerWidth = Math.max(posterWidth * 0.02, nameInk);
         const dividerX = squareCaptionGeometry.captionAlign === "left"
           ? squareCaptionGeometry.captionX
           : squareCaptionGeometry.captionAlign === "right"

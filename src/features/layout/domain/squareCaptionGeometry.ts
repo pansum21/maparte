@@ -15,6 +15,52 @@ export interface SquareCaptionGeometry {
   captionXStart: number;
   captionAlign: "left" | "center" | "right";
   variant: "center-bottom" | "left-bottom" | "right-bottom" | "top-left";
+  /** Map window shape. Circle windows share the exact square slot (x, y, size). */
+  shape?: "square" | "circle";
+  /** Landscape only: which side the text column sits on. */
+  textSide?: "left" | "right";
+}
+
+/**
+ * Circle layouts reuse the square geometry: the circle is inscribed in the same
+ * square slot. In landscape the text column can be mirrored to the left side.
+ */
+export function getCircleCaptionGeometry(
+  posterWidth: number,
+  posterHeight: number,
+  widthCm: number,
+  heightCm: number,
+  mapInsetCm: number,
+  gapCm: number,
+  textSide: "left" | "right" = "right",
+  requestedAlign?: "left" | "center" | "right",
+): SquareCaptionGeometry {
+  const isLandscape = widthCm > heightCm;
+  const base = getSquareCaptionGeometry(
+    posterWidth, posterHeight, widthCm, heightCm, mapInsetCm, gapCm,
+    "center-bottom", requestedAlign,
+  );
+  if (!isLandscape || textSide === "right") {
+    return { ...base, shape: "circle", textSide: "right" };
+  }
+  const pxPerCmX = posterWidth / Math.max(1, widthCm);
+  const x = posterWidth - base.safeInsetX - base.size;
+  const captionXStart = base.safeInsetX;
+  const captionWidth = Math.max(1, x - 1.2 * pxPerCmX - captionXStart);
+  const captionX = base.captionAlign === "left"
+    ? captionXStart
+    : base.captionAlign === "right"
+      ? captionXStart + captionWidth
+      : captionXStart + captionWidth / 2;
+  return {
+    ...base,
+    x,
+    captionX,
+    captionXStart,
+    captionWidth,
+    shape: "circle",
+    textSide: "left",
+  };
 }
 
 /**

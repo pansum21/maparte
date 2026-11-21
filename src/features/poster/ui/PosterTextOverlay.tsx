@@ -42,6 +42,8 @@ interface PosterTextOverlayProps {
   showOverlay: boolean;
   customDate?: string;
   squareCaption?: boolean;
+  /** Circle layout: the map slot is round, text placement comes from the geometry. */
+  circleCaption?: boolean;
   squareCaptionGeometry?: SquareCaptionGeometry | null;
   isCustomColor?: boolean;
   posterWidthCm?: number;
@@ -74,6 +76,7 @@ export default function PosterTextOverlay({
   showOverlay,
   customDate,
   squareCaption = false,
+  circleCaption = false,
   squareCaptionGeometry,
   isCustomColor = false,
   posterWidthCm = 21,
@@ -143,32 +146,57 @@ export default function PosterTextOverlay({
   const cityRef = useRef<HTMLDivElement | null>(null);
   const [cityTextWidthPercent, setCityTextWidthPercent] = useState<number | null>(null);
 
+  // Trailing letter-spacing (in em) that browsers add after the last glyph. It is
+  // compensated below so the visible name is optically centred / flush, and
+  // removed from the measured width so the rule matches the visible letters.
+  const letterSpacingEm = Number.parseFloat(cityLetterSpacing) || 0;
+
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
     const el = cityRef.current;
     if (!el) return;
 
-    // Measure the widest rendered line of the city title
-    const lineSpans = el.querySelectorAll<HTMLElement>(".poster-city-line");
-    let maxLineWidth = 0;
-    if (lineSpans.length > 0) {
-      lineSpans.forEach((span) => {
-        const w = span.getBoundingClientRect().width;
-        if (w > maxLineWidth) maxLineWidth = w;
+    const measure = () => {
+      const stack = el.parentElement;
+      if (!stack) return;
+      // Widest visible line of the title, measured on the text itself (the line
+      // elements are blocks, so their own box would report the full column width).
+      let widest = 0;
+      const lines = el.querySelectorAll<HTMLElement>(".poster-city-line");
+      lines.forEach((line) => {
+        const range = document.createRange();
+        range.selectNodeContents(line);
+        const textWidth = range.getBoundingClientRect().width;
+        const style = window.getComputedStyle(line);
+        const trailing = Number.parseFloat(style.letterSpacing) || 0;
+        const padding = (Number.parseFloat(style.paddingLeft) || 0) + (Number.parseFloat(style.paddingRight) || 0);
+        const ink = Math.max(0, textWidth - padding - trailing);
+        if (ink > widest) widest = ink;
       });
-    } else {
-      maxLineWidth = el.getBoundingClientRect().width;
-    }
+      const stackStyle = window.getComputedStyle(stack);
+      const contentWidth =
+        stack.getBoundingClientRect().width -
+        (Number.parseFloat(stackStyle.paddingLeft) || 0) -
+        (Number.parseFloat(stackStyle.paddingRight) || 0);
+      if (contentWidth > 0 && widest > 0) {
+        setCityTextWidthPercent(Number(Math.min(100, (widest / contentWidth) * 100).toFixed(3)));
+      }
+    };
 
-    const parent = el.closest(".poster-text-overlay");
-    if (!parent) return;
-    const parentWidth = parent.getBoundingClientRect().width;
-
-    if (parentWidth > 0 && maxLineWidth > 0) {
-      const pct = (maxLineWidth / parentWidth) * 100;
-      setCityTextWidthPercent(Math.min(92, Math.max(8, Number(pct.toFixed(2)))));
-    }
-  }, [city, cityLayout, fontFamily, fontSize, headingFamily, headingScale, squareCaption, isLandscape, align]);
+    measure();
+    let cancelled = false;
+    const fonts = (document as Document & { fonts?: FontFaceSet }).fonts;
+    fonts?.ready.then(() => { if (!cancelled) measure(); }).catch(() => undefined);
+    fonts?.addEventListener?.("loadingdone", measure);
+    const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    observer?.observe(el);
+    if (el.parentElement) observer?.observe(el.parentElement);
+    return () => {
+      cancelled = true;
+      fonts?.removeEventListener?.("loadingdone", measure);
+      observer?.disconnect();
+    };
+  }, [city, cityLayout, fontFamily, fontSize, headingFamily, headingScale, squareCaption, isLandscape, align, cityLetterSpacing, showPosterText, geometry?.captionWidth]);
 
   const approxCharUnits = Math.max(...cityLayout.lines.map((line) => line.length), 4);
   const fallbackDividerWidth = squareCaption
@@ -238,7 +266,7 @@ export default function PosterTextOverlay({
   const dividerMarginRight = align === "left" ? "auto" : align === "center" ? "auto" : 0;
 
   return (
-    <div className={`poster-text-overlay${squareCaption ? " is-square-caption-text" : ""}`} style={{ color: safeTextColor }}>
+    <div className={`poster-text-overlay${squareCaption ? " is-square-caption-text" : ""}${circleCaption ? " is-circle-caption-text" : ""}`} style={{ color: safeTextColor }}>
       {showPosterText && (
         <div className="poster-caption-stack" style={stackPositionStyle}>
           <div
@@ -257,6 +285,8 @@ export default function PosterTextOverlay({
                 style={{
                   display: "block",
                   maxWidth: "100%",
+                  paddingLeft: align === "center" ? `${letterSpacingEm}em` : undefined,
+                  marginRight: align === "right" ? `${-letterSpacingEm}em` : undefined,
                   fontSize: idx === 0 && line.includes("CITY OF") ? "0.68em" : undefined,
                   fontWeight: idx === 0 && line.includes("CITY OF") ? 500 : 700,
                   letterSpacing: cityLetterSpacing,

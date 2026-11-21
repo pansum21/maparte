@@ -44,9 +44,12 @@ import {
   formatLayoutDimensions,
   getLayoutOption,
   isMaparteSquareCaptionLayout,
+  isMaparteCircleLayout,
   getMaparteCaptionVariant,
 } from "@/features/layout/infrastructure/layoutRepository";
-import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import { getSquareCaptionGeometry, getCircleCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import { DEFAULT_NAV_MARKER_COLOR, type MinimapOverlayOptions } from "@/features/poster/domain/minimapOverlay";
+import MinimapOverlay from "./MinimapOverlay";
 import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
@@ -288,6 +291,7 @@ export default function PreviewPanel({
     ? (form.frameLayout as FrameLayoutId)
     : null;
   const isSquareCaption = !selectedFrameLayout && isMaparteSquareCaptionLayout(form.layout);
+  const isCircleCaption = isSquareCaption && isMaparteCircleLayout(form.layout);
   const previewFrameLayoutGeometry = useMemo(() => {
     if (!selectedFrameLayout) return null;
     const previewWidth = 1000;
@@ -297,6 +301,18 @@ export default function PreviewPanel({
   const captionVariant = getMaparteCaptionVariant(form.layout) ?? "center-bottom";
   const squareCaptionGeometry = useMemo(() => {
     if (!isSquareCaption) return null;
+    if (isCircleCaption) {
+      return getCircleCaptionGeometry(
+        widthCm * 100,
+        heightCm * 100,
+        widthCm,
+        heightCm,
+        borderMetrics.mapInsetCm,
+        borderMetrics.gapCm,
+        form.circleTextSide === "left" ? "left" : "right",
+        form.textAlign,
+      );
+    }
     return getSquareCaptionGeometry(
       widthCm * 100,
       heightCm * 100,
@@ -307,7 +323,20 @@ export default function PreviewPanel({
       captionVariant,
       form.textAlign,
     );
-  }, [isSquareCaption, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, captionVariant, form.textAlign]);
+  }, [isSquareCaption, isCircleCaption, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, captionVariant, form.textAlign, form.circleTextSide]);
+  const minimapOptions = useMemo<MinimapOverlayOptions | null>(() => {
+    if (!isSquareCaption) return null;
+    return {
+      shape: isCircleCaption ? "circle" : "square",
+      ring: form.minimapRing !== false,
+      route: Boolean(form.minimapRoute),
+      marker: Boolean(form.navMarker),
+      markerSize: form.navMarkerSize ?? 1,
+      markerColor: form.navMarkerColor ?? DEFAULT_NAV_MARKER_COLOR,
+      ringBackground: effectiveTheme.ui.bg,
+      ringForeground: form.posterTextColor || effectiveTheme.ui.text,
+    };
+  }, [isSquareCaption, isCircleCaption, form.minimapRing, form.minimapRoute, form.navMarker, form.navMarkerSize, form.navMarkerColor, form.posterTextColor, effectiveTheme.ui.bg, effectiveTheme.ui.text]);
 
   const [baseGlobeZoom, setBaseGlobeZoom] = useState<number>(() => {
     if (typeof window === "undefined") return 1.0;
@@ -553,7 +582,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}${previewFrameLayoutGeometry ? ` frame-layout-preview frame-layout-preview--${previewFrameLayoutGeometry.style}` : ""}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}${isCircleCaption ? " is-maparte-circle" : ""}${previewFrameLayoutGeometry ? ` frame-layout-preview frame-layout-preview--${previewFrameLayoutGeometry.style}` : ""}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || cinemaLayoutMovementLocked || !onCinemaPosterPlacementChange || event.button !== 0) return;
             if (mapWindowRef.current?.contains(event.target as Node)) return;
@@ -669,6 +698,7 @@ export default function PreviewPanel({
               overzoomScale={overzoomScale}
             />
           ) : null}
+          {minimapOptions ? <MinimapOverlay options={minimapOptions} /> : null}
           {state.showGrid ? (
             <PosterGridOverlay
               backgroundColor={effectiveTheme.map.land}
@@ -725,6 +755,7 @@ export default function PreviewPanel({
                   showOverlay={form.overlayBottom ?? form.showMarkers}
                   customDate={activeCustomDate}
                   squareCaption={isSquareCaption}
+                  circleCaption={isCircleCaption}
                   squareCaptionGeometry={squareCaptionGeometry}
                   isCustomColor={Boolean(form.posterTextColor)}
                   posterWidthCm={widthCm}
