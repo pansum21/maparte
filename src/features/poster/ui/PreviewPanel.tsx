@@ -754,7 +754,7 @@ export default function PreviewPanel({
                           style={mapStyle}
                           center={isActive ? mapCenter : [view.lon, view.lat]}
                           zoom={noPlace && slotZoom < 3.5 ? baseGlobeZoom : slotZoom}
-                          baseGlobeZoom={baseGlobeZoom}
+                          baseGlobeZoom={noPlace ? baseGlobeZoom : undefined}
                           mapRef={doubleMapRefs[p]}
                           interactive={isActive && (((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
                           allowRotation={isActive && ((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing)}
