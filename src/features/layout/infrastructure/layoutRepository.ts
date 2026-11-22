@@ -160,7 +160,9 @@ const maparteCaptionVariants: Record<string, MaparteCaptionVariant> = {
   print_maparte_left_caption_a4_landscape: "left-bottom",
   print_maparte_right_caption_a4_landscape: "right-bottom",
   print_maparte_circle_caption_a4_portrait: "center-bottom",
+  print_maparte_circle_caption_a4_top: "top-center",
   print_maparte_circle_caption_a4_landscape: "center-bottom",
+  print_maparte_circle_caption_a4_landscape_left: "center-bottom",
   print_maparte_circle_poster_a4_portrait: "center-bottom",
   print_maparte_circle_poster_a4_landscape: "center-bottom",
 };
@@ -168,6 +170,7 @@ const maparteCaptionVariants: Record<string, MaparteCaptionVariant> = {
 export function isMaparteLandscapeLeftLayout(layoutId: string): boolean {
   return (
     layoutId === "print_maparte_square_caption_a4_landscape_left" ||
+    layoutId === "print_maparte_circle_caption_a4_landscape_left" ||
     layoutId === "print_maparte_left_caption_a4_landscape"
   );
 }
@@ -179,7 +182,9 @@ export const MAPARTE_CIRCLE_POSTER_LAYOUT_IDS = [
 
 export const MAPARTE_CIRCLE_LAYOUT_IDS = [
   "print_maparte_circle_caption_a4_portrait",
+  "print_maparte_circle_caption_a4_top",
   "print_maparte_circle_caption_a4_landscape",
+  "print_maparte_circle_caption_a4_landscape_left",
   ...MAPARTE_CIRCLE_POSTER_LAYOUT_IDS,
 ] as const;
 

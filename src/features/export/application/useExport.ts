@@ -280,6 +280,7 @@ export function useExport() {
         const isSquareCaption = isMaparteSquareCaptionLayout(form.layout);
         const isCircleCaption = isSquareCaption && isMaparteCircleLayout(form.layout);
         const isLandscapeLeft = isMaparteLandscapeLeftLayout(form.layout) || form.circleTextSide === "left";
+        const captionVariant = getMaparteCaptionVariant(form.layout) ?? "center-bottom";
         const squareCaptionGeometry = isCircleCaption
           ? getCircleCaptionGeometry(
               size.width,
@@ -291,6 +292,7 @@ export function useExport() {
               isLandscapeLeft ? "left" : "right",
               form.textAlign,
               isMaparteCirclePosterLayout(form.layout),
+              captionVariant,
             )
           : isSquareCaption
             ? getSquareCaptionGeometry(

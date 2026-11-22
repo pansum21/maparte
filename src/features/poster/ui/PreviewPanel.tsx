@@ -317,6 +317,7 @@ export default function PreviewPanel({
         isLandscapeLeft ? "left" : "right",
         form.textAlign,
         isCirclePoster,
+        captionVariant,
       );
     }
     return getSquareCaptionGeometry(
@@ -666,8 +667,8 @@ export default function PreviewPanel({
               zoom={(!form.displayCity && mapZoom < 3.5) ? baseGlobeZoom : mapZoom}
               baseGlobeZoom={baseGlobeZoom}
               mapRef={mapRef}
-              interactive={isCinemaMode ? !cinemaMapMovementLocked && !isMarkerEditorActive : (((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
-              allowRotation={isCinemaMode ? !cinemaMapMovementLocked : ((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing)}
+              interactive={isCinemaMode ? (!cinemaMapMovementLocked && !isMarkerEditorActive) : ((!isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
+              allowRotation={isCinemaMode ? !cinemaMapMovementLocked : (!isPosterLayoutOpen || isEditing)}
               autoRotate={!isCinemaMode}
               minZoom={mapMinZoom}
               maxZoom={mapMaxZoom}

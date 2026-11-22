@@ -735,7 +735,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    width: 330px;
+    width: 340px;
     height: 38px;
     background: rgba(18, 32, 48, 0.95);
     backdrop-filter: blur(14px);
@@ -1114,7 +1114,7 @@
     top: 50px;
     bottom: 32px;
     left: 60px;
-    width: 307px;
+    width: 340px;
     z-index: 85;
     pointer-events: none;
     overflow: hidden;
@@ -1140,7 +1140,7 @@
     right: auto;
     bottom: 32px;
     left: 60px;
-    width: 307px;
+    width: 340px;
     max-height: none;
   }
 
@@ -1179,7 +1179,7 @@
     position: fixed;
     top: 76px;
     left: 82px; /* 64px nav + 18px gap */
-    width: 307px;
+    width: 340px;
     z-index: 46;
     pointer-events: none;
   }
@@ -2613,7 +2613,7 @@
   right: auto;
   bottom: 32px;
   left: 60px;
-  width: min(374px, calc(100vw - 60px));
+  width: min(340px, calc(100vw - 60px));
   max-width: calc(100vw - 60px);
   height: auto;
   max-height: none;
@@ -2645,7 +2645,7 @@
   top: 50px;
   bottom: 32px;
   left: 60px;
-  width: min(374px, calc(100vw - 60px));
+  width: min(340px, calc(100vw - 60px));
   border-left: none;
   border-radius: 0 14px 14px 0;
   box-sizing: border-box;
@@ -2950,7 +2950,7 @@
   top: 50px;
   bottom: 32px;
   left: 60px;
-  width: min(374px, calc(100vw - 60px));
+  width: min(340px, calc(100vw - 60px));
   max-width: none;
   max-height: none;
   box-sizing: border-box;
@@ -3216,7 +3216,7 @@ button.all-cities-clear-btn:not(:disabled):hover {
     right: auto;
     bottom: 32px;
     left: 60px;
-    width: 307px;
+    width: 340px;
     height: auto;
     max-height: none;
     overflow: visible;
@@ -3460,7 +3460,7 @@ button.all-cities-clear-btn:not(:disabled):hover {
   .app-shell[data-desktop-tab="markers"] .desktop-left-panel,
   .app-shell[data-desktop-tab="routes"] .desktop-left-panel,
   .app-shell[data-desktop-tab="settings"] .desktop-left-panel {
-    width: 307px !important;
+    width: 340px !important;
   }
   .desktop-left-panel .desktop-settings-slide,
   .desktop-left-panel .desktop-edit-map-panel {
@@ -3484,7 +3484,7 @@ button.all-cities-clear-btn:not(:disabled):hover {
   .app-shell[data-desktop-tab="markers"] .desktop-left-panel,
   .app-shell[data-desktop-tab="routes"] .desktop-left-panel,
   .app-shell[data-desktop-tab="settings"] .desktop-left-panel {
-    width: 307px !important;
+    width: 340px !important;
   }
   .desktop-left-panel .desktop-settings-slide,
   .desktop-left-panel .desktop-edit-map-panel {

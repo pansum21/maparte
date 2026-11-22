@@ -28,6 +28,16 @@ import {
   TrashIcon,
 } from "@/shared/ui/Icons";
 import ColorPicker from "@/features/theme/ui/ColorPicker";
+import { DEFAULT_NAV_MARKER_COLOR } from "@/features/poster/domain/minimapOverlay";
+
+const ARROW_COLORS: Array<[string, string]> = [
+  [DEFAULT_NAV_MARKER_COLOR, "Blue"],
+  ["#E5303A", "Red"],
+  ["#14B87A", "Green"],
+  ["#F5A524", "Amber"],
+  ["#8B5CF6", "Violet"],
+  ["#FFFFFF", "White"],
+];
 import { buildDynamicColorChoices } from "@/features/theme/domain/colorSuggestions";
 import {
   DISPLAY_PALETTE_KEYS,

@@ -134,6 +134,7 @@ export function getCircleCaptionGeometry(
   textSide: "left" | "right" = "right",
   requestedAlign?: "left" | "center" | "right",
   posterStyle = false,
+  variant: SquareCaptionGeometry["variant"] = "center-bottom",
 ): SquareCaptionGeometry {
   if (posterStyle) {
     return getCirclePosterGeometry(
@@ -143,7 +144,7 @@ export function getCircleCaptionGeometry(
   const isLandscape = widthCm > heightCm;
   const base = getSquareCaptionGeometry(
     posterWidth, posterHeight, widthCm, heightCm, mapInsetCm, gapCm,
-    "center-bottom", requestedAlign,
+    variant, requestedAlign, textSide,
   );
   if (!isLandscape || textSide === "right") {
     return { ...base, shape: "circle", textSide: "right" };
