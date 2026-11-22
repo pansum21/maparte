@@ -67,8 +67,19 @@
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='21' y='5' width='22' height='20' rx='2' fill='#4B91B7'/><path d='M23 29h18M26 32h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
         },
         {
+          "id": "print_maparte_square_caption_a4_top",
+          "name": "Square Caption · A4 (Top Caption)",
+          "description": "An editable place caption above a square map on A4 portrait paper.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><path d='M23 8h18M26 11h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/><rect x='21' y='15' width='22' height='20' rx='2' fill='#4B91B7'/></svg>"
+        },
+        {
           "id": "print_maparte_corner_caption_a4_portrait",
-          "name": "Corner Details · A4",
+          "name": "Corner Details · A4 (Top)",
           "description": "Place details sit in the upper-left corner above a larger square map.",
           "width": 21,
           "height": 29.7,
@@ -76,6 +87,17 @@
           "posterWidthCm": 21,
           "posterHeightCm": 29.7,
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><path d='M18 7h12M18 10h8' stroke='#9CC3DA' stroke-width='1.2' stroke-linecap='round'/><rect x='18' y='14' width='28' height='19' rx='2' fill='#4B91B7'/></svg>"
+        },
+        {
+          "id": "print_maparte_corner_caption_a4_bottom",
+          "name": "Corner Details · A4 (Bottom)",
+          "description": "Place details sit in the lower-left corner below a square map.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='18' y='5' width='28' height='19' rx='2' fill='#4B91B7'/><path d='M18 29h12M18 32h8' stroke='#9CC3DA' stroke-width='1.2' stroke-linecap='round'/></svg>"
         },
         {
           "id": "print_a4_landscape",
@@ -89,14 +111,25 @@
         },
         {
           "id": "print_maparte_square_caption_a4_landscape",
-          "name": "Square Caption · A4 Landscape",
-          "description": "A square map on the left with place details alongside on A4 landscape paper.",
+          "name": "Square Caption · A4 Landscape (Right)",
+          "description": "A square map on the left with place details on the right on A4 landscape paper.",
           "width": 29.7,
           "height": 21,
           "unit": "cm",
           "posterWidthCm": 29.7,
           "posterHeightCm": 21,
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='8' y='8' width='24' height='24' rx='2' fill='#4B91B7'/><path d='M38 17h16M38 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_square_caption_a4_landscape_left",
+          "name": "Square Caption · A4 Landscape (Left)",
+          "description": "Place details on the left side with a square map on the right on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='32' y='8' width='24' height='24' rx='2' fill='#4B91B7'/><path d='M10 17h16M10 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
         },
         {
           "id": "print_maparte_circle_caption_a4_portrait",

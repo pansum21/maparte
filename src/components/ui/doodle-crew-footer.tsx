@@ -1,6 +1,6 @@
 import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
 
-function ArrowUpRight(props: { "aria-hidden"?: string | boolean }) {
+function ArrowUpRight(props: { "aria-hidden"?: boolean | "true" | "false" }) {
 	return (
 		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
 			<path d="M7 17 17 7m0 0H7m10 0v10" />
@@ -8,7 +8,7 @@ function ArrowUpRight(props: { "aria-hidden"?: string | boolean }) {
 	);
 }
 
-function MoveUpRight(props: { "aria-hidden"?: string | boolean }) {
+function MoveUpRight(props: { "aria-hidden"?: boolean | "true" | "false" }) {
 	return (
 		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
 			<path d="M13 5h6v6m0-6L5 19" />

@@ -20,7 +20,7 @@ import {
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { readNeatlineSelection, getPosterBorderMetrics } from "@/features/layout/ui/NeatlinePicker";
-import { getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteCirclePosterLayout, isMaparteSquareCaptionLayout } from "@/features/layout/infrastructure/layoutRepository";
+import { getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteCirclePosterLayout, isMaparteSquareCaptionLayout, isMaparteLandscapeLeftLayout } from "@/features/layout/infrastructure/layoutRepository";
 import { getCircleCaptionGeometry, getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { DEFAULT_NAV_MARKER_COLOR, type MinimapOverlayOptions } from "@/features/poster/domain/minimapOverlay";
 import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
@@ -279,6 +279,7 @@ export function useExport() {
         const showWhiteMat = Boolean(neatlineSelection.showWhiteMat);
         const isSquareCaption = isMaparteSquareCaptionLayout(form.layout);
         const isCircleCaption = isSquareCaption && isMaparteCircleLayout(form.layout);
+        const isLandscapeLeft = isMaparteLandscapeLeftLayout(form.layout) || form.circleTextSide === "left";
         const squareCaptionGeometry = isCircleCaption
           ? getCircleCaptionGeometry(
               size.width,
@@ -287,7 +288,7 @@ export function useExport() {
               heightCm,
               borderMetrics.mapInsetCm,
               borderMetrics.gapCm,
-              form.circleTextSide === "left" ? "left" : "right",
+              isLandscapeLeft ? "left" : "right",
               form.textAlign,
               isMaparteCirclePosterLayout(form.layout),
             )
@@ -301,6 +302,7 @@ export function useExport() {
                 borderMetrics.gapCm,
                 getMaparteCaptionVariant(form.layout) ?? "center-bottom",
                 form.textAlign,
+                isLandscapeLeft ? "left" : "right",
               )
             : undefined;
         const minimapOverlay: MinimapOverlayOptions | undefined =

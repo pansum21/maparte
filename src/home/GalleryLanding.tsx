@@ -49,7 +49,7 @@ function SlideArtwork({ category, item }: { category: GalleryKey; item: GalleryI
     {category === "layouts" && <div className="gallery-art__paper" style={{ aspectRatio: String(item.ratio || 1) }}><i /></div>}
     {category === "borders" && <div className={`gallery-art__frame gallery-art__frame--${item.border || "single"}`}><i /></div>}
     {category === "maps" && <div className="gallery-art__streets"><i /><i /><i /><i /><i /><i /></div>}
-    <span className="gallery-art__index">{item.id.replaceAll("-", " ").toUpperCase()}</span>
+    <span className="gallery-art__index">{item.id.replace(/-/g, " ").toUpperCase()}</span>
   </div>;
 }
 

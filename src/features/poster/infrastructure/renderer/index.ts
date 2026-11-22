@@ -112,15 +112,7 @@ export async function compositeExport(
     pageCtx.fillRect(0, 0, page.width, page.height);
     if (g.style === "dark") {
       pageCtx.fillStyle = "#111";
-      pageCtx.fillRect(g.x, g.y + g.height, g.width, page.height - (g.y + g.height) - g.safeInsetY);
-    }
-    if (g.style === "box") {
-      pageCtx.save();
-      pageCtx.shadowColor = "rgba(0,0,0,.16)";
-      pageCtx.shadowBlur = Math.max(2, page.width * .003);
-      pageCtx.fillStyle = "rgba(255,255,255,.96)";
-      pageCtx.fillRect(g.captionX - g.captionWidth / 2, g.y + g.height - page.height * .075, g.captionWidth, page.height * .12);
-      pageCtx.restore();
+      pageCtx.fillRect(g.x, g.y + g.height, g.width, g.captionHeight);
     }
     pageCtx.save();
     pageCtx.translate(g.x, g.y);
@@ -139,7 +131,21 @@ export async function compositeExport(
     }
     pageCtx.restore();
 
-    const textColor = g.style === "dark" ? "#fff" : (theme.ui.text || "#171717");
+    if (g.style === "box") {
+      pageCtx.save();
+      pageCtx.shadowColor = "rgba(0,0,0,.22)";
+      pageCtx.shadowBlur = Math.max(6, page.width * .006);
+      pageCtx.shadowOffsetY = Math.max(2, page.height * .003);
+      pageCtx.fillStyle = "rgba(255,255,255,.98)";
+      const boxW = g.captionWidth;
+      const boxH = g.captionHeight || page.height * .12;
+      const boxX = g.captionX - boxW / 2;
+      const boxY = g.captionY - boxH / 2;
+      pageCtx.fillRect(boxX, boxY, boxW, boxH);
+      pageCtx.restore();
+    }
+
+    const textColor = g.style === "dark" ? "#fff" : g.style === "box" ? "#171717" : (theme.ui.text || "#171717");
     const headingFamily = headingFontFamily?.trim() || fontFamily;
     const midlineFamily = midlineFontFamily?.trim() || fontFamily;
     const bottomLineFamily = bottomLineFontFamily?.trim() || fontFamily;
@@ -157,8 +163,7 @@ export async function compositeExport(
     const bottomLineScale = getPosterFontScale(bottomLineFontSize ?? fontSize);
     const scale = Math.min(page.width, page.height) / 1000 * getPosterFontScale(fontSize);
     const creditFont = fontFor(fontFamily, true);
-    const box = g.style === "box";
-    const captionY = box ? g.y + g.height - page.height * .047 : g.captionY;
+    const captionY = g.captionY;
     const captionX = g.captionX;
     pageCtx.fillStyle = textColor;
     pageCtx.textAlign = g.captionAlign;

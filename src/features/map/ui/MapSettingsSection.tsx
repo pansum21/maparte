@@ -318,9 +318,9 @@ export default function MapSettingsSection({
   }
 
   function handleLayoutSelectInline(layoutId: string) {
-    // A regular paper/wallpaper layout takes precedence over frame compositions.
-    // Clear any previously selected frame so the newly tapped layout is visible.
-    onFrameLayoutChange?.("none");
+    if (!framePaperLayoutIds.has(layoutId)) {
+      onFrameLayoutChange?.("none");
+    }
     onLayoutChange(form.layout === layoutId ? "" : layoutId);
     setIsLayoutEditing(false);
   }
@@ -483,49 +483,84 @@ export default function MapSettingsSection({
       normalizedEditorColor &&
       originalEditorColor !== normalizedEditorColor,
   );
-  const framePaperLayoutIds = new Set([
-    "print_maparte_square_caption_a4_portrait",
-    "print_maparte_corner_caption_a4_portrait",
-    "print_maparte_square_caption_a4_landscape",
-  ]);
-  const framePaperLayouts = layoutGroups.flatMap((group) =>
-    group.options.filter((layoutOption) => framePaperLayoutIds.has(layoutOption.id)),
+  const framePaperLayoutIds = useMemo(
+    () =>
+      new Set([
+        "print_maparte_square_caption_a4_portrait",
+        "print_maparte_square_caption_a4_top",
+        "print_maparte_corner_caption_a4_portrait",
+        "print_maparte_corner_caption_a4_bottom",
+        "print_maparte_square_caption_a4_landscape",
+        "print_maparte_square_caption_a4_landscape_left",
+        "print_maparte_circle_caption_a4_portrait",
+        "print_maparte_circle_caption_a4_landscape",
+        "print_maparte_circle_poster_a4_portrait",
+        "print_maparte_circle_poster_a4_landscape",
+      ]),
+    [],
   );
-  const standardLayoutGroups = layoutGroups
-    .map((group) => ({
-      ...group,
-      options: group.options.filter((layoutOption) => !framePaperLayoutIds.has(layoutOption.id)),
-    }))
-    .filter((group) => group.options.length > 0);
-  const printGroup = standardLayoutGroups.find((group) => group.id === "print");
-  const wallpaperGroups = standardLayoutGroups.filter(
-    (group) => group.id === "wallpaper" || group.id === "iphone_wallpaper",
+
+  const [activeLayoutTab, setActiveLayoutTab] = useState<"print" | "frame" | "wallpaper" | "social">(() => {
+    if (framePaperLayoutIds.has(form.layout) || (form.frameLayout && form.frameLayout !== "none")) {
+      return "frame";
+    }
+    if (form.layout?.startsWith("wallpaper") || form.layout?.startsWith("iphone")) {
+      return "wallpaper";
+    }
+    if (form.layout?.startsWith("social") || form.layout?.startsWith("web")) {
+      return "social";
+    }
+    return "print";
+  });
+
+  const lastFormLayoutRef = useRef(form.layout);
+  useEffect(() => {
+    if (lastFormLayoutRef.current === form.layout) return;
+    lastFormLayoutRef.current = form.layout;
+    if (framePaperLayoutIds.has(form.layout)) {
+      setActiveLayoutTab("frame");
+    } else if (form.layout?.startsWith("wallpaper") || form.layout?.startsWith("iphone")) {
+      setActiveLayoutTab("wallpaper");
+    } else if (form.layout?.startsWith("social") || form.layout?.startsWith("web")) {
+      setActiveLayoutTab("social");
+    } else if (form.layout) {
+      setActiveLayoutTab("print");
+    }
+  }, [form.layout, framePaperLayoutIds]);
+
+  const framePaperLayouts = useMemo(
+    () =>
+      layoutGroups.flatMap((group) =>
+        group.options.filter((layoutOption) => framePaperLayoutIds.has(layoutOption.id)),
+      ),
+    [framePaperLayoutIds, layoutGroups],
   );
-  const wallpaperGroup = wallpaperGroups.length
-    ? {
-        id: "wallpaper",
-        name: "Wallpaper",
-        options: wallpaperGroups.flatMap((group) => group.options),
-      }
-    : null;
-  const otherLayoutGroups = standardLayoutGroups.filter(
-    (group) =>
-      group.id !== "print" &&
-      group.id !== "wallpaper" &&
-      group.id !== "iphone_wallpaper",
+
+  const printLayouts = useMemo(
+    () =>
+      layoutGroups
+        .filter((group) => group.id === "print")
+        .flatMap((group) =>
+          group.options.filter((layoutOption) => !framePaperLayoutIds.has(layoutOption.id)),
+        ),
+    [framePaperLayoutIds, layoutGroups],
   );
-  const otherGroup = otherLayoutGroups.length
-    ? {
-        id: "other",
-        name: "Other",
-        options: otherLayoutGroups.flatMap((group) => group.options),
-      }
-    : null;
-  const displayLayoutGroups = [
-    ...(printGroup ? [printGroup] : []),
-    ...(wallpaperGroup ? [wallpaperGroup] : []),
-    ...(otherGroup ? [otherGroup] : []),
-  ];
+
+  const wallpaperLayouts = useMemo(
+    () =>
+      layoutGroups
+        .filter((group) => group.id === "wallpaper" || group.id === "iphone_wallpaper")
+        .flatMap((group) => group.options),
+    [layoutGroups],
+  );
+
+  const socialLayouts = useMemo(
+    () =>
+      layoutGroups
+        .filter((group) => group.id === "social_media" || group.id === "web")
+        .flatMap((group) => group.options),
+    [layoutGroups],
+  );
 
   return (
     <section className="panel-block">
@@ -639,44 +674,50 @@ export default function MapSettingsSection({
           </div>
         ) : (
           <div className="layout-inline-groups" ref={layoutGroupsRef}>
-            <section className="layout-inline-group frame-layout-group" aria-label="Frame layouts">
-              <h3>Print · Frame Layouts</h3>
-              <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
-                {framePaperLayouts.map((layoutOption) => (
-                  <LayoutCard
-                    key={layoutOption.id}
-                    layoutOption={layoutOption}
-                    isSelected={layoutOption.id === form.layout}
-                    onClick={() => handleLayoutSelectInline(layoutOption.id)}
-                  />
-                ))}
-              </div>
-              <p className="frame-layout-help">Choose a framed paper size, then its frame style. Works with portrait and landscape.</p>
-              <div className="frame-layout-grid">
-                {[
-                  ["classic", "Classic"], ["left", "Left"], ["right", "Right"], ["center", "Center"],
-                  ["dark", "Dark"], ["box", "Box"], ["title", "Title"], ["full-map", "Full Map"],
-                ].map(([id, label]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    className={`frame-layout-option${(form.frameLayout ?? "none") === id ? " is-selected" : ""}`}
-                    aria-pressed={(form.frameLayout ?? "none") === id}
-                    onClick={() => handleFrameLayoutSelectInline(id)}
-                  >
-                    <span className={`frame-layout-swatch frame-layout-swatch--${id}`} aria-hidden="true">
-                      <i /><b /><em />
-                    </span>
-                    <span>{label}</span>
-                  </button>
-                ))}
-              </div>
-            </section>
-            {displayLayoutGroups.map((group) => (
-              <section key={group.id} className="layout-inline-group" data-layout-group={group.id}>
-                <h3>{group.name}</h3>
+            <div className="layout-category-tabs" role="tablist" aria-label="Layout Categories">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeLayoutTab === "print"}
+                className={`layout-category-tab${activeLayoutTab === "print" ? " is-active" : ""}`}
+                onClick={() => setActiveLayoutTab("print")}
+              >
+                Print
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeLayoutTab === "frame"}
+                className={`layout-category-tab${activeLayoutTab === "frame" ? " is-active" : ""}`}
+                onClick={() => setActiveLayoutTab("frame")}
+              >
+                Frame
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeLayoutTab === "wallpaper"}
+                className={`layout-category-tab${activeLayoutTab === "wallpaper" ? " is-active" : ""}`}
+                onClick={() => setActiveLayoutTab("wallpaper")}
+              >
+                Wallpaper
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeLayoutTab === "social"}
+                className={`layout-category-tab${activeLayoutTab === "social" ? " is-active" : ""}`}
+                onClick={() => setActiveLayoutTab("social")}
+              >
+                Social
+              </button>
+            </div>
+
+            {activeLayoutTab === "print" && (
+              <section className="layout-inline-group" data-layout-group="print">
+                <h3>Standard Print Formats</h3>
                 <div className="layout-inline-list card-scroll-list">
-                  {group.options.map((layoutOption) => (
+                  {printLayouts.map((layoutOption) => (
                     <LayoutCard
                       key={layoutOption.id}
                       layoutOption={layoutOption}
@@ -686,8 +727,79 @@ export default function MapSettingsSection({
                   ))}
                 </div>
               </section>
-            ))}
-            <MinimapControls />
+            )}
+
+            {activeLayoutTab === "frame" && (
+              <section className="layout-inline-group frame-layout-group" aria-label="Frame layouts">
+                <h3>Framed Layout Compositions</h3>
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
+                  {framePaperLayouts.map((layoutOption) => (
+                    <LayoutCard
+                      key={layoutOption.id}
+                      layoutOption={layoutOption}
+                      isSelected={layoutOption.id === form.layout}
+                      onClick={() => handleLayoutSelectInline(layoutOption.id)}
+                    />
+                  ))}
+                </div>
+                <div className="frame-layout-style-section">
+                  <h4 className="frame-layout-subheading">Frame Styles</h4>
+                  <p className="frame-layout-help">Choose a frame style for your poster.</p>
+                  <div className="frame-layout-grid">
+                    {[
+                      ["classic", "Classic"], ["left", "Left"], ["right", "Right"], ["center", "Center"],
+                      ["dark", "Dark"], ["box", "Box"], ["title", "Title"], ["full-map", "Full Map"],
+                    ].map(([id, label]) => (
+                      <button
+                        key={id}
+                        type="button"
+                        className={`frame-layout-option${(form.frameLayout ?? "none") === id ? " is-selected" : ""}`}
+                        aria-pressed={(form.frameLayout ?? "none") === id}
+                        onClick={() => handleFrameLayoutSelectInline(id)}
+                      >
+                        <span className={`frame-layout-swatch frame-layout-swatch--${id}`} aria-hidden="true">
+                          <i /><b /><em />
+                        </span>
+                        <span>{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <MinimapControls />
+              </section>
+            )}
+
+            {activeLayoutTab === "wallpaper" && (
+              <section className="layout-inline-group" data-layout-group="wallpaper">
+                <h3>Desktop & Mobile Wallpapers</h3>
+                <div className="layout-inline-list card-scroll-list">
+                  {wallpaperLayouts.map((layoutOption) => (
+                    <LayoutCard
+                      key={layoutOption.id}
+                      layoutOption={layoutOption}
+                      isSelected={layoutOption.id === form.layout}
+                      onClick={() => handleLayoutSelectInline(layoutOption.id)}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {activeLayoutTab === "social" && (
+              <section className="layout-inline-group" data-layout-group="social">
+                <h3>Social Media & Web</h3>
+                <div className="layout-inline-list card-scroll-list">
+                  {socialLayouts.map((layoutOption) => (
+                    <LayoutCard
+                      key={layoutOption.id}
+                      layoutOption={layoutOption}
+                      isSelected={layoutOption.id === form.layout}
+                      onClick={() => handleLayoutSelectInline(layoutOption.id)}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         )}
       </div>

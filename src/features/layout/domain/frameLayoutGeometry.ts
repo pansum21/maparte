@@ -46,22 +46,23 @@ export function getFrameLayoutGeometry(
   const safeInsetY = safeInsetCm * pxPerCmY;
   const innerWidth = Math.max(1, posterWidth - safeInsetX * 2);
   const innerHeight = Math.max(1, posterHeight - safeInsetY * 2);
-  const fullBleed = style === "full-map";
+  const fullBleed = style === "full-map" || style === "box";
   const box = style === "box";
-  const captionHeight = fullBleed ? 0 : Math.min(innerHeight * 0.245, 7.1 * pxPerCmY);
+  const boxHeight = Math.min(innerHeight * 0.14, 5.2 * pxPerCmY);
+  const captionHeight = fullBleed && !box ? 0 : box ? boxHeight : Math.min(innerHeight * 0.245, 7.1 * pxPerCmY);
   const mapX = fullBleed ? 0 : safeInsetX;
   const mapY = fullBleed ? 0 : safeInsetY;
   const mapWidth = fullBleed ? posterWidth : innerWidth;
   const mapHeight = fullBleed ? posterHeight : Math.max(1, innerHeight - captionHeight);
   const captionAlign = style === "left" ? "left" : style === "right" ? "right" : "center";
-  const captionWidth = box ? innerWidth * 0.74 : innerWidth;
+  const captionWidth = box ? Math.min(innerWidth * 0.76, 14 * pxPerCmX) : innerWidth;
   const captionX = captionAlign === "left"
     ? safeInsetX
     : captionAlign === "right"
       ? posterWidth - safeInsetX
       : posterWidth / 2;
   const captionY = box
-    ? mapY + mapHeight - 0.45 * pxPerCmY
+    ? posterHeight - safeInsetY - 1.2 * pxPerCmY - boxHeight / 2
     : mapY + mapHeight + Math.max(0.35 * pxPerCmY, captionHeight * 0.18);
 
   return {
