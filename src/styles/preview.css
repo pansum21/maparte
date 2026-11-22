@@ -1598,3 +1598,49 @@
   pointer-events: none;
   overflow: hidden;
 }
+
+/* Double map layouts: two clipped map windows side by side, text column beside them. */
+.poster-frame.is-double-map .poster-double-window {
+  position: absolute;
+  z-index: 2;
+}
+
+.poster-frame.is-double-map .poster-double-window.is-circle {
+  border-radius: 50%;
+}
+
+.poster-frame.is-double-map .poster-double-window.is-heart {
+  clip-path: url(#poster-heart-clip);
+}
+
+.poster-double-select {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.poster-double-select:hover,
+.poster-double-select:focus-visible {
+  background: rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+.poster-double-outline {
+  position: absolute;
+  z-index: 5;
+  overflow: visible;
+  pointer-events: none;
+  fill: none;
+  stroke: rgba(37, 99, 235, 0);
+  stroke-width: 2.5px;
+}
+
+.poster-double-outline.is-active {
+  stroke: #2563eb;
+}

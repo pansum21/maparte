@@ -12,7 +12,7 @@ import {
 import { usePosterContext } from "./PosterContext";
 import AdUnit from "@/shared/ui/AdUnit";
 import { AD_SLOT_SIDEBAR, ADS_SIDEBAR_ENABLED } from "@/core/config";
-import { useMapSync } from "@/features/map/application/useMapSync";
+import { useMapSync, distanceToZoom } from "@/features/map/application/useMapSync";
 const MapPreview = lazy(() => import("@/features/map/ui/MapPreview"));
 import MarkerOverlay from "@/features/markers/ui/MarkerOverlay";
 import RouteOverlay from "@/features/routes/ui/RouteOverlay";
@@ -20,6 +20,9 @@ import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
 import GradientFades from "./GradientFades";
 import PosterTextOverlay from "./PosterTextOverlay";
 import CirclePosterCaption from "./CirclePosterCaption";
+import DoubleMapCaption from "./DoubleMapCaption";
+import { HEART_PATH_UNIT } from "@/features/poster/domain/heartShape";
+import { getDoubleSlotViews } from "@/features/poster/domain/doubleMapSlots";
 import ErrorBoundary from "@/shared/ui/ErrorBoundary";
 import PosterGridOverlay from "./PosterGridOverlay";
 import { GridIcon } from "@/shared/ui/Icons";
@@ -48,8 +51,9 @@ import {
   isMaparteCircleLayout,
   isMaparteCirclePosterLayout,
   getMaparteCaptionVariant,
+  getDoubleMapShape,
 } from "@/features/layout/infrastructure/layoutRepository";
-import { getSquareCaptionGeometry, getCircleCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import { getSquareCaptionGeometry, getCircleCaptionGeometry, getDoubleMapGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { DEFAULT_NAV_MARKER_COLOR, type MinimapOverlayOptions } from "@/features/poster/domain/minimapOverlay";
 import MinimapOverlay from "./MinimapOverlay";
 import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
@@ -103,7 +107,7 @@ export default function PreviewPanel({
   const [internalIsPosterLayoutOpen, setInternalIsPosterLayoutOpen] = useState(false);
   const isPosterLayoutOpen = propIsPosterLayoutOpen !== undefined ? propIsPosterLayoutOpen : internalIsPosterLayoutOpen;
   const handleTogglePosterLayout = onTogglePosterLayout || (() => setInternalIsPosterLayoutOpen((prev) => !prev));
-  const { state, dispatch, effectiveTheme, mapStyle, mapRef } =
+  const { state, dispatch, effectiveTheme, mapStyle, mapRef, doubleMapRefs } =
     usePosterContext();
   const {
     form,
@@ -121,11 +125,14 @@ export default function PreviewPanel({
     handleMove,
     handleMoveEnd,
     setContainerWidth,
+    containerPx,
     overzoomScale,
   } = useMapSync(state, dispatch, mapRef);
 
   const frameRef = useRef<HTMLDivElement | null>(null);
   const mapWindowRef = useRef<HTMLDivElement | null>(null);
+  const mapWindowRefB = useRef<HTMLDivElement | null>(null);
+  const [doubleMaps, setDoubleMaps] = useState<[any, any]>([null, null]);
   const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
   const [mapInstance, setMapInstance] = useState<any>(null);
@@ -228,7 +235,7 @@ export default function PreviewPanel({
     // poster frame. Calibrate zoom against the visible map window itself.
     observer.observe(element);
     return () => observer.disconnect();
-  }, [setContainerWidth]);
+  }, [setContainerWidth, form.layout]);
 
   useEffect(() => {
     if (!form.showPosterText) return;
@@ -295,6 +302,66 @@ export default function PreviewPanel({
   const isSquareCaption = !selectedFrameLayout && isMaparteSquareCaptionLayout(form.layout);
   const isCircleCaption = isSquareCaption && isMaparteCircleLayout(form.layout);
   const isCirclePoster = isCircleCaption && isMaparteCirclePosterLayout(form.layout);
+  const doubleShape = !selectedFrameLayout ? getDoubleMapShape(form.layout) : null;
+  const doubleGeometry = useMemo(() => {
+    if (!doubleShape) return null;
+    return getDoubleMapGeometry(
+      widthCm * 100,
+      heightCm * 100,
+      widthCm,
+      heightCm,
+      borderMetrics.mapInsetCm,
+      borderMetrics.gapCm,
+      doubleShape,
+      form.circleTextSide === "left" ? "left" : "right",
+      form.textAlign,
+    );
+  }, [doubleShape, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, form.circleTextSide, form.textAlign]);
+  const doubleViews = getDoubleSlotViews(form, state.doubleMap);
+  const doubleActive = state.doubleMap.active;
+  const doubleSeededRef = useRef(false);
+
+  // The active map is the one the search box, zoom buttons and exports talk to.
+  useEffect(() => {
+    if (!doubleShape) return;
+    const map = doubleMaps[doubleActive];
+    if (!map) return;
+    mapRef.current = map;
+    (window as unknown as { map?: unknown }).map = map;
+    setMapInstance(map);
+  }, [doubleShape, doubleActive, doubleMaps, mapRef]);
+
+  // Give the second map a sensible starting place so the poster is never half empty.
+  useEffect(() => {
+    if (!doubleShape) {
+      doubleSeededRef.current = false;
+      return;
+    }
+    const other = state.doubleMap.other;
+    if (doubleSeededRef.current || other.displayCity || other.location || !form.displayCity) return;
+    doubleSeededRef.current = true;
+    dispatch({
+      type: "SET_DOUBLE_OTHER",
+      data: {
+        location: "Paris, France",
+        latitude: "48.856600",
+        longitude: "2.352200",
+        distance: "6000",
+        displayCity: "Paris",
+        displayCountry: "France",
+        displayContinent: "Europe",
+        selectedLocation: {
+          id: "default:paris",
+          label: "Paris, France",
+          lat: 48.8566,
+          lon: 2.3522,
+          city: "Paris",
+          country: "France",
+          continent: "Europe",
+        },
+      },
+    });
+  }, [doubleShape, state.doubleMap.other, form.displayCity, dispatch]);
   const previewFrameLayoutGeometry = useMemo(() => {
     if (!selectedFrameLayout) return null;
     const previewWidth = 1000;
@@ -384,6 +451,13 @@ export default function PreviewPanel({
       return;
     }
 
+    if (doubleGeometry) {
+      const slotCm = (doubleGeometry.slots[0].size / doubleGeometry.posterWidth) * widthCm;
+      const targetDiameterPx = (frameW * Math.max(1, slotCm - 3.0)) / widthCm;
+      setBaseGlobeZoom(Number(Math.log2((Math.PI * targetDiameterPx) / 512).toFixed(4)));
+      return;
+    }
+
     if (isSquareCaption && squareCaptionGeometry) {
       const squareSizeCm = (squareCaptionGeometry.size / squareCaptionGeometry.posterWidth) * widthCm;
       const targetDiameterCm = Math.max(1, squareSizeCm - 3.0);
@@ -407,7 +481,7 @@ export default function PreviewPanel({
 
     const targetZoom = Math.log2((Math.PI * targetDiameterPx) / 512);
     setBaseGlobeZoom(Number(targetZoom.toFixed(4)));
-  }, [isPosterLayoutOpen, widthCm, heightCm, isSquareCaption, squareCaptionGeometry, previewFrameLayoutGeometry]);
+  }, [isPosterLayoutOpen, widthCm, heightCm, isSquareCaption, squareCaptionGeometry, doubleGeometry, previewFrameLayoutGeometry]);
 
   useEffect(() => {
     updateBaseGlobeZoom();
@@ -587,7 +661,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}${isCircleCaption ? " is-maparte-circle" : ""}${previewFrameLayoutGeometry ? ` frame-layout-preview frame-layout-preview--${previewFrameLayoutGeometry.style}` : ""}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}${isCircleCaption ? " is-maparte-circle" : ""}${doubleShape ? ` is-double-map is-double-${doubleShape}` : ""}${previewFrameLayoutGeometry ? ` frame-layout-preview frame-layout-preview--${previewFrameLayoutGeometry.style}` : ""}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || cinemaLayoutMovementLocked || !onCinemaPosterPlacementChange || event.button !== 0) return;
             if (mapWindowRef.current?.contains(event.target as Node)) return;
@@ -617,7 +691,7 @@ export default function PreviewPanel({
           style={
             {
               "--poster-aspect": `${aspect}`,
-              "--poster-bg": previewFrameLayoutGeometry?.style === "full-map" ? posterBg : isCirclePoster ? effectiveTheme.ui.bg : "#fff",
+              "--poster-bg": previewFrameLayoutGeometry?.style === "full-map" ? posterBg : (isCirclePoster || doubleShape) ? effectiveTheme.ui.bg : "#fff",
               "--map-inset-x": borderMetrics.mapInsetX,
               "--map-inset-y": borderMetrics.mapInsetY,
               "--mat-inset-x": borderMetrics.matInsetX,
@@ -639,6 +713,90 @@ export default function PreviewPanel({
           
 
 
+          {doubleGeometry && doubleShape ? (
+            <>
+              <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true" focusable="false">
+                <clipPath id="poster-heart-clip" clipPathUnits="objectBoundingBox">
+                  <path d={HEART_PATH_UNIT} />
+                </clipPath>
+              </svg>
+              {([0, 1] as const).map((p) => {
+                const slot = doubleGeometry.slots[p];
+                const view = doubleViews[p];
+                const isActive = doubleActive === p;
+                const other = state.doubleMap.other;
+                const slotZoom = isActive
+                  ? mapZoom
+                  : distanceToZoom(Math.max(1, view.distance), view.lat, containerPx);
+                const noPlace = isActive ? !form.displayCity : !other.displayCity;
+                const box = {
+                  left: `${(slot.x / doubleGeometry.posterWidth) * 100}%`,
+                  top: `${(slot.y / doubleGeometry.posterHeight) * 100}%`,
+                  width: `${(slot.size / doubleGeometry.posterWidth) * 100}%`,
+                  height: `${(slot.size / doubleGeometry.posterHeight) * 100}%`,
+                };
+                return (
+                  <div key={p}>
+                    <div
+                      ref={p === 0 ? mapWindowRef : mapWindowRefB}
+                      className={`poster-map-window poster-double-window is-${doubleShape}${isActive ? " is-active" : ""}`}
+                      data-double-slot={p}
+                      style={{ inset: "auto", ...box }}
+                    >
+                      <Suspense
+                        fallback={
+                          <div className="map-container map-preview-loading" role="status" aria-live="polite">
+                            Loading map preview…
+                          </div>
+                        }
+                      >
+                        <MapPreview
+                          style={mapStyle}
+                          center={isActive ? mapCenter : [view.lon, view.lat]}
+                          zoom={noPlace && slotZoom < 3.5 ? baseGlobeZoom : slotZoom}
+                          baseGlobeZoom={baseGlobeZoom}
+                          mapRef={doubleMapRefs[p]}
+                          interactive={isActive && (((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
+                          allowRotation={isActive && ((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing)}
+                          autoRotate={isActive}
+                          minZoom={mapMinZoom}
+                          maxZoom={mapMaxZoom}
+                          overzoomScale={1}
+                          onMove={isActive ? handleMove : undefined}
+                          onMoveEnd={isActive ? handleMoveEnd : undefined}
+                          onMapReady={(map) => setDoubleMaps((prev) => (p === 0 ? [map, prev[1]] : [prev[0], map]))}
+                        />
+                      </Suspense>
+                      {!isActive ? (
+                        <button
+                          type="button"
+                          className="poster-double-select"
+                          aria-label={`Edit map ${p + 1}`}
+                          title={`Click to edit map ${p + 1}`}
+                          onClick={() => dispatch({ type: "SELECT_DOUBLE_SLOT", slot: p })}
+                        />
+                      ) : null}
+                    </div>
+                    <svg
+                      className={`poster-double-outline${isActive ? " is-active" : ""}`}
+                      style={box}
+                      viewBox="0 0 1 1"
+                      preserveAspectRatio="none"
+                      aria-hidden="true"
+                    >
+                      {doubleShape === "heart" ? (
+                        <path d={HEART_PATH_UNIT} vectorEffect="non-scaling-stroke" />
+                      ) : doubleShape === "circle" ? (
+                        <ellipse cx="0.5" cy="0.5" rx="0.5" ry="0.5" vectorEffect="non-scaling-stroke" />
+                      ) : (
+                        <rect x="0" y="0" width="1" height="1" vectorEffect="non-scaling-stroke" />
+                      )}
+                    </svg>
+                  </div>
+                );
+              })}
+            </>
+          ) : (
           <div
             ref={mapWindowRef}
             className="poster-map-window"
@@ -711,6 +869,7 @@ export default function PreviewPanel({
             />
           ) : null}
           </div>
+          )}
 
           
 
@@ -752,7 +911,24 @@ export default function PreviewPanel({
           {isPosterLayoutOpen ? (
             <>
               <ErrorBoundary name="PosterTextOverlay" fallback={null}>
-                {isCirclePoster && squareCaptionGeometry ? (
+                {doubleGeometry ? (
+                  <DoubleMapCaption
+                    geometry={doubleGeometry}
+                    slots={[doubleViews[0], doubleViews[1]]}
+                    fontFamily={form.fontFamily}
+                    fontSize={Number(form.fontSize) || 16}
+                    headingFontFamily={form.headingFontFamily}
+                    headingFontSize={Number(form.headingFontSize) || undefined}
+                    midlineFontFamily={form.midlineFontFamily}
+                    midlineFontSize={Number(form.midlineFontSize) || undefined}
+                    bottomLineFontFamily={form.bottomLineFontFamily}
+                    bottomLineFontSize={Number(form.bottomLineFontSize) || undefined}
+                    textColor={posterTextColor}
+                    showPosterText={form.showPosterText}
+                    includeCredits={form.includeCredits}
+                    customDate={activeCustomDate}
+                  />
+                ) : isCirclePoster && squareCaptionGeometry ? (
                   <CirclePosterCaption
                     geometry={squareCaptionGeometry}
                     city={displayTitle}

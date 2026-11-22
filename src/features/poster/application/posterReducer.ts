@@ -172,6 +172,7 @@ export type PosterAction =
   | { type: "RESET_COLORS" }
   | { type: "SELECT_LOCATION"; location: SearchResult }
   | { type: "SELECT_DOUBLE_SLOT"; slot: 0 | 1 }
+  | { type: "SET_DOUBLE_OTHER"; data: Partial<DoubleSlotData> }
   | { type: "SET_USER_LOCATION"; location: SearchResult | null }
   | { type: "CLEAR_LOCATION" }
   | { type: "SET_LOCATION_FOCUSED"; focused: boolean }
@@ -286,6 +287,12 @@ export function posterReducer(
 
     case "RESET_COLORS":
       return { ...state, customColors: {} };
+
+    case "SET_DOUBLE_OTHER":
+      return {
+        ...state,
+        doubleMap: { ...state.doubleMap, other: { ...state.doubleMap.other, ...action.data } },
+      };
 
     case "SELECT_DOUBLE_SLOT": {
       if (state.doubleMap.active === action.slot) return state;
