@@ -337,7 +337,7 @@ export default function PreviewPanel({
     return {
       shape: isCircleCaption ? "circle" : "square",
       ring: form.minimapRing !== false,
-      route: Boolean(form.minimapRoute),
+      route: false,
       marker: Boolean(form.navMarker),
       markerSize: form.navMarkerSize ?? 1,
       markerColor: form.navMarkerColor ?? DEFAULT_NAV_MARKER_COLOR,
@@ -345,7 +345,7 @@ export default function PreviewPanel({
       ringForeground: form.posterTextColor || effectiveTheme.ui.text,
       ringStyle: isCirclePoster ? "poster" : "band",
     };
-  }, [isSquareCaption, isCircleCaption, isCirclePoster, form.minimapRing, form.minimapRoute, form.navMarker, form.navMarkerSize, form.navMarkerColor, form.posterTextColor, effectiveTheme.ui.bg, effectiveTheme.ui.text]);
+  }, [isSquareCaption, isCircleCaption, isCirclePoster, form.minimapRing, form.navMarker, form.navMarkerSize, form.navMarkerColor, form.posterTextColor, effectiveTheme.ui.bg, effectiveTheme.ui.text]);
 
   const [baseGlobeZoom, setBaseGlobeZoom] = useState<number>(() => {
     if (typeof window === "undefined") return 1.0;

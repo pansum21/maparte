@@ -312,7 +312,7 @@ export function useExport() {
             ? {
                 shape: isCircleCaption ? "circle" : "square",
                 ring: form.minimapRing !== false,
-                route: Boolean(form.minimapRoute),
+                route: false,
                 marker: Boolean(form.navMarker),
                 markerSize: form.navMarkerSize ?? 1,
                 markerColor: form.navMarkerColor ?? DEFAULT_NAV_MARKER_COLOR,

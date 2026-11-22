@@ -39,6 +39,8 @@ export default function MinimapControls() {
   if (frameLayoutActive || !isMaparteSquareCaptionLayout(form.layout)) return null;
 
   const isCircle = isMaparteCircleLayout(form.layout);
+  if (!isCircle) return null;
+
   const set = <K extends keyof typeof form>(name: K, value: (typeof form)[K]) =>
     dispatch({ type: "SET_FIELD", name: name as string, value } as never);
 
@@ -46,19 +48,11 @@ export default function MinimapControls() {
     <section className="minimap-controls" aria-label="Map extras">
       <h4 className="frame-layout-subheading" style={{ marginTop: "14px", marginBottom: "8px" }}>Map Extras</h4>
       <div className="minimap-toggle-list">
-        {isCircle ? (
-          <Toggle
-            label="Map Ring"
-            hint="Tick marks and compass ring around the circle"
-            pressed={form.minimapRing !== false}
-            onToggle={() => set("minimapRing", form.minimapRing === false)}
-          />
-        ) : null}
         <Toggle
-          label="Route Line"
-          hint="Red route drawn across the map"
-          pressed={Boolean(form.minimapRoute)}
-          onToggle={() => set("minimapRoute", !form.minimapRoute)}
+          label="Map Ring"
+          hint="Tick marks and compass ring around the circle"
+          pressed={form.minimapRing !== false}
+          onToggle={() => set("minimapRing", form.minimapRing === false)}
         />
       </div>
     </section>
