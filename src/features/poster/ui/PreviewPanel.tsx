@@ -19,6 +19,7 @@ import RouteOverlay from "@/features/routes/ui/RouteOverlay";
 import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
 import GradientFades from "./GradientFades";
 import PosterTextOverlay from "./PosterTextOverlay";
+import CirclePosterCaption from "./CirclePosterCaption";
 import ErrorBoundary from "@/shared/ui/ErrorBoundary";
 import PosterGridOverlay from "./PosterGridOverlay";
 import { GridIcon } from "@/shared/ui/Icons";
@@ -44,9 +45,13 @@ import {
   formatLayoutDimensions,
   getLayoutOption,
   isMaparteSquareCaptionLayout,
+  isMaparteCircleLayout,
+  isMaparteCirclePosterLayout,
   getMaparteCaptionVariant,
 } from "@/features/layout/infrastructure/layoutRepository";
-import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import { getSquareCaptionGeometry, getCircleCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import { DEFAULT_NAV_MARKER_COLOR, type MinimapOverlayOptions } from "@/features/poster/domain/minimapOverlay";
+import MinimapOverlay from "./MinimapOverlay";
 import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
 import { formatLayoutCm } from "@/features/layout/domain/layoutMatcher";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
@@ -288,6 +293,8 @@ export default function PreviewPanel({
     ? (form.frameLayout as FrameLayoutId)
     : null;
   const isSquareCaption = !selectedFrameLayout && isMaparteSquareCaptionLayout(form.layout);
+  const isCircleCaption = isSquareCaption && isMaparteCircleLayout(form.layout);
+  const isCirclePoster = isCircleCaption && isMaparteCirclePosterLayout(form.layout);
   const previewFrameLayoutGeometry = useMemo(() => {
     if (!selectedFrameLayout) return null;
     const previewWidth = 1000;
@@ -297,6 +304,19 @@ export default function PreviewPanel({
   const captionVariant = getMaparteCaptionVariant(form.layout) ?? "center-bottom";
   const squareCaptionGeometry = useMemo(() => {
     if (!isSquareCaption) return null;
+    if (isCircleCaption) {
+      return getCircleCaptionGeometry(
+        widthCm * 100,
+        heightCm * 100,
+        widthCm,
+        heightCm,
+        borderMetrics.mapInsetCm,
+        borderMetrics.gapCm,
+        form.circleTextSide === "left" ? "left" : "right",
+        form.textAlign,
+        isCirclePoster,
+      );
+    }
     return getSquareCaptionGeometry(
       widthCm * 100,
       heightCm * 100,
@@ -307,7 +327,21 @@ export default function PreviewPanel({
       captionVariant,
       form.textAlign,
     );
-  }, [isSquareCaption, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, captionVariant, form.textAlign]);
+  }, [isSquareCaption, isCircleCaption, isCirclePoster, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, captionVariant, form.textAlign, form.circleTextSide]);
+  const minimapOptions = useMemo<MinimapOverlayOptions | null>(() => {
+    if (!isSquareCaption) return null;
+    return {
+      shape: isCircleCaption ? "circle" : "square",
+      ring: form.minimapRing !== false,
+      route: Boolean(form.minimapRoute),
+      marker: Boolean(form.navMarker),
+      markerSize: form.navMarkerSize ?? 1,
+      markerColor: form.navMarkerColor ?? DEFAULT_NAV_MARKER_COLOR,
+      ringBackground: effectiveTheme.ui.bg,
+      ringForeground: form.posterTextColor || effectiveTheme.ui.text,
+      ringStyle: isCirclePoster ? "poster" : "band",
+    };
+  }, [isSquareCaption, isCircleCaption, isCirclePoster, form.minimapRing, form.minimapRoute, form.navMarker, form.navMarkerSize, form.navMarkerColor, form.posterTextColor, effectiveTheme.ui.bg, effectiveTheme.ui.text]);
 
   const [baseGlobeZoom, setBaseGlobeZoom] = useState<number>(() => {
     if (typeof window === "undefined") return 1.0;
@@ -553,7 +587,7 @@ export default function PreviewPanel({
         ) : null}
         <div
           ref={frameRef}
-          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}${previewFrameLayoutGeometry ? ` frame-layout-preview frame-layout-preview--${previewFrameLayoutGeometry.style}` : ""}`}
+          className={`poster-frame${neatlineSelection.showWhiteMat && neatlineSelection.lineId !== "none" ? " has-white-mat" : " is-full-bleed"}${isSquareCaption ? " is-maparte-square-caption" : ""}${isCircleCaption ? " is-maparte-circle" : ""}${previewFrameLayoutGeometry ? ` frame-layout-preview frame-layout-preview--${previewFrameLayoutGeometry.style}` : ""}`}
           onPointerDown={(event) => {
             if (!isCinemaMode || cinemaLayoutMovementLocked || !onCinemaPosterPlacementChange || event.button !== 0) return;
             if (mapWindowRef.current?.contains(event.target as Node)) return;
@@ -583,7 +617,7 @@ export default function PreviewPanel({
           style={
             {
               "--poster-aspect": `${aspect}`,
-              "--poster-bg": previewFrameLayoutGeometry?.style === "full-map" ? posterBg : "#fff",
+              "--poster-bg": previewFrameLayoutGeometry?.style === "full-map" ? posterBg : isCirclePoster ? effectiveTheme.ui.bg : "#fff",
               "--map-inset-x": borderMetrics.mapInsetX,
               "--map-inset-y": borderMetrics.mapInsetY,
               "--mat-inset-x": borderMetrics.matInsetX,
@@ -669,6 +703,7 @@ export default function PreviewPanel({
               overzoomScale={overzoomScale}
             />
           ) : null}
+          {minimapOptions && !isCirclePoster ? <MinimapOverlay options={minimapOptions} /> : null}
           {state.showGrid ? (
             <PosterGridOverlay
               backgroundColor={effectiveTheme.map.land}
@@ -681,6 +716,19 @@ export default function PreviewPanel({
 
           
 
+          {isCirclePoster && minimapOptions && squareCaptionGeometry ? (
+            <div
+              className="poster-circle-minimap-slot"
+              style={{
+                left: `${((squareCaptionGeometry.overlayX ?? 0) / squareCaptionGeometry.posterWidth) * 100}%`,
+                top: `${((squareCaptionGeometry.overlayY ?? 0) / squareCaptionGeometry.posterHeight) * 100}%`,
+                width: `${((squareCaptionGeometry.overlaySize ?? 0) / squareCaptionGeometry.posterWidth) * 100}%`,
+                height: `${((squareCaptionGeometry.overlaySize ?? 0) / squareCaptionGeometry.posterHeight) * 100}%`,
+              }}
+            >
+              <MinimapOverlay options={minimapOptions} />
+            </div>
+          ) : null}
           {previewFrameLayoutGeometry && previewFrameLayoutGeometry.style !== "full-map" ? (
             <div className={`frame-layout-caption-band frame-layout-caption-band--${previewFrameLayoutGeometry.style}`}
               aria-hidden="true"
@@ -704,6 +752,27 @@ export default function PreviewPanel({
           {isPosterLayoutOpen ? (
             <>
               <ErrorBoundary name="PosterTextOverlay" fallback={null}>
+                {isCirclePoster && squareCaptionGeometry ? (
+                  <CirclePosterCaption
+                    geometry={squareCaptionGeometry}
+                    city={displayTitle}
+                    country={displaySubtitle}
+                    lat={formLat}
+                    lon={formLon}
+                    fontFamily={form.fontFamily}
+                    fontSize={Number(form.fontSize) || 16}
+                    headingFontFamily={form.headingFontFamily}
+                    headingFontSize={Number(form.headingFontSize) || undefined}
+                    midlineFontFamily={form.midlineFontFamily}
+                    midlineFontSize={Number(form.midlineFontSize) || undefined}
+                    bottomLineFontFamily={form.bottomLineFontFamily}
+                    bottomLineFontSize={Number(form.bottomLineFontSize) || undefined}
+                    textColor={posterTextColor}
+                    showPosterText={form.showPosterText}
+                    includeCredits={form.includeCredits}
+                    customDate={activeCustomDate}
+                  />
+                ) : (
                 <PosterTextOverlay
                   city={displayTitle}
                   country={displaySubtitle}
@@ -725,11 +794,13 @@ export default function PreviewPanel({
                   showOverlay={form.overlayBottom ?? form.showMarkers}
                   customDate={activeCustomDate}
                   squareCaption={isSquareCaption}
+                  circleCaption={isCircleCaption}
                   squareCaptionGeometry={squareCaptionGeometry}
                   isCustomColor={Boolean(form.posterTextColor)}
                   posterWidthCm={widthCm}
                   posterHeightCm={heightCm}
                 />
+                )}
               </ErrorBoundary>
               <NeatlineArtwork
                 selection={neatlineSelection}

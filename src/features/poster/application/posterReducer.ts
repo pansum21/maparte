@@ -50,6 +50,16 @@ export interface PosterForm {
   bottomLineFontFamily?: string;
   bottomLineFontSize?: string;
   textAlign?: "left" | "center" | "right";
+  /** Circle layouts (landscape): which side the text column sits on. */
+  circleTextSide?: "left" | "right";
+  /** Minimap-style ring with tick marks and N/E/S/W letters around the map. */
+  minimapRing?: boolean;
+  /** Red route line drawn across the map. */
+  minimapRoute?: boolean;
+  /** Navigation-arrow marker on the chosen location. */
+  navMarker?: boolean;
+  navMarkerSize?: number;
+  navMarkerColor?: string;
   showPosterText: boolean;
   includeCredits: boolean;
   includeLandcover: boolean;

@@ -20,8 +20,9 @@ import {
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { readNeatlineSelection, getPosterBorderMetrics } from "@/features/layout/ui/NeatlinePicker";
-import { getMaparteCaptionVariant, isMaparteSquareCaptionLayout } from "@/features/layout/infrastructure/layoutRepository";
-import { getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import { getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteCirclePosterLayout, isMaparteSquareCaptionLayout } from "@/features/layout/infrastructure/layoutRepository";
+import { getCircleCaptionGeometry, getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import { DEFAULT_NAV_MARKER_COLOR, type MinimapOverlayOptions } from "@/features/poster/domain/minimapOverlay";
 import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
 import { getAllMarkerIcons } from "@/features/markers/infrastructure/iconRegistry";
 import { ensureFont } from "@/core/services";
@@ -277,18 +278,45 @@ export function useExport() {
         );
         const showWhiteMat = Boolean(neatlineSelection.showWhiteMat);
         const isSquareCaption = isMaparteSquareCaptionLayout(form.layout);
-        const squareCaptionGeometry = isSquareCaption
-          ? getSquareCaptionGeometry(
+        const isCircleCaption = isSquareCaption && isMaparteCircleLayout(form.layout);
+        const squareCaptionGeometry = isCircleCaption
+          ? getCircleCaptionGeometry(
               size.width,
               size.height,
               widthCm,
               heightCm,
               borderMetrics.mapInsetCm,
               borderMetrics.gapCm,
-              getMaparteCaptionVariant(form.layout) ?? "center-bottom",
+              form.circleTextSide === "left" ? "left" : "right",
               form.textAlign,
+              isMaparteCirclePosterLayout(form.layout),
             )
-          : undefined;
+          : isSquareCaption
+            ? getSquareCaptionGeometry(
+                size.width,
+                size.height,
+                widthCm,
+                heightCm,
+                borderMetrics.mapInsetCm,
+                borderMetrics.gapCm,
+                getMaparteCaptionVariant(form.layout) ?? "center-bottom",
+                form.textAlign,
+              )
+            : undefined;
+        const minimapOverlay: MinimapOverlayOptions | undefined =
+          squareCaptionGeometry && !(form.frameLayout && form.frameLayout !== "none")
+            ? {
+                shape: isCircleCaption ? "circle" : "square",
+                ring: form.minimapRing !== false,
+                route: Boolean(form.minimapRoute),
+                marker: Boolean(form.navMarker),
+                markerSize: form.navMarkerSize ?? 1,
+                markerColor: form.navMarkerColor ?? DEFAULT_NAV_MARKER_COLOR,
+                ringBackground: effectiveTheme.ui.bg,
+                ringForeground: form.posterTextColor || effectiveTheme.ui.text,
+                ringStyle: isCircleCaption && isMaparteCirclePosterLayout(form.layout) ? "poster" : "band",
+              }
+            : undefined;
         const frameLayoutGeometry = form.frameLayout && form.frameLayout !== "none"
           ? getFrameLayoutGeometry(
               size.width, size.height, widthCm, heightCm,
@@ -333,6 +361,7 @@ export function useExport() {
             mapInsetYRatio: borderMetrics.mapInsetYRatio,
             squareCaptionGeometry,
             frameLayoutGeometry,
+            minimapOverlay,
           });
           const svgFilename = createPosterFilename(
             form.displayCity || form.location,
@@ -431,6 +460,7 @@ export function useExport() {
           routes: visibleRoutes,
           squareCaptionGeometry,
           frameLayoutGeometry,
+          minimapOverlay,
         });
 
         const canvas = isPro ? fullCanvas : applyFreeTier(fullCanvas);
@@ -477,6 +507,7 @@ export function useExport() {
             mapInsetYRatio: borderMetrics.mapInsetYRatio,
             squareCaptionGeometry,
             frameLayoutGeometry,
+            minimapOverlay,
           });
 
           const pngBlob = await createPngBlob(canvas, density);

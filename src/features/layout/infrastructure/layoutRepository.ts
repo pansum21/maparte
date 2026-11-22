@@ -150,7 +150,31 @@ const maparteCaptionVariants: Record<string, MaparteCaptionVariant> = {
   print_maparte_square_caption_a4_landscape: "center-bottom",
   print_maparte_left_caption_a4_landscape: "left-bottom",
   print_maparte_right_caption_a4_landscape: "right-bottom",
+  print_maparte_circle_caption_a4_portrait: "center-bottom",
+  print_maparte_circle_caption_a4_landscape: "center-bottom",
+  print_maparte_circle_poster_a4_portrait: "center-bottom",
+  print_maparte_circle_poster_a4_landscape: "center-bottom",
 };
+
+export const MAPARTE_CIRCLE_POSTER_LAYOUT_IDS = [
+  "print_maparte_circle_poster_a4_portrait",
+  "print_maparte_circle_poster_a4_landscape",
+] as const;
+
+export const MAPARTE_CIRCLE_LAYOUT_IDS = [
+  "print_maparte_circle_caption_a4_portrait",
+  "print_maparte_circle_caption_a4_landscape",
+  ...MAPARTE_CIRCLE_POSTER_LAYOUT_IDS,
+] as const;
+
+/** Poster style circle: compass ring outside the map, name block in the lower 30%. */
+export function isMaparteCirclePosterLayout(layoutId: string): boolean {
+  return (MAPARTE_CIRCLE_POSTER_LAYOUT_IDS as readonly string[]).includes(layoutId);
+}
+
+export function isMaparteCircleLayout(layoutId: string): boolean {
+  return (MAPARTE_CIRCLE_LAYOUT_IDS as readonly string[]).includes(layoutId);
+}
 
 export function getMaparteCaptionVariant(layoutId: string): MaparteCaptionVariant | null {
   return maparteCaptionVariants[layoutId] ?? null;

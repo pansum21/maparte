@@ -15,6 +15,157 @@ export interface SquareCaptionGeometry {
   captionXStart: number;
   captionAlign: "left" | "center" | "right";
   variant: "center-bottom" | "left-bottom" | "right-bottom" | "top-left";
+  /** Map window shape. Circle windows share the exact square slot (x, y, size). */
+  shape?: "square" | "circle";
+  /** Landscape only: which side the text column sits on. */
+  textSide?: "left" | "right";
+  /**
+   * Poster style circle. x, y and size describe the round map itself; the compass
+   * ring, ticks and letters live in the larger overlay slot around it, and the
+   * name block is laid out inside `textBox`.
+   */
+  posterStyle?: boolean;
+  overlayX?: number;
+  overlayY?: number;
+  overlaySize?: number;
+  textBox?: { x: number; y: number; w: number; h: number };
+}
+
+/** Map diameter as a share of the compass slot (ticks and letters use the rest). */
+export const CIRCLE_POSTER_MAP_FRACTION = 0.82;
+/** Share of the poster height used by the compass block in portrait (the rest is text). */
+export const CIRCLE_POSTER_MAP_BLOCK = 0.7;
+
+/**
+ * Poster style circle layout. Portrait: compass block on the top 70 percent, name block
+ * in the lower 30 percent. Landscape: compass block on one side, name block on the other.
+ */
+export function getCirclePosterGeometry(
+  posterWidth: number,
+  posterHeight: number,
+  widthCm: number,
+  heightCm: number,
+  mapInsetCm: number,
+  gapCm: number,
+  textSide: "left" | "right" = "right",
+  requestedAlign?: "left" | "center" | "right",
+): SquareCaptionGeometry {
+  const pxPerCmX = posterWidth / Math.max(1, widthCm);
+  const pxPerCmY = posterHeight / Math.max(1, heightCm);
+  const isLandscape = widthCm > heightCm;
+  const minDim = Math.min(posterWidth, posterHeight);
+  const frameMarginX = Math.max(0, mapInsetCm + (gapCm || 0)) * pxPerCmX;
+  const frameMarginY = Math.max(0, mapInsetCm + (gapCm || 0)) * pxPerCmY;
+  const safeInsetX = Math.max(0.035 * minDim, frameMarginX);
+  const safeInsetY = Math.max(0.035 * minDim, frameMarginY);
+
+  let slot: number;
+  let slotX: number;
+  let slotY: number;
+  let textBox: { x: number; y: number; w: number; h: number };
+  let align: "left" | "center" | "right";
+
+  if (!isLandscape) {
+    const blockBottom = CIRCLE_POSTER_MAP_BLOCK * posterHeight;
+    slot = Math.min(posterWidth - safeInsetX * 2, blockBottom - safeInsetY * 0.4);
+    slotX = (posterWidth - slot) / 2;
+    slotY = blockBottom - slot - safeInsetY * 0.2;
+    const top = blockBottom;
+    const creditBand = 0.04 * posterHeight;
+    textBox = {
+      x: safeInsetX,
+      y: top,
+      w: posterWidth - safeInsetX * 2,
+      h: Math.max(1, posterHeight - safeInsetY - creditBand - top),
+    };
+    align = requestedAlign ?? "center";
+  } else {
+    slot = posterHeight - safeInsetY * 2;
+    slotY = safeInsetY;
+    const gap = 0.04 * posterWidth;
+    const textW = Math.max(1, posterWidth - safeInsetX * 2 - slot - gap);
+    if (textSide === "left") {
+      slotX = posterWidth - safeInsetX - slot;
+      textBox = { x: safeInsetX, y: safeInsetY, w: textW, h: posterHeight - safeInsetY * 2 - 0.04 * posterHeight };
+    } else {
+      slotX = safeInsetX;
+      textBox = { x: slotX + slot + gap, y: safeInsetY, w: textW, h: posterHeight - safeInsetY * 2 - 0.04 * posterHeight };
+    }
+    align = requestedAlign ?? "center";
+  }
+
+  const mapSize = slot * CIRCLE_POSTER_MAP_FRACTION;
+  const captionX = align === "left" ? textBox.x : align === "right" ? textBox.x + textBox.w : textBox.x + textBox.w / 2;
+  return {
+    posterWidth,
+    posterHeight,
+    x: slotX + (slot - mapSize) / 2,
+    y: slotY + (slot - mapSize) / 2,
+    size: mapSize,
+    safeInsetX,
+    safeInsetY,
+    captionX,
+    captionY: textBox.y,
+    captionWidth: textBox.w,
+    captionXStart: textBox.x,
+    captionAlign: align,
+    variant: "center-bottom",
+    shape: "circle",
+    textSide: isLandscape ? textSide : "right",
+    posterStyle: true,
+    overlayX: slotX,
+    overlayY: slotY,
+    overlaySize: slot,
+    textBox,
+  };
+}
+
+/**
+ * Circle layouts reuse the square geometry: the circle is inscribed in the same
+ * square slot. In landscape the text column can be mirrored to the left side.
+ */
+export function getCircleCaptionGeometry(
+  posterWidth: number,
+  posterHeight: number,
+  widthCm: number,
+  heightCm: number,
+  mapInsetCm: number,
+  gapCm: number,
+  textSide: "left" | "right" = "right",
+  requestedAlign?: "left" | "center" | "right",
+  posterStyle = false,
+): SquareCaptionGeometry {
+  if (posterStyle) {
+    return getCirclePosterGeometry(
+      posterWidth, posterHeight, widthCm, heightCm, mapInsetCm, gapCm, textSide, requestedAlign,
+    );
+  }
+  const isLandscape = widthCm > heightCm;
+  const base = getSquareCaptionGeometry(
+    posterWidth, posterHeight, widthCm, heightCm, mapInsetCm, gapCm,
+    "center-bottom", requestedAlign,
+  );
+  if (!isLandscape || textSide === "right") {
+    return { ...base, shape: "circle", textSide: "right" };
+  }
+  const pxPerCmX = posterWidth / Math.max(1, widthCm);
+  const x = posterWidth - base.safeInsetX - base.size;
+  const captionXStart = base.safeInsetX;
+  const captionWidth = Math.max(1, x - 1.2 * pxPerCmX - captionXStart);
+  const captionX = base.captionAlign === "left"
+    ? captionXStart
+    : base.captionAlign === "right"
+      ? captionXStart + captionWidth
+      : captionXStart + captionWidth / 2;
+  return {
+    ...base,
+    x,
+    captionX,
+    captionXStart,
+    captionWidth,
+    shape: "circle",
+    textSide: "left",
+  };
 }
 
 /**

@@ -99,6 +99,50 @@
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='8' y='8' width='24' height='24' rx='2' fill='#4B91B7'/><path d='M38 17h16M38 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
         },
         {
+          "id": "print_maparte_circle_caption_a4_portrait",
+          "name": "Circle Map · A4 Portrait",
+          "description": "A round map on top with place details underneath on A4 portrait paper.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect x='2' y='2' width='36' height='52' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='20' cy='22' r='13' fill='#4B91B7'/><path d='M11 43h18M14 48h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_circle_caption_a4_landscape",
+          "name": "Circle Map · A4 Landscape",
+          "description": "A round map on one side with place details on the other (left or right) on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='20' cy='20' r='12' fill='#4B91B7'/><path d='M38 17h16M38 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_circle_poster_a4_portrait",
+          "name": "Compass Poster · A4 Portrait",
+          "description": "A round map with a compass ring and arrow on the top 70%, place name with underline below, on A4 portrait paper.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect x='2' y='2' width='36' height='52' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='20' cy='23' r='12' fill='#4B91B7'/><circle cx='20' cy='23' r='16' fill='none' stroke='#9CC3DA' stroke-width='1' stroke-dasharray='1 2'/><path d='M12 44h16M15 49h10' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_circle_poster_a4_landscape",
+          "name": "Compass Poster · A4 Landscape",
+          "description": "A round map with a compass ring and arrow on one side, place name with underline on the other (left or right), on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='20' cy='20' r='11' fill='#4B91B7'/><circle cx='20' cy='20' r='14.5' fill='none' stroke='#9CC3DA' stroke-width='1' stroke-dasharray='1 2'/><path d='M38 17h16M38 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
           "id": "print_a5_portrait",
           "name": "A5 Portrait",
           "description": "ISO A5 portrait format.",

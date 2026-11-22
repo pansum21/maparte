@@ -1246,6 +1246,23 @@
   );
 }
 
+/* Circle map: same square slot, round window. */
+.poster-frame.is-maparte-circle .poster-map-window {
+  border-radius: 50%;
+}
+
+/* Minimap ring, route and navigation arrow share the map window. */
+.poster-minimap-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
 .poster-frame.is-maparte-square-caption .poster-text-overlay {
   z-index: 3;
 }
@@ -1558,4 +1575,26 @@
 }
 .poster-frame.frame-layout-preview--full-map .poster-text-overlay {
   display: none;
+}
+
+/* Poster style circle: compass slot (ring, ticks, letters) and name block sit on the poster grid. */
+.poster-circle-minimap-slot {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.poster-circle-minimap-slot .poster-minimap-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.poster-circle-caption {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
 }

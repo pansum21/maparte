@@ -1,3 +1,4 @@
+import type { MinimapOverlayOptions } from "./minimapOverlay";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import type {
   MarkerIconDefinition,
@@ -62,6 +63,8 @@ export interface ExportOptions {
   markerSizeScale?: number;
   routes?: Route[];
   neatlineSvg?: string;
+  /** Circle ring, route line and navigation arrow drawn over the map window. */
+  minimapOverlay?: MinimapOverlayOptions;
 }
 
 export interface Typography {

@@ -7,6 +7,9 @@ import { formatCoordinates } from "@/shared/geo/posterBounds";
 import { withAlpha } from "@/shared/utils/color";
 import { APP_CREDIT_URL } from "@/core/config";
 import { formatCityLabel, getPosterFontScale } from "@/features/poster/domain/textLayout";
+import { buildMinimapOverlaySvg, hasMinimapContent } from "../../domain/minimapOverlay";
+import { layoutCirclePosterCaption } from "../../domain/circlePosterCaption";
+import { posterFontStack } from "../../domain/posterFontStack";
 import type { ExportOptions, CanvasSize } from "../../domain/types";
 
 async function drawNeatlineSvg(
@@ -16,6 +19,7 @@ async function drawNeatlineSvg(
   svgMarkup?: string,
   insetXRatio = 0.025,
   insetYRatio = 0.025,
+  rect?: { x: number; y: number; w: number; h: number },
 ) {
   if (!svgMarkup) return;
   const objectUrl = URL.createObjectURL(
@@ -28,10 +32,10 @@ async function drawNeatlineSvg(
       image.onload = () => resolve();
       image.onerror = () => reject(new Error("Could not render the selected border."));
     });
-    const x = width * insetXRatio;
-    const y = height * insetYRatio;
-    const w = width * (1 - insetXRatio * 2);
-    const h = height * (1 - insetYRatio * 2);
+    const x = rect ? rect.x : width * insetXRatio;
+    const y = rect ? rect.y : height * insetYRatio;
+    const w = rect ? rect.w : width * (1 - insetXRatio * 2);
+    const h = rect ? rect.h : height * (1 - insetYRatio * 2);
     ctx.drawImage(image, x, y, w, h);
   } finally {
     URL.revokeObjectURL(objectUrl);
@@ -91,6 +95,7 @@ export async function compositeExport(
     neatlineSvg,
     squareCaptionGeometry,
     frameLayoutGeometry,
+    minimapOverlay,
   } = options;
 
   const width = mapCanvas.width;
@@ -220,7 +225,8 @@ export async function compositeExport(
 
   if (squareCaptionGeometry) {
     const { posterWidth, posterHeight, x, y, size, safeInsetX, safeInsetY } = squareCaptionGeometry;
-    ctx.fillStyle = showWhiteMat ? "#fff" : theme.ui.bg;
+    const isPosterStyle = Boolean(squareCaptionGeometry.posterStyle);
+    ctx.fillStyle = showWhiteMat && !isPosterStyle ? "#fff" : theme.ui.bg;
     ctx.fillRect(0, 0, posterWidth, posterHeight);
 
     // The export map is captured square, so all map based overlays share its
@@ -228,6 +234,12 @@ export async function compositeExport(
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(size / width, size / height);
+    if (squareCaptionGeometry.shape === "circle") {
+      ctx.beginPath();
+      ctx.ellipse(width / 2, height / 2, width / 2, height / 2, 0, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+    }
     ctx.drawImage(mapCanvas, 0, 0, width, height);
     if (overlayTop || overlayBottom) {
       applyFades(ctx, width, height, theme.ui.bg, overlayTop, overlayBottom);
@@ -243,6 +255,24 @@ export async function compositeExport(
       await drawMarkersOnCanvas(ctx, markers, markerIcons, markerProjection, markerScaleX, markerScaleY, markerSizeScale);
     }
     ctx.restore();
+
+    if (minimapOverlay && hasMinimapContent(minimapOverlay)) {
+      const slotSize = isPosterStyle ? (squareCaptionGeometry.overlaySize ?? size) : size;
+      await drawNeatlineSvg(
+        ctx,
+        1,
+        1,
+        buildMinimapOverlaySvg(minimapOverlay, Math.min(2400, Math.max(600, Math.round(slotSize)))),
+        0,
+        0,
+        {
+          x: isPosterStyle ? (squareCaptionGeometry.overlayX ?? x) : x,
+          y: isPosterStyle ? (squareCaptionGeometry.overlayY ?? y) : y,
+          w: slotSize,
+          h: slotSize,
+        },
+      );
+    }
 
     const textColor = theme.ui.text || "#171717";
     const headingFamily = headingFontFamily?.trim() || fontFamily;
@@ -266,12 +296,67 @@ export async function compositeExport(
     ctx.fillStyle = textColor;
     ctx.textAlign = squareCaptionGeometry.captionAlign;
     ctx.textBaseline = "middle";
-    if (showPosterText) {
+    if (isPosterStyle) {
+      const measureCtx = ctx;
+      const layout = layoutCirclePosterCaption(
+        {
+          geometry: squareCaptionGeometry,
+          city: displayCity || "",
+          country: displayCountry || "",
+          coords: formatCoordinates(center.lat, center.lon),
+          customDate: customDate?.trim() || undefined,
+          showText: Boolean(showPosterText),
+          includeCredits: Boolean(includeCredits),
+          creditUrl: APP_CREDIT_URL,
+          headingFamily: posterFontStack(headingFamily),
+          midlineFamily: posterFontStack(midlineFamily),
+          bottomFamily: posterFontStack(bottomLineFamily, true),
+          creditFamily: posterFontStack(fontFamily, true),
+          headingScale,
+          midlineScale,
+          bottomScale: bottomLineScale,
+        },
+        (font, text) => {
+          measureCtx.font = font;
+          return measureCtx.measureText(text).width;
+        },
+      );
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      for (const rule of layout.rules) {
+        ctx.globalAlpha = rule.opacity;
+        ctx.fillRect(rule.x, rule.y, rule.w, rule.h);
+      }
+      for (const run of layout.runs) {
+        ctx.globalAlpha = run.opacity;
+        ctx.font = `${run.weight} ${run.size}px ${run.family}`;
+        if (run.xs.length === 1 && run.chars.length > 1) {
+          ctx.fillText(run.chars, run.xs[0], run.baselineY);
+        } else {
+          Array.from(run.chars).forEach((ch, i) => ctx.fillText(ch, run.xs[i], run.baselineY));
+        }
+      }
+      for (const credit of layout.credits) {
+        ctx.globalAlpha = credit.opacity;
+        ctx.font = `300 ${credit.size}px ${credit.family}`;
+        ctx.textAlign = credit.anchor === "end" ? "right" : "left";
+        ctx.fillText(credit.text, credit.x, credit.y);
+      }
+      ctx.globalAlpha = 1;
+      ctx.textAlign = squareCaptionGeometry.captionAlign;
+    }
+    if (showPosterText && !isPosterStyle) {
       ctx.font = `600 ${Math.max(20, 48 * base * headingScale)}px ${headingFont}`;
       ctx.fillText(formatCityLabel(displayCity), squareCaptionGeometry.captionX, captionY, squareCaptionGeometry.captionWidth);
       if (displayCity && displayCountry) {
         ctx.globalAlpha = 0.55;
-        const dividerWidth = Math.min(posterWidth * 0.14, squareCaptionGeometry.captionWidth * 0.2);
+        // The rule matches the printed width of the city name, so it is short for
+        // short names and never wider than the name itself.
+        const nameInk = Math.min(
+          ctx.measureText(formatCityLabel(displayCity)).width,
+          squareCaptionGeometry.captionWidth,
+        );
+        const dividerWidth = Math.max(posterWidth * 0.02, nameInk);
         const dividerX = squareCaptionGeometry.captionAlign === "left"
           ? squareCaptionGeometry.captionX
           : squareCaptionGeometry.captionAlign === "right"
@@ -299,6 +384,7 @@ export async function compositeExport(
 
     const creditY = posterHeight - safeInsetY;
     const creditSize = Math.max(9, 13 * base);
+    if (!isPosterStyle) {
     ctx.font = `300 ${creditSize}px ${creditFont}`;
     ctx.textBaseline = "bottom";
     ctx.globalAlpha = 0.68;
@@ -307,6 +393,7 @@ export async function compositeExport(
     if (includeCredits) {
       ctx.textAlign = "left";
       ctx.fillText(APP_CREDIT_URL, safeInsetX, creditY, posterWidth * 0.42);
+    }
     }
     ctx.globalAlpha = 1;
     await drawNeatlineSvg(ctx, posterWidth, posterHeight, neatlineSvg, matInsetXRatio, matInsetYRatio);
