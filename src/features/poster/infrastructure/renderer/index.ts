@@ -8,6 +8,8 @@ import { withAlpha } from "@/shared/utils/color";
 import { APP_CREDIT_URL } from "@/core/config";
 import { formatCityLabel, getPosterFontScale } from "@/features/poster/domain/textLayout";
 import { buildMinimapOverlaySvg, hasMinimapContent } from "../../domain/minimapOverlay";
+import { layoutCirclePosterCaption } from "../../domain/circlePosterCaption";
+import { posterFontStack } from "../../domain/posterFontStack";
 import type { ExportOptions, CanvasSize } from "../../domain/types";
 
 async function drawNeatlineSvg(
@@ -223,7 +225,8 @@ export async function compositeExport(
 
   if (squareCaptionGeometry) {
     const { posterWidth, posterHeight, x, y, size, safeInsetX, safeInsetY } = squareCaptionGeometry;
-    ctx.fillStyle = showWhiteMat ? "#fff" : theme.ui.bg;
+    const isPosterStyle = Boolean(squareCaptionGeometry.posterStyle);
+    ctx.fillStyle = showWhiteMat && !isPosterStyle ? "#fff" : theme.ui.bg;
     ctx.fillRect(0, 0, posterWidth, posterHeight);
 
     // The export map is captured square, so all map based overlays share its
@@ -254,14 +257,20 @@ export async function compositeExport(
     ctx.restore();
 
     if (minimapOverlay && hasMinimapContent(minimapOverlay)) {
+      const slotSize = isPosterStyle ? (squareCaptionGeometry.overlaySize ?? size) : size;
       await drawNeatlineSvg(
         ctx,
         1,
         1,
-        buildMinimapOverlaySvg(minimapOverlay, Math.min(2400, Math.max(600, Math.round(size)))),
+        buildMinimapOverlaySvg(minimapOverlay, Math.min(2400, Math.max(600, Math.round(slotSize)))),
         0,
         0,
-        { x, y, w: size, h: size },
+        {
+          x: isPosterStyle ? (squareCaptionGeometry.overlayX ?? x) : x,
+          y: isPosterStyle ? (squareCaptionGeometry.overlayY ?? y) : y,
+          w: slotSize,
+          h: slotSize,
+        },
       );
     }
 
@@ -287,7 +296,56 @@ export async function compositeExport(
     ctx.fillStyle = textColor;
     ctx.textAlign = squareCaptionGeometry.captionAlign;
     ctx.textBaseline = "middle";
-    if (showPosterText) {
+    if (isPosterStyle) {
+      const measureCtx = ctx;
+      const layout = layoutCirclePosterCaption(
+        {
+          geometry: squareCaptionGeometry,
+          city: displayCity || "",
+          country: displayCountry || "",
+          coords: formatCoordinates(center.lat, center.lon),
+          customDate: customDate?.trim() || undefined,
+          showText: Boolean(showPosterText),
+          includeCredits: Boolean(includeCredits),
+          creditUrl: APP_CREDIT_URL,
+          headingFamily: posterFontStack(headingFamily),
+          midlineFamily: posterFontStack(midlineFamily),
+          bottomFamily: posterFontStack(bottomLineFamily, true),
+          creditFamily: posterFontStack(fontFamily, true),
+          headingScale,
+          midlineScale,
+          bottomScale: bottomLineScale,
+        },
+        (font, text) => {
+          measureCtx.font = font;
+          return measureCtx.measureText(text).width;
+        },
+      );
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      for (const rule of layout.rules) {
+        ctx.globalAlpha = rule.opacity;
+        ctx.fillRect(rule.x, rule.y, rule.w, rule.h);
+      }
+      for (const run of layout.runs) {
+        ctx.globalAlpha = run.opacity;
+        ctx.font = `${run.weight} ${run.size}px ${run.family}`;
+        if (run.xs.length === 1 && run.chars.length > 1) {
+          ctx.fillText(run.chars, run.xs[0], run.baselineY);
+        } else {
+          Array.from(run.chars).forEach((ch, i) => ctx.fillText(ch, run.xs[i], run.baselineY));
+        }
+      }
+      for (const credit of layout.credits) {
+        ctx.globalAlpha = credit.opacity;
+        ctx.font = `300 ${credit.size}px ${credit.family}`;
+        ctx.textAlign = credit.anchor === "end" ? "right" : "left";
+        ctx.fillText(credit.text, credit.x, credit.y);
+      }
+      ctx.globalAlpha = 1;
+      ctx.textAlign = squareCaptionGeometry.captionAlign;
+    }
+    if (showPosterText && !isPosterStyle) {
       ctx.font = `600 ${Math.max(20, 48 * base * headingScale)}px ${headingFont}`;
       ctx.fillText(formatCityLabel(displayCity), squareCaptionGeometry.captionX, captionY, squareCaptionGeometry.captionWidth);
       if (displayCity && displayCountry) {
@@ -326,6 +384,7 @@ export async function compositeExport(
 
     const creditY = posterHeight - safeInsetY;
     const creditSize = Math.max(9, 13 * base);
+    if (!isPosterStyle) {
     ctx.font = `300 ${creditSize}px ${creditFont}`;
     ctx.textBaseline = "bottom";
     ctx.globalAlpha = 0.68;
@@ -334,6 +393,7 @@ export async function compositeExport(
     if (includeCredits) {
       ctx.textAlign = "left";
       ctx.fillText(APP_CREDIT_URL, safeInsetX, creditY, posterWidth * 0.42);
+    }
     }
     ctx.globalAlpha = 1;
     await drawNeatlineSvg(ctx, posterWidth, posterHeight, neatlineSvg, matInsetXRatio, matInsetYRatio);

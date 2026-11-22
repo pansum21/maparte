@@ -20,7 +20,7 @@ import {
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { readNeatlineSelection, getPosterBorderMetrics } from "@/features/layout/ui/NeatlinePicker";
-import { getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteSquareCaptionLayout } from "@/features/layout/infrastructure/layoutRepository";
+import { getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteCirclePosterLayout, isMaparteSquareCaptionLayout } from "@/features/layout/infrastructure/layoutRepository";
 import { getCircleCaptionGeometry, getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { DEFAULT_NAV_MARKER_COLOR, type MinimapOverlayOptions } from "@/features/poster/domain/minimapOverlay";
 import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
@@ -289,6 +289,7 @@ export function useExport() {
               borderMetrics.gapCm,
               form.circleTextSide === "left" ? "left" : "right",
               form.textAlign,
+              isMaparteCirclePosterLayout(form.layout),
             )
           : isSquareCaption
             ? getSquareCaptionGeometry(
@@ -313,6 +314,7 @@ export function useExport() {
                 markerColor: form.navMarkerColor ?? DEFAULT_NAV_MARKER_COLOR,
                 ringBackground: effectiveTheme.ui.bg,
                 ringForeground: form.posterTextColor || effectiveTheme.ui.text,
+                ringStyle: isCircleCaption && isMaparteCirclePosterLayout(form.layout) ? "poster" : "band",
               }
             : undefined;
         const frameLayoutGeometry = form.frameLayout && form.frameLayout !== "none"
