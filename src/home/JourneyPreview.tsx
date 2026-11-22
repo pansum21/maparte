@@ -11,8 +11,14 @@ import { DoodleCrewFooter } from "@/components/ui/doodle-crew-footer";
 import PerspectiveTunnelHero from "@/home/PerspectiveTunnelHero";
 import "@fontsource/dm-serif-display/400.css";
 import "@fontsource/dm-serif-display/400-italic.css";
+import "@fontsource/fraunces/400.css";
+import "@fontsource/fraunces/400-italic.css";
+import "@fontsource/fraunces/600-italic.css";
+import "@fontsource/bricolage-grotesque/700.css";
+import "@fontsource/bricolage-grotesque/800.css";
 import "./journeyPreview.css";
 import "@/components/ui/doodle-crew-footer.css";
+import "./journeyPolish.css";
 
 setWorkerUrl(workerUrl);
 
@@ -392,6 +398,7 @@ export default function JourneyPreview() {
         }
         lastPageProgress = pageProgress;
         progressRef.current = mapProgress;
+        page.style.setProperty("--page-progress", String(pageProgress));
       });
     };
     update();
@@ -406,6 +413,7 @@ export default function JourneyPreview() {
       <header className="journey-header">
         <a className="journey-wordmark" href="#start" aria-label="MapArte home"><img src="/assets/logo.svg" alt="" /><span>MAPARTE</span></a>
         <div className="journey-header__right"><span>MAPS FOR THE PLACES THAT STAY</span><a className="journey-glass" href="/?editor=true">Make your map</a></div>
+        <div className="journey-progressbar" aria-hidden="true"><i /></div>
       </header>
       <PerspectiveTunnelHero />
       <main id="start" ref={storyRef} className="journey-track">

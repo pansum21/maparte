@@ -67,10 +67,10 @@ const footerGroups = [
 ];
 
 const crew: { id: CharacterKind; left: string; bottom: string; width: string; delay: string; color: string; note: string }[] = [
-	{ id: "yeti", left: "1%", bottom: "6%", width: "10%", delay: "-.8s", color: "#174b70", note: "Your place is out there." },
-	{ id: "kid", left: "26%", bottom: "16%", width: "7%", delay: "-.2s", color: "#c25e48", note: "Pick a city. Make it yours." },
-	{ id: "ghost", left: "56%", bottom: "20%", width: "7%", delay: "-1.4s", color: "#297d83", note: "A little map magic." },
-	{ id: "cat", left: "84%", bottom: "7%", width: "10%", delay: "-.5s", color: "#71458f", note: "Every good story has a somewhere." },
+	{ id: "yeti", left: "1%", bottom: "6%", width: "10%", delay: "-.8s", color: "#8fc6ee", note: "Your place is out there." },
+	{ id: "kid", left: "26%", bottom: "16%", width: "7%", delay: "-.2s", color: "#ff8f78", note: "Pick a city. Make it yours." },
+	{ id: "ghost", left: "56%", bottom: "20%", width: "7%", delay: "-1.4s", color: "#5fd3cf", note: "A little map magic." },
+	{ id: "cat", left: "84%", bottom: "7%", width: "10%", delay: "-.5s", color: "#c7a0ee", note: "Every good story has a somewhere." },
 ];
 
 export function DoodleCrewFooter() {

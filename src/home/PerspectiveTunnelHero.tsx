@@ -2,15 +2,15 @@ import { useEffect, useRef } from "react";
 import "./perspectiveTunnelHero.css";
 
 const slides = [
-	{ title: "A place that stays" },
-	{ title: "Your city, your view" },
-	{ title: "Made around a memory" },
-	{ title: "From earth to street" },
-	{ title: "A map with meaning" },
-	{ title: "One city, your style" },
-	{ title: "Keep your coordinates" },
-	{ title: "A story in every street" },
-	{ title: "Your place on the map" },
+	{ title: "Where we met", src: "where-we-met", offset: 0.5 },
+	{ title: "Paris, terracotta", src: "paris-terracotta", offset: 0.22 },
+	{ title: "She said yes", src: "she-said-yes", offset: 0.38 },
+	{ title: "Hometown roots", src: "hometown-roots", offset: 0.12 },
+	{ title: "Wedding day", src: "wedding-day", offset: 0.64 },
+	{ title: "New York, terracotta", src: "new-york-terracotta", offset: 0.3 },
+	{ title: "Travel memories", src: "travel-memories", offset: 0.08 },
+	{ title: "First home", src: "first-home", offset: 0.56 },
+	{ title: "Paris, sandstone", src: "paris-sandstone", offset: 0.44 },
 ];
 
 const cards = slides.map((item, index) => {
@@ -18,9 +18,9 @@ const cards = slides.map((item, index) => {
 	return {
 		...item,
 		index,
-		x: Math.cos(angle) * (0.28 + (index % 3) * 0.08),
-		y: Math.sin(angle) * (0.26 + (index % 2) * 0.09),
-		rotation: (index % 2 === 0 ? 1 : -1) * (3 + (index % 5) * 2),
+		x: Math.cos(angle) * (0.3 + (index % 3) * 0.08),
+		y: Math.sin(angle) * (0.24 + (index % 2) * 0.08),
+		rotation: (index % 2 === 0 ? 1 : -1) * (2 + (index % 5) * 1.6),
 	};
 });
 
@@ -56,19 +56,21 @@ export default function PerspectiveTunnelHero() {
 				cardElements.forEach((element, index) => {
 					const card = cards[index];
 					if (reduceMotion.matches) return;
-					const stagger = 0.55;
-					const start = (card.index / cards.length) * (1 - stagger);
-					const local = smooth(clamp((progress - start) / stagger));
+					// Every card starts part-way down the tunnel so posters are already visible
+					// when the page loads, then all of them fly past as the visitor scrolls.
+					const local = smooth(clamp(card.offset + (1 - card.offset) * progress));
 					const farZ = window.innerWidth < 768 ? -1050 : -1550;
 					const nearZ = window.innerWidth < 768 ? 260 : 390;
 					const z = farZ + (nearZ - farZ) * local;
-					const fadeIn = clamp(local / 0.18);
+					const fadeIn = clamp(local / 0.12);
 					const fadeOut = clamp((1 - local) / 0.12);
 					const opacity = Math.min(fadeIn, fadeOut);
 					const pan = window.innerWidth < 768 ? 16 : 34;
 					const heroOffset = window.innerWidth < 768 ? 0 : section.clientWidth * 0.23;
 					const offsetX = heroOffset + card.x * section.clientWidth * (window.innerWidth < 768 ? 0.62 : 0.55) - pointerX * pan;
-					const offsetY = card.y * window.innerHeight - pointerY * pan;
+					const mobileView = window.innerWidth < 768;
+					// On phones the copy sits in the upper half, so the posters live in the lower half instead of behind the text.
+					const offsetY = (mobileView ? window.innerHeight * (0.32 + (1 - progress) * 0.05) + card.y * window.innerHeight * 0.42 : card.y * window.innerHeight) - pointerY * pan;
 					element.style.transform = `translate3d(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px), ${z}px) rotateZ(${card.rotation}deg)`;
 					element.style.opacity = String(opacity);
 				});
@@ -122,9 +124,8 @@ export default function PerspectiveTunnelHero() {
 				<div className="maparte-tunnel__grid" aria-hidden="true" />
 				<div className="maparte-tunnel__cards" aria-hidden="true">
 					{cards.map((card) => (
-						<figure className="maparte-tunnel__card" key={card.title}>
-							<div className="maparte-tunnel__art" aria-hidden="true"><i /><i /><i /><i /></div>
-							<figcaption>{card.title}</figcaption>
+						<figure className="maparte-tunnel__card" key={card.src}>
+							<img className="maparte-tunnel__poster" src={`/assets/landing-posters/${card.src}.webp`} alt="" width={520} height={734} decoding="async" draggable={false} />
 						</figure>
 					))}
 				</div>
