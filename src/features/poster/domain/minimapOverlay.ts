@@ -171,7 +171,7 @@ function buildRoute(): string {
 
 function buildMarker(color: string, size: number, heading: number, centre: Pt = MINIMAP_ROUTE_POINTS.end): string {
   const [cx, cy] = centre;
-  const k = 1.15 * Math.max(0.5, Math.min(2, size));
+  const k = 0.58 * Math.max(0.5, Math.min(2, size));
   const base = (list: Pt[]): Pt[] =>
     list.map(([x, y]) => rotate([cx + x * k, cy + y * k], heading, cx, cy));
 
@@ -187,7 +187,7 @@ function buildMarker(color: string, size: number, heading: number, centre: Pt = 
   const dark = mixHex(color, 0, 0.55);
   const mid = mixHex(color, 0, 0.12);
   const light = mixHex(color, 255, 0.32);
-  const depth = Math.round(14 * k);
+  const depth = Math.max(3, Math.round(10 * k));
 
   // Solid extrusion: stacked copies of the outline pushed straight down on the poster.
   const extrusion: string[] = [];
@@ -256,9 +256,9 @@ function buildPosterRoute(): string {
   const { start, end } = posterRoutePoints();
   const d = `M${f(start[0])} ${f(start[1])} L${f(end[0])} ${f(end[1])}`;
   return (
-    `<path d="${d}" fill="none" stroke="#FFFFFF" stroke-opacity="0.9" stroke-width="20" stroke-linecap="round"/>` +
-    `<path d="${d}" fill="none" stroke="${MINIMAP_ROUTE_COLOR}" stroke-width="12" stroke-linecap="round"/>` +
-    `<circle cx="${f(end[0])}" cy="${f(end[1])}" r="17" fill="${MINIMAP_ROUTE_COLOR}" stroke="#FFFFFF" stroke-width="5"/>`
+    `<path d="${d}" fill="none" stroke="#FFFFFF" stroke-opacity="0.85" stroke-width="7" stroke-linecap="round"/>` +
+    `<path d="${d}" fill="none" stroke="${MINIMAP_ROUTE_COLOR}" stroke-width="3.6" stroke-linecap="round"/>` +
+    `<circle cx="${f(end[0])}" cy="${f(end[1])}" r="6.5" fill="${MINIMAP_ROUTE_COLOR}" stroke="#FFFFFF" stroke-width="2"/>`
   );
 }
 

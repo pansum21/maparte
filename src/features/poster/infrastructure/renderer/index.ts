@@ -190,8 +190,6 @@ export async function compositeExport(
     pageCtx.textAlign = "left";
     pageCtx.fillStyle = g.style === "dark" ? "#fff" : textColor;
     pageCtx.fillText(APP_CREDIT_URL, g.safeInsetX, page.height - g.safeInsetY, page.width * .42);
-    pageCtx.textAlign = "right";
-    pageCtx.fillText("© OpenStreetMap contributors", page.width - g.safeInsetX, page.height - g.safeInsetY, page.width * .42);
     pageCtx.globalAlpha = 1;
     await drawNeatlineSvg(pageCtx, page.width, page.height, neatlineSvg, matInsetXRatio, matInsetYRatio);
     const densityX = widthInches > 0 ? page.width / widthInches : 0;
@@ -388,8 +386,6 @@ export async function compositeExport(
     ctx.font = `300 ${creditSize}px ${creditFont}`;
     ctx.textBaseline = "bottom";
     ctx.globalAlpha = 0.68;
-    ctx.textAlign = "right";
-    ctx.fillText("© OpenStreetMap contributors", posterWidth - safeInsetX, creditY, posterWidth * 0.42);
     if (includeCredits) {
       ctx.textAlign = "left";
       ctx.fillText(APP_CREDIT_URL, safeInsetX, creditY, posterWidth * 0.42);

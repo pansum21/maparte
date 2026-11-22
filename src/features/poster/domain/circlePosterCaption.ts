@@ -157,15 +157,6 @@ export function layoutCirclePosterCaption(
 
   const creditSize = Math.max(8, unit * 0.0165);
   const creditY = H - g.safeInsetY;
-  credits.push({
-    text: "© OpenStreetMap contributors",
-    x: W - g.safeInsetX,
-    y: creditY,
-    size: creditSize,
-    anchor: "end",
-    family: input.creditFamily,
-    opacity: 0.68,
-  });
   if (input.includeCredits) {
     credits.push({
       text: input.creditUrl,

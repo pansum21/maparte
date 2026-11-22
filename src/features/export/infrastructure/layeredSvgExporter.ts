@@ -639,9 +639,8 @@ export async function createLayeredSvgBlobFromMap({
     }
 
     let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale * fontScale;
-    const osmText = "© OpenStreetMap contributors";
     const appText = APP_CREDIT_URL;
-    const approxOsmWidth = osmText.length * attributionFontSize * 0.6;
+    const approxOsmWidth = 0;
     const approxAppWidth = includeCredits ? appText.length * attributionFontSize * 0.6 : 0;
     const edgeMargin = exportWidth * TEXT_EDGE_MARGIN_RATIO;
     const availableAttrWidth = exportWidth - (edgeMargin * 2) - (includeCredits ? exportWidth * 0.04 : 0);
@@ -658,11 +657,7 @@ export async function createLayeredSvgBlobFromMap({
 
     const credX = borderInnerX + pointTwoMmPx;
     const attrY = exportHeight - (borderInnerY + pointTwoMmPx);
-    const osmX = exportWidth - (borderInnerX + pointTwoMmPx);
 
-    if (!squareCaptionGeometry) vectorTypographySvg += `
-  <text x="${osmX}" y="${attrY}" text-anchor="end" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">© OpenStreetMap contributors</text>
-`;
 
     if (includeCredits && !squareCaptionGeometry) {
       // Dedicated MapArte branding font size: at least 18pt / visible on sheet
@@ -814,7 +809,6 @@ export async function createLayeredSvgBlobFromMap({
 
           return `<g id="square-caption-typography">${captionSvg}</g>
 <g id="square-caption-credits" font-family="${bodyFontFamily}" font-size="${Math.max(9, 13 * Math.min(pageWidth, pageHeight) / 1000)}" opacity="0.68">
-<text x="${pageWidth - g.safeInsetX}" y="${creditY}" text-anchor="end" fill="${attributionColor}">© OpenStreetMap contributors</text>
 ${includeCredits ? `<text x="${g.safeInsetX}" y="${creditY}" text-anchor="start" fill="${attributionColor}" font-size="${Math.max(18, Math.round(24 * Math.min(pageWidth, pageHeight) / 1000 * fontScale))}" font-weight="600" letter-spacing="0.1em">${escapeXml(APP_CREDIT_URL)}</text>` : ""}
 </g>`;
         })()
