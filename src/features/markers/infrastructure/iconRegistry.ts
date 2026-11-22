@@ -76,9 +76,23 @@ function createImageIcon(id: string, label: string, sourcePath: string) {
   } satisfies MarkerIconDefinition;
 }
 
+const Gta6NavIcon: IconType = (props) =>
+  createElement(
+    "svg",
+    {
+      viewBox: "0 0 24 24",
+      fill: "currentColor",
+      ...props,
+    },
+    createElement("path", {
+      d: "M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z",
+    }),
+  );
+
 export const predefinedMarkerIcons: MarkerIconDefinition[] = [
   createImageIcon("app-marker", "MAPARTE", "/assets/marker-ma.png"),
   createImageIcon("app-marker-a", "ART", "/assets/marker-a-full.png"),
+  createSvgIcon("gta-6", "GTA 6", Gta6NavIcon),
   createSvgIcon("pin", "Pin", FaLocationDot),
   createSvgIcon("heart", "Heart", FaHeart),
   createSvgIcon("ring", "Ring", FaRing),

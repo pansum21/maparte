@@ -353,7 +353,7 @@
         },
         {
           "id": "print_maparte_circle_poster_a4_portrait",
-          "name": "Compass Poster · A4 Portrait",
+          "name": "GTA 6 Layout · A4 Portrait",
           "description": "A round map with a compass ring and arrow on the top 70%, place name with underline below, on A4 portrait paper.",
           "width": 21,
           "height": 29.7,
@@ -408,7 +408,7 @@
         },
         {
           "id": "print_maparte_circle_poster_a4_landscape",
-          "name": "Compass Poster · A4 Landscape",
+          "name": "GTA 6 Layout · A4 Landscape",
           "description": "A round map with a compass ring and arrow on one side, place name with underline on the other (left or right), on A4 landscape paper.",
           "width": 29.7,
           "height": 21,
