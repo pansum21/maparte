@@ -27,7 +27,19 @@ export interface MinimapOverlayOptions {
   ringBackground: string;
   /** Ticks, letters and rim colour (usually the poster text colour). */
   ringForeground: string;
+  /**
+   * band: ring drawn inside the map window (original circle layout).
+   * poster: the grid is the whole compass slot around the map; the map circle is
+   * POSTER_MAP_RADIUS wide and ticks and letters sit outside it.
+   */
+  ringStyle?: "band" | "poster";
 }
+
+/** Poster style: map circle radius on the 1000 grid (matches CIRCLE_POSTER_MAP_FRACTION). */
+export const POSTER_MAP_RADIUS = 410;
+/** Poster style: where the optional route ends, as a heading and distance from the centre. */
+const POSTER_ROUTE_HEADING_DEG = 45;
+const POSTER_ROUTE_LENGTH = 335;
 
 type Pt = [number, number];
 
@@ -78,9 +90,9 @@ function rotate(point: Pt, deg: number, cx: number, cy: number): Pt {
   return [cx + dx * Math.cos(a) - dy * Math.sin(a), cy + dx * Math.sin(a) + dy * Math.cos(a)];
 }
 
-function letterPath(letter: "N" | "E" | "S" | "W", cx: number, cy: number): string {
-  const w = 15;
-  const h = 21;
+function letterPath(letter: "N" | "E" | "S" | "W", cx: number, cy: number, scale = 1): string {
+  const w = 15 * scale;
+  const h = 21 * scale;
   const p = (x: number, y: number) => `${f(cx + x)} ${f(cy + y)}`;
   switch (letter) {
     case "N":
@@ -157,8 +169,8 @@ function buildRoute(): string {
   );
 }
 
-function buildMarker(color: string, size: number, heading: number): string {
-  const [cx, cy] = MINIMAP_ROUTE_POINTS.end;
+function buildMarker(color: string, size: number, heading: number, centre: Pt = MINIMAP_ROUTE_POINTS.end): string {
+  const [cx, cy] = centre;
   const k = 1.15 * Math.max(0.5, Math.min(2, size));
   const base = (list: Pt[]): Pt[] =>
     list.map(([x, y]) => rotate([cx + x * k, cy + y * k], heading, cx, cy));
@@ -199,12 +211,76 @@ function buildMarker(color: string, size: number, heading: number): string {
   );
 }
 
+function posterRoutePoints(): { start: Pt; end: Pt } {
+  const a = (POSTER_ROUTE_HEADING_DEG * Math.PI) / 180;
+  const c = MINIMAP_GRID / 2;
+  return { start: [c, c], end: [c + Math.sin(a) * POSTER_ROUTE_LENGTH, c - Math.cos(a) * POSTER_ROUTE_LENGTH] };
+}
+
+/** Thin rim, tick ring and N/E/S/W letters outside the map circle. */
+function buildPosterRing(fg: string): string {
+  const c = MINIMAP_GRID / 2;
+  const R = POSTER_MAP_RADIUS;
+  const parts: string[] = [];
+  parts.push(`<circle cx="${c}" cy="${c}" r="${R + 4}" fill="none" stroke="${fg}" stroke-opacity="0.95" stroke-width="4"/>`);
+  const ticks: string[] = [];
+  for (let deg = 0; deg < 360; deg += 6) {
+    const major = deg % 30 === 0;
+    const cardinal = deg % 90 === 0;
+    const inner = R + 14;
+    const outer = inner + (cardinal ? 16 : major ? 22 : 11);
+    const a = (deg * Math.PI) / 180;
+    ticks.push(
+      `<line x1="${f(c + Math.sin(a) * inner)}" y1="${f(c - Math.cos(a) * inner)}" x2="${f(c + Math.sin(a) * outer)}" y2="${f(c - Math.cos(a) * outer)}" stroke-width="${major || cardinal ? 3.4 : 2.2}" stroke-opacity="${major || cardinal ? 0.95 : 0.6}"/>`,
+    );
+  }
+  parts.push(`<g stroke="${fg}" stroke-linecap="round">${ticks.join("")}</g>`);
+
+  const scale = 1.2;
+  const letterR = 470;
+  const letters: Array<["N" | "E" | "S" | "W", number, number]> = [
+    ["N", c, c - letterR],
+    ["E", c + letterR, c],
+    ["S", c, c + letterR],
+    ["W", c - letterR, c],
+  ];
+  parts.push(
+    `<g fill="none" stroke="${fg}" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">` +
+      letters.map(([l, x, y]) => `<path d="${letterPath(l, x, y, scale)}"/>`).join("") +
+      `</g>`,
+  );
+  return parts.join("");
+}
+
+function buildPosterRoute(): string {
+  const { start, end } = posterRoutePoints();
+  const d = `M${f(start[0])} ${f(start[1])} L${f(end[0])} ${f(end[1])}`;
+  return (
+    `<path d="${d}" fill="none" stroke="#FFFFFF" stroke-opacity="0.9" stroke-width="20" stroke-linecap="round"/>` +
+    `<path d="${d}" fill="none" stroke="${MINIMAP_ROUTE_COLOR}" stroke-width="12" stroke-linecap="round"/>` +
+    `<circle cx="${f(end[0])}" cy="${f(end[1])}" r="17" fill="${MINIMAP_ROUTE_COLOR}" stroke="#FFFFFF" stroke-width="5"/>`
+  );
+}
+
 /** Inner markup only (1000 x 1000 grid), for embedding inside another SVG. */
 export function buildMinimapOverlayInner(options: MinimapOverlayOptions): string {
   const fg = clampHex(options.ringForeground, "#FFFFFF");
   const bg = clampHex(options.ringBackground, "#101820");
   const color = clampHex(options.markerColor, DEFAULT_NAV_MARKER_COLOR);
   const parts: string[] = [];
+  if (options.ringStyle === "poster") {
+    if (options.route) parts.push(buildPosterRoute());
+    if (options.shape === "circle" && options.ring) parts.push(buildPosterRing(fg));
+    if (options.marker) {
+      parts.push(
+        buildMarker(color, options.markerSize, options.route ? POSTER_ROUTE_HEADING_DEG : 0, [
+          MINIMAP_GRID / 2,
+          MINIMAP_GRID / 2,
+        ]),
+      );
+    }
+    return parts.join("");
+  }
   if (options.route) parts.push(buildRoute());
   if (options.shape === "circle" && options.ring) parts.push(buildRing(fg, bg));
   if (options.marker) {

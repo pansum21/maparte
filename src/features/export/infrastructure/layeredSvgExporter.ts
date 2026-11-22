@@ -18,6 +18,7 @@ import { drawRoutesOnCanvas } from "@/features/routes/infrastructure/rendering";
 import { routeEndpointMarkerItems } from "@/features/routes/infrastructure/helpers";
 import { applyFades } from "@/features/poster/infrastructure/renderer/layers";
 import { formatCoordinates } from "@/shared/geo/posterBounds";
+import { createCanvasMeasure, layoutCirclePosterCaption } from "@/features/poster/domain/circlePosterCaption";
 import { APP_CREDIT_URL } from "@/core/config";
 import {
   TEXT_DIMENSION_REFERENCE_PX,
@@ -682,7 +683,8 @@ export async function createLayeredSvgBlobFromMap({
       ? `<svg x="${neatlineX}" y="${neatlineY}" width="${neatlineW}" height="${neatlineH}" viewBox="0 0 1000 ${(1000 * pageHeight) / pageWidth}" preserveAspectRatio="none">${neatlineSvg}</svg>`
       : "";
 
-    const matRect = showWhiteMat
+    const isPosterStyle = Boolean(squareCaptionGeometry?.posterStyle);
+    const matRect = showWhiteMat && !isPosterStyle
       ? `<rect width="${pageWidth}" height="${pageHeight}" fill="#fff"/>`
       : squareCaptionGeometry
         ? `<rect width="${pageWidth}" height="${pageHeight}" fill="${theme.ui.bg}"/>`
@@ -694,7 +696,41 @@ export async function createLayeredSvgBlobFromMap({
       ? `transform="translate(${squareCaptionGeometry.x} ${squareCaptionGeometry.y}) scale(${squareCaptionGeometry.size / exportWidth} ${squareCaptionGeometry.size / exportHeight})"`
       : "";
     const captionBackdropSvg = "";
-    const squareCaptionSvg = squareCaptionGeometry
+    const posterCaptionSvg = squareCaptionGeometry && isPosterStyle
+      ? (() => {
+          const layout = layoutCirclePosterCaption(
+            {
+              geometry: squareCaptionGeometry,
+              city: displayCity || "",
+              country: displayCountry || "",
+              coords: formatCoordinates(center.lat, center.lon),
+              customDate: customDate?.trim() || undefined,
+              showText: Boolean(showPosterText),
+              includeCredits: Boolean(includeCredits),
+              creditUrl: APP_CREDIT_URL,
+              headingFamily: titleFontFamily,
+              midlineFamily: titleFontFamily,
+              bottomFamily: bodyFontFamily,
+              creditFamily: bodyFontFamily,
+              headingScale: fontScale,
+              midlineScale: fontScale,
+              bottomScale: fontScale,
+            },
+            createCanvasMeasure(),
+          );
+          const rules = layout.rules
+            .map((r) => `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${textColor}" fill-opacity="${r.opacity}"/>`)
+            .join("\n");
+          const runs = layout.runs
+            .map((r) => `<text x="${r.xs.join(" ")}" y="${r.baselineY}" font-family="${r.family}" font-size="${r.size}" font-weight="${r.weight}" fill="${textColor}" fill-opacity="${r.opacity}">${escapeXml(r.chars)}</text>`)
+            .join("\n");
+          const credits = layout.credits
+            .map((c) => `<text x="${c.x}" y="${c.y}" text-anchor="${c.anchor}" font-family="${c.family}" font-size="${c.size}" font-weight="300" fill="${attributionColor}" fill-opacity="${c.opacity}">${escapeXml(c.text)}</text>`)
+            .join("\n");
+          return `<g id="square-caption-typography">\n${rules}\n${runs}\n</g>\n<g id="square-caption-credits">\n${credits}\n</g>`;
+        })()
+      : "";
+    const squareCaptionSvg = squareCaptionGeometry && !isPosterStyle
       ? (() => {
           const g = squareCaptionGeometry;
           const isLandscapeSquare = g.posterWidth > g.posterHeight;
@@ -791,7 +827,7 @@ ${includeCredits ? `<text x="${g.safeInsetX}" y="${creditY}" text-anchor="start"
     const circleClipAttr = isCircleMap ? ` clip-path="url(#circle-map-clip)"` : "";
     const minimapLayerSvg =
       squareCaptionGeometry && minimapOverlay && hasMinimapContent(minimapOverlay)
-        ? `<g id="minimap-overlay" transform="translate(${squareCaptionGeometry.x} ${squareCaptionGeometry.y}) scale(${squareCaptionGeometry.size / MINIMAP_GRID})">${buildMinimapOverlayInner(minimapOverlay)}</g>`
+        ? `<g id="minimap-overlay" transform="translate(${isPosterStyle ? (squareCaptionGeometry.overlayX ?? squareCaptionGeometry.x) : squareCaptionGeometry.x} ${isPosterStyle ? (squareCaptionGeometry.overlayY ?? squareCaptionGeometry.y) : squareCaptionGeometry.y}) scale(${(isPosterStyle ? (squareCaptionGeometry.overlaySize ?? squareCaptionGeometry.size) : squareCaptionGeometry.size) / MINIMAP_GRID})">${buildMinimapOverlayInner(minimapOverlay)}</g>`
         : "";
 
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
@@ -808,7 +844,7 @@ ${squareCaptionGeometry ? "" : `<g id="vector-typography">`}
 ${vectorTypographySvg}
 ${squareCaptionGeometry ? "" : `</g>`}
 </g>
-${squareCaptionGeometry ? `</g>${minimapLayerSvg}${squareCaptionSvg}` : ""}
+${squareCaptionGeometry ? `</g>${minimapLayerSvg}${isPosterStyle ? posterCaptionSvg : squareCaptionSvg}` : ""}
 ${neatlineLayerSvg}
 </svg>`;
 

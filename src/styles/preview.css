@@ -1576,3 +1576,25 @@
 .poster-frame.frame-layout-preview--full-map .poster-text-overlay {
   display: none;
 }
+
+/* Poster style circle: compass slot (ring, ticks, letters) and name block sit on the poster grid. */
+.poster-circle-minimap-slot {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.poster-circle-minimap-slot .poster-minimap-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.poster-circle-caption {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+}
