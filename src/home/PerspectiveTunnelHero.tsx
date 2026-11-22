@@ -13,19 +13,30 @@ const slides = [
 	{ title: "Paris, sandstone", src: "paris-sandstone", offset: 0.44 },
 ];
 
-const cards = slides.map((item, index) => {
-	const angle = index * 137.5 * (Math.PI / 180);
-	return {
-		...item,
-		index,
-		x: Math.cos(angle) * (0.3 + (index % 3) * 0.08),
-		y: Math.sin(angle) * (0.24 + (index % 2) * 0.08),
-		rotation: (index % 2 === 0 ? 1 : -1) * (2 + (index % 5) * 1.6),
-	};
-});
+const cards = slides.map((item, index) => ({
+	...item,
+	index,
+	rotation: (index % 2 === 0 ? 1 : -1) * (2 + (index % 5) * 1.6),
+}));
 
 const clamp = (value: number, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 const smooth = (value: number) => value * value * (3 - 2 * value);
+
+// Scroll timeline (0 = top of the hero, 1 = end of the pinned hero):
+//   0.00 - 0.46  every poster flies in and settles fully inside the screen
+//   0.46 - 0.56  hold: all posters in front, heading still in place
+//   0.56 - 0.92  heading block scrolls up and away, posters stay fully visible
+//   0.92 - 1.00  hold on the finished poster wall before the page moves on
+const ARRIVE_END = 0.46;
+const LEAVE_START = 0.56;
+const LEAVE_END = 0.92;
+// Which grid cell (3 columns x 3 rows, read left to right) each poster settles into.
+const CELL = [4, 1, 6, 2, 8, 0, 5, 7, 3];
+// Small fixed nudges so the settled posters look like a scattered pile, not a strict grid.
+const NUDGE = [
+	[0.04, -0.06], [-0.05, 0.05], [0.06, 0.03], [-0.03, -0.05], [0.02, 0.06],
+	[-0.06, 0.02], [0.05, -0.03], [-0.02, 0.04], [0.03, -0.02],
+];
 
 export default function PerspectiveTunnelHero() {
 	const sectionRef = useRef<HTMLElement>(null);
@@ -36,10 +47,8 @@ export default function PerspectiveTunnelHero() {
 
 		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 		const cardElements = Array.from(section.querySelectorAll<HTMLElement>(".maparte-tunnel__card"));
+		const stage = section.querySelector<HTMLElement>(".maparte-tunnel__stage");
 		const title = section.querySelector<HTMLElement>(".maparte-tunnel__title");
-		const heading = section.querySelector<HTMLElement>(".maparte-tunnel__title h2");
-		const headingInto = section.querySelector<HTMLElement>(".maparte-tunnel__heading-into");
-		const headingEarth = section.querySelector<HTMLElement>(".maparte-tunnel__heading-earth");
 		const prompt = section.querySelector<HTMLElement>(".maparte-tunnel__prompt");
 		let frame = 0;
 		let pointerX = 0;
@@ -53,46 +62,69 @@ export default function PerspectiveTunnelHero() {
 				const progress = reduceMotion.matches ? 0 : clamp(-bounds.top / scrollSpan);
 				section.style.setProperty("--tunnel-progress", String(progress));
 
+				const mobileView = window.innerWidth < 768;
+				const stageW = section.clientWidth;
+				const stageH = stage ? stage.clientHeight : window.innerHeight;
+				const titleH = title ? title.offsetHeight : 0;
+				const mobileTitleLift = 113.4; // 3cm, matches the copy position set below
+				const titleTop = stageH / 2 - titleH / 2 - (mobileView ? mobileTitleLift : 0);
+
+				// Area the posters settle in: right side on desktop, below the copy on phones.
+				const pointerPan = mobileView ? 0 : 34;
+				const pad = mobileView ? 10 : 36 + pointerPan;
+				const region = mobileView
+					? { left: pad, right: stageW - pad, top: titleTop + titleH + 16, bottom: stageH - 30 }
+					: { left: stageW * 0.47, right: stageW - pad, top: 84 + pointerPan, bottom: stageH - 24 - pointerPan };
+				const rowPitch = mobileView ? 0.65 : 0.8;
+				const farZ = mobileView ? -1050 : -1550;
+				// Once the heading is almost gone, the finished poster wall glides to the middle of the screen.
+				const leaveAmount = reduceMotion.matches ? 0 : clamp((progress - LEAVE_START) / (LEAVE_END - LEAVE_START));
+				const centre = smooth(clamp((leaveAmount - 0.7) / 0.3));
+				const centreX = mobileView ? 0 : (stageW / 2 - (region.left + region.right) / 2) * centre;
+				const centreY = mobileView ? (stageH / 2 - (region.top + region.bottom) / 2) * centre : 0;
+
 				cardElements.forEach((element, index) => {
 					const card = cards[index];
 					if (reduceMotion.matches) return;
-					// Every card starts part-way down the tunnel so posters are already visible
-					// when the page loads, then all of them fly past as the visitor scrolls.
-					const local = smooth(clamp(card.offset + (1 - card.offset) * progress));
-					const farZ = window.innerWidth < 768 ? -1050 : -1550;
-					const nearZ = window.innerWidth < 768 ? 260 : 390;
-					const z = farZ + (nearZ - farZ) * local;
-					const fadeIn = clamp(local / 0.12);
-					const fadeOut = clamp((1 - local) / 0.12);
-					const opacity = Math.min(fadeIn, fadeOut);
-					const pan = window.innerWidth < 768 ? 16 : 34;
-					const heroOffset = window.innerWidth < 768 ? 0 : section.clientWidth * 0.23;
-					const offsetX = heroOffset + card.x * section.clientWidth * (window.innerWidth < 768 ? 0.62 : 0.55) - pointerX * pan;
-					const mobileView = window.innerWidth < 768;
-					// On phones the copy sits in the upper half, so the posters live in the lower half instead of behind the text.
-					const offsetY = (mobileView ? window.innerHeight * (0.32 + (1 - progress) * 0.05) + card.y * window.innerHeight * 0.42 : card.y * window.innerHeight) - pointerY * pan;
-					element.style.transform = `translate3d(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px), ${z}px) rotateZ(${card.rotation}deg)`;
+					const cardW = element.offsetWidth;
+					const cardH = element.offsetHeight;
+					// Shrink the posters a little on short screens so the whole 3 x 3 pile always fits.
+					const fit = clamp((region.bottom - region.top) / (cardH * (1 + 2 * rowPitch)), 0.5, 1);
+					const w = cardW * fit;
+					const h = cardH * fit;
+					const cell = CELL[index];
+					const col = cell % 3;
+					const row = Math.floor(cell / 3);
+					const spanX = Math.max(0, region.right - region.left - w);
+					const spanY = Math.max(0, region.bottom - region.top - h);
+					const nudge = NUDGE[index];
+					const cx = region.left + w / 2 + (col / 2) * spanX + nudge[0] * w * 0.6;
+					const cy = region.top + h / 2 + (row / 2) * spanY + nudge[1] * h * 0.6;
+					const restX = Math.max(region.left + w / 2, Math.min(region.right - w / 2, cx)) - stageW / 2 + centreX;
+					const restY = Math.max(region.top + h / 2, Math.min(region.bottom - h / 2, cy)) - stageH / 2 + centreY;
+
+					// Posters start far down the tunnel and fly to z = 0, where they sit flat on the
+					// screen with no perspective growth, so they can never be cut by the screen edge.
+					const start = (card.offset / 0.64) * 0.14;
+					const arrival = smooth(clamp((progress - start) / (ARRIVE_END - 0.14)));
+					const local = 0.04 + 0.96 * arrival;
+					const z = farZ * (1 - local);
+					const opacity = clamp(arrival / 0.35);
+					element.style.transform = `translate3d(calc(-50% + ${restX - pointerX * pointerPan * arrival}px), calc(-50% + ${restY - pointerY * pointerPan * arrival}px), ${z}px) rotateZ(${card.rotation}deg) scale(${fit})`;
 					element.style.opacity = String(opacity);
 				});
 
 				if (title) {
-					const opacity = reduceMotion.matches ? 1 : 1 - smooth(clamp((progress - 0.58) / 0.18));
-					title.style.opacity = String(opacity);
-					const titlePosition = window.innerWidth < 768 ? "translate(-50%, calc(-50% - 3cm))" : "translateY(-50%)";
-					title.style.transform = titlePosition;
+					// The heading block stays put until every poster is in, then scrolls up out of view.
+					const leave = leaveAmount;
+					const travel = titleTop + titleH + 40;
+					const lift = leave * travel;
+					title.style.opacity = String(reduceMotion.matches ? 1 : 1 - smooth(clamp((leave - 0.55) / 0.45)));
+					title.style.transform = mobileView
+						? `translate(-50%, calc(-50% - 3cm - ${lift}px))`
+						: `translateY(calc(-50% - ${lift}px))`;
 				}
-				if (heading && headingInto && headingEarth) {
-					const flight = reduceMotion.matches ? 0 : smooth(clamp(progress / 0.78));
-					const scale = 1 + flight * 0.52;
-					const mobile = window.innerWidth < 768;
-					heading.style.transform = `scale(${scale})`;
-					heading.style.transformOrigin = mobile ? "center center" : "left center";
-					headingInto.style.transform = `translate3d(${flight * (mobile ? 8 : 17)}vw, 0, 0)`;
-					headingInto.style.opacity = String(reduceMotion.matches ? 1 : 1 - smooth(clamp((progress - 0.64) / 0.2)));
-					headingEarth.style.transform = `translate3d(${flight * (mobile ? -4 : -8)}vw, 0, 0)`;
-					headingEarth.style.opacity = String(reduceMotion.matches ? 1 : 1 - smooth(clamp((progress - 0.48) / 0.22)));
-				}
-				if (prompt) prompt.style.opacity = String(reduceMotion.matches ? 0 : clamp(1 - progress * 9));
+				if (prompt) prompt.style.opacity = String(reduceMotion.matches ? 0 : clamp(1 - Math.max(0, -bounds.top) / 90));
 			});
 		};
 

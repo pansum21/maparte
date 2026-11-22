@@ -1,8 +1,8 @@
 .maparte-tunnel{
 	--tunnel-progress:0;
 	position:relative;
-	height:165svh;
-	min-height:1000px;
+	height:360svh;
+	min-height:1900px;
 	color:#f2f2ed;
 	background:transparent;
 	isolation:isolate;
@@ -89,9 +89,9 @@
 .maparte-tunnel__prompt{position:absolute;z-index:5;bottom:28px;left:50%;display:flex;align-items:center;gap:13px;transform:translateX(-50%);color:rgba(232,243,240,.86);font:500 11px "Spline Sans Mono",monospace;letter-spacing:.2em;white-space:nowrap;transition:opacity .15s}
 .maparte-tunnel__prompt span{color:#b2e6e2;font-size:15px}
 @media(max-width:767px){
-	.maparte-tunnel{height:155svh;min-height:900px}
+	.maparte-tunnel{height:340svh;min-height:1800px}
 	.maparte-tunnel__stage{min-height:520px}
-	.maparte-tunnel__card{width:clamp(112px,32vw,160px);border-radius:4px}
+	.maparte-tunnel__card{width:clamp(78px,23vw,110px);border-radius:4px}
 	.maparte-tunnel__title{left:50%;width:min(440px,calc(100% - 30px));text-align:center}
 	.maparte-tunnel__eyebrow{font-size:10px;letter-spacing:.1em;margin-bottom:14px}
 	.maparte-tunnel__title h2{font-size:clamp(46px,13vw,72px)}
