@@ -38,6 +38,43 @@ export interface ParsedUrlPosterState {
   presetExtra?: string;
 }
 
+export interface ParsedSecondMapState {
+  latitude?: string;
+  longitude?: string;
+  displayCity?: string;
+  displayCountry?: string;
+  distance?: string;
+  /** 1 = first map is active, 2 = second map is active. */
+  active?: 1 | 2;
+}
+
+/**
+ * Second map of a double layout (?lat2=&lon2=&city2=&country2=&dist2=&active=2).
+ * Only read once at start, which is enough for sharing a link and for testing.
+ */
+export function parseSecondMapFromUrl(search: string): ParsedSecondMapState {
+  const result: ParsedSecondMapState = {};
+  if (!search || typeof search !== "string") return result;
+  try {
+    const params = new URLSearchParams(search);
+    const lat = params.get("lat2");
+    if (lat && !isNaN(Number(lat))) result.latitude = lat.trim();
+    const lon = params.get("lon2");
+    if (lon && !isNaN(Number(lon))) result.longitude = lon.trim();
+    const city = params.get("city2");
+    if (city !== null) result.displayCity = city.trim();
+    const country = params.get("country2");
+    if (country !== null) result.displayCountry = country.trim();
+    const dist = params.get("dist2");
+    if (dist && !isNaN(Number(dist))) result.distance = dist.trim();
+    const active = params.get("active");
+    if (active === "1" || active === "2") result.active = Number(active) as 1 | 2;
+  } catch {
+    // ignore malformed params
+  }
+  return result;
+}
+
 /**
  * Parses customization parameters from window.location.search (?theme=...&border=...)
  */

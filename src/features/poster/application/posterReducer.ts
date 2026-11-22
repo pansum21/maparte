@@ -11,6 +11,7 @@ import {
 import { createDefaultMarkerSettings, createMarkerItem } from "@/features/markers/infrastructure/helpers";
 import { featuredMarkerIcons } from "@/features/markers/infrastructure/iconRegistry";
 import { clamp } from "@/shared/geo/math";
+import { DEFAULT_DISTANCE_METERS, DEFAULT_LAT, DEFAULT_LON } from "@/core/config";
 import type { Route, RouteDefaults } from "@/features/routes/domain/types";
 import {
   MAX_ROUTE_OPACITY,
@@ -87,6 +88,48 @@ export interface PosterForm {
   showRoutes: boolean;
 }
 
+/* ────── Double map layouts ────── */
+
+/** Location data of one map of a double layout while that map is not the active one. */
+export interface DoubleSlotData {
+  location: string;
+  latitude: string;
+  longitude: string;
+  distance: string;
+  displayCity: string;
+  displayTown?: string;
+  displayCountry: string;
+  displayState?: string;
+  displayContinent: string;
+  selectedLocation: SearchResult | null;
+  displayNameOverrides: { city: boolean; country: boolean };
+}
+
+/**
+ * Double layouts hold two maps. `form` always carries the active map, so search, zoom and
+ * pan keep working as before. The other map is parked here until it is clicked.
+ */
+export interface DoubleMapState {
+  active: 0 | 1;
+  other: DoubleSlotData;
+}
+
+export function createEmptyDoubleSlot(): DoubleSlotData {
+  return {
+    location: "",
+    latitude: DEFAULT_LAT.toFixed(6),
+    longitude: DEFAULT_LON.toFixed(6),
+    distance: String(DEFAULT_DISTANCE_METERS),
+    displayCity: "",
+    displayTown: "",
+    displayCountry: "",
+    displayState: "",
+    displayContinent: "",
+    selectedLocation: null,
+    displayNameOverrides: { city: false, country: false },
+  };
+}
+
 /* ────── App-level state ────── */
 
 export interface PosterState {
@@ -109,6 +152,7 @@ export interface PosterState {
     country: boolean;
   };
   showGrid?: boolean;
+  doubleMap: DoubleMapState;
 }
 
 /* ────── Actions ────── */
@@ -127,6 +171,7 @@ export type PosterAction =
   | { type: "SET_COLOR"; key: string; value: string }
   | { type: "RESET_COLORS" }
   | { type: "SELECT_LOCATION"; location: SearchResult }
+  | { type: "SELECT_DOUBLE_SLOT"; slot: 0 | 1 }
   | { type: "SET_USER_LOCATION"; location: SearchResult | null }
   | { type: "CLEAR_LOCATION" }
   | { type: "SET_LOCATION_FOCUSED"; focused: boolean }
@@ -241,6 +286,44 @@ export function posterReducer(
 
     case "RESET_COLORS":
       return { ...state, customColors: {} };
+
+    case "SELECT_DOUBLE_SLOT": {
+      if (state.doubleMap.active === action.slot) return state;
+      const f = state.form;
+      const parked: DoubleSlotData = {
+        location: f.location,
+        latitude: f.latitude,
+        longitude: f.longitude,
+        distance: f.distance,
+        displayCity: f.displayCity,
+        displayTown: f.displayTown,
+        displayCountry: f.displayCountry,
+        displayState: f.displayState,
+        displayContinent: f.displayContinent,
+        selectedLocation: state.selectedLocation,
+        displayNameOverrides: state.displayNameOverrides,
+      };
+      const next = state.doubleMap.other;
+      return {
+        ...state,
+        selectedLocation: next.selectedLocation,
+        displayNameOverrides: next.displayNameOverrides,
+        isLocationFocused: false,
+        doubleMap: { active: action.slot, other: parked },
+        form: {
+          ...f,
+          location: next.location,
+          latitude: next.latitude,
+          longitude: next.longitude,
+          distance: next.distance,
+          displayCity: next.displayCity,
+          displayTown: next.displayTown,
+          displayCountry: next.displayCountry,
+          displayState: next.displayState,
+          displayContinent: next.displayContinent,
+        },
+      };
+    }
 
     case "SELECT_LOCATION": {
       const isGmaps = Boolean(action.location.fromGoogleMaps);

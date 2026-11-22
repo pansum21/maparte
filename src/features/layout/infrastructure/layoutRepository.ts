@@ -172,6 +172,17 @@ export function isMaparteCirclePosterLayout(layoutId: string): boolean {
   return (MAPARTE_CIRCLE_POSTER_LAYOUT_IDS as readonly string[]).includes(layoutId);
 }
 
+export const MAPARTE_DOUBLE_MAP_LAYOUT_IDS: Record<string, "square" | "circle" | "heart"> = {
+  print_maparte_double_square_a4_landscape: "square",
+  print_maparte_double_circle_a4_landscape: "circle",
+  print_maparte_double_heart_a4_landscape: "heart",
+};
+
+/** Landscape layouts with two maps. Returns the shape of both maps, or null for every other layout. */
+export function getDoubleMapShape(layoutId: string): "square" | "circle" | "heart" | null {
+  return MAPARTE_DOUBLE_MAP_LAYOUT_IDS[layoutId] ?? null;
+}
+
 export function isMaparteCircleLayout(layoutId: string): boolean {
   return (MAPARTE_CIRCLE_LAYOUT_IDS as readonly string[]).includes(layoutId);
 }
