@@ -546,6 +546,53 @@ export default function MapSettingsSection({
     [framePaperLayoutIds, layoutGroups],
   );
 
+  const [printOrientation, setPrintOrientation] = useState<"all" | "portrait" | "landscape">("all");
+
+  const filteredPrintLayouts = useMemo(() => {
+    if (printOrientation === "portrait") {
+      return printLayouts.filter((l) => (l.heightCm ?? l.height) >= (l.widthCm ?? l.width));
+    }
+    if (printOrientation === "landscape") {
+      return printLayouts.filter((l) => (l.widthCm ?? l.width) > (l.heightCm ?? l.height));
+    }
+    return printLayouts;
+  }, [printLayouts, printOrientation]);
+
+  function handlePrintOrientationChange(newOrientation: "all" | "portrait" | "landscape") {
+    setPrintOrientation(newOrientation);
+    if (newOrientation === "all") return;
+
+    const current = printLayouts.find((l) => l.id === form.layout);
+    if (!current) return;
+
+    const isCurrentlyLandscape = (current.widthCm ?? current.width) > (current.heightCm ?? current.height);
+    if (newOrientation === "portrait" && isCurrentlyLandscape) {
+      const partnerId = current.id
+        .replace(/_landscape$/, "_portrait")
+        .replace(/_18x12_in$/, "_12x18_in")
+        .replace(/_24x18_in$/, "_18x24_in")
+        .replace(/_36x24_in$/, "_24x36_in")
+        .replace(/_70x50_cm$/, "_50x70_cm")
+        .replace(/_100x70_cm$/, "_70x100_cm");
+      const partner = printLayouts.find((l) => l.id === partnerId);
+      if (partner) {
+        onLayoutChange(partner.id);
+      }
+    } else if (newOrientation === "landscape" && !isCurrentlyLandscape) {
+      const partnerId = current.id
+        .replace(/_portrait$/, "_landscape")
+        .replace(/_12x18_in$/, "_18x12_in")
+        .replace(/_18x24_in$/, "_24x18_in")
+        .replace(/_24x36_in$/, "_36x24_in")
+        .replace(/_50x70_cm$/, "_70x50_cm")
+        .replace(/_70x100_cm$/, "_100x70_cm");
+      const partner = printLayouts.find((l) => l.id === partnerId);
+      if (partner) {
+        onLayoutChange(partner.id);
+      }
+    }
+  }
+
   const wallpaperLayouts = useMemo(
     () =>
       layoutGroups
@@ -715,9 +762,34 @@ export default function MapSettingsSection({
 
             {activeLayoutTab === "print" && (
               <section className="layout-inline-group" data-layout-group="print">
-                <h3>Standard Print Formats</h3>
+                <div className="layout-subhead-row">
+                  <h3>Standard Print Formats</h3>
+                  <div className="layout-orientation-toggle" role="group" aria-label="Print orientation">
+                    <button
+                      type="button"
+                      className={`layout-orientation-btn${printOrientation === "all" ? " is-active" : ""}`}
+                      onClick={() => handlePrintOrientationChange("all")}
+                    >
+                      All
+                    </button>
+                    <button
+                      type="button"
+                      className={`layout-orientation-btn${printOrientation === "portrait" ? " is-active" : ""}`}
+                      onClick={() => handlePrintOrientationChange("portrait")}
+                    >
+                      Portrait
+                    </button>
+                    <button
+                      type="button"
+                      className={`layout-orientation-btn${printOrientation === "landscape" ? " is-active" : ""}`}
+                      onClick={() => handlePrintOrientationChange("landscape")}
+                    >
+                      Landscape
+                    </button>
+                  </div>
+                </div>
                 <div className="layout-inline-list card-scroll-list">
-                  {printLayouts.map((layoutOption) => (
+                  {filteredPrintLayouts.map((layoutOption) => (
                     <LayoutCard
                       key={layoutOption.id}
                       layoutOption={layoutOption}

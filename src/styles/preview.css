@@ -1401,6 +1401,54 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+.layout-subhead-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.layout-subhead-row h3 {
+  margin: 0;
+}
+
+.layout-orientation-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px;
+  border: 1px solid rgba(151, 183, 207, 0.2);
+  border-radius: 8px;
+  background: rgba(4, 12, 20, 0.5);
+}
+
+.layout-orientation-btn {
+  padding: 3px 8px;
+  min-height: 24px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: #8da4b7;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.layout-orientation-btn:hover {
+  color: #e4eff8;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.layout-orientation-btn.is-active {
+  background: rgba(223, 186, 115, 0.2);
+  border-color: rgba(223, 186, 115, 0.5);
+  color: #f7eedf;
+}
+
 .frame-layout-style-section {
   margin-top: 14px;
   padding-top: 12px;
