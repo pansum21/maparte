@@ -9,6 +9,7 @@ import { EARTH_CIRCUMFERENCE_M, TILE_SIZE_PX } from "@/core/config";
 import { helpFaqs } from "@/shared/help/helpFaqs";
 import { DoodleCrewFooter } from "@/components/ui/doodle-crew-footer";
 import PerspectiveTunnelHero from "@/home/PerspectiveTunnelHero";
+import { getHeroProgress } from "@/home/heroProgress";
 import "@fontsource/dm-serif-display/400.css";
 import "@fontsource/dm-serif-display/400-italic.css";
 import "@fontsource/fraunces/400.css";
@@ -371,9 +372,8 @@ export default function JourneyPreview() {
         const top = story.getBoundingClientRect().top + window.scrollY;
         const storySpan = Math.max(1, story.offsetHeight - window.innerHeight);
         const pageSpan = Math.max(storySpan, page.offsetHeight - window.innerHeight);
-        const hero = document.querySelector<HTMLElement>(".maparte-tunnel");
-        const heroSpan = hero ? Math.max(1, hero.offsetHeight - window.innerHeight) : 1;
-        const heroProgress = hero ? clamp(-hero.getBoundingClientRect().top / heroSpan) : 0;
+        // The hero publishes its progress each frame, so no layout is measured here.
+        const heroProgress = getHeroProgress();
         const storyProgress = clamp((window.scrollY - top) / storySpan);
         const pageProgress = clamp((window.scrollY - top) / pageSpan);
         // Start the globe's eastward trip behind the opening title, then hand
