@@ -413,7 +413,6 @@ export default function JourneyPreview() {
       <header className="journey-header">
         <a className="journey-wordmark" href="#start" aria-label="MapArte home"><img src="/assets/logo.svg" alt="" /><span>MAPARTE</span></a>
         <div className="journey-header__right">
-          <a className="journey-header__download" href="/?editor=true">Download</a>
           <a className="journey-header__grid" href="/?gallery=maps">Grid</a>
           <a className="journey-header__guide" href="/?editor=true&guide=1">Guide</a>
           <span>MAPS FOR THE PLACES THAT STAY</span><a className="journey-glass" href="/?editor=true">Make your map</a>

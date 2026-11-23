@@ -13,6 +13,7 @@ import {
   WallIcon,
   ScissorsIcon,
   FullScreenIcon,
+  DownloadIcon,
 } from "./Icons";
 import type { MobileTab } from "./MobileNavBar";
 
@@ -30,6 +31,7 @@ export interface DesktopNavBarProps {
   wallOpen?: boolean;
   isEditing?: boolean;
   onEditMapToggle?: () => void;
+  onDownloadClick?: () => void;
 }
 
 export default function DesktopNavBar({
@@ -46,6 +48,7 @@ export default function DesktopNavBar({
   wallOpen = false,
   isEditing = false,
   onEditMapToggle,
+  onDownloadClick,
 }: DesktopNavBarProps) {
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const isLocationActive = Boolean(isLocationVisible || allCitiesOpen);
@@ -237,6 +240,20 @@ export default function DesktopNavBar({
         >
           <FullScreenIcon className="desktop-nav-icon" />
           <span className="desktop-nav-label">Full Screen</span>
+        </button>
+      </div>
+
+      {/* Download sits on the left rail, after Full Screen, and opens the same export panel. */}
+      <div className="desktop-nav-row desktop-nav-row--download" data-tab="download">
+        <button
+          type="button"
+          className="desktop-nav-tab desktop-nav-tab--download"
+          onClick={onDownloadClick}
+          title="Download your map"
+          aria-label="Download"
+        >
+          <DownloadIcon className="desktop-nav-icon" />
+          <span className="desktop-nav-label">Download</span>
         </button>
       </div>
 
