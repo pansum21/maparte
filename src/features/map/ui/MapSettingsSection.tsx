@@ -2,6 +2,7 @@ import MinimapControls from "@/features/poster/ui/MinimapControls";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   createCustomLayoutOption,
+  formatLayoutDimensions,
   isMaparteCircleLayout,
 } from "@/features/layout/infrastructure/layoutRepository";
 import {
@@ -703,6 +704,9 @@ export default function MapSettingsSection({
               LAYOUT:{" "}
               <span className="layout-summary-label-name">
                 {selectedLayoutOption.name}
+              </span>
+              <span className="layout-summary-meta">
+                {" "}· {formatLayoutDimensions(selectedLayoutOption)}
               </span>
             </p>
             <p className="layout-summary-description">
