@@ -496,11 +496,13 @@ export default function MapSettingsSection({
         "print_maparte_circle_caption_a4_portrait",
         "print_maparte_circle_caption_a4_top",
         "print_maparte_circle_poster_a4_portrait",
+        "print_maparte_circle_poster_a4_top",
         "print_maparte_square_caption_a4_landscape",
         "print_maparte_square_caption_a4_landscape_left",
         "print_maparte_circle_caption_a4_landscape",
         "print_maparte_circle_caption_a4_landscape_left",
         "print_maparte_circle_poster_a4_landscape",
+        "print_maparte_circle_poster_a4_landscape_left",
       ]),
     [],
   );

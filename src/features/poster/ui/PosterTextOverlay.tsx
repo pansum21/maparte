@@ -216,7 +216,7 @@ export default function PosterTextOverlay({
           top: `${(geometry.captionY / geometry.posterHeight) * 100}%`,
           left: `${(geometry.safeInsetX / geometry.posterWidth) * 100}%`,
           width: `${(geometry.captionWidth / geometry.posterWidth) * 100}%`,
-          transform: "none",
+          transform: "translateY(-50%)",
           alignItems: "flex-start",
           textAlign: "left",
         };
