@@ -299,7 +299,7 @@
 .layout-inline-list.card-scroll-list {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  grid-auto-rows: 64px !important;
+  grid-auto-rows: 78px !important;
   gap: 8px !important;
   overflow: visible !important;
   padding: 0;
@@ -311,58 +311,89 @@
   box-sizing: border-box;
   width: 100% !important;
   min-width: 0;
-  height: 64px !important;
-  min-height: 64px;
+  height: 78px !important;
+  min-height: 78px;
   margin: 0 !important;
-  padding: 6px;
+  padding: 6px 4px 4px !important;
   flex: initial !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 3px !important;
   border-radius: 10px;
   scroll-snap-align: none !important;
 }
 
-.layout-inline-list .layout-card-copy {
-  display: none !important;
-}
-
-.layout-inline-list .layout-card-name {
-  display: none !important;
-}
-
-.layout-inline-list .layout-card-meta {
-  display: none !important;
+.layout-inline-list .layout-card-symbol-wrap {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .layout-inline-list .layout-card-symbol {
-  flex: initial !important;
   width: 100% !important;
   height: 100% !important;
-  max-height: 48px;
-  margin: 0 auto;
-  object-fit: contain;
+  max-height: 48px !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+}
+
+.layout-inline-list .layout-card-label {
+  display: block !important;
+  width: 100%;
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #c5dded;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.layout-inline-list .layout-card.is-selected .layout-card-label {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.layout-inline-list .layout-card-copy,
+.layout-inline-list .layout-card-name,
+.layout-inline-list .layout-card-meta {
+  display: none !important;
 }
 
 @media (max-width: 420px) {
   .layout-inline-list.card-scroll-list {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    grid-auto-rows: 56px !important;
+    grid-auto-rows: 72px !important;
     gap: 5px;
   }
 
   .layout-inline-list .layout-card {
-    height: 56px !important;
-    min-height: 56px;
-    padding: 4px;
+    height: 72px !important;
+    min-height: 72px !important;
+    padding: 4px 3px 3px !important;
     border-radius: 8px;
   }
 
+  .layout-inline-list .layout-card-symbol-wrap {
+    height: 42px;
+  }
+
   .layout-inline-list .layout-card-symbol {
-    max-height: 42px;
-    margin: 0 auto;
+    max-height: 42px !important;
+    margin: 0 auto !important;
+  }
+
+  .layout-inline-list .layout-card-label {
+    font-size: 0.58rem;
   }
 }
 

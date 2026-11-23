@@ -32,26 +32,40 @@ function formatDecimal(value: number): string {
 }
 
 function createSymbolFromRatio(width: number, height: number): string {
+  const isPortrait = height > width;
   const ratio = Math.max(0.15, Math.min(6, width / height));
-  const maxInnerWidth = 50;
-  const maxInnerHeight = 30;
 
-  let innerWidth = maxInnerWidth;
-  let innerHeight = innerWidth / ratio;
-
-  if (innerHeight > maxInnerHeight) {
-    innerHeight = maxInnerHeight;
-    innerWidth = innerHeight * ratio;
+  if (isPortrait) {
+    // ── PORTRAIT PAPER OUTLINE (ViewBox: 40 x 56) ──
+    const maxInnerWidth = 30;
+    const maxInnerHeight = 44;
+    let innerHeight = maxInnerHeight;
+    let innerWidth = innerHeight * ratio;
+    if (innerWidth > maxInnerWidth) {
+      innerWidth = maxInnerWidth;
+      innerHeight = innerWidth / ratio;
+    }
+    const x = Number(((40 - innerWidth) / 2).toFixed(2));
+    const y = Number(((56 - innerHeight) / 2).toFixed(2));
+    const w = Number(innerWidth.toFixed(2));
+    const h = Number(innerHeight.toFixed(2));
+    return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect x='2' y='2' width='36' height='52' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='${x}' y='${y}' width='${w}' height='${h}' rx='2.5' fill='#4B91B7'/></svg>`;
+  } else {
+    // ── LANDSCAPE PAPER OUTLINE (ViewBox: 56 x 40) ──
+    const maxInnerWidth = 44;
+    const maxInnerHeight = 30;
+    let innerWidth = maxInnerWidth;
+    let innerHeight = innerWidth / ratio;
+    if (innerHeight > maxInnerHeight) {
+      innerHeight = maxInnerHeight;
+      innerWidth = innerHeight * ratio;
+    }
+    const x = Number(((56 - innerWidth) / 2).toFixed(2));
+    const y = Number(((40 - innerHeight) / 2).toFixed(2));
+    const w = Number(innerWidth.toFixed(2));
+    const h = Number(innerHeight.toFixed(2));
+    return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 40'><rect x='2' y='2' width='52' height='36' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='${x}' y='${y}' width='${w}' height='${h}' rx='2.5' fill='#4B91B7'/></svg>`;
   }
-
-  const x = (64 - innerWidth) / 2;
-  const y = (40 - innerHeight) / 2;
-  const roundedX = Number(x.toFixed(2));
-  const roundedY = Number(y.toFixed(2));
-  const roundedWidth = Number(innerWidth.toFixed(2));
-  const roundedHeight = Number(innerHeight.toFixed(2));
-
-  return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='${roundedX}' y='${roundedY}' width='${roundedWidth}' height='${roundedHeight}' rx='3' fill='#4B91B7'/></svg>`;
 }
 
 function normalizeLayout(

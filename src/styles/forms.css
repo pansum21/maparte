@@ -1545,12 +1545,12 @@ button.color-editor-target:focus-visible {
   position: relative;
   width: 100%;
   margin: 0 0 10px;
-  padding: 6px;
-  height: 64px;
+  padding: 6px 4px 4px;
+  height: 78px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   text-align: center;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -1572,16 +1572,20 @@ button.color-editor-target:focus-visible {
   background: rgba(13, 25, 36, 0.9);
 }
 
-.layout-card-copy {
-  display: none;
-}
-
-.layout-card-name {
-  display: none;
-}
-
+.layout-card-copy,
+.layout-card-name,
 .layout-card-meta {
   display: none;
+}
+
+.layout-card-symbol-wrap {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .layout-card-symbol {
@@ -1596,24 +1600,24 @@ button.color-editor-target:focus-visible {
   object-fit: contain;
 }
 
-.layout-card-badge {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.layout-card-label {
+  display: block;
+  width: 100%;
   font-family: "Spline Sans Mono", monospace;
-  font-size: 0.74rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #c5dded;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.layout-card.is-selected .layout-card-label {
+  color: #ffffff;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #e7f2fb;
-  background: rgba(8, 17, 26, 0.72);
-  padding: 1px 6px;
-  border-radius: 4px;
-  border: 1px solid rgba(156, 195, 218, 0.38);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  user-select: none;
-  z-index: 2;
 }
 
 .layout-card-description {
