@@ -4,6 +4,7 @@ import {
   createCustomLayoutOption,
   formatLayoutDimensions,
   isMaparteCircleLayout,
+  isMaparteSquareCaptionLayout,
 } from "@/features/layout/infrastructure/layoutRepository";
 import {
   DISPLAY_PALETTE_KEYS,
@@ -360,9 +361,7 @@ export default function MapSettingsSection({
   }
 
   function handleLayoutSelectInline(layoutId: string) {
-    if (!framePaperLayoutIds.has(layoutId)) {
-      onFrameLayoutChange?.("none");
-    }
+    onFrameLayoutChange?.("none");
     onLayoutChange(form.layout === layoutId ? "" : layoutId);
     setIsLayoutEditing(false);
   }
@@ -370,6 +369,11 @@ export default function MapSettingsSection({
   function handleFrameLayoutSelectInline(frameLayoutId: string) {
     const nextFrameLayout = form.frameLayout === frameLayoutId ? "none" : frameLayoutId;
     onFrameLayoutChange?.(nextFrameLayout);
+    if (nextFrameLayout !== "none") {
+      if (isMaparteSquareCaptionLayout(form.layout) || isMaparteCircleLayout(form.layout)) {
+        onLayoutChange("print_a4_portrait");
+      }
+    }
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent(nextFrameLayout === "none"
         ? "maparte:disable-poster-layout"
@@ -920,8 +924,10 @@ export default function MapSettingsSection({
                   <p className="frame-layout-help">Choose a frame style for your poster.</p>
                   <div className="frame-layout-grid">
                     {[
-                      ["classic", "Classic"], ["left", "Left"], ["right", "Right"], ["center", "Center"],
-                      ["dark", "Dark"], ["box", "Box"], ["full-map", "Full Map"],
+                      ["center", "Standard"],
+                      ["dark", "Dark"],
+                      ["box", "Box"],
+                      ["full-map", "Full Map"],
                     ].map(([id, label]) => (
                       <button
                         key={id}

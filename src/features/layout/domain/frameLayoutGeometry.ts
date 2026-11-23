@@ -48,14 +48,14 @@ export function getFrameLayoutGeometry(
   const innerHeight = Math.max(1, posterHeight - safeInsetY * 2);
   const fullBleed = style === "full-map" || style === "box";
   const box = style === "box";
-  const boxHeight = Math.min(innerHeight * 0.14, 5.2 * pxPerCmY);
+  const boxHeight = Math.min(innerHeight * 0.20, 7.2 * pxPerCmY);
   const captionHeight = fullBleed && !box ? 0 : box ? boxHeight : Math.min(innerHeight * 0.245, 7.1 * pxPerCmY);
   const mapX = fullBleed ? 0 : safeInsetX;
   const mapY = fullBleed ? 0 : safeInsetY;
   const mapWidth = fullBleed ? posterWidth : innerWidth;
   const mapHeight = fullBleed ? posterHeight : Math.max(1, innerHeight - captionHeight);
   const captionAlign = style === "left" ? "left" : style === "right" ? "right" : "center";
-  const captionWidth = box ? Math.min(innerWidth * 0.76, 14 * pxPerCmX) : innerWidth;
+  const captionWidth = box ? Math.min(innerWidth * 0.86, 17 * pxPerCmX) : innerWidth;
   const captionX = captionAlign === "left"
     ? safeInsetX
     : captionAlign === "right"

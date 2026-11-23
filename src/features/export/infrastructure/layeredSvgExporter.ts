@@ -815,10 +815,14 @@ export async function createLayeredSvgBlobFromMap({
   ${taglineSvg}
   ${coordsSvg}` : "";
 
+          const isLand = pageWidth > pageHeight;
+          const credAppX = isLand ? g.x + Math.max(8, g.size * 0.025) : g.safeInsetX;
+          const credAppY = isLand ? g.y + g.size - Math.max(6, g.size * 0.02) : creditY;
+
           return `<g id="square-caption-typography">${captionSvg}</g>
 <g id="square-caption-credits" font-family="${bodyFontFamily}" font-size="${Math.max(9, 13 * Math.min(pageWidth, pageHeight) / 1000)}" opacity="0.68">
 <text x="${pageWidth - g.safeInsetX}" y="${creditY}" text-anchor="end" fill="${attributionColor}">© OpenStreetMap contributors</text>
-${includeCredits ? `<text x="${g.safeInsetX}" y="${creditY}" text-anchor="start" fill="${attributionColor}" font-size="${Math.max(18, Math.round(24 * Math.min(pageWidth, pageHeight) / 1000 * fontScale))}" font-weight="600" letter-spacing="0.1em">${escapeXml(APP_CREDIT_URL)}</text>` : ""}
+${includeCredits ? `<text x="${credAppX}" y="${credAppY}" text-anchor="start" fill="${attributionColor}" font-size="${Math.max(18, Math.round(24 * Math.min(pageWidth, pageHeight) / 1000 * fontScale))}" font-weight="600" letter-spacing="0.1em">${escapeXml(APP_CREDIT_URL)}</text>` : ""}
 </g>`;
         })()
       : "";

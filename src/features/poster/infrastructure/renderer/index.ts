@@ -397,8 +397,15 @@ export async function compositeExport(
     ctx.textAlign = "right";
     ctx.fillText("© OpenStreetMap contributors", posterWidth - safeInsetX, creditY, posterWidth * 0.42);
     if (includeCredits) {
-      ctx.textAlign = "left";
-      ctx.fillText(APP_CREDIT_URL, safeInsetX, creditY, posterWidth * 0.42);
+      if (posterWidth > posterHeight) {
+        ctx.textAlign = "left";
+        const mapCreditX = x + Math.max(8, size * 0.025);
+        const mapCreditY = y + size - Math.max(6, size * 0.02);
+        ctx.fillText(APP_CREDIT_URL, mapCreditX, mapCreditY, size * 0.42);
+      } else {
+        ctx.textAlign = "left";
+        ctx.fillText(APP_CREDIT_URL, safeInsetX, creditY, posterWidth * 0.42);
+      }
     }
     }
     ctx.globalAlpha = 1;

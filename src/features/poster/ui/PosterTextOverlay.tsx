@@ -136,8 +136,10 @@ export default function PosterTextOverlay({
   const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX * fontScale)}cqmin`;
   const maparteFontSize = `${toCqMin(80 * fontScale)}cqmin`;
   const safeTextColor = ensureContrastTextColor(textColor, landColor, isCustomColor);
-  const attributionColor = computeAttributionColor(safeTextColor, landColor, showOverlay);
-  const attributionOpacity = showOverlay ? 0.65 : 0.95;
+  const attributionColor = frameLayoutGeometry?.style === "dark"
+    ? "#ffffff"
+    : computeAttributionColor(safeTextColor, landColor, showOverlay);
+  const attributionOpacity = frameLayoutGeometry?.style === "dark" ? 0.95 : (showOverlay ? 0.65 : 0.95);
   const hasTagline = Boolean(customDate && customDate.trim());
 
   // Physical calibrated gaps in container query height (cqh) units:
@@ -425,8 +427,16 @@ export default function PosterTextOverlay({
             fontSize: maparteFontSize,
             fontWeight: 600,
             letterSpacing: "0.08em",
-            bottom: squareCaption && geometry ? `${(geometry.safeInsetY / geometry.posterHeight) * 100}%` : "calc(2.5% + 0.2mm)",
-            left: squareCaption && geometry ? `${(geometry.safeInsetX / geometry.posterWidth) * 100}%` : "calc(2.5% + 0.2mm)",
+            bottom: squareCaption && geometry
+              ? isLandscape
+                ? `${((geometry.posterHeight - (geometry.y + geometry.size) + geometry.size * 0.02) / geometry.posterHeight) * 100}%`
+                : `${(geometry.safeInsetY / geometry.posterHeight) * 100}%`
+              : "calc(2.5% + 0.2mm)",
+            left: squareCaption && geometry
+              ? isLandscape
+                ? `${((geometry.x + geometry.size * 0.025) / geometry.posterWidth) * 100}%`
+                : `${(geometry.safeInsetX / geometry.posterWidth) * 100}%`
+              : "calc(2.5% + 0.2mm)",
             right: squareCaption ? "auto" : undefined,
             textAlign: squareCaption ? "left" : undefined,
           }}
