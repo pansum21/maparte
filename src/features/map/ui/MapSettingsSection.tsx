@@ -1,6 +1,9 @@
 import MinimapControls from "@/features/poster/ui/MinimapControls";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createCustomLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
+import {
+  createCustomLayoutOption,
+  isMaparteCircleLayout,
+} from "@/features/layout/infrastructure/layoutRepository";
 import {
   DISPLAY_PALETTE_KEYS,
   PALETTE_COLOR_LABELS,
@@ -530,18 +533,54 @@ export default function MapSettingsSection({
     }
   }, [form.layout, framePaperLayoutIds]);
 
-  const framePortraitLayouts = useMemo(
+  const frameRectPortraitLayouts = useMemo(
     () =>
       layoutGroups.flatMap((group) =>
-        group.options.filter((l) => framePaperLayoutIds.has(l.id) && (l.heightCm ?? l.height) >= (l.widthCm ?? l.width)),
+        group.options.filter(
+          (l) =>
+            framePaperLayoutIds.has(l.id) &&
+            !isMaparteCircleLayout(l.id) &&
+            (l.heightCm ?? l.height) >= (l.widthCm ?? l.width),
+        ),
       ),
     [framePaperLayoutIds, layoutGroups],
   );
 
-  const frameLandscapeLayouts = useMemo(
+  const frameRectLandscapeLayouts = useMemo(
     () =>
       layoutGroups.flatMap((group) =>
-        group.options.filter((l) => framePaperLayoutIds.has(l.id) && (l.widthCm ?? l.width) > (l.heightCm ?? l.height)),
+        group.options.filter(
+          (l) =>
+            framePaperLayoutIds.has(l.id) &&
+            !isMaparteCircleLayout(l.id) &&
+            (l.widthCm ?? l.width) > (l.heightCm ?? l.height),
+        ),
+      ),
+    [framePaperLayoutIds, layoutGroups],
+  );
+
+  const frameCirclePortraitLayouts = useMemo(
+    () =>
+      layoutGroups.flatMap((group) =>
+        group.options.filter(
+          (l) =>
+            framePaperLayoutIds.has(l.id) &&
+            isMaparteCircleLayout(l.id) &&
+            (l.heightCm ?? l.height) >= (l.widthCm ?? l.width),
+        ),
+      ),
+    [framePaperLayoutIds, layoutGroups],
+  );
+
+  const frameCircleLandscapeLayouts = useMemo(
+    () =>
+      layoutGroups.flatMap((group) =>
+        group.options.filter(
+          (l) =>
+            framePaperLayoutIds.has(l.id) &&
+            isMaparteCircleLayout(l.id) &&
+            (l.widthCm ?? l.width) > (l.heightCm ?? l.height),
+        ),
       ),
     [framePaperLayoutIds, layoutGroups],
   );
@@ -783,7 +822,7 @@ export default function MapSettingsSection({
                   <h3>Portrait Compositions</h3>
                 </div>
                 <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
-                  {framePortraitLayouts.map((layoutOption) => (
+                  {frameRectPortraitLayouts.map((layoutOption) => (
                     <LayoutCard
                       key={layoutOption.id}
                       layoutOption={layoutOption}
@@ -796,7 +835,34 @@ export default function MapSettingsSection({
                   <h3>Landscape Compositions</h3>
                 </div>
                 <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
-                  {frameLandscapeLayouts.map((layoutOption) => (
+                  {frameRectLandscapeLayouts.map((layoutOption) => (
+                    <LayoutCard
+                      key={layoutOption.id}
+                      layoutOption={layoutOption}
+                      isSelected={layoutOption.id === form.layout}
+                      onClick={() => handleLayoutSelectInline(layoutOption.id)}
+                    />
+                  ))}
+                </div>
+
+                <div className="layout-subhead-row" style={{ marginTop: "16px" }}>
+                  <h3>GTA 6 Layouts (Portrait)</h3>
+                </div>
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
+                  {frameCirclePortraitLayouts.map((layoutOption) => (
+                    <LayoutCard
+                      key={layoutOption.id}
+                      layoutOption={layoutOption}
+                      isSelected={layoutOption.id === form.layout}
+                      onClick={() => handleLayoutSelectInline(layoutOption.id)}
+                    />
+                  ))}
+                </div>
+                <div className="layout-subhead-row" style={{ marginTop: "14px" }}>
+                  <h3>GTA 6 Layouts (Landscape)</h3>
+                </div>
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
+                  {frameCircleLandscapeLayouts.map((layoutOption) => (
                     <LayoutCard
                       key={layoutOption.id}
                       layoutOption={layoutOption}
