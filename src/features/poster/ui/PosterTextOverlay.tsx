@@ -248,12 +248,18 @@ export default function PosterTextOverlay({
       // Landscape: side column (left or right)
       const colLeftPercent = (geometry.captionXStart / geometry.posterWidth) * 100;
       const colWidthPercent = (geometry.captionWidth / geometry.posterWidth) * 100;
+      const isTopCorner = captionVariant === "top-left";
+      const isBottomCorner = captionVariant === "bottom-left";
 
       stackPositionStyle = {
         left: `${colLeftPercent}%`,
         width: `${colWidthPercent}%`,
-        top: "50%",
-        transform: "translateY(-50%)",
+        top: isTopCorner
+          ? `${(geometry.captionY / geometry.posterHeight) * 100}%`
+          : isBottomCorner
+            ? `${(geometry.captionY / geometry.posterHeight) * 100}%`
+            : "50%",
+        transform: isTopCorner || isBottomCorner ? "none" : "translateY(-50%)",
         alignItems: align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center",
         textAlign: align,
         paddingInline: "4px",

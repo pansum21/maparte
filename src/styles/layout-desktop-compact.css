@@ -307,6 +307,7 @@
 }
 
 .layout-inline-list .layout-card {
+  position: relative !important;
   box-sizing: border-box;
   width: 100% !important;
   min-width: 0;

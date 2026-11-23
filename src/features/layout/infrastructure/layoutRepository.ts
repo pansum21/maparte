@@ -174,7 +174,9 @@ export function isMaparteLandscapeLeftLayout(layoutId: string): boolean {
     layoutId === "print_maparte_square_caption_a4_landscape_left" ||
     layoutId === "print_maparte_circle_caption_a4_landscape_left" ||
     layoutId === "print_maparte_circle_poster_a4_landscape_left" ||
-    layoutId === "print_maparte_left_caption_a4_landscape"
+    layoutId === "print_maparte_left_caption_a4_landscape" ||
+    layoutId === "print_maparte_corner_caption_a4_portrait" ||
+    layoutId === "print_maparte_corner_caption_a4_bottom"
   );
 }
 

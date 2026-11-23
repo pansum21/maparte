@@ -29,6 +29,44 @@ import { loadCustomThemes, saveCustomThemes, type SavedCustomTheme } from "@/fea
 import { getTheme } from "@/features/theme/infrastructure/themeRepository";
 import { applyThemeColorOverrides } from "@/features/theme/domain/colorPaths";
 
+const PRINT_ORDER_MAP: Record<string, number> = {
+  // A0 to A5 sequence
+  print_a0_portrait: 1,
+  print_a0_landscape: 1,
+  print_a1_portrait: 2,
+  print_a1_landscape: 2,
+  print_a2_portrait: 3,
+  print_a2_landscape: 3,
+  print_a3_portrait: 4,
+  print_a3_landscape: 4,
+  print_a4_portrait: 5,
+  print_a4_landscape: 5,
+  print_a5_portrait: 6,
+  print_a5_landscape: 6,
+
+  // US Paper Formats
+  print_letter_us_portrait: 10,
+  print_letter_us_landscape: 10,
+  print_legal_us_portrait: 11,
+  print_legal_us_landscape: 11,
+  print_tabloid_us_portrait: 12,
+  print_tabloid_us_landscape: 12,
+
+  // Large Posters
+  print_poster_12x18_in: 20,
+  print_poster_18x12_in: 20,
+  print_poster_18x24_in: 21,
+  print_poster_24x18_in: 21,
+  print_poster_50x70_cm: 22,
+  print_poster_70x50_cm: 22,
+  print_poster_24x36_in: 23,
+  print_poster_70x100_cm: 24,
+};
+
+function sortPrintLayouts(a: { id: string }, b: { id: string }): number {
+  return (PRINT_ORDER_MAP[a.id] ?? 99) - (PRINT_ORDER_MAP[b.id] ?? 99);
+}
+
 const FALLBACK_COLOR = "#000000";
 
 interface MapSettingsForm {
@@ -595,7 +633,7 @@ export default function MapSettingsSection({
         .flatMap((group) =>
           group.options.filter((l) => !framePaperLayoutIds.has(l.id) && (l.heightCm ?? l.height) >= (l.widthCm ?? l.width)),
         )
-        .sort((a, b) => ((a.widthCm ?? a.width) * (a.heightCm ?? a.height)) - ((b.widthCm ?? b.width) * (b.heightCm ?? b.height))),
+        .sort(sortPrintLayouts),
     [framePaperLayoutIds, layoutGroups],
   );
 
@@ -606,7 +644,7 @@ export default function MapSettingsSection({
         .flatMap((group) =>
           group.options.filter((l) => !framePaperLayoutIds.has(l.id) && (l.widthCm ?? l.width) > (l.heightCm ?? l.height)),
         )
-        .sort((a, b) => ((a.widthCm ?? a.width) * (a.heightCm ?? a.height)) - ((b.widthCm ?? b.width) * (b.heightCm ?? b.height))),
+        .sort(sortPrintLayouts),
     [framePaperLayoutIds, layoutGroups],
   );
 
@@ -794,7 +832,7 @@ export default function MapSettingsSection({
             {activeLayoutTab === "print" && (
               <section className="layout-inline-group" data-layout-group="print">
                 <div className="layout-subhead-row">
-                  <h3>Portrait Formats (Small to Large)</h3>
+                  <h3>Portrait Formats (A0 - A5, US & Posters)</h3>
                 </div>
                 <div className="layout-inline-list card-scroll-list">
                   {printPortraitLayouts.map((layoutOption) => (
@@ -807,7 +845,7 @@ export default function MapSettingsSection({
                   ))}
                 </div>
                 <div className="layout-subhead-row" style={{ marginTop: "14px" }}>
-                  <h3>Landscape Formats (Small to Large)</h3>
+                  <h3>Landscape Formats (A0 - A5, US & Posters)</h3>
                 </div>
                 <div className="layout-inline-list card-scroll-list">
                   {printLandscapeLayouts.map((layoutOption) => (

@@ -299,10 +299,20 @@ export function getSquareCaptionGeometry(
     const captionXStart = isTextLeft ? safeInsetX : x + size + 1.2 * pxPerCmX;
     const captionWidth = Math.max(1, isTextLeft ? x - 1.2 * pxPerCmX - captionXStart : posterWidth - safeInsetX - captionXStart);
 
-    // Center text vertically in the column alongside the center of the square map
-    const captionY = y + size / 2 - 1.6 * pxPerCmY;
+    // Corner details sit at the top or bottom of the side column; center-bottom is centered vertically
+    const isTopCorner = variant === "top-left";
+    const isBottomCorner = variant === "bottom-left";
 
-    const captionAlign = requestedAlign ?? (variant === "left-bottom"
+    let captionY: number;
+    if (isTopCorner) {
+      captionY = safeInsetY + 1.2 * pxPerCmY;
+    } else if (isBottomCorner) {
+      captionY = posterHeight - safeInsetY - 4.5 * pxPerCmY;
+    } else {
+      captionY = y + size / 2 - 1.6 * pxPerCmY;
+    }
+
+    const captionAlign = requestedAlign ?? (isTopCorner || isBottomCorner || variant === "left-bottom" || isTextLeft
       ? "left"
       : variant === "right-bottom"
         ? "right"

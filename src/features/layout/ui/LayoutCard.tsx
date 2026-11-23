@@ -44,6 +44,34 @@ function getLayoutSymbolDataUri(layoutOption: Layout): string {
   return `data:image/svg+xml;utf8,${encodeURIComponent(normalizedSymbol)}`;
 }
 
+function getLayoutBadge(layoutOption: Layout): string | null {
+  if (layoutOption.categoryId !== "print") {
+    return null;
+  }
+  // Exclude custom maparte compositions which have their own detailed illustrations
+  if (layoutOption.id.includes("maparte_")) {
+    return null;
+  }
+  const id = layoutOption.id.toLowerCase();
+  if (id.includes("_a0_")) return "A0";
+  if (id.includes("_a1_")) return "A1";
+  if (id.includes("_a2_")) return "A2";
+  if (id.includes("_a3_")) return "A3";
+  if (id.includes("_a4_")) return "A4";
+  if (id.includes("_a5_")) return "A5";
+  if (id.includes("letter")) return "Letter";
+  if (id.includes("legal")) return "Legal";
+  if (id.includes("tabloid")) return "Tabloid";
+  if (id.includes("12x18") || id.includes("18x12")) return "12×18";
+  if (id.includes("18x24") || id.includes("24x18")) return "18×24";
+  if (id.includes("24x36")) return "24×36";
+  if (id.includes("50x70") || id.includes("70x50")) return "50×70";
+  if (id.includes("70x100")) return "70×100";
+  const name = layoutOption.name || "";
+  const match = name.match(/A[0-5]|Letter|Legal|Tabloid|\d+[\s×x]+\d+/i);
+  return match ? match[0].replace(/\s+/g, "") : null;
+}
+
 interface LayoutCardProps {
   layoutOption: Layout | null;
   onClick?: () => void;
@@ -63,6 +91,7 @@ export default function LayoutCard({
     .join(" ");
   const symbolDataUri = getLayoutSymbolDataUri(layoutOption);
   const sizeText = formatLayoutDimensions(layoutOption);
+  const badge = getLayoutBadge(layoutOption);
 
   return (
     <button
@@ -80,6 +109,7 @@ export default function LayoutCard({
           alt={`${layoutOption.name} ratio symbol`}
         />
       ) : null}
+      {badge ? <span className="layout-card-badge">{badge}</span> : null}
     </button>
   );
 }
