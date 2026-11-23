@@ -7,6 +7,7 @@ import { checkPaymentReturnUrl } from "@/features/export/infrastructure/planTier
 import { ErrorBoundary } from "@/shared/ui/ErrorBoundary";
 import JourneyPreview from "@/home/JourneyPreview";
 import GalleryLanding from "@/home/GalleryLanding";
+import AboutPage from "@/home/AboutPage";
 
 export default function App() {
   useEffect(() => {
@@ -15,6 +16,7 @@ export default function App() {
 
   const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
   if (pathname === "/journey-preview") return <JourneyPreview />;
+  if (pathname === "/about") return <AboutPage />;
 
   const search = new URLSearchParams(window.location.search);
   if (["maps", "themes", "layouts", "borders", "presets"].includes(search.get("gallery") || "")) {

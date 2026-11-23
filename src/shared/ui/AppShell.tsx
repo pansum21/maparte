@@ -198,8 +198,8 @@ export default function AppShell() {
   const desktopSettingsPanelRef = useRef<HTMLDivElement | null>(null);
   const [desktopLocationRowVisible, setDesktopLocationRowVisible] =
     useState(false);
-  const [aboutOpen, setAboutOpen] = useState(false);
-  const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">("about");
+  const [aboutOpen, setAboutOpen] = useState(() => new URLSearchParams(window.location.search).get("guide") === "1");
+  const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">(() => new URLSearchParams(window.location.search).get("guide") === "1" ? "guide" : "about");
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [isCinemaMode, setIsCinemaMode] = useState(false);
   const [cinemaMapMovementLocked, setCinemaMapMovementLocked] = useState(true);
