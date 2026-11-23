@@ -36,6 +36,7 @@ interface PosterTextOverlayProps {
   bottomLineFontFamily?: string;
   bottomLineFontSize?: number;
   textAlign?: "left" | "center" | "right";
+  textPosition?: "top" | "center" | "bottom";
   textColor: string;
   landColor: string;
   showPosterText: boolean;
@@ -71,6 +72,7 @@ export default function PosterTextOverlay({
   bottomLineFontFamily: bottomLineFontFamilyProp,
   bottomLineFontSize: bottomLineFontSizeProp,
   textAlign = "center",
+  textPosition = "bottom",
   textColor,
   landColor,
   showPosterText,
@@ -292,7 +294,16 @@ export default function PosterTextOverlay({
     }
   } else {
     // Standard Layouts (Portrait / Landscape / Social)
-    const standardTopPercent = (cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO) * 100;
+    const position = textPosition ?? "bottom";
+    let standardTopPercent: number;
+    if (position === "top") {
+      standardTopPercent = 14;
+    } else if (position === "center") {
+      standardTopPercent = 50;
+    } else {
+      standardTopPercent = (cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO) * 100;
+    }
+
     stackPositionStyle = {
       top: `${standardTopPercent}%`,
       transform: "translateY(-50%)",

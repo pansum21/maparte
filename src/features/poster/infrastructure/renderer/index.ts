@@ -80,6 +80,7 @@ export async function compositeExport(
     bottomLineFontFamily,
     bottomLineFontSize,
     textAlign = "center",
+    textPosition = "bottom",
     showPosterText = true,
     showOverlay = true,
     overlayTop = showOverlay,
@@ -187,7 +188,7 @@ export async function compositeExport(
       pageCtx.fillText(formatCoordinates(center.lat, center.lon), captionX, lineY, g.captionWidth);
       pageCtx.globalAlpha = 1;
     } else if (showPosterText) {
-      drawPosterText(pageCtx, page.width, page.height, theme, center, displayCity, displayCountry, fontFamily, true, overlayBottom, includeCredits, customDate, fontSize, textAlign, { headingFontFamily, headingFontSize, midlineFontFamily, midlineFontSize, bottomLineFontFamily, bottomLineFontSize });
+      drawPosterText(pageCtx, page.width, page.height, theme, center, displayCity, displayCountry, fontFamily, true, overlayBottom, includeCredits, customDate, fontSize, textAlign, { headingFontFamily, headingFontSize, midlineFontFamily, midlineFontSize, bottomLineFontFamily, bottomLineFontSize }, textPosition);
     }
     pageCtx.textBaseline = "bottom";
     pageCtx.globalAlpha = .68;
@@ -499,6 +500,7 @@ export async function compositeExport(
       fontSize,
       textAlign,
       { headingFontFamily, headingFontSize, midlineFontFamily, midlineFontSize, bottomLineFontFamily, bottomLineFontSize },
+      textPosition,
     );
     ctx.restore();
 
@@ -582,6 +584,7 @@ export async function compositeExport(
         fontSize,
         textAlign,
         { headingFontFamily, headingFontSize, midlineFontFamily, midlineFontSize, bottomLineFontFamily, bottomLineFontSize },
+        textPosition,
       );
 
       ctx.restore();
@@ -648,6 +651,7 @@ export async function compositeExport(
         fontSize,
         textAlign,
         { headingFontFamily, headingFontSize, midlineFontFamily, midlineFontSize, bottomLineFontFamily, bottomLineFontSize },
+        textPosition,
       );
     }
 

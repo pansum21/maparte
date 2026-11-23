@@ -50,6 +50,7 @@ export interface ExportOptions {
   bottomLineFontFamily?: string;
   bottomLineFontSize?: number;
   textAlign?: "left" | "center" | "right";
+  textPosition?: "top" | "center" | "bottom";
   showPosterText: boolean;
   showOverlay?: boolean;
   overlayTop?: boolean;

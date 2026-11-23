@@ -37,6 +37,7 @@ export function drawPosterText(
   fontSize: number = 16,
   textAlign: CanvasTextAlign = "center",
   lineTypography?: { headingFontFamily?: string; headingFontSize?: number; midlineFontFamily?: string; midlineFontSize?: number; bottomLineFontFamily?: string; bottomLineFontSize?: number },
+  textPosition: "top" | "center" | "bottom" = "bottom",
 ): void {
   const landColor = theme.map?.land || (theme.ui as any)?.bg || "#808080";
   const rawTextColor = theme.ui?.text || "#111111";
@@ -97,10 +98,16 @@ export function drawPosterText(
     }
 
     const taglineFontSize = 68 * dimScale * bottomLineScale;
-    const cityY = height * TEXT_CITY_Y_RATIO;
-    const countryY = height * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO);
-    const taglineY = height * (country ? .918 : .89);
-    const coordinatesY = height * (hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9));
+    const positionYRatio = textPosition === "top"
+      ? 0.14
+      : textPosition === "center"
+        ? 0.50
+        : TEXT_CITY_Y_RATIO;
+    const yDelta = height * (positionYRatio - TEXT_CITY_Y_RATIO);
+    const cityY = height * positionYRatio;
+    const countryY = height * (hasTagline ? 0.896 : TEXT_COUNTRY_Y_RATIO) + yDelta;
+    const taglineY = height * (country ? .918 : .89) + yDelta;
+    const coordinatesY = height * (hasTagline ? (country ? .938 : .918) : (country ? TEXT_COORDS_Y_RATIO : .9)) + yDelta;
 
     ctx.fillStyle = textColor;
     ctx.textAlign = textAlign;

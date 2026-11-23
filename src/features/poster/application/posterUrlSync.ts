@@ -15,6 +15,7 @@ export interface ParsedUrlPosterState {
   height?: string;
   fontFamily?: string;
   textAlign?: "left" | "center" | "right";
+  textPosition?: "top" | "center" | "bottom";
   circleTextSide?: "left" | "right";
   minimapRing?: boolean;
   minimapRoute?: boolean;
@@ -73,6 +74,8 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
     if (font && font.trim()) result.fontFamily = font.trim();
     const align = params.get("align");
     if (align === "left" || align === "center" || align === "right") result.textAlign = align;
+    const pos = params.get("pos");
+    if (pos === "top" || pos === "center" || pos === "bottom") result.textPosition = pos;
 
     const side = params.get("textside");
     if (side === "left" || side === "right") result.circleTextSide = side;
@@ -165,6 +168,7 @@ export function serializePosterStateToUrl(
     params.set("font", form.fontFamily.trim());
   }
   if (form.textAlign && form.textAlign !== "center") params.set("align", form.textAlign);
+  if (form.textPosition && form.textPosition !== "bottom") params.set("pos", form.textPosition);
   if (form.circleTextSide === "left") params.set("textside", "left");
   if (form.minimapRing === false) params.set("ring", "0");
   if (form.minimapRoute) params.set("mroute", "1");

@@ -50,6 +50,7 @@ export interface PosterForm {
   bottomLineFontFamily?: string;
   bottomLineFontSize?: string;
   textAlign?: "left" | "center" | "right";
+  textPosition?: "top" | "center" | "bottom";
   /** Circle layouts (landscape): which side the text column sits on. */
   circleTextSide?: "left" | "right";
   /** Minimap-style ring with tick marks and N/E/S/W letters around the map. */

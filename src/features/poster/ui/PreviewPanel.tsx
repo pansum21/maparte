@@ -793,6 +793,7 @@ export default function PreviewPanel({
                   bottomLineFontFamily={form.bottomLineFontFamily}
                   bottomLineFontSize={Number(form.bottomLineFontSize) || undefined}
                   textAlign={previewFrameLayoutGeometry?.style === "left" || previewFrameLayoutGeometry?.style === "right" ? previewFrameLayoutGeometry.style : (form.textAlign ?? "center")}
+                  textPosition={form.textPosition ?? "bottom"}
                   textColor={posterTextColor}
                   landColor={effectiveTheme.map.land}
                   showPosterText={form.showPosterText && previewFrameLayoutGeometry?.style !== "full-map"}

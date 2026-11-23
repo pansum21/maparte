@@ -63,6 +63,7 @@ interface LayeredSvgOptions {
   fontFamily?: string;
   fontSize?: number;
   textAlign?: "left" | "center" | "right";
+  textPosition?: "top" | "center" | "bottom";
   showPosterText: boolean;
   showOverlay: boolean;
   overlayTop?: boolean;
@@ -253,6 +254,7 @@ export async function createLayeredSvgBlobFromMap({
   fontFamily,
   fontSize = 16,
   textAlign = "center",
+  textPosition = "bottom",
   showPosterText,
   showOverlay,
   overlayTop = showOverlay,
@@ -588,7 +590,8 @@ export async function createLayeredSvgBlobFromMap({
       const lineX1 = textAlign === "left" ? exportWidth * 0.05 : textAlign === "right" ? exportWidth * 0.95 - dividerWidth : exportWidth * 0.5 - dividerWidth / 2;
       const lineX2 = lineX1 + dividerWidth;
 
-      const cityStartY = exportHeight * (cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO);
+      const yRatio = textPosition === "top" ? 0.14 : textPosition === "center" ? 0.50 : TEXT_CITY_Y_RATIO;
+      const cityStartY = exportHeight * (cityLayout.isMultiLine ? yRatio - 0.015 : yRatio);
       const lineSpacing = cityFontSize * 1.08;
 
       if (cityLayout.isMultiLine) {
