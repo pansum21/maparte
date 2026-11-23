@@ -65,6 +65,10 @@
   transition: background 0.4s ease;
 }
 
+.poster-viewport.is-wall-mockup:not([class*="wall-"]):not(.has-user-wall-photo):not(.has-live-camera-background) {
+  background: transparent !important;
+}
+
 /* Wall Background Styles */
 .poster-viewport.is-wall-mockup.wall-nordic-grey {
   background:

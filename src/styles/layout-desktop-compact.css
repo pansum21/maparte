@@ -306,6 +306,31 @@
   touch-action: auto !important;
 }
 
+.layout-inline-list.card-scroll-list.layout-grid-portrait-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  grid-auto-rows: 78px !important;
+  gap: 6px !important;
+}
+
+.layout-inline-list.card-scroll-list.layout-grid-landscape-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-auto-rows: 72px !important;
+  gap: 8px !important;
+}
+
+.layout-inline-list.card-scroll-list.layout-grid-landscape-2 .layout-card {
+  height: 72px !important;
+  min-height: 72px !important;
+}
+
+.layout-inline-list.card-scroll-list.layout-grid-landscape-2 .layout-card-symbol-wrap {
+  height: 42px;
+}
+
+.layout-inline-list.card-scroll-list.layout-grid-landscape-2 .layout-card-symbol {
+  max-height: 42px !important;
+}
+
 .layout-inline-list .layout-card {
   position: relative !important;
   box-sizing: border-box;

@@ -834,7 +834,7 @@ export default function MapSettingsSection({
                 <div className="layout-subhead-row">
                   <h3>Portrait Formats (A0 - A5, US & Posters)</h3>
                 </div>
-                <div className="layout-inline-list card-scroll-list">
+                <div className="layout-inline-list card-scroll-list layout-grid-portrait-4">
                   {printPortraitLayouts.map((layoutOption) => (
                     <LayoutCard
                       key={layoutOption.id}
@@ -847,7 +847,7 @@ export default function MapSettingsSection({
                 <div className="layout-subhead-row" style={{ marginTop: "14px" }}>
                   <h3>Landscape Formats (A0 - A5, US & Posters)</h3>
                 </div>
-                <div className="layout-inline-list card-scroll-list">
+                <div className="layout-inline-list card-scroll-list layout-grid-landscape-2">
                   {printLandscapeLayouts.map((layoutOption) => (
                     <LayoutCard
                       key={layoutOption.id}
@@ -865,7 +865,7 @@ export default function MapSettingsSection({
                 <div className="layout-subhead-row">
                   <h3>Portrait Compositions</h3>
                 </div>
-                <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-portrait-4">
                   {frameRectPortraitLayouts.map((layoutOption) => (
                     <LayoutCard
                       key={layoutOption.id}
@@ -878,7 +878,7 @@ export default function MapSettingsSection({
                 <div className="layout-subhead-row" style={{ marginTop: "14px" }}>
                   <h3>Landscape Compositions</h3>
                 </div>
-                <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-landscape-2">
                   {frameRectLandscapeLayouts.map((layoutOption) => (
                     <LayoutCard
                       key={layoutOption.id}
@@ -892,7 +892,7 @@ export default function MapSettingsSection({
                 <div className="layout-subhead-row" style={{ marginTop: "16px" }}>
                   <h3>GTA 6 Layouts (Portrait)</h3>
                 </div>
-                <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-portrait-4">
                   {frameCirclePortraitLayouts.map((layoutOption) => (
                     <LayoutCard
                       key={layoutOption.id}
@@ -905,7 +905,7 @@ export default function MapSettingsSection({
                 <div className="layout-subhead-row" style={{ marginTop: "14px" }}>
                   <h3>GTA 6 Layouts (Landscape)</h3>
                 </div>
-                <div className="layout-inline-list card-scroll-list frame-paper-layout-list">
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-landscape-2">
                   {frameCircleLandscapeLayouts.map((layoutOption) => (
                     <LayoutCard
                       key={layoutOption.id}

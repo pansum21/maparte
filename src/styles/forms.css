@@ -1368,10 +1368,18 @@ button.color-editor-target:focus-visible {
 
 .layout-inline-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-auto-rows: 126px;
   gap: 8px;
   width: 100%;
+}
+
+.layout-inline-list.layout-grid-portrait-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.layout-inline-list.layout-grid-landscape-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
 
 .layout-inline-group,

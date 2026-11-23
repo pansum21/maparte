@@ -167,8 +167,6 @@ const maparteCaptionVariants: Record<string, MaparteCaptionVariant> = {
   print_maparte_square_caption_a4_top: "top-center",
   print_maparte_left_caption_a4_portrait: "left-bottom",
   print_maparte_right_caption_a4_portrait: "right-bottom",
-  print_maparte_corner_caption_a4_portrait: "top-left",
-  print_maparte_corner_caption_a4_bottom: "bottom-left",
   print_maparte_square_caption_a4_landscape: "center-bottom",
   print_maparte_square_caption_a4_landscape_left: "center-bottom",
   print_maparte_left_caption_a4_landscape: "left-bottom",
@@ -188,9 +186,7 @@ export function isMaparteLandscapeLeftLayout(layoutId: string): boolean {
     layoutId === "print_maparte_square_caption_a4_landscape_left" ||
     layoutId === "print_maparte_circle_caption_a4_landscape_left" ||
     layoutId === "print_maparte_circle_poster_a4_landscape_left" ||
-    layoutId === "print_maparte_left_caption_a4_landscape" ||
-    layoutId === "print_maparte_corner_caption_a4_portrait" ||
-    layoutId === "print_maparte_corner_caption_a4_bottom"
+    layoutId === "print_maparte_left_caption_a4_landscape"
   );
 }
 
