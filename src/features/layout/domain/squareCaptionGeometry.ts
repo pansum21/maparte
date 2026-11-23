@@ -29,6 +29,8 @@ export interface SquareCaptionGeometry {
   overlayY?: number;
   overlaySize?: number;
   textBox?: { x: number; y: number; w: number; h: number };
+  /** Name block starts at the top of textBox instead of being centred in it (double layouts). */
+  textTopAlign?: boolean;
 }
 
 /** Map diameter as a share of the compass slot (ticks and letters use the rest). */
@@ -307,19 +309,20 @@ export interface DoubleMapGeometry {
   safeInsetY: number;
   shape: "square" | "circle" | "heart";
   slots: [DoubleMapSlot, DoubleMapSlot];
-  /** One text box per map, stacked in the text column (first box belongs to the first map). */
+  /** One name block per map, placed directly below that map (first box belongs to the first map). */
   textBoxes: [
     { x: number; y: number; w: number; h: number },
     { x: number; y: number; w: number; h: number },
   ];
-  textSide: "left" | "right";
   captionAlign: "left" | "center" | "right";
 }
 
+/** Name block height as a share of the poster height (below each map). */
+export const DOUBLE_NAME_BAND = 0.2;
+
 /**
- * Landscape layout with two equal maps side by side and one text column on the
- * left or right. Each map has its own name block in the column, top block for the
- * first map and bottom block for the second.
+ * Landscape layout with two equal maps side by side. Each map has its own name
+ * block directly below it, so the maps can be as big as the width and height allow.
  */
 export function getDoubleMapGeometry(
   posterWidth: number,
@@ -329,7 +332,6 @@ export function getDoubleMapGeometry(
   mapInsetCm: number,
   gapCm: number,
   shape: "square" | "circle" | "heart",
-  textSide: "left" | "right" = "right",
   requestedAlign?: "left" | "center" | "right",
 ): DoubleMapGeometry {
   const pxPerCmX = posterWidth / Math.max(1, widthCm);
@@ -337,28 +339,18 @@ export function getDoubleMapGeometry(
   const minDim = Math.min(posterWidth, posterHeight);
   const safeInsetX = Math.max(0.035 * minDim, Math.max(0, mapInsetCm + (gapCm || 0)) * pxPerCmX);
   const safeInsetY = Math.max(0.035 * minDim, Math.max(0, mapInsetCm + (gapCm || 0)) * pxPerCmY);
-  const textW = 0.23 * posterWidth;
-  const textGap = 0.035 * posterWidth;
-  const midGap = 0.03 * posterWidth;
+  const midGap = 0.04 * posterWidth;
+  const nameGap = 0.02 * posterHeight;
+  const nameH = DOUBLE_NAME_BAND * posterHeight;
   const creditBand = 0.04 * posterHeight;
-  const sizeByWidth = (posterWidth - safeInsetX * 2 - textW - textGap - midGap) / 2;
-  const sizeByHeight = posterHeight - safeInsetY * 2 - creditBand;
+  const sizeByWidth = (posterWidth - safeInsetX * 2 - midGap) / 2;
+  const sizeByHeight = posterHeight - safeInsetY * 2 - creditBand - nameGap - nameH;
   const size = Math.max(1, Math.min(sizeByWidth, sizeByHeight));
-  const y = (posterHeight - size) / 2;
-  const total = size * 2 + midGap + textGap + textW;
-  const left = (posterWidth - total) / 2;
-  let ax: number;
-  let textX: number;
-  if (textSide === "left") {
-    textX = left;
-    ax = left + textW + textGap;
-  } else {
-    ax = left;
-    textX = left + size * 2 + midGap + textGap;
-  }
-  const bx = ax + size + midGap;
-  const boxGap = 0.03 * posterHeight;
-  const boxH = (size - boxGap) / 2;
+  // Map plus its name block, centred between the top inset and the credit band.
+  const groupH = size + nameGap + nameH;
+  const top = safeInsetY + Math.max(0, (posterHeight - safeInsetY * 2 - creditBand - groupH) / 2);
+  const left = (posterWidth - (size * 2 + midGap)) / 2;
+  const bx = left + size + midGap;
   return {
     posterWidth,
     posterHeight,
@@ -366,15 +358,14 @@ export function getDoubleMapGeometry(
     safeInsetY,
     shape,
     slots: [
-      { x: ax, y, size },
-      { x: bx, y, size },
+      { x: left, y: top, size },
+      { x: bx, y: top, size },
     ],
     textBoxes: [
-      { x: textX, y, w: textW, h: boxH },
-      { x: textX, y: y + boxH + boxGap, w: textW, h: boxH },
+      { x: left, y: top + size + nameGap, w: size, h: nameH },
+      { x: bx, y: top + size + nameGap, w: size, h: nameH },
     ],
-    textSide,
-    captionAlign: requestedAlign ?? "left",
+    captionAlign: requestedAlign ?? "center",
   };
 }
 
@@ -398,8 +389,8 @@ export function doubleSlotCaptionGeometry(g: DoubleMapGeometry, index: 0 | 1): S
     captionAlign: g.captionAlign,
     variant: "center-bottom",
     shape: g.shape === "square" ? "square" : "circle",
-    textSide: g.textSide,
     posterStyle: true,
     textBox: box,
+    textTopAlign: true,
   };
 }

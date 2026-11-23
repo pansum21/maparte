@@ -402,7 +402,6 @@ export function useExport() {
             borderMetrics.mapInsetCm,
             borderMetrics.gapCm,
             doubleShape,
-            form.circleTextSide === "left" ? "left" : "right",
             form.textAlign,
           );
           const views = getDoubleSlotViews(form, state.doubleMap);

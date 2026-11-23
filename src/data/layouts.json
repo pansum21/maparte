@@ -145,7 +145,7 @@
         {
           "id": "print_maparte_double_square_a4_landscape",
           "name": "Double Square · A4 Landscape",
-          "description": "Two square maps side by side, each with its own place. Names and coordinates on the left or right, on A4 landscape paper.",
+          "description": "Two square maps side by side, each with its own place. Each place name and its coordinates sit below its own map, on A4 landscape paper.",
           "width": 29.7,
           "height": 21,
           "unit": "cm",
@@ -156,7 +156,7 @@
         {
           "id": "print_maparte_double_circle_a4_landscape",
           "name": "Double Circle · A4 Landscape",
-          "description": "Two round maps side by side, each with its own place. Names and coordinates on the left or right, on A4 landscape paper.",
+          "description": "Two round maps side by side, each with its own place. Each place name and its coordinates sit below its own map, on A4 landscape paper.",
           "width": 29.7,
           "height": 21,
           "unit": "cm",
@@ -167,7 +167,7 @@
         {
           "id": "print_maparte_double_heart_a4_landscape",
           "name": "Double Heart · A4 Landscape",
-          "description": "Two heart shaped maps side by side, each with its own place. Names and coordinates on the left or right, on A4 landscape paper.",
+          "description": "Two heart shaped maps side by side, each with its own place. Each place name and its coordinates sit below its own map, on A4 landscape paper.",
           "width": 29.7,
           "height": 21,
           "unit": "cm",

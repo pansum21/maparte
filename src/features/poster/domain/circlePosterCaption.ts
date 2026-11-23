@@ -255,7 +255,7 @@ export function layoutCirclePosterCaption(
     k = Math.max(0.2, box.h / built.height);
     built = build(k);
   }
-  const offset = box.y + Math.max(0, (box.h - built.height) / 2);
+  const offset = g.textTopAlign ? box.y : box.y + Math.max(0, (box.h - built.height) / 2);
   built.out.forEach((r) => runs.push({ ...r, baselineY: Number((r.baselineY + offset).toFixed(2)) }));
   built.outRules.forEach((r) => rules.push({ ...r, y: Number((r.y + offset).toFixed(2)) }));
   return { runs, rules, credits };
