@@ -397,7 +397,11 @@ export function getDoubleMapGeometry(
   const captionShare = 0.5;
   const bandH = DOUBLE_NAME_BAND * posterHeight;
   const cellW = vertical ? usableW : (usableW - gap * (total - 1)) / total;
-  const cellH = vertical ? (usableH - gap * (total - 1)) / total : usableH;
+  // Credits sit on the poster's bottom inset. Leave a dedicated footer strip
+  // below portrait rows so the final map/caption never collides with them.
+  const portraitCreditClearance = vertical ? Math.max(minimumInsetCm * pxPerCmY, 0.035 * minDim) : 0;
+  const compositionH = Math.max(1, usableH - portraitCreditClearance);
+  const cellH = vertical ? (compositionH - gap * (total - 1)) / total : usableH;
   const mapCellW = vertical ? (usableW - gap) * (1 - captionShare) : cellW;
   const mapCellH = vertical ? cellH : Math.max(1, usableH - bandH);
   const slots: DoubleMapSlot[] = [];
