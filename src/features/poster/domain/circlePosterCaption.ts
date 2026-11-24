@@ -12,7 +12,11 @@ import { isLatinScript } from "@/features/poster/domain/textLayout";
  */
 
 /** Returns the width in px of `text` set in the CSS font shorthand `font`. */
-export type MeasureText = (font: string, text: string) => number;
+export type MeasureWidth = (font: string, text: string) => number;
+/** Height of the printed ink of `text` above and below its baseline, in px. */
+export type MeasureInk = (font: string, text: string) => { ascent: number; descent: number };
+/** Width measurer, optionally with ink extents (used to centre the block on its visible ink). */
+export type MeasureText = MeasureWidth & { ink?: MeasureInk };
 
 export interface CirclePosterCaptionInput {
   geometry: SquareCaptionGeometry;
@@ -219,6 +223,16 @@ export function layoutCirclePosterCaption(
     const outRules: PosterRule[] = [];
     const cs = citySize * k;
     let y = 0;
+    // Top and bottom of the printed ink of the whole block, relative to the first baseline origin.
+    let inkTop = Infinity;
+    let inkBottom = -Infinity;
+    const track = (text: string, family: string, weight: number, baseline: number, size: number) => {
+      const e = measure.ink
+        ? measure.ink(`${weight} ${REF}px ${family}`, text)
+        : { ascent: REF * CAP, descent: 0 };
+      inkTop = Math.min(inkTop, baseline - (e.ascent / REF) * size);
+      inkBottom = Math.max(inkBottom, baseline + (e.descent / REF) * size);
+    };
     if (cityText) {
       const lineStep = cs * 1.12;
       cityLines.forEach((line, i) => {
@@ -226,6 +240,7 @@ export function layoutCirclePosterCaption(
         const w = inkWidth(m) * cs;
         y = cs * CAP + i * lineStep;
         out.push(placeRun(m, cs, startX(w), y, cityWeight, input.headingFamily, 1));
+        track(line, input.headingFamily, cityWeight, y, cs);
       });
       if (country) {
         const widest = Math.max(...cityLines.map(lineWidth)) * cs;
@@ -254,17 +269,20 @@ export function layoutCirclePosterCaption(
       const top = i === 0 && !cityText ? 0 : y + size * item.gap;
       y = top + size * CAP;
       out.push(placeRun(m, size, startX(w), y, item.weight, item.family, item.opacity));
+      track(text, item.family, item.weight, y, size);
     });
-    return { out, outRules, height: y };
+    return { out, outRules, inkTop, inkHeight: inkBottom - inkTop };
   };
 
   let k = 1;
   let built = build(k);
-  if (built.height > box.h) {
-    k = Math.max(0.2, box.h / built.height);
+  if (built.inkHeight > box.h) {
+    k = Math.max(0.2, box.h / built.inkHeight);
     built = build(k);
   }
-  const offset = box.y + Math.max(0, (box.h - built.height) / 2);
+  if (!Number.isFinite(built.inkTop)) return { runs, rules, credits };
+  // Name block is centred in its box on its printed ink: equal space above and below.
+  const offset = box.y + Math.max(0, (box.h - built.inkHeight) / 2) - built.inkTop;
   built.out.forEach((r) => runs.push({ ...r, baselineY: Number((r.baselineY + offset).toFixed(2)) }));
   built.outRules.forEach((r) => rules.push({ ...r, y: Number((r.y + offset).toFixed(2)) }));
   return { runs, rules, credits };
@@ -280,9 +298,16 @@ export function createCanvasMeasure(): MeasureText {
   } catch {
     ctx = null;
   }
-  return (font, text) => {
+  const measure = ((font: string, text: string) => {
     if (!ctx) return text.length * REF * 0.6;
     ctx.font = font;
     return ctx.measureText(text).width;
+  }) as MeasureText;
+  measure.ink = (font: string, text: string) => {
+    if (!ctx) return { ascent: REF * CAP, descent: 0 };
+    ctx.font = font;
+    const m = ctx.measureText(text);
+    return { ascent: m.actualBoundingBoxAscent, descent: m.actualBoundingBoxDescent };
   };
+  return measure;
 }

@@ -18,10 +18,12 @@ import {
   consumeProCredit,
 } from "@/features/export/infrastructure/planTier";
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
+import { renderDoublePoster } from "@/features/export/infrastructure/doublePosterExporter";
+import { getDoubleSlotViews } from "@/features/poster/domain/doubleMapSlots";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { readNeatlineSelection, getPosterBorderMetrics } from "@/features/layout/ui/NeatlinePicker";
-import { getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteCirclePosterLayout, isMaparteSquareCaptionLayout, isMaparteLandscapeLeftLayout } from "@/features/layout/infrastructure/layoutRepository";
-import { getCircleCaptionGeometry, getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import { getDoubleMapShape, getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteCirclePosterLayout, isMaparteSquareCaptionLayout, isMaparteLandscapeLeftLayout } from "@/features/layout/infrastructure/layoutRepository";
+import { getCircleCaptionGeometry, getDoubleMapGeometry, getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { DEFAULT_NAV_MARKER_COLOR, type MinimapOverlayOptions } from "@/features/poster/domain/minimapOverlay";
 import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
 import { getAllMarkerIcons } from "@/features/markers/infrastructure/iconRegistry";
@@ -167,7 +169,7 @@ function writePosterExportCount(nextCount: number): void {
  * 5. Download.
  */
 export function useExport() {
-  const { state, dispatch, effectiveTheme, mapRef } = usePosterContext();
+  const { state, dispatch, effectiveTheme, mapRef, doubleMapRefs } = usePosterContext();
   const { form } = state;
   const hasVisibleMarkers = form.showMarkers && state.markers.length > 0;
   const visibleRoutes = useMemo(
@@ -334,6 +336,13 @@ export function useExport() {
         const lat = Number(form.latitude) || 0;
         const lon = Number(form.longitude) || 0;
 
+        const doubleShape = getDoubleMapShape(form.layout);
+        if (doubleShape && (format === "svg" || format === "zip")) {
+          throw new Error(
+            "Vector and master bundle downloads are not available for the double map layouts yet. Please use PNG, JPG or PDF.",
+          );
+        }
+
         if (format === "svg") {
           const svgBlob = await createLayeredSvgBlobFromMap({
             map,
@@ -383,6 +392,45 @@ export function useExport() {
           return;
         }
 
+        let fullCanvas: HTMLCanvasElement;
+        let density: { x: number; y: number };
+        let effectiveDpi: number;
+        if (doubleShape) {
+          const mapA = doubleMapRefs[0].current;
+          const mapB = doubleMapRefs[1].current;
+          if (!mapA || !mapB) throw new Error("Both maps need to be ready before downloading.");
+          const doubleGeometry = getDoubleMapGeometry(
+            size.width,
+            size.height,
+            widthCm,
+            heightCm,
+            borderMetrics.mapInsetCm,
+            borderMetrics.gapCm,
+            doubleShape,
+            form.textAlign,
+          );
+          const views = getDoubleSlotViews(form, state.doubleMap);
+          fullCanvas = await renderDoublePoster({
+            geometry: doubleGeometry,
+            maps: [mapA, mapB],
+            slots: [views[0], views[1]],
+            background: effectiveTheme.ui.bg,
+            textColor: form.posterTextColor || effectiveTheme.ui.text,
+            showPosterText: form.showPosterText,
+            includeCredits,
+            customDate: getActivePosterLabels(form).customDate,
+            fontFamily: form.fontFamily.trim(),
+            fontSize: Number(form.fontSize) || 16,
+            headingFontFamily: form.headingFontFamily,
+            headingFontSize: Number(form.headingFontSize) || undefined,
+            midlineFontFamily: form.midlineFontFamily,
+            midlineFontSize: Number(form.midlineFontSize) || undefined,
+            bottomLineFontFamily: form.bottomLineFontFamily,
+            bottomLineFontSize: Number(form.bottomLineFontSize) || undefined,
+          });
+          density = { x: fullCanvas.width / widthInches, y: fullCanvas.height / heightInches };
+          effectiveDpi = Math.max(1, Math.floor(Math.min(density.x, density.y)));
+        } else {
         // 1. Capture map at full export resolution
         const {
           canvas: mapCanvas,
@@ -411,7 +459,7 @@ export function useExport() {
               y: (frameLayoutGeometry.height / size.height) * heightCm / 2.54,
             }
           : null;
-        const density = squarePhysicalInches
+        density = squarePhysicalInches
           ? {
               x: mapCanvas.width / squarePhysicalInches,
               y: mapCanvas.height / squarePhysicalInches,
@@ -422,10 +470,10 @@ export function useExport() {
               x: mapCanvas.width / widthInches,
               y: mapCanvas.height / heightInches,
             };
-        const effectiveDpi = Math.max(1, Math.floor(Math.min(density.x, density.y)));
+        effectiveDpi = Math.max(1, Math.floor(Math.min(density.x, density.y)));
 
         // 2. Composite fades + text
-        const { canvas: fullCanvas } = await compositeExport(mapCanvas, {
+        ({ canvas: fullCanvas } = await compositeExport(mapCanvas, {
           mapAlreadyInset,
           showWhiteMat: (squareCaptionGeometry || frameLayoutGeometry) ? false : showWhiteMat,
           matInsetXRatio: borderMetrics.matInsetXRatio,
@@ -467,7 +515,8 @@ export function useExport() {
           squareCaptionGeometry,
           frameLayoutGeometry,
           minimapOverlay,
-        });
+        }));
+        }
 
         const canvas = isPro ? fullCanvas : applyFreeTier(fullCanvas);
 
@@ -597,7 +646,9 @@ export function useExport() {
     },
     [
       mapRef,
+      doubleMapRefs,
       form,
+      state.doubleMap,
       effectiveTheme,
       dispatch,
       hasVisibleMarkers,

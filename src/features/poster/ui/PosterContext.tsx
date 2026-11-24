@@ -12,6 +12,8 @@ import {
   type PosterState,
   type PosterAction,
   type PosterForm,
+  type DoubleMapState,
+  createEmptyDoubleSlot,
 } from "../application/posterReducer";
 import type { ResolvedTheme } from "@/features/theme/domain/types";
 import { getTheme } from "@/features/theme/infrastructure/themeRepository";
@@ -44,7 +46,7 @@ import {
 } from "@/core/config";
 
 import { resolveCityFromUrl, findCityMatch } from "@/features/location/domain/cityRouteResolver";
-import { parsePosterStateFromUrl, serializePosterStateToUrl } from "@/features/poster/application/posterUrlSync";
+import { parsePosterStateFromUrl, parseSecondMapFromUrl, serializePosterStateToUrl } from "@/features/poster/application/posterUrlSync";
 
 const DEFAULT_LOCATION_LABEL = "";
 
@@ -249,8 +251,64 @@ function getInitialState(readUrlState = true): PosterState {
     }
   }
 
+  let doubleMap: DoubleMapState = { active: 0, other: createEmptyDoubleSlot() };
+  if (readUrlState && typeof window !== "undefined") {
+    const second = parseSecondMapFromUrl(window.location.search);
+    const other = { ...createEmptyDoubleSlot() };
+    if (second.latitude && second.longitude) {
+      other.latitude = second.latitude;
+      other.longitude = second.longitude;
+      other.location = second.displayCity || "Custom Location";
+      other.displayCity = second.displayCity || "";
+      other.displayCountry = second.displayCountry || "";
+      if (second.distance) other.distance = second.distance;
+      other.selectedLocation = {
+        id: `custom:${second.latitude},${second.longitude}`,
+        label: second.displayCity || "Custom Location",
+        lat: Number(second.latitude),
+        lon: Number(second.longitude),
+        city: second.displayCity || "",
+        country: second.displayCountry || "",
+        continent: "",
+      };
+      other.displayNameOverrides = { city: Boolean(second.displayCity), country: false };
+    }
+    doubleMap = { active: 0, other };
+    if (second.active === 2) {
+      // Start with the second map active: swap it into the form.
+      const parked = {
+        location: form.location,
+        latitude: form.latitude,
+        longitude: form.longitude,
+        distance: form.distance,
+        displayCity: form.displayCity,
+        displayTown: form.displayTown,
+        displayCountry: form.displayCountry,
+        displayState: form.displayState,
+        displayContinent: form.displayContinent,
+        selectedLocation,
+        displayNameOverrides: { city: Boolean(form.displayCity), country: false },
+      };
+      form = {
+        ...form,
+        location: other.location,
+        latitude: other.latitude,
+        longitude: other.longitude,
+        distance: other.distance,
+        displayCity: other.displayCity,
+        displayTown: other.displayTown,
+        displayCountry: other.displayCountry,
+        displayState: other.displayState,
+        displayContinent: other.displayContinent,
+      };
+      selectedLocation = other.selectedLocation;
+      doubleMap = { active: 1, other: parked };
+    }
+  }
+
   return {
     form,
+    doubleMap,
     customColors: {},
     markers: initialMarkers,
     customMarkerIcons: [],
@@ -299,6 +357,8 @@ interface PosterContextValue {
   effectiveTheme: ResolvedTheme;
   mapStyle: StyleSpecification;
   mapRef: MapInstanceRef;
+  /** Double layouts: the map of each slot. `mapRef` points at the active one. */
+  doubleMapRefs: [MapInstanceRef, MapInstanceRef];
 }
 
 const PosterContext = createContext<PosterContextValue | null>(null);
@@ -308,6 +368,8 @@ const PosterContext = createContext<PosterContextValue | null>(null);
 export function PosterProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(posterReducer, INITIAL_STATE);
   const mapRef = useRef(null) as MapInstanceRef;
+  const doubleMapRefA = useRef(null) as MapInstanceRef;
+  const doubleMapRefB = useRef(null) as MapInstanceRef;
   const lastSyncedMarkerThemeColorRef = useRef<string | null>(null);
   const lastSyncedRouteThemeColorRef = useRef<string | null>(null);
   const hasLoadedCustomIconsRef = useRef(false);
@@ -521,6 +583,7 @@ export function PosterProvider({ children }: { children: ReactNode }) {
       effectiveTheme,
       mapStyle,
       mapRef,
+      doubleMapRefs: [doubleMapRefA, doubleMapRefB],
     }),
     [state, selectedTheme, effectiveTheme, mapStyle],
   );

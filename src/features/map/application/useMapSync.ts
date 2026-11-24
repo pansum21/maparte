@@ -362,6 +362,7 @@ export function useMapSync(
     handleMoveEnd,
     flyToLocation,
     setContainerWidth,
+    containerPx,
     overzoomScale,
   };
 }
