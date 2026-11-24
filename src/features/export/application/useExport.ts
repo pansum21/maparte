@@ -22,7 +22,7 @@ import { renderDoublePoster } from "@/features/export/infrastructure/doublePoste
 import { getDoubleSlotViews } from "@/features/poster/domain/doubleMapSlots";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { readNeatlineSelection, getPosterBorderMetrics } from "@/features/layout/ui/NeatlinePicker";
-import { getDoubleMapShape, getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteCirclePosterLayout, isMaparteSquareCaptionLayout, isMaparteLandscapeLeftLayout } from "@/features/layout/infrastructure/layoutRepository";
+import { getDoubleMapShape, getMaparteMultiMapLayout, getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteCirclePosterLayout, isMaparteSquareCaptionLayout, isMaparteLandscapeLeftLayout } from "@/features/layout/infrastructure/layoutRepository";
 import { getCircleCaptionGeometry, getDoubleMapGeometry, getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { DEFAULT_NAV_MARKER_COLOR, type MinimapOverlayOptions } from "@/features/poster/domain/minimapOverlay";
 import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
@@ -396,9 +396,9 @@ export function useExport() {
         let density: { x: number; y: number };
         let effectiveDpi: number;
         if (doubleShape) {
-          const mapA = doubleMapRefs[0].current;
-          const mapB = doubleMapRefs[1].current;
-          if (!mapA || !mapB) throw new Error("Both maps need to be ready before downloading.");
+          const mapCount = getMaparteMultiMapLayout(form.layout)?.count ?? 2;
+          const maps = doubleMapRefs.slice(0, mapCount).map((ref) => ref.current);
+          if (maps.some((map) => !map)) throw new Error("All maps need to be ready before downloading.");
           const doubleGeometry = getDoubleMapGeometry(
             size.width,
             size.height,
@@ -408,12 +408,13 @@ export function useExport() {
             borderMetrics.gapCm,
             doubleShape,
             form.textAlign,
+            mapCount,
           );
-          const views = getDoubleSlotViews(form, state.doubleMap);
+          const views = getDoubleSlotViews(form, state.doubleMap, mapCount);
           fullCanvas = await renderDoublePoster({
             geometry: doubleGeometry,
-            maps: [mapA, mapB],
-            slots: [views[0], views[1]],
+            maps: maps as NonNullable<typeof maps[number]>[],
+            slots: views,
             background: effectiveTheme.ui.bg,
             textColor: form.posterTextColor || effectiveTheme.ui.text,
             showPosterText: form.showPosterText,

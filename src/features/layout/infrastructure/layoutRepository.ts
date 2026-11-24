@@ -216,9 +216,22 @@ export const MAPARTE_DOUBLE_MAP_LAYOUT_IDS: Record<string, "square" | "circle" |
   print_maparte_double_heart_a4_landscape: "heart",
 };
 
+export type MaparteMultiMapLayout = { shape: "square" | "circle" | "heart"; count: 2 | 3; orientation: "portrait" | "landscape" };
+export const MAPARTE_MULTI_MAP_LAYOUTS: Record<string, MaparteMultiMapLayout> = {
+  ...Object.fromEntries(Object.entries(MAPARTE_DOUBLE_MAP_LAYOUT_IDS).map(([id, shape]) => [id, { shape, count: 2 as const, orientation: "landscape" as const }])),
+  ...Object.fromEntries((["square", "circle", "heart"] as const).flatMap((shape) => (["portrait", "landscape"] as const).map((orientation) => [
+    `frame_maparte_triple_${shape}_a4_${orientation}`,
+    { shape, count: 3 as const, orientation },
+  ]))),
+};
+
+export function getMaparteMultiMapLayout(layoutId: string): MaparteMultiMapLayout | null {
+  return MAPARTE_MULTI_MAP_LAYOUTS[layoutId] ?? null;
+}
+
 /** Landscape layouts with two maps. Returns the shape of both maps, or null for every other layout. */
 export function getDoubleMapShape(layoutId: string): "square" | "circle" | "heart" | null {
-  return MAPARTE_DOUBLE_MAP_LAYOUT_IDS[layoutId] ?? null;
+  return MAPARTE_MULTI_MAP_LAYOUTS[layoutId]?.shape ?? null;
 }
 
 export function isMaparteCircleLayout(layoutId: string): boolean {

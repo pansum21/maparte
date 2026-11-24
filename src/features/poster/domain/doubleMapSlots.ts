@@ -44,8 +44,7 @@ function toView(slot: FormSlice): DoubleSlotView {
 }
 
 /** Both maps in poster order (index 0 = first map, 1 = second map). */
-export function getDoubleSlotViews(form: FormSlice, doubleMap: DoubleMapState): [DoubleSlotView, DoubleSlotView] {
+export function getDoubleSlotViews(form: FormSlice, doubleMap: DoubleMapState, count = 2): DoubleSlotView[] {
   const activeView = toView(form);
-  const otherView = toView(doubleMap.other as DoubleSlotData);
-  return doubleMap.active === 0 ? [activeView, otherView] : [otherView, activeView];
+  return Array.from({ length: count }, (_, i) => i === doubleMap.active ? activeView : toView(doubleMap.slots[i] as DoubleSlotData));
 }

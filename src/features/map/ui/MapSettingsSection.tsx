@@ -5,6 +5,7 @@ import {
   formatLayoutDimensions,
   isMaparteCircleLayout,
   isMaparteSquareCaptionLayout,
+  getMaparteMultiMapLayout,
 } from "@/features/layout/infrastructure/layoutRepository";
 import {
   DISPLAY_PALETTE_KEYS,
@@ -546,6 +547,13 @@ export default function MapSettingsSection({
         "print_maparte_circle_caption_a4_landscape_left",
         "print_maparte_circle_poster_a4_landscape",
         "print_maparte_circle_poster_a4_landscape_left",
+        "print_maparte_double_square_a4_landscape",
+        "print_maparte_double_circle_a4_landscape",
+        "print_maparte_double_heart_a4_landscape",
+        ...["square", "circle", "heart"].flatMap((shape) => [
+          `frame_maparte_triple_${shape}_a4_portrait`,
+          `frame_maparte_triple_${shape}_a4_landscape`,
+        ]),
       ]),
     [],
   );
@@ -584,6 +592,7 @@ export default function MapSettingsSection({
         group.options.filter(
           (l) =>
             framePaperLayoutIds.has(l.id) &&
+            !getMaparteMultiMapLayout(l.id) &&
             !isMaparteCircleLayout(l.id) &&
             (l.heightCm ?? l.height) >= (l.widthCm ?? l.width),
         ),
@@ -597,6 +606,7 @@ export default function MapSettingsSection({
         group.options.filter(
           (l) =>
             framePaperLayoutIds.has(l.id) &&
+            !getMaparteMultiMapLayout(l.id) &&
             !isMaparteCircleLayout(l.id) &&
             (l.widthCm ?? l.width) > (l.heightCm ?? l.height),
         ),
@@ -610,6 +620,7 @@ export default function MapSettingsSection({
         group.options.filter(
           (l) =>
             framePaperLayoutIds.has(l.id) &&
+            !getMaparteMultiMapLayout(l.id) &&
             isMaparteCircleLayout(l.id) &&
             (l.heightCm ?? l.height) >= (l.widthCm ?? l.width),
         ),
@@ -623,12 +634,21 @@ export default function MapSettingsSection({
         group.options.filter(
           (l) =>
             framePaperLayoutIds.has(l.id) &&
+            !getMaparteMultiMapLayout(l.id) &&
             isMaparteCircleLayout(l.id) &&
             (l.widthCm ?? l.width) > (l.heightCm ?? l.height),
         ),
       ),
     [framePaperLayoutIds, layoutGroups],
   );
+
+  const multiMapLayouts = useMemo(
+    () => layoutGroups.flatMap((group) => group.options).filter((option) => Boolean(getMaparteMultiMapLayout(option.id))),
+    [layoutGroups],
+  );
+  const doubleMapLayouts = multiMapLayouts.filter((option) => getMaparteMultiMapLayout(option.id)?.count === 2);
+  const triplePortraitLayouts = multiMapLayouts.filter((option) => getMaparteMultiMapLayout(option.id)?.count === 3 && getMaparteMultiMapLayout(option.id)?.orientation === "portrait");
+  const tripleLandscapeLayouts = multiMapLayouts.filter((option) => getMaparteMultiMapLayout(option.id)?.count === 3 && getMaparteMultiMapLayout(option.id)?.orientation === "landscape");
 
   const printPortraitLayouts = useMemo(
     () =>
@@ -918,6 +938,19 @@ export default function MapSettingsSection({
                       onClick={() => handleLayoutSelectInline(layoutOption.id)}
                     />
                   ))}
+                </div>
+                <div className="layout-subhead-row" style={{ marginTop: "16px" }}><h3>Multi-Map Layouts</h3></div>
+                <div className="layout-subhead-row"><h4>Double Maps</h4></div>
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-landscape-2">
+                  {doubleMapLayouts.map((layoutOption) => <LayoutCard key={layoutOption.id} layoutOption={layoutOption} isSelected={layoutOption.id === form.layout} onClick={() => handleLayoutSelectInline(layoutOption.id)} />)}
+                </div>
+                <div className="layout-subhead-row" style={{ marginTop: "12px" }}><h4>Triple Maps · Portrait</h4></div>
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-portrait-4">
+                  {triplePortraitLayouts.map((layoutOption) => <LayoutCard key={layoutOption.id} layoutOption={layoutOption} isSelected={layoutOption.id === form.layout} onClick={() => handleLayoutSelectInline(layoutOption.id)} />)}
+                </div>
+                <div className="layout-subhead-row" style={{ marginTop: "12px" }}><h4>Triple Maps · Landscape</h4></div>
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-landscape-2">
+                  {tripleLandscapeLayouts.map((layoutOption) => <LayoutCard key={layoutOption.id} layoutOption={layoutOption} isSelected={layoutOption.id === form.layout} onClick={() => handleLayoutSelectInline(layoutOption.id)} />)}
                 </div>
                 <div className="frame-layout-style-section">
                   <h4 className="frame-layout-subheading">Frame Styles</h4>

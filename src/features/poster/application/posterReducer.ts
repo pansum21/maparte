@@ -111,8 +111,8 @@ export interface DoubleSlotData {
  * pan keep working as before. The other map is parked here until it is clicked.
  */
 export interface DoubleMapState {
-  active: 0 | 1;
-  other: DoubleSlotData;
+  active: number;
+  slots: DoubleSlotData[];
 }
 
 export function createEmptyDoubleSlot(): DoubleSlotData {
@@ -172,7 +172,8 @@ export type PosterAction =
   | { type: "SET_COLOR"; key: string; value: string }
   | { type: "RESET_COLORS" }
   | { type: "SELECT_LOCATION"; location: SearchResult }
-  | { type: "SELECT_DOUBLE_SLOT"; slot: 0 | 1 }
+  | { type: "SELECT_DOUBLE_SLOT"; slot: number }
+  | { type: "SET_DOUBLE_SLOT"; slot: number; data: Partial<DoubleSlotData> }
   | { type: "SET_DOUBLE_OTHER"; data: Partial<DoubleSlotData> }
   | { type: "SET_USER_LOCATION"; location: SearchResult | null }
   | { type: "CLEAR_LOCATION" }
@@ -289,14 +290,20 @@ export function posterReducer(
     case "RESET_COLORS":
       return { ...state, customColors: {} };
 
+    case "SET_DOUBLE_SLOT":
+      return {
+        ...state,
+        doubleMap: { ...state.doubleMap, slots: state.doubleMap.slots.map((slot, i) => i === action.slot ? { ...slot, ...action.data } : slot) },
+      };
+
     case "SET_DOUBLE_OTHER":
       return {
         ...state,
-        doubleMap: { ...state.doubleMap, other: { ...state.doubleMap.other, ...action.data } },
+        doubleMap: { ...state.doubleMap, slots: state.doubleMap.slots.map((slot, i) => i === (state.doubleMap.active === 0 ? 1 : 0) ? { ...slot, ...action.data } : slot) },
       };
 
     case "SELECT_DOUBLE_SLOT": {
-      if (state.doubleMap.active === action.slot) return state;
+      if (state.doubleMap.active === action.slot || !state.doubleMap.slots[action.slot]) return state;
       const f = state.form;
       const parked: DoubleSlotData = {
         location: f.location,
@@ -311,13 +318,14 @@ export function posterReducer(
         selectedLocation: state.selectedLocation,
         displayNameOverrides: state.displayNameOverrides,
       };
-      const next = state.doubleMap.other;
+      const next = state.doubleMap.slots[action.slot];
+      const slots = state.doubleMap.slots.map((slot, i) => i === state.doubleMap.active ? parked : slot);
       return {
         ...state,
         selectedLocation: next.selectedLocation,
         displayNameOverrides: next.displayNameOverrides,
         isLocationFocused: false,
-        doubleMap: { active: action.slot, other: parked },
+        doubleMap: { active: action.slot, slots },
         form: {
           ...f,
           location: next.location,

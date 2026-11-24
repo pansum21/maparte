@@ -60,6 +60,12 @@ function getLayoutSymbolDataUri(layoutOption: Layout): string {
 
 function getLayoutCardLabel(layoutOption: Layout): string {
   const id = layoutOption.id.toLowerCase();
+  const multi = id.match(/(?:double|triple)_(square|circle|heart)/);
+  if (multi) {
+    const count = id.includes("triple") ? "Triple" : "Double";
+    const orientation = id.endsWith("_portrait") ? "P" : "L";
+    return `${count} ${multi[1][0].toUpperCase()}${multi[1].slice(1)} ${orientation}`;
+  }
   // Print sizes: A0 to A5, US formats, Posters
   if (id.includes("_a0_")) return "A0";
   if (id.includes("_a1_")) return "A1";

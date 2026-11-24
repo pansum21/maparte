@@ -19,8 +19,8 @@ export interface DoubleExportSlotText {
 
 export interface DoublePosterExportOptions {
   geometry: DoubleMapGeometry;
-  maps: [MaplibreMap, MaplibreMap];
-  slots: [DoubleExportSlotText, DoubleExportSlotText];
+  maps: MaplibreMap[];
+  slots: DoubleExportSlotText[];
   background: string;
   textColor: string;
   showPosterText: boolean;
@@ -71,7 +71,7 @@ export async function renderDoublePoster(opts: DoublePosterExportOptions): Promi
   ctx.fillStyle = opts.background;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  for (const i of [0, 1] as const) {
+  for (let i = 0; i < opts.maps.length; i += 1) {
     const slot = geometry.slots[i];
     const side = Math.max(1, Math.round(slot.size));
     const { canvas: mapCanvas } = await captureMapAsCanvas(opts.maps[i], side, side, false, 0, 0);
@@ -87,10 +87,7 @@ export async function renderDoublePoster(opts: DoublePosterExportOptions): Promi
   const layout = layoutDoubleMapCaption(
     {
       geometry,
-      slots: [
-        { city: opts.slots[0].city, country: opts.slots[0].country, coords: coords(opts.slots[0]) },
-        { city: opts.slots[1].city, country: opts.slots[1].country, coords: coords(opts.slots[1]) },
-      ],
+      slots: opts.slots.map((slot) => ({ city: slot.city, country: slot.country, coords: coords(slot) })),
       customDate: opts.customDate?.trim() || undefined,
       showText: opts.showPosterText,
       includeCredits: opts.includeCredits,

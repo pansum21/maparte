@@ -14,7 +14,7 @@ export interface DoubleMapCaptionSlotText {
 
 export interface DoubleMapCaptionInput {
   geometry: DoubleMapGeometry;
-  slots: [DoubleMapCaptionSlotText, DoubleMapCaptionSlotText];
+  slots: DoubleMapCaptionSlotText[];
   customDate?: string;
   showText: boolean;
   includeCredits: boolean;
@@ -40,8 +40,7 @@ export function layoutDoubleMapCaption(
   measure: MeasureText,
 ): CirclePosterCaptionLayout {
   const out: CirclePosterCaptionLayout = { runs: [], rules: [], credits: [] };
-  ([0, 1] as const).forEach((i) => {
-    const text = input.slots[i];
+  input.slots.forEach((text, i) => {
     const base: CirclePosterCaptionInput = {
       geometry: doubleSlotCaptionGeometry(input.geometry, i),
       city: text.city,
@@ -55,9 +54,9 @@ export function layoutDoubleMapCaption(
       midlineFamily: input.midlineFamily,
       bottomFamily: input.bottomFamily,
       creditFamily: input.creditFamily,
-      headingScale: input.headingScale * DOUBLE_HEADING_FACTOR,
-      midlineScale: input.midlineScale * 0.62,
-      bottomScale: input.bottomScale * 0.7,
+      headingScale: input.headingScale * (input.slots.length > 2 ? 0.38 : DOUBLE_HEADING_FACTOR),
+      midlineScale: input.midlineScale * (input.slots.length > 2 ? 0.48 : 0.62),
+      bottomScale: input.bottomScale * (input.slots.length > 2 ? 0.54 : 0.7),
     };
     const part = layoutCirclePosterCaption(base, measure);
     out.runs.push(...part.runs);

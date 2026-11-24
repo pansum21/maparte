@@ -449,6 +449,72 @@
           "posterWidthCm": 29.7,
           "posterHeightCm": 21,
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><path transform='translate(8 9) scale(1)' d='M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z' fill='#4B91B7'/><path transform='translate(36 9) scale(1)' d='M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z' fill='#4B91B7'/></svg>"
+        },
+        {
+          "id": "frame_maparte_triple_square_a4_portrait",
+          "name": "Triple Square · A4 Portrait",
+          "description": "Three independent square-shaped city maps with individual captions in an A4 portrait composition.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 40\"><rect x=\"17\" y=\"2\" width=\"30\" height=\"36\" rx=\"4\" fill=\"none\" stroke=\"#9CC3DA\" stroke-width=\"2\"/><rect x=\"24\" y=\"7\" width=\"16\" height=\"8\" rx=\"1\" fill=\"#4B91B7\"/><rect x=\"24\" y=\"18\" width=\"16\" height=\"8\" rx=\"1\" fill=\"#4B91B7\"/><rect x=\"24\" y=\"29\" width=\"16\" height=\"8\" rx=\"1\" fill=\"#4B91B7\"/></svg>"
+        },
+        {
+          "id": "frame_maparte_triple_square_a4_landscape",
+          "name": "Triple Square · A4 Landscape",
+          "description": "Three independent square-shaped city maps with individual captions in an A4 landscape composition.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 40\"><rect x=\"2\" y=\"6\" width=\"60\" height=\"28\" rx=\"4\" fill=\"none\" stroke=\"#9CC3DA\" stroke-width=\"2\"/><rect x=\"8\" y=\"13\" width=\"14\" height=\"14\" rx=\"1\" fill=\"#4B91B7\"/><rect x=\"26\" y=\"13\" width=\"14\" height=\"14\" rx=\"1\" fill=\"#4B91B7\"/><rect x=\"44\" y=\"13\" width=\"14\" height=\"14\" rx=\"1\" fill=\"#4B91B7\"/></svg>"
+        },
+        {
+          "id": "frame_maparte_triple_circle_a4_portrait",
+          "name": "Triple Circle · A4 Portrait",
+          "description": "Three independent circle-shaped city maps with individual captions in an A4 portrait composition.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 40\"><rect x=\"17\" y=\"2\" width=\"30\" height=\"36\" rx=\"4\" fill=\"none\" stroke=\"#9CC3DA\" stroke-width=\"2\"/><circle cx=\"32\" cy=\"11\" r=\"4\" fill=\"#4B91B7\"/><circle cx=\"32\" cy=\"22\" r=\"4\" fill=\"#4B91B7\"/><circle cx=\"32\" cy=\"33\" r=\"4\" fill=\"#4B91B7\"/></svg>"
+        },
+        {
+          "id": "frame_maparte_triple_circle_a4_landscape",
+          "name": "Triple Circle · A4 Landscape",
+          "description": "Three independent circle-shaped city maps with individual captions in an A4 landscape composition.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 40\"><rect x=\"2\" y=\"6\" width=\"60\" height=\"28\" rx=\"4\" fill=\"none\" stroke=\"#9CC3DA\" stroke-width=\"2\"/><circle cx=\"15\" cy=\"20\" r=\"7\" fill=\"#4B91B7\"/><circle cx=\"33\" cy=\"20\" r=\"7\" fill=\"#4B91B7\"/><circle cx=\"51\" cy=\"20\" r=\"7\" fill=\"#4B91B7\"/></svg>"
+        },
+        {
+          "id": "frame_maparte_triple_heart_a4_portrait",
+          "name": "Triple Heart · A4 Portrait",
+          "description": "Three independent heart-shaped city maps with individual captions in an A4 portrait composition.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 40\"><rect x=\"17\" y=\"2\" width=\"30\" height=\"36\" rx=\"4\" fill=\"none\" stroke=\"#9CC3DA\" stroke-width=\"2\"/><path transform=\"translate(26 8) scale(.55)\" d=\"M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z\" fill=\"#4B91B7\"/><path transform=\"translate(26 19) scale(.55)\" d=\"M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z\" fill=\"#4B91B7\"/><path transform=\"translate(26 30) scale(.55)\" d=\"M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z\" fill=\"#4B91B7\"/></svg>"
+        },
+        {
+          "id": "frame_maparte_triple_heart_a4_landscape",
+          "name": "Triple Heart · A4 Landscape",
+          "description": "Three independent heart-shaped city maps with individual captions in an A4 landscape composition.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 40\"><rect x=\"2\" y=\"6\" width=\"60\" height=\"28\" rx=\"4\" fill=\"none\" stroke=\"#9CC3DA\" stroke-width=\"2\"/><path transform=\"translate(8 12) scale(.7)\" d=\"M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z\" fill=\"#4B91B7\"/><path transform=\"translate(26 12) scale(.7)\" d=\"M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z\" fill=\"#4B91B7\"/><path transform=\"translate(44 12) scale(.7)\" d=\"M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z\" fill=\"#4B91B7\"/></svg>"
         }
       ]
     },

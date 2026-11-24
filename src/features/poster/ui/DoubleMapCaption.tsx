@@ -16,7 +16,7 @@ export interface DoubleMapCaptionSlot {
 
 interface DoubleMapCaptionProps {
   geometry: DoubleMapGeometry;
-  slots: [DoubleMapCaptionSlot, DoubleMapCaptionSlot];
+  slots: DoubleMapCaptionSlot[];
   fontFamily: string;
   fontSize: number;
   headingFontFamily?: string;
@@ -53,16 +53,12 @@ export default function DoubleMapCaption(props: DoubleMapCaptionProps) {
     return () => fonts.removeEventListener?.("loadingdone", bump);
   }, []);
 
-  const [a, b] = props.slots;
   const layout = useMemo(() => {
     const measure = createCanvasMeasure();
     return layoutDoubleMapCaption(
       {
         geometry,
-        slots: [
-          { city: a.city, country: a.country, coords: doubleSlotCoords(a.lat, a.lon, Boolean(a.city || a.country)) },
-          { city: b.city, country: b.country, coords: doubleSlotCoords(b.lat, b.lon, Boolean(b.city || b.country)) },
-        ],
+        slots: props.slots.map((slot) => ({ city: slot.city, country: slot.country, coords: doubleSlotCoords(slot.lat, slot.lon, Boolean(slot.city || slot.country)) })),
         customDate: props.customDate,
         showText: props.showPosterText,
         includeCredits: props.includeCredits,
@@ -80,7 +76,7 @@ export default function DoubleMapCaption(props: DoubleMapCaptionProps) {
     // fontTick re-measures once web fonts have finished loading.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    geometry, a.city, a.country, a.lat, a.lon, b.city, b.country, b.lat, b.lon, props.customDate,
+    geometry, props.slots, props.customDate,
     props.showPosterText, props.includeCredits, props.fontFamily, props.fontSize,
     props.headingFontFamily, props.headingFontSize, props.midlineFontFamily, props.midlineFontSize,
     props.bottomLineFontFamily, props.bottomLineFontSize, fontTick,

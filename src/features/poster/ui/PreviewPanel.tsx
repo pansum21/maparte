@@ -53,6 +53,7 @@ import {
   isMaparteLandscapeLeftLayout,
   getMaparteCaptionVariant,
   getDoubleMapShape,
+  getMaparteMultiMapLayout,
 } from "@/features/layout/infrastructure/layoutRepository";
 import { getSquareCaptionGeometry, getCircleCaptionGeometry, getDoubleMapGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { DEFAULT_NAV_MARKER_COLOR, type MinimapOverlayOptions } from "@/features/poster/domain/minimapOverlay";
@@ -133,7 +134,8 @@ export default function PreviewPanel({
   const frameRef = useRef<HTMLDivElement | null>(null);
   const mapWindowRef = useRef<HTMLDivElement | null>(null);
   const mapWindowRefB = useRef<HTMLDivElement | null>(null);
-  const [doubleMaps, setDoubleMaps] = useState<[any, any]>([null, null]);
+  const mapWindowRefC = useRef<HTMLDivElement | null>(null);
+  const [doubleMaps, setDoubleMaps] = useState<any[]>([null, null, null]);
   const posterDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const [internalIsEditing, setInternalIsEditing] = useState(false);
   const [mapInstance, setMapInstance] = useState<any>(null);
@@ -304,6 +306,7 @@ export default function PreviewPanel({
   const isCircleCaption = isSquareCaption && isMaparteCircleLayout(form.layout);
   const isCirclePoster = isCircleCaption && isMaparteCirclePosterLayout(form.layout);
   const doubleShape = !selectedFrameLayout ? getDoubleMapShape(form.layout) : null;
+  const multiMapLayout = !selectedFrameLayout ? getMaparteMultiMapLayout(form.layout) : null;
   const doubleGeometry = useMemo(() => {
     if (!doubleShape) return null;
     return getDoubleMapGeometry(
@@ -315,9 +318,10 @@ export default function PreviewPanel({
       borderMetrics.gapCm,
       doubleShape,
       form.textAlign,
+      multiMapLayout?.count ?? 2,
     );
-  }, [doubleShape, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, form.textAlign]);
-  const doubleViews = getDoubleSlotViews(form, state.doubleMap);
+  }, [doubleShape, multiMapLayout?.count, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, form.textAlign]);
+  const doubleViews = getDoubleSlotViews(form, state.doubleMap, multiMapLayout?.count ?? 2);
   const doubleActive = state.doubleMap.active;
   const doubleSeededRef = useRef(false);
 
@@ -331,37 +335,34 @@ export default function PreviewPanel({
     setMapInstance(map);
   }, [doubleShape, doubleActive, doubleMaps, mapRef]);
 
-  // Give the second map a sensible starting place so the poster is never half empty.
+  // Seed inactive maps with distinct example cities; each slot remains independently editable.
   useEffect(() => {
     if (!doubleShape) {
       doubleSeededRef.current = false;
       return;
     }
-    const other = state.doubleMap.other;
-    if (doubleSeededRef.current || other.displayCity || other.location || !form.displayCity) return;
+    if (doubleSeededRef.current) return;
     doubleSeededRef.current = true;
-    dispatch({
-      type: "SET_DOUBLE_OTHER",
-      data: {
-        location: "Paris, France",
-        latitude: "48.856600",
-        longitude: "2.352200",
+    const examples = [
+      { city: "Paris", country: "France", continent: "Europe", location: "Paris, France", latitude: "48.856600", longitude: "2.352200", lat: 48.8566, lon: 2.3522 },
+      { city: "Tokyo", country: "Japan", continent: "Asia", location: "Tokyo, Japan", latitude: "35.676200", longitude: "139.650300", lat: 35.6762, lon: 139.6503 },
+    ];
+    examples.slice(0, (multiMapLayout?.count ?? 2) - 1).forEach((example, index) => {
+      const slot = index + 1;
+      const current = state.doubleMap.slots[slot];
+      if (current?.displayCity || current?.location) return;
+      dispatch({ type: "SET_DOUBLE_SLOT", slot, data: {
+        location: example.location,
+        latitude: example.latitude,
+        longitude: example.longitude,
         distance: "6000",
-        displayCity: "Paris",
-        displayCountry: "France",
-        displayContinent: "Europe",
-        selectedLocation: {
-          id: "default:paris",
-          label: "Paris, France",
-          lat: 48.8566,
-          lon: 2.3522,
-          city: "Paris",
-          country: "France",
-          continent: "Europe",
-        },
-      },
+        displayCity: example.city,
+        displayCountry: example.country,
+        displayContinent: example.continent,
+        selectedLocation: { id: `default:${example.city.toLowerCase()}`, label: example.location, lat: example.lat, lon: example.lon, city: example.city, country: example.country, continent: example.continent },
+      } });
     });
-  }, [doubleShape, state.doubleMap.other, form.displayCity, dispatch]);
+  }, [doubleShape, multiMapLayout?.count, state.doubleMap.slots, dispatch]);
   const previewFrameLayoutGeometry = useMemo(() => {
     if (!selectedFrameLayout) return null;
     const previewWidth = 1000;
@@ -723,15 +724,14 @@ export default function PreviewPanel({
                   <path d={HEART_PATH_UNIT} />
                 </clipPath>
               </svg>
-              {([0, 1] as const).map((p) => {
-                const slot = doubleGeometry.slots[p];
+              {doubleGeometry.slots.map((slot, p) => {
                 const view = doubleViews[p];
                 const isActive = doubleActive === p;
-                const other = state.doubleMap.other;
+                const other = state.doubleMap.slots[p];
                 const slotZoom = isActive
                   ? mapZoom
                   : distanceToZoom(Math.max(1, view.distance), view.lat, containerPx);
-                const noPlace = isActive ? !form.displayCity : !other.displayCity;
+                const noPlace = isActive ? !form.displayCity : !other?.displayCity;
                 const box = {
                   left: `${(slot.x / doubleGeometry.posterWidth) * 100}%`,
                   top: `${(slot.y / doubleGeometry.posterHeight) * 100}%`,
@@ -741,7 +741,7 @@ export default function PreviewPanel({
                 return (
                   <div key={p}>
                     <div
-                      ref={p === 0 ? mapWindowRef : mapWindowRefB}
+                      ref={p === 0 ? mapWindowRef : p === 1 ? mapWindowRefB : mapWindowRefC}
                       className={`poster-map-window poster-double-window is-${doubleShape}${isActive ? " is-active" : ""}`}
                       data-double-slot={p}
                       style={{ inset: "auto", ...box }}
@@ -767,7 +767,7 @@ export default function PreviewPanel({
                           overzoomScale={1}
                           onMove={isActive ? handleMove : undefined}
                           onMoveEnd={isActive ? handleMoveEnd : undefined}
-                          onMapReady={(map) => setDoubleMaps((prev) => (p === 0 ? [map, prev[1]] : [prev[0], map]))}
+                          onMapReady={(map) => setDoubleMaps((prev) => { const next = [...prev]; next[p] = map; return next; })}
                         />
                       </Suspense>
                       {!isActive ? (
@@ -921,7 +921,7 @@ export default function PreviewPanel({
                 {doubleGeometry ? (
                   <DoubleMapCaption
                     geometry={doubleGeometry}
-                    slots={[doubleViews[0], doubleViews[1]]}
+                    slots={doubleViews}
                     fontFamily={form.fontFamily}
                     fontSize={Number(form.fontSize) || 16}
                     headingFontFamily={form.headingFontFamily}
