@@ -13,7 +13,13 @@ import {
   createCurvedFlightArc,
 } from "@/features/routes/infrastructure/osrmRouter";
 import { createRouteFromCoordinates } from "@/features/routes/infrastructure/helpers";
-import type { RouteDefaults } from "@/features/routes/domain/types";
+import type { Route, RouteDefaults } from "@/features/routes/domain/types";
+
+interface TemplateRouteResult {
+  route: Route | null;
+  /** false when the template wanted road routing but no server answered */
+  roadRoutingFailed: boolean;
+}
 
 async function generateTemplateRoute(
   templateId: string,
@@ -21,7 +27,7 @@ async function generateTemplateRoute(
   lon: number,
   routeDefaults: RouteDefaults,
   markerColor?: string,
-) {
+): Promise<TemplateRouteResult> {
   if (templateId === "marathon_race") {
     // 42.195 KM Marathon road course snapped to real roads
     const waypoints = [
@@ -31,17 +37,20 @@ async function generateTemplateRoute(
       { lat: lat - 0.010, lon: lon + 0.012 },
     ];
     const road = await fetchRoadRoute(waypoints, "walking");
-    return createRouteFromCoordinates({
-      coordinates: road.coordinates,
-      defaults: routeDefaults,
-      label: "42.195 KM Official Marathon Course",
-      source: "manual",
-      color: markerColor || "#ef4444",
-      lineStyle: "solid",
-      strokeWidth: 3.5,
-      startIconId: "runner",
-      finishIconId: "finish_flag",
-    });
+    return {
+      roadRoutingFailed: !road.snapped,
+      route: createRouteFromCoordinates({
+        coordinates: road.coordinates,
+        defaults: routeDefaults,
+        label: "42.195 KM Official Marathon Course",
+        source: "manual",
+        color: markerColor || "#ef4444",
+        lineStyle: "solid",
+        strokeWidth: 3.5,
+        startIconId: "runner",
+        finishIconId: "finish_flag",
+      }),
+    };
   }
 
   if (templateId === "mountain_summit") {
@@ -52,17 +61,20 @@ async function generateTemplateRoute(
       { lat, lon },
     ];
     const trail = await fetchRoadRoute(waypoints, "walking");
-    return createRouteFromCoordinates({
-      coordinates: trail.coordinates,
-      defaults: routeDefaults,
-      label: "Summit Alpine Trail Ascent",
-      source: "manual",
-      color: markerColor || "#06b6d4",
-      lineStyle: "solid",
-      strokeWidth: 3,
-      startIconId: "compass",
-      finishIconId: "flag",
-    });
+    return {
+      roadRoutingFailed: !trail.snapped,
+      route: createRouteFromCoordinates({
+        coordinates: trail.coordinates,
+        defaults: routeDefaults,
+        label: "Summit Alpine Trail Ascent",
+        source: "manual",
+        color: markerColor || "#06b6d4",
+        lineStyle: "solid",
+        strokeWidth: 3,
+        startIconId: "compass",
+        finishIconId: "flag",
+      }),
+    };
   }
 
   if (templateId === "hometown_roots") {
@@ -72,17 +84,20 @@ async function generateTemplateRoute(
       { lat: lat + 0.015, lon: lon + 0.018 },
     ];
     const road = await fetchRoadRoute(waypoints, "driving");
-    return createRouteFromCoordinates({
-      coordinates: road.coordinates,
-      defaults: routeDefaults,
-      label: "Scenic Hometown Route",
-      source: "manual",
-      color: markerColor || "#10b981",
-      lineStyle: "solid",
-      strokeWidth: 3.5,
-      startIconId: "tree",
-      finishIconId: "home",
-    });
+    return {
+      roadRoutingFailed: !road.snapped,
+      route: createRouteFromCoordinates({
+        coordinates: road.coordinates,
+        defaults: routeDefaults,
+        label: "Scenic Hometown Route",
+        source: "manual",
+        color: markerColor || "#10b981",
+        lineStyle: "solid",
+        strokeWidth: 3.5,
+        startIconId: "tree",
+        finishIconId: "home",
+      }),
+    };
   }
 
   if (templateId === "travel_memories") {
@@ -90,20 +105,23 @@ async function generateTemplateRoute(
     const origin = { lat: lat - 0.05, lon: lon - 0.08 };
     const dest = { lat: lat + 0.05, lon: lon + 0.07 };
     const flightArc = createCurvedFlightArc(origin, dest, 50, 0.25);
-    return createRouteFromCoordinates({
-      coordinates: flightArc,
-      defaults: routeDefaults,
-      label: "Air Travel Journey Arc",
-      source: "manual",
-      color: markerColor || "#d97706",
-      lineStyle: "dashed",
-      strokeWidth: 3,
-      startIconId: "plane",
-      finishIconId: "heart",
-    });
+    return {
+      roadRoutingFailed: false,
+      route: createRouteFromCoordinates({
+        coordinates: flightArc,
+        defaults: routeDefaults,
+        label: "Air Travel Journey Arc",
+        source: "manual",
+        color: markerColor || "#d97706",
+        lineStyle: "dashed",
+        strokeWidth: 3,
+        startIconId: "plane",
+        finishIconId: "heart",
+      }),
+    };
   }
 
-  return null;
+  return { route: null, roadRoutingFailed: false };
 }
 
 interface TemplatesSectionProps {
@@ -116,6 +134,7 @@ export default function TemplatesSection({
   const { state, dispatch } = usePosterContext();
   const [appliedId, setAppliedId] = useState<string | null>(null);
   const [openInfoId, setOpenInfoId] = useState<string | null>(null);
+  const [routeNotice, setRouteNotice] = useState<string | null>(null);
 
   const handleToggleTemplate = async (template: OccasionTemplate) => {
     // If already active, toggle OFF / unclick!
@@ -124,6 +143,7 @@ export default function TemplatesSection({
       dispatch({ type: "CLEAR_MARKERS" });
       dispatch({ type: "CLEAR_ROUTES" });
       dispatch({ type: "SET_FIELD", name: "showRoutes", value: false });
+      setRouteNotice(null);
 
       // Restore standard location names
       const defaultCity =
@@ -186,7 +206,7 @@ export default function TemplatesSection({
     dispatch({ type: "ADD_MARKER", marker });
 
     // 4. Generate street-snapped or curved flight route for motion templates
-    const route = await generateTemplateRoute(
+    const { route, roadRoutingFailed } = await generateTemplateRoute(
       template.id,
       lat,
       lon,
@@ -202,6 +222,11 @@ export default function TemplatesSection({
       dispatch({ type: "SET_FIELD", name: "showRoutes", value: false });
     }
 
+    setRouteNotice(
+      roadRoutingFailed
+        ? "Could not reach the road map just now, so this route is drawn as straight lines. Apply the preset again to retry."
+        : null,
+    );
     setAppliedId(template.id);
     onTemplateApplied?.(template);
   };
@@ -229,6 +254,12 @@ export default function TemplatesSection({
           </p>
         ) : null}
       </div>
+
+      {routeNotice ? (
+        <p className="occasion-templates-sub occasion-route-notice" role="status">
+          {routeNotice}
+        </p>
+      ) : null}
 
       <div className="occasion-templates-grid">
         {OCCASION_TEMPLATES.map((tmpl) => {

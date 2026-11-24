@@ -47,6 +47,13 @@
   line-height: 1.4;
 }
 
+/* Shown when a preset's road route could not be fetched */
+.occasion-route-notice {
+  margin-top: 8px;
+  color: #fcd34d;
+  border-color: rgba(252, 211, 77, 0.3);
+}
+
 /* Templates Grid */
 .occasion-templates-grid {
   display: flex;

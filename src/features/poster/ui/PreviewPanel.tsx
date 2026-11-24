@@ -841,6 +841,7 @@ export default function PreviewPanel({
           <RouteOverlay
             routes={state.routes}
             mapRef={mapRef}
+            mapInstance={mapInstance}
             visible={form.showRoutes}
             overzoomScale={overzoomScale}
           />
@@ -848,6 +849,7 @@ export default function PreviewPanel({
             routes={state.routes}
             customIcons={state.customMarkerIcons}
             mapRef={mapRef}
+            mapInstance={mapInstance}
             visible={form.showRoutes}
             overzoomScale={overzoomScale}
           />
