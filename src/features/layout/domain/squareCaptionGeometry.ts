@@ -14,7 +14,7 @@ export interface SquareCaptionGeometry {
   captionWidth: number;
   captionXStart: number;
   captionAlign: "left" | "center" | "right";
-  variant: "center-bottom" | "left-bottom" | "right-bottom" | "top-left";
+  variant: "center-bottom" | "left-bottom" | "right-bottom" | "top-left" | "top-center" | "bottom-left";
   /** Map window shape. Circle windows share the exact square slot (x, y, size). */
   shape?: "square" | "circle";
   /** Landscape only: which side the text column sits on. */
@@ -49,6 +49,7 @@ export function getCirclePosterGeometry(
   gapCm: number,
   textSide: "left" | "right" = "right",
   requestedAlign?: "left" | "center" | "right",
+  variant: SquareCaptionGeometry["variant"] = "center-bottom",
 ): SquareCaptionGeometry {
   const pxPerCmX = posterWidth / Math.max(1, widthCm);
   const pxPerCmY = posterHeight / Math.max(1, heightCm);
@@ -66,19 +67,34 @@ export function getCirclePosterGeometry(
   let align: "left" | "center" | "right";
 
   if (!isLandscape) {
-    const blockBottom = CIRCLE_POSTER_MAP_BLOCK * posterHeight;
-    slot = Math.min(posterWidth - safeInsetX * 2, blockBottom - safeInsetY * 0.4);
-    slotX = (posterWidth - slot) / 2;
-    slotY = blockBottom - slot - safeInsetY * 0.2;
-    const top = blockBottom;
-    const creditBand = 0.04 * posterHeight;
-    textBox = {
-      x: safeInsetX,
-      y: top,
-      w: posterWidth - safeInsetX * 2,
-      h: Math.max(1, posterHeight - safeInsetY - creditBand - top),
-    };
-    align = requestedAlign ?? "center";
+    if (variant === "top-center") {
+      const topBandHeight = (1 - CIRCLE_POSTER_MAP_BLOCK) * posterHeight;
+      const creditBand = 0.04 * posterHeight;
+      slot = Math.min(posterWidth - safeInsetX * 2, (posterHeight - topBandHeight) - safeInsetY * 0.4);
+      slotX = (posterWidth - slot) / 2;
+      slotY = topBandHeight + (posterHeight - topBandHeight - safeInsetY - slot) / 2;
+      textBox = {
+        x: safeInsetX,
+        y: safeInsetY,
+        w: posterWidth - safeInsetX * 2,
+        h: Math.max(1, topBandHeight - safeInsetY - creditBand),
+      };
+      align = requestedAlign ?? "center";
+    } else {
+      const blockBottom = CIRCLE_POSTER_MAP_BLOCK * posterHeight;
+      slot = Math.min(posterWidth - safeInsetX * 2, blockBottom - safeInsetY * 0.4);
+      slotX = (posterWidth - slot) / 2;
+      slotY = blockBottom - slot - safeInsetY * 0.2;
+      const top = blockBottom;
+      const creditBand = 0.04 * posterHeight;
+      textBox = {
+        x: safeInsetX,
+        y: top,
+        w: posterWidth - safeInsetX * 2,
+        h: Math.max(1, posterHeight - safeInsetY - creditBand - top),
+      };
+      align = requestedAlign ?? "center";
+    }
   } else {
     slot = posterHeight - safeInsetY * 2;
     slotY = safeInsetY;
@@ -109,7 +125,7 @@ export function getCirclePosterGeometry(
     captionWidth: textBox.w,
     captionXStart: textBox.x,
     captionAlign: align,
-    variant: "center-bottom",
+    variant: !isLandscape && variant === "top-center" ? "top-center" : "center-bottom",
     shape: "circle",
     textSide: isLandscape ? textSide : "right",
     posterStyle: true,
@@ -134,16 +150,17 @@ export function getCircleCaptionGeometry(
   textSide: "left" | "right" = "right",
   requestedAlign?: "left" | "center" | "right",
   posterStyle = false,
+  variant: SquareCaptionGeometry["variant"] = "center-bottom",
 ): SquareCaptionGeometry {
   if (posterStyle) {
     return getCirclePosterGeometry(
-      posterWidth, posterHeight, widthCm, heightCm, mapInsetCm, gapCm, textSide, requestedAlign,
+      posterWidth, posterHeight, widthCm, heightCm, mapInsetCm, gapCm, textSide, requestedAlign, variant,
     );
   }
   const isLandscape = widthCm > heightCm;
   const base = getSquareCaptionGeometry(
     posterWidth, posterHeight, widthCm, heightCm, mapInsetCm, gapCm,
-    "center-bottom", requestedAlign,
+    variant, requestedAlign, textSide,
   );
   if (!isLandscape || textSide === "right") {
     return { ...base, shape: "circle", textSide: "right" };
@@ -182,6 +199,7 @@ export function getSquareCaptionGeometry(
   gapCm: number,
   variant: SquareCaptionGeometry["variant"] = "center-bottom",
   requestedAlign?: "left" | "center" | "right",
+  textSide: "left" | "right" = "right",
 ): SquareCaptionGeometry {
   const pxPerCmX = posterWidth / Math.max(1, widthCm);
   const pxPerCmY = posterHeight / Math.max(1, heightCm);
@@ -193,42 +211,61 @@ export function getSquareCaptionGeometry(
   const safeInsetX = baseMarginCm * pxPerCmX;
   const safeInsetY = baseMarginCm * pxPerCmY;
 
-  const topCaption = variant === "top-left";
+  const topCaption = variant === "top-left" || variant === "top-center";
+  const bottomCorner = variant === "bottom-left";
 
   if (!isLandscape) {
     // ── PORTRAIT OR SQUARE (e.g. A4 Portrait: 21 x 29.7 cm) ──
     const availableWidth = Math.max(1, posterWidth - safeInsetX * 2);
+    const availableHeight = Math.max(1, posterHeight - safeInsetY * 2);
     // Height reserved for caption block (City, divider, country, coords, credits)
-    const captionHeight = (topCaption ? 4.2 : 7.6) * pxPerCmY;
+    const captionHeight = (variant === "top-left" || bottomCorner ? 4.2 : 7.6) * pxPerCmY;
 
     // Size is the available width (e.g. 18cm on A4 with 1.5cm margins)
-    const maxSquareHeight = posterHeight - safeInsetY * 2 - captionHeight;
+    const maxSquareHeight = availableHeight - captionHeight;
     const size = Math.min(availableWidth, maxSquareHeight);
 
     const x = (posterWidth - size) / 2;
-    // Map is at top (or bottom if corner caption)
-    const y = topCaption ? posterHeight - safeInsetY - size : safeInsetY;
+    const isCornerDetail = variant === "top-left" || bottomCorner;
+    // For corner details, the square map is centered vertically and horizontally inside the poster borders!
+    const y = isCornerDetail
+      ? safeInsetY + (availableHeight - size) / 2
+      : topCaption
+        ? posterHeight - safeInsetY - size
+        : safeInsetY;
 
-    // Center the caption block vertically in the lower white band
+    // Center the caption block vertically in the allocated white band
     const mapBottom = y + size;
     const contentBottom = posterHeight - safeInsetY;
     const lowerAreaHeight = contentBottom - mapBottom;
     const lowerCenterY = mapBottom + lowerAreaHeight / 2;
-    // .poster-city is translateY(-50%), and coords end at ~1.58 * lineStep
-    // Centering the whole block around lowerCenterY gives equal gaps top and bottom
     const lineStep = posterHeight * 0.042;
-    const captionY = topCaption
-      ? safeInsetY + (y - safeInsetY) / 2
-      : lowerCenterY - lineStep * 0.85;
 
-    const captionWidth = topCaption ? availableWidth * 0.74 : availableWidth;
-    const captionAlign = topCaption
-      ? "left"
-      : requestedAlign ?? (variant === "left-bottom"
+    let captionY: number;
+    let captionWidth: number;
+    let captionAlign: "left" | "center" | "right";
+
+    if (variant === "top-left") {
+      captionY = safeInsetY + (y - safeInsetY) / 2;
+      captionWidth = availableWidth * 0.74;
+      captionAlign = "left";
+    } else if (variant === "top-center") {
+      captionY = safeInsetY + (y - safeInsetY) / 2 - lineStep * 0.2;
+      captionWidth = availableWidth;
+      captionAlign = requestedAlign ?? "center";
+    } else if (bottomCorner) {
+      captionY = mapBottom + lowerAreaHeight / 2;
+      captionWidth = availableWidth * 0.74;
+      captionAlign = "left";
+    } else {
+      captionY = lowerCenterY - lineStep * 0.85;
+      captionWidth = availableWidth;
+      captionAlign = requestedAlign ?? (variant === "left-bottom"
         ? "left"
         : variant === "right-bottom"
           ? "right"
           : "center");
+    }
 
     const captionX = captionAlign === "left"
       ? x
@@ -250,21 +287,32 @@ export function getSquareCaptionGeometry(
       captionXStart: x,
       captionAlign,
       variant,
+      textSide: "right",
     };
   } else {
     // ── LANDSCAPE (e.g. A4 Landscape: 29.7 x 21 cm) ──
-    // In landscape, height is 21 cm -> square map is on left, caption in right column
+    const isTextLeft = textSide === "left";
     const size = Math.max(1, posterHeight - safeInsetY * 2);
-    const x = safeInsetX;
+    const x = isTextLeft ? posterWidth - safeInsetX - size : safeInsetX;
     const y = safeInsetY;
 
-    const captionXStart = x + size + 1.2 * pxPerCmX;
-    const captionWidth = Math.max(1, posterWidth - safeInsetX - captionXStart);
+    const captionXStart = isTextLeft ? safeInsetX : x + size + 1.2 * pxPerCmX;
+    const captionWidth = Math.max(1, isTextLeft ? x - 1.2 * pxPerCmX - captionXStart : posterWidth - safeInsetX - captionXStart);
 
-    // Center text vertically in the right column alongside the center of the square map
-    const captionY = y + size / 2 - 1.6 * pxPerCmY;
+    // Corner details sit at the top or bottom of the side column; center-bottom is centered vertically
+    const isTopCorner = variant === "top-left";
+    const isBottomCorner = variant === "bottom-left";
 
-    const captionAlign = requestedAlign ?? (variant === "left-bottom"
+    let captionY: number;
+    if (isTopCorner) {
+      captionY = safeInsetY + 1.2 * pxPerCmY;
+    } else if (isBottomCorner) {
+      captionY = posterHeight - safeInsetY - 4.5 * pxPerCmY;
+    } else {
+      captionY = y + size / 2 - 1.6 * pxPerCmY;
+    }
+
+    const captionAlign = requestedAlign ?? (isTopCorner || isBottomCorner || variant === "left-bottom" || isTextLeft
       ? "left"
       : variant === "right-bottom"
         ? "right"
@@ -273,7 +321,7 @@ export function getSquareCaptionGeometry(
     const captionX = captionAlign === "left"
       ? captionXStart
       : captionAlign === "right"
-        ? posterWidth - safeInsetX
+        ? captionXStart + captionWidth
         : captionXStart + captionWidth / 2;
 
     return {
@@ -290,6 +338,7 @@ export function getSquareCaptionGeometry(
       captionXStart,
       captionAlign,
       variant,
+      textSide: isTextLeft ? "left" : "right",
     };
   }
 }

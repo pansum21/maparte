@@ -22,7 +22,7 @@ import { renderDoublePoster } from "@/features/export/infrastructure/doublePoste
 import { getDoubleSlotViews } from "@/features/poster/domain/doubleMapSlots";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { readNeatlineSelection, getPosterBorderMetrics } from "@/features/layout/ui/NeatlinePicker";
-import { getDoubleMapShape, getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteCirclePosterLayout, isMaparteSquareCaptionLayout } from "@/features/layout/infrastructure/layoutRepository";
+import { getDoubleMapShape, getMaparteCaptionVariant, isMaparteCircleLayout, isMaparteCirclePosterLayout, isMaparteSquareCaptionLayout, isMaparteLandscapeLeftLayout } from "@/features/layout/infrastructure/layoutRepository";
 import { getCircleCaptionGeometry, getDoubleMapGeometry, getSquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { DEFAULT_NAV_MARKER_COLOR, type MinimapOverlayOptions } from "@/features/poster/domain/minimapOverlay";
 import { getFrameLayoutGeometry, type FrameLayoutId } from "@/features/layout/domain/frameLayoutGeometry";
@@ -281,6 +281,8 @@ export function useExport() {
         const showWhiteMat = Boolean(neatlineSelection.showWhiteMat);
         const isSquareCaption = isMaparteSquareCaptionLayout(form.layout);
         const isCircleCaption = isSquareCaption && isMaparteCircleLayout(form.layout);
+        const isLandscapeLeft = isMaparteLandscapeLeftLayout(form.layout) || form.circleTextSide === "left";
+        const captionVariant = getMaparteCaptionVariant(form.layout) ?? "center-bottom";
         const squareCaptionGeometry = isCircleCaption
           ? getCircleCaptionGeometry(
               size.width,
@@ -289,9 +291,10 @@ export function useExport() {
               heightCm,
               borderMetrics.mapInsetCm,
               borderMetrics.gapCm,
-              form.circleTextSide === "left" ? "left" : "right",
+              isLandscapeLeft ? "left" : "right",
               form.textAlign,
               isMaparteCirclePosterLayout(form.layout),
+              captionVariant,
             )
           : isSquareCaption
             ? getSquareCaptionGeometry(
@@ -303,6 +306,7 @@ export function useExport() {
                 borderMetrics.gapCm,
                 getMaparteCaptionVariant(form.layout) ?? "center-bottom",
                 form.textAlign,
+                isLandscapeLeft ? "left" : "right",
               )
             : undefined;
         const minimapOverlay: MinimapOverlayOptions | undefined =
@@ -310,7 +314,7 @@ export function useExport() {
             ? {
                 shape: isCircleCaption ? "circle" : "square",
                 ring: form.minimapRing !== false,
-                route: Boolean(form.minimapRoute),
+                route: false,
                 marker: Boolean(form.navMarker),
                 markerSize: form.navMarkerSize ?? 1,
                 markerColor: form.navMarkerColor ?? DEFAULT_NAV_MARKER_COLOR,
@@ -352,6 +356,7 @@ export function useExport() {
             fontFamily: form.fontFamily.trim(),
             fontSize: Number(form.fontSize) || 16,
             textAlign: form.textAlign ?? "center",
+            textPosition: form.textPosition ?? "bottom",
             showPosterText: form.showPosterText,
             showOverlay: form.showMarkers,
             overlayTop: form.overlayTop ?? form.showMarkers,
@@ -491,6 +496,7 @@ export function useExport() {
           bottomLineFontFamily: form.bottomLineFontFamily || form.fontFamily,
           bottomLineFontSize: Number(form.bottomLineFontSize) || Number(form.fontSize) || 16,
           textAlign: form.textAlign ?? "center",
+          textPosition: form.textPosition ?? "bottom",
           showPosterText: form.showPosterText,
           showOverlay: form.showMarkers,
             overlayTop: form.overlayTop ?? form.showMarkers,
@@ -538,6 +544,7 @@ export function useExport() {
             fontFamily: form.fontFamily.trim(),
             fontSize: Number(form.fontSize) || 16,
             textAlign: form.textAlign ?? "center",
+            textPosition: form.textPosition ?? "bottom",
             showPosterText: form.showPosterText,
             showOverlay: form.showMarkers,
             overlayTop: form.overlayTop ?? form.showMarkers,

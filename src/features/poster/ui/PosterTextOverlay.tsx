@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { formatCoordinates } from "@/shared/geo/posterBounds";
 import { APP_CREDIT_URL } from "@/core/config";
 import type { SquareCaptionGeometry } from "@/features/layout/domain/squareCaptionGeometry";
+import type { FrameLayoutGeometry } from "@/features/layout/domain/frameLayoutGeometry";
 import {
   TEXT_DIMENSION_REFERENCE_PX,
   TEXT_CITY_Y_RATIO,
@@ -35,6 +36,7 @@ interface PosterTextOverlayProps {
   bottomLineFontFamily?: string;
   bottomLineFontSize?: number;
   textAlign?: "left" | "center" | "right";
+  textPosition?: "top" | "center" | "bottom";
   textColor: string;
   landColor: string;
   showPosterText: boolean;
@@ -45,6 +47,7 @@ interface PosterTextOverlayProps {
   /** Circle layout: the map slot is round, text placement comes from the geometry. */
   circleCaption?: boolean;
   squareCaptionGeometry?: SquareCaptionGeometry | null;
+  frameLayoutGeometry?: FrameLayoutGeometry | null;
   isCustomColor?: boolean;
   posterWidthCm?: number;
   posterHeightCm?: number;
@@ -69,6 +72,7 @@ export default function PosterTextOverlay({
   bottomLineFontFamily: bottomLineFontFamilyProp,
   bottomLineFontSize: bottomLineFontSizeProp,
   textAlign = "center",
+  textPosition = "bottom",
   textColor,
   landColor,
   showPosterText,
@@ -78,6 +82,7 @@ export default function PosterTextOverlay({
   squareCaption = false,
   circleCaption = false,
   squareCaptionGeometry,
+  frameLayoutGeometry,
   isCustomColor = false,
   posterWidthCm = 21,
   posterHeightCm = 29.7,
@@ -131,8 +136,10 @@ export default function PosterTextOverlay({
   const attributionFontSize = `${toCqMin(ATTRIBUTION_FONT_BASE_PX * fontScale)}cqmin`;
   const maparteFontSize = `${toCqMin(80 * fontScale)}cqmin`;
   const safeTextColor = ensureContrastTextColor(textColor, landColor, isCustomColor);
-  const attributionColor = computeAttributionColor(safeTextColor, landColor, showOverlay);
-  const attributionOpacity = showOverlay ? 0.65 : 0.95;
+  const attributionColor = frameLayoutGeometry?.style === "dark"
+    ? "#ffffff"
+    : computeAttributionColor(safeTextColor, landColor, showOverlay);
+  const attributionOpacity = frameLayoutGeometry?.style === "dark" ? 0.95 : (showOverlay ? 0.65 : 0.95);
   const hasTagline = Boolean(customDate && customDate.trim());
 
   // Physical calibrated gaps in container query height (cqh) units:
@@ -208,14 +215,23 @@ export default function PosterTextOverlay({
 
   if (squareCaption && geometry) {
     if (!isLandscape) {
-      if (captionVariant === "top-left") {
+      if (captionVariant === "top-left" || captionVariant === "bottom-left") {
         stackPositionStyle = {
           top: `${(geometry.captionY / geometry.posterHeight) * 100}%`,
           left: `${(geometry.safeInsetX / geometry.posterWidth) * 100}%`,
           width: `${(geometry.captionWidth / geometry.posterWidth) * 100}%`,
-          transform: "none",
+          transform: "translateY(-50%)",
           alignItems: "flex-start",
           textAlign: "left",
+        };
+      } else if (captionVariant === "top-center") {
+        stackPositionStyle = {
+          top: `${(geometry.captionY / geometry.posterHeight) * 100}%`,
+          transform: "translateY(-50%)",
+          left: `${(geometry.x / geometry.posterWidth) * 100}%`,
+          width: `${(geometry.size / geometry.posterWidth) * 100}%`,
+          alignItems: align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center",
+          textAlign: align,
         };
       } else {
         const mapBottom = geometry.y + geometry.size;
@@ -233,23 +249,63 @@ export default function PosterTextOverlay({
         };
       }
     } else {
-      // Landscape: right column
-      const rightColLeftPercent = (geometry.captionXStart / geometry.posterWidth) * 100;
-      const rightColWidthPercent = (geometry.captionWidth / geometry.posterWidth) * 100;
+      // Landscape: side column (left or right)
+      const colLeftPercent = (geometry.captionXStart / geometry.posterWidth) * 100;
+      const colWidthPercent = (geometry.captionWidth / geometry.posterWidth) * 100;
+      const isTopCorner = captionVariant === "top-left";
+      const isBottomCorner = captionVariant === "bottom-left";
 
       stackPositionStyle = {
-        left: `${rightColLeftPercent}%`,
-        width: `${rightColWidthPercent}%`,
-        top: "50%",
-        transform: "translateY(-50%)",
+        left: `${colLeftPercent}%`,
+        width: `${colWidthPercent}%`,
+        top: isTopCorner
+          ? `${(geometry.captionY / geometry.posterHeight) * 100}%`
+          : isBottomCorner
+            ? `${(geometry.captionY / geometry.posterHeight) * 100}%`
+            : "50%",
+        transform: isTopCorner || isBottomCorner ? "none" : "translateY(-50%)",
         alignItems: align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center",
         textAlign: align,
         paddingInline: "4px",
       };
     }
+  } else if (frameLayoutGeometry && frameLayoutGeometry.style !== "full-map") {
+    const fg = frameLayoutGeometry;
+    if (fg.style === "box") {
+      stackPositionStyle = {
+        top: `${(fg.captionY / fg.posterHeight) * 100}%`,
+        left: `${((fg.captionX - fg.captionWidth / 2) / fg.posterWidth) * 100}%`,
+        width: `${(fg.captionWidth / fg.posterWidth) * 100}%`,
+        transform: "translateY(-50%)",
+        alignItems: "center",
+        textAlign: "center",
+        paddingInline: "4%",
+        zIndex: 5,
+      };
+    } else {
+      const topCenterY = fg.y + fg.height + fg.captionHeight / 2;
+      stackPositionStyle = {
+        top: `${(topCenterY / fg.posterHeight) * 100}%`,
+        left: `${(fg.x / fg.posterWidth) * 100}%`,
+        width: `${(fg.width / fg.posterWidth) * 100}%`,
+        transform: "translateY(-50%)",
+        alignItems: align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center",
+        textAlign: align,
+        paddingInline: "2%",
+      };
+    }
   } else {
     // Standard Layouts (Portrait / Landscape / Social)
-    const standardTopPercent = (cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO) * 100;
+    const position = textPosition ?? "bottom";
+    let standardTopPercent: number;
+    if (position === "top") {
+      standardTopPercent = 14;
+    } else if (position === "center") {
+      standardTopPercent = 50;
+    } else {
+      standardTopPercent = (cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO) * 100;
+    }
+
     stackPositionStyle = {
       top: `${standardTopPercent}%`,
       transform: "translateY(-50%)",
@@ -265,8 +321,14 @@ export default function PosterTextOverlay({
   const dividerMarginLeft = align === "right" ? "auto" : align === "center" ? "auto" : 0;
   const dividerMarginRight = align === "left" ? "auto" : align === "center" ? "auto" : 0;
 
+  const effectiveTextColor = frameLayoutGeometry?.style === "dark"
+    ? "#ffffff"
+    : frameLayoutGeometry?.style === "box"
+      ? "#111111"
+      : safeTextColor;
+
   return (
-    <div className={`poster-text-overlay${squareCaption ? " is-square-caption-text" : ""}${circleCaption ? " is-circle-caption-text" : ""}`} style={{ color: safeTextColor }}>
+    <div className={`poster-text-overlay${squareCaption ? " is-square-caption-text" : ""}${circleCaption ? " is-circle-caption-text" : ""}`} style={{ color: effectiveTextColor }}>
       {showPosterText && (
         <div className="poster-caption-stack" style={stackPositionStyle}>
           <div
@@ -365,8 +427,16 @@ export default function PosterTextOverlay({
             fontSize: maparteFontSize,
             fontWeight: 600,
             letterSpacing: "0.08em",
-            bottom: squareCaption && geometry ? `${(geometry.safeInsetY / geometry.posterHeight) * 100}%` : "calc(2.5% + 0.2mm)",
-            left: squareCaption && geometry ? `${(geometry.safeInsetX / geometry.posterWidth) * 100}%` : "calc(2.5% + 0.2mm)",
+            bottom: squareCaption && geometry
+              ? isLandscape
+                ? `${((geometry.posterHeight - (geometry.y + geometry.size) + geometry.size * 0.02) / geometry.posterHeight) * 100}%`
+                : `${(geometry.safeInsetY / geometry.posterHeight) * 100}%`
+              : "calc(2.5% + 0.2mm)",
+            left: squareCaption && geometry
+              ? isLandscape
+                ? `${((geometry.x + geometry.size * 0.025) / geometry.posterWidth) * 100}%`
+                : `${(geometry.safeInsetX / geometry.posterWidth) * 100}%`
+              : "calc(2.5% + 0.2mm)",
             right: squareCaption ? "auto" : undefined,
             textAlign: squareCaption ? "left" : undefined,
           }}

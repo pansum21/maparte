@@ -6,44 +6,24 @@
       "name": "Print",
       "layouts": [
         {
-          "id": "print_a0_portrait",
-          "name": "A0 Portrait",
-          "description": "ISO A0 portrait print format.",
-          "width": 84.1,
-          "height": 118.9,
+          "id": "print_a5_portrait",
+          "name": "A5 Portrait",
+          "description": "ISO A5 portrait format.",
+          "width": 14.8,
+          "height": 21,
           "unit": "cm",
-          "posterWidthCm": 84.1,
-          "posterHeightCm": 118.9
+          "posterWidthCm": 14.8,
+          "posterHeightCm": 21
         },
         {
-          "id": "print_a1_portrait",
-          "name": "A1 Portrait",
-          "description": "ISO A1 portrait print format.",
-          "width": 59.4,
-          "height": 84.1,
+          "id": "print_letter_us_portrait",
+          "name": "Letter (US) Portrait",
+          "description": "US Letter portrait format.",
+          "width": 21.6,
+          "height": 27.9,
           "unit": "cm",
-          "posterWidthCm": 59.4,
-          "posterHeightCm": 84.1
-        },
-        {
-          "id": "print_a2_portrait",
-          "name": "A2 Portrait",
-          "description": "ISO A2 portrait print format.",
-          "width": 42,
-          "height": 59.4,
-          "unit": "cm",
-          "posterWidthCm": 42,
-          "posterHeightCm": 59.4
-        },
-        {
-          "id": "print_a3_portrait",
-          "name": "A3 Portrait",
-          "description": "ISO A3 portrait format.",
-          "width": 29.7,
-          "height": 42,
-          "unit": "cm",
-          "posterWidthCm": 29.7,
-          "posterHeightCm": 42
+          "posterWidthCm": 21.6,
+          "posterHeightCm": 27.9
         },
         {
           "id": "print_a4_portrait",
@@ -56,26 +36,134 @@
           "posterHeightCm": 29.7
         },
         {
-          "id": "print_maparte_square_caption_a4_portrait",
-          "name": "Square Caption · A4",
-          "description": "A square map above an editable, centered place caption on A4 portrait paper.",
-          "width": 21,
-          "height": 29.7,
+          "id": "print_legal_us_portrait",
+          "name": "Legal (US) Portrait",
+          "description": "US Legal portrait print format.",
+          "width": 21.59,
+          "height": 35.56,
           "unit": "cm",
-          "posterWidthCm": 21,
-          "posterHeightCm": 29.7,
-          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='21' y='5' width='22' height='20' rx='2' fill='#4B91B7'/><path d='M23 29h18M26 32h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+          "posterWidthCm": 21.59,
+          "posterHeightCm": 35.56
         },
         {
-          "id": "print_maparte_corner_caption_a4_portrait",
-          "name": "Corner Details · A4",
-          "description": "Place details sit in the upper-left corner above a larger square map.",
+          "id": "print_tabloid_us_portrait",
+          "name": "Tabloid (US) Portrait",
+          "description": "US Tabloid portrait print format.",
+          "width": 27.94,
+          "height": 43.18,
+          "unit": "cm",
+          "posterWidthCm": 27.94,
+          "posterHeightCm": 43.18
+        },
+        {
+          "id": "print_a3_portrait",
+          "name": "A3 Portrait",
+          "description": "ISO A3 portrait format.",
+          "width": 29.7,
+          "height": 42,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 42
+        },
+        {
+          "id": "print_poster_12x18_in",
+          "name": "Poster 12 × 18 in",
+          "description": "Common medium poster print size.",
+          "width": 30.48,
+          "height": 45.72,
+          "unit": "cm",
+          "posterWidthCm": 30.48,
+          "posterHeightCm": 45.72
+        },
+        {
+          "id": "print_a2_portrait",
+          "name": "A2 Portrait",
+          "description": "ISO A2 portrait print format.",
+          "width": 42,
+          "height": 59.4,
+          "unit": "cm",
+          "posterWidthCm": 42,
+          "posterHeightCm": 59.4
+        },
+        {
+          "id": "print_poster_18x24_in",
+          "name": "Poster 18 × 24 in",
+          "description": "Common large poster print size.",
+          "width": 45.72,
+          "height": 60.96,
+          "unit": "cm",
+          "posterWidthCm": 45.72,
+          "posterHeightCm": 60.96
+        },
+        {
+          "id": "print_poster_50x70_cm",
+          "name": "Poster 50 × 70 cm (B2)",
+          "description": "Popular global gallery poster frame size (IKEA, Target).",
+          "width": 50,
+          "height": 70,
+          "unit": "cm",
+          "posterWidthCm": 50,
+          "posterHeightCm": 70
+        },
+        {
+          "id": "print_a1_portrait",
+          "name": "A1 Portrait",
+          "description": "ISO A1 portrait print format.",
+          "width": 59.4,
+          "height": 84.1,
+          "unit": "cm",
+          "posterWidthCm": 59.4,
+          "posterHeightCm": 84.1
+        },
+        {
+          "id": "print_poster_24x36_in",
+          "name": "Poster 24 × 36 in",
+          "description": "Common extra-large poster print size.",
+          "width": 60.96,
+          "height": 91.44,
+          "unit": "cm",
+          "posterWidthCm": 60.96,
+          "posterHeightCm": 91.44
+        },
+        {
+          "id": "print_poster_70x100_cm",
+          "name": "Poster 70 × 100 cm (B1)",
+          "description": "Large statement poster frame size (IKEA Ribba, Habitat).",
+          "width": 70,
+          "height": 100,
+          "unit": "cm",
+          "posterWidthCm": 70,
+          "posterHeightCm": 100
+        },
+        {
+          "id": "print_a0_portrait",
+          "name": "A0 Portrait",
+          "description": "ISO A0 portrait print format.",
+          "width": 84.1,
+          "height": 118.9,
+          "unit": "cm",
+          "posterWidthCm": 84.1,
+          "posterHeightCm": 118.9
+        },
+        {
+          "id": "print_a5_landscape",
+          "name": "A5 Landscape",
+          "description": "ISO A5 landscape format.",
           "width": 21,
-          "height": 29.7,
+          "height": 14.8,
           "unit": "cm",
           "posterWidthCm": 21,
-          "posterHeightCm": 29.7,
-          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><path d='M18 7h12M18 10h8' stroke='#9CC3DA' stroke-width='1.2' stroke-linecap='round'/><rect x='18' y='14' width='28' height='19' rx='2' fill='#4B91B7'/></svg>"
+          "posterHeightCm": 14.8
+        },
+        {
+          "id": "print_letter_us_landscape",
+          "name": "Letter (US) Landscape",
+          "description": "US Letter landscape format.",
+          "width": 27.9,
+          "height": 21.6,
+          "unit": "cm",
+          "posterWidthCm": 27.9,
+          "posterHeightCm": 21.6
         },
         {
           "id": "print_a4_landscape",
@@ -88,20 +176,141 @@
           "posterHeightCm": 21
         },
         {
-          "id": "print_maparte_square_caption_a4_landscape",
-          "name": "Square Caption · A4 Landscape",
-          "description": "A square map on the left with place details alongside on A4 landscape paper.",
-          "width": 29.7,
-          "height": 21,
+          "id": "print_legal_us_landscape",
+          "name": "Legal (US) Landscape",
+          "description": "US Legal landscape print format.",
+          "width": 35.56,
+          "height": 21.59,
           "unit": "cm",
-          "posterWidthCm": 29.7,
-          "posterHeightCm": 21,
-          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='8' y='8' width='24' height='24' rx='2' fill='#4B91B7'/><path d='M38 17h16M38 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+          "posterWidthCm": 35.56,
+          "posterHeightCm": 21.59
+        },
+        {
+          "id": "print_tabloid_us_landscape",
+          "name": "Tabloid (US) Landscape",
+          "description": "US Tabloid landscape print format.",
+          "width": 43.18,
+          "height": 27.94,
+          "unit": "cm",
+          "posterWidthCm": 43.18,
+          "posterHeightCm": 27.94
+        },
+        {
+          "id": "print_a3_landscape",
+          "name": "A3 Landscape",
+          "description": "ISO A3 landscape format.",
+          "width": 42,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 42,
+          "posterHeightCm": 29.7
+        },
+        {
+          "id": "print_poster_18x12_in",
+          "name": "Poster 18 × 12 in",
+          "description": "Common medium poster print size in landscape.",
+          "width": 45.72,
+          "height": 30.48,
+          "unit": "cm",
+          "posterWidthCm": 45.72,
+          "posterHeightCm": 30.48
+        },
+        {
+          "id": "print_a2_landscape",
+          "name": "A2 Landscape",
+          "description": "ISO A2 landscape print format.",
+          "width": 59.4,
+          "height": 42,
+          "unit": "cm",
+          "posterWidthCm": 59.4,
+          "posterHeightCm": 42
+        },
+        {
+          "id": "print_poster_24x18_in",
+          "name": "Poster 24 × 18 in",
+          "description": "Common large poster print size in landscape.",
+          "width": 60.96,
+          "height": 45.72,
+          "unit": "cm",
+          "posterWidthCm": 60.96,
+          "posterHeightCm": 45.72
+        },
+        {
+          "id": "print_poster_70x50_cm",
+          "name": "Poster 70 × 50 cm (B2)",
+          "description": "Popular global gallery poster frame size in landscape.",
+          "width": 70,
+          "height": 50,
+          "unit": "cm",
+          "posterWidthCm": 70,
+          "posterHeightCm": 50
+        },
+        {
+          "id": "print_a1_landscape",
+          "name": "A1 Landscape",
+          "description": "ISO A1 landscape print format.",
+          "width": 84.1,
+          "height": 59.4,
+          "unit": "cm",
+          "posterWidthCm": 84.1,
+          "posterHeightCm": 59.4
+        },
+        {
+          "id": "print_poster_36x24_in",
+          "name": "Poster 36 × 24 in",
+          "description": "Common extra-large poster print size in landscape.",
+          "width": 91.44,
+          "height": 60.96,
+          "unit": "cm",
+          "posterWidthCm": 91.44,
+          "posterHeightCm": 60.96
+        },
+        {
+          "id": "print_poster_100x70_cm",
+          "name": "Poster 100 × 70 cm (B1)",
+          "description": "Large statement poster frame size in landscape.",
+          "width": 100,
+          "height": 70,
+          "unit": "cm",
+          "posterWidthCm": 100,
+          "posterHeightCm": 70
+        },
+        {
+          "id": "print_a0_landscape",
+          "name": "A0 Landscape",
+          "description": "ISO A0 landscape print format.",
+          "width": 118.9,
+          "height": 84.1,
+          "unit": "cm",
+          "posterWidthCm": 118.9,
+          "posterHeightCm": 84.1
+        },
+        {
+          "id": "print_maparte_square_caption_a4_portrait",
+          "name": "Top Square",
+          "description": "A square map above place details on A4 portrait paper.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect x='2' y='2' width='36' height='52' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='7' y='6' width='26' height='26' rx='2' fill='#4B91B7'/><path d='M10 39h20M14 43h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_square_caption_a4_top",
+          "name": "Bottom Square",
+          "description": "Place details above a square map on A4 portrait paper.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect x='2' y='2' width='36' height='52' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><path d='M10 11h20M14 15h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/><rect x='7' y='22' width='26' height='26' rx='2' fill='#4B91B7'/></svg>"
         },
         {
           "id": "print_maparte_circle_caption_a4_portrait",
-          "name": "Circle Map · A4 Portrait",
-          "description": "A round map on top with place details underneath on A4 portrait paper.",
+          "name": "GTA 6 Layout · A4 Portrait",
+          "description": "GTA 6 circular map on top with place details underneath on A4 portrait paper.",
           "width": 21,
           "height": 29.7,
           "unit": "cm",
@@ -110,20 +319,20 @@
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect x='2' y='2' width='36' height='52' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='20' cy='22' r='13' fill='#4B91B7'/><path d='M11 43h18M14 48h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
         },
         {
-          "id": "print_maparte_circle_caption_a4_landscape",
-          "name": "Circle Map · A4 Landscape",
-          "description": "A round map on one side with place details on the other (left or right) on A4 landscape paper.",
-          "width": 29.7,
-          "height": 21,
+          "id": "print_maparte_circle_caption_a4_top",
+          "name": "GTA 6 Layout · A4 Top",
+          "description": "GTA 6 circular map with place caption above on A4 portrait paper.",
+          "width": 21,
+          "height": 29.7,
           "unit": "cm",
-          "posterWidthCm": 29.7,
-          "posterHeightCm": 21,
-          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='20' cy='20' r='12' fill='#4B91B7'/><path d='M38 17h16M38 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect x='2' y='2' width='36' height='52' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><path d='M11 11h18M14 16h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/><circle cx='20' cy='34' r='13' fill='#4B91B7'/></svg>"
         },
         {
           "id": "print_maparte_circle_poster_a4_portrait",
-          "name": "Compass Poster · A4 Portrait",
-          "description": "A round map with a compass ring and arrow on the top 70%, place name with underline below, on A4 portrait paper.",
+          "name": "GTA 6 Layout · A4 (Compass)",
+          "description": "GTA 6 circular map with compass ring and 3D navigation arrow on top 70%, place name with underline below, on A4 portrait paper.",
           "width": 21,
           "height": 29.7,
           "unit": "cm",
@@ -132,15 +341,81 @@
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect x='2' y='2' width='36' height='52' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='20' cy='23' r='12' fill='#4B91B7'/><circle cx='20' cy='23' r='16' fill='none' stroke='#9CC3DA' stroke-width='1' stroke-dasharray='1 2'/><path d='M12 44h16M15 49h10' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
         },
         {
+          "id": "print_maparte_circle_poster_a4_top",
+          "name": "GTA 6 Layout · A4 (Compass - Top)",
+          "description": "GTA 6 circular map with compass ring and 3D navigation arrow on bottom 70%, place name with underline above, on A4 portrait paper.",
+          "width": 21,
+          "height": 29.7,
+          "unit": "cm",
+          "posterWidthCm": 21,
+          "posterHeightCm": 29.7,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect x='2' y='2' width='36' height='52' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><path d='M12 11h16M15 16h10' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/><circle cx='20' cy='35' r='12' fill='#4B91B7'/><circle cx='20' cy='35' r='16' fill='none' stroke='#9CC3DA' stroke-width='1' stroke-dasharray='1 2'/></svg>"
+        },
+        {
+          "id": "print_maparte_square_caption_a4_landscape",
+          "name": "Square · Right",
+          "description": "A square map on the left with place details on the right on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='8' y='8' width='24' height='24' rx='2' fill='#4B91B7'/><path d='M38 17h16M38 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_square_caption_a4_landscape_left",
+          "name": "Square · Left",
+          "description": "Place details on the left side with a square map on the right on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='32' y='8' width='24' height='24' rx='2' fill='#4B91B7'/><path d='M10 17h16M10 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_circle_caption_a4_landscape",
+          "name": "GTA 6 Layout · A4 Landscape (Right)",
+          "description": "GTA 6 circular map on the left with place details on the right on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='20' cy='20' r='12' fill='#4B91B7'/><path d='M38 17h16M38 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_circle_caption_a4_landscape_left",
+          "name": "GTA 6 Layout · A4 Landscape (Left)",
+          "description": "Place details on the left with GTA 6 circular map on the right on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><path d='M10 17h16M10 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/><circle cx='44' cy='20' r='12' fill='#4B91B7'/></svg>"
+        },
+        {
           "id": "print_maparte_circle_poster_a4_landscape",
-          "name": "Compass Poster · A4 Landscape",
-          "description": "A round map with a compass ring and arrow on one side, place name with underline on the other (left or right), on A4 landscape paper.",
+          "name": "GTA 6 Layout · A4 Landscape (Compass - Right)",
+          "description": "GTA 6 circular map with compass ring and 3D navigation arrow on the left, place name with underline on the right, on A4 landscape paper.",
           "width": 29.7,
           "height": 21,
           "unit": "cm",
           "posterWidthCm": 29.7,
           "posterHeightCm": 21,
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='20' cy='20' r='11' fill='#4B91B7'/><circle cx='20' cy='20' r='14.5' fill='none' stroke='#9CC3DA' stroke-width='1' stroke-dasharray='1 2'/><path d='M38 17h16M38 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/></svg>"
+        },
+        {
+          "id": "print_maparte_circle_poster_a4_landscape_left",
+          "name": "GTA 6 Layout · A4 Landscape (Compass - Left)",
+          "description": "Place name with underline on the left, GTA 6 circular map with compass ring and 3D navigation arrow on the right, on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><path d='M10 17h16M10 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/><circle cx='44' cy='20' r='11' fill='#4B91B7'/><circle cx='44' cy='20' r='14.5' fill='none' stroke='#9CC3DA' stroke-width='1' stroke-dasharray='1 2'/></svg>"
         },
         {
           "id": "print_maparte_double_square_a4_landscape",
@@ -174,96 +449,6 @@
           "posterWidthCm": 29.7,
           "posterHeightCm": 21,
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><path transform='translate(8 9) scale(1)' d='M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z' fill='#4B91B7'/><path transform='translate(36 9) scale(1)' d='M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z' fill='#4B91B7'/></svg>"
-        },
-        {
-          "id": "print_a5_portrait",
-          "name": "A5 Portrait",
-          "description": "ISO A5 portrait format.",
-          "width": 14.8,
-          "height": 21,
-          "unit": "cm",
-          "posterWidthCm": 14.8,
-          "posterHeightCm": 21
-        },
-        {
-          "id": "print_letter_us_portrait",
-          "name": "Letter (US) Portrait",
-          "description": "US Letter portrait format.",
-          "width": 21.6,
-          "height": 27.9,
-          "unit": "cm",
-          "posterWidthCm": 21.6,
-          "posterHeightCm": 27.9
-        },
-        {
-          "id": "print_legal_us_portrait",
-          "name": "Legal (US) Portrait",
-          "description": "US Legal portrait print format.",
-          "width": 21.59,
-          "height": 35.56,
-          "unit": "cm",
-          "posterWidthCm": 21.59,
-          "posterHeightCm": 35.56
-        },
-        {
-          "id": "print_tabloid_us_portrait",
-          "name": "Tabloid (US) Portrait",
-          "description": "US Tabloid portrait print format.",
-          "width": 27.94,
-          "height": 43.18,
-          "unit": "cm",
-          "posterWidthCm": 27.94,
-          "posterHeightCm": 43.18
-        },
-        {
-          "id": "print_poster_12x18_in",
-          "name": "Poster 12 \u00d7 18 in",
-          "description": "Common medium poster print size.",
-          "width": 30.48,
-          "height": 45.72,
-          "unit": "cm",
-          "posterWidthCm": 30.48,
-          "posterHeightCm": 45.72
-        },
-        {
-          "id": "print_poster_18x24_in",
-          "name": "Poster 18 \u00d7 24 in",
-          "description": "Common large poster print size.",
-          "width": 45.72,
-          "height": 60.96,
-          "unit": "cm",
-          "posterWidthCm": 45.72,
-          "posterHeightCm": 60.96
-        },
-        {
-          "id": "print_poster_24x36_in",
-          "name": "Poster 24 \u00d7 36 in",
-          "description": "Common extra-large poster print size.",
-          "width": 60.96,
-          "height": 91.44,
-          "unit": "cm",
-          "posterWidthCm": 60.96,
-          "posterHeightCm": 91.44
-        },
-        {
-          "id": "print_poster_50x70_cm",
-          "name": "Poster 50 \u00d7 70 cm (B2)",
-          "description": "Popular global gallery poster frame size (IKEA, Target).",
-          "width": 50,
-          "height": 70,
-          "unit": "cm",
-          "posterWidthCm": 50,
-          "posterHeightCm": 70
-        },
-        {
-          "id": "print_poster_70x100_cm",
-          "name": "Poster 70 \u00d7 100 cm (B1)",
-          "description": "Large statement poster frame size (IKEA Ribba, Habitat).",
-          "width": 70,
-          "height": 100,
-          "unit": "cm",
-          "posterWidthCm": 70,
-          "posterHeightCm": 100
         }
       ]
     },
@@ -271,6 +456,66 @@
       "id": "social_media",
       "name": "Social Media",
       "layouts": [
+        {
+          "id": "social_reddit_banner",
+          "name": "Reddit Banner",
+          "description": "Ultra-wide subreddit header format.",
+          "width": 1920,
+          "height": 256,
+          "unit": "px",
+          "posterWidthCm": 60,
+          "posterHeightCm": 8
+        },
+        {
+          "id": "social_linkedin_cover",
+          "name": "LinkedIn Cover",
+          "description": "LinkedIn profile or company cover format.",
+          "width": 1584,
+          "height": 396,
+          "unit": "px",
+          "posterWidthCm": 30,
+          "posterHeightCm": 7.5
+        },
+        {
+          "id": "social_twitter_header",
+          "name": "Twitter Header",
+          "description": "Twitter/X profile header format.",
+          "width": 1500,
+          "height": 500,
+          "unit": "px",
+          "posterWidthCm": 30,
+          "posterHeightCm": 10
+        },
+        {
+          "id": "social_linkedin_post",
+          "name": "LinkedIn Post",
+          "description": "Standard LinkedIn post image format.",
+          "width": 1200,
+          "height": 627,
+          "unit": "px",
+          "posterWidthCm": 30,
+          "posterHeightCm": 15.68
+        },
+        {
+          "id": "social_reddit_post_16_9",
+          "name": "Reddit Post (16:9)",
+          "description": "Widescreen format for Reddit posts.",
+          "width": 1200,
+          "height": 675,
+          "unit": "px",
+          "posterWidthCm": 30,
+          "posterHeightCm": 16.88
+        },
+        {
+          "id": "social_youtube_thumbnail",
+          "name": "YouTube Thumbnail",
+          "description": "16:9 thumbnail format for YouTube videos.",
+          "width": 1280,
+          "height": 720,
+          "unit": "px",
+          "posterWidthCm": 30,
+          "posterHeightCm": 16.88
+        },
         {
           "id": "social_instagram_square",
           "name": "Instagram Square",
@@ -292,36 +537,6 @@
           "posterHeightCm": 30
         },
         {
-          "id": "social_instagram_story_tiktok",
-          "name": "Story (9:16)",
-          "description": "9:16 vertical short-form format.",
-          "width": 1080,
-          "height": 1920,
-          "unit": "px",
-          "posterWidthCm": 16.88,
-          "posterHeightCm": 30
-        },
-        {
-          "id": "social_linkedin_post",
-          "name": "LinkedIn Post",
-          "description": "Standard LinkedIn post image format.",
-          "width": 1200,
-          "height": 627,
-          "unit": "px",
-          "posterWidthCm": 30,
-          "posterHeightCm": 15.68
-        },
-        {
-          "id": "social_linkedin_cover",
-          "name": "LinkedIn Cover",
-          "description": "LinkedIn profile or company cover format.",
-          "width": 1584,
-          "height": 396,
-          "unit": "px",
-          "posterWidthCm": 30,
-          "posterHeightCm": 7.5
-        },
-        {
           "id": "social_pinterest_pin",
           "name": "Pinterest Pin",
           "description": "2:3 vertical format for Pinterest pins.",
@@ -332,44 +547,14 @@
           "posterHeightCm": 30
         },
         {
-          "id": "social_reddit_post_16_9",
-          "name": "Reddit Post (16:9)",
-          "description": "Widescreen format for Reddit posts.",
-          "width": 1200,
-          "height": 675,
+          "id": "social_instagram_story_tiktok",
+          "name": "Story (9:16)",
+          "description": "9:16 vertical short-form format.",
+          "width": 1080,
+          "height": 1920,
           "unit": "px",
-          "posterWidthCm": 30,
-          "posterHeightCm": 16.88
-        },
-        {
-          "id": "social_reddit_banner",
-          "name": "Reddit Banner",
-          "description": "Ultra-wide subreddit header format.",
-          "width": 1920,
-          "height": 256,
-          "unit": "px",
-          "posterWidthCm": 60,
-          "posterHeightCm": 8
-        },
-        {
-          "id": "social_twitter_header",
-          "name": "Twitter Header",
-          "description": "Twitter/X profile header format.",
-          "width": 1500,
-          "height": 500,
-          "unit": "px",
-          "posterWidthCm": 30,
-          "posterHeightCm": 10
-        },
-        {
-          "id": "social_youtube_thumbnail",
-          "name": "YouTube Thumbnail",
-          "description": "16:9 thumbnail format for YouTube videos.",
-          "width": 1280,
-          "height": 720,
-          "unit": "px",
-          "posterWidthCm": 30,
-          "posterHeightCm": 16.88
+          "posterWidthCm": 16.88,
+          "posterHeightCm": 30
         }
       ]
     },
@@ -378,21 +563,51 @@
       "name": "Wallpaper",
       "layouts": [
         {
+          "id": "wallpaper_xteink_x4",
+          "name": "Xteink X4 (E-Ink)",
+          "description": "Native Xteink X4 format (480x800) for E-Ink screen displays.",
+          "width": 480,
+          "height": 800,
+          "unit": "px",
+          "posterWidthCm": 4.06,
+          "posterHeightCm": 6.77
+        },
+        {
+          "id": "wallpaper_ipad_pro_11",
+          "name": "iPad Pro 11\"",
+          "description": "Wallpaper format for iPad Pro 11-inch display.",
+          "width": 1668,
+          "height": 2388,
+          "unit": "px",
+          "posterWidthCm": 20.95,
+          "posterHeightCm": 30
+        },
+        {
+          "id": "wallpaper_samsung_galaxy_s24_ultra",
+          "name": "Galaxy S24 Ultra",
+          "description": "Vertical wallpaper format for Samsung Galaxy S24 Ultra.",
+          "width": 1440,
+          "height": 3120,
+          "unit": "px",
+          "posterWidthCm": 13.85,
+          "posterHeightCm": 30
+        },
+        {
+          "id": "wallpaper_ipad_pro_12_9",
+          "name": "iPad Pro 12.9\"",
+          "description": "Wallpaper format for iPad Pro 12.9-inch display.",
+          "width": 2048,
+          "height": 2732,
+          "unit": "px",
+          "posterWidthCm": 22.49,
+          "posterHeightCm": 30
+        },
+        {
           "id": "wallpaper_desktop_full_hd",
           "name": "Desktop Full HD",
           "description": "16:9 desktop wallpaper for standard monitors.",
           "width": 1920,
           "height": 1080,
-          "unit": "px",
-          "posterWidthCm": 30,
-          "posterHeightCm": 16.88
-        },
-        {
-          "id": "wallpaper_desktop_4k",
-          "name": "Desktop 4K",
-          "description": "4K UHD wallpaper with 16:9 ratio.",
-          "width": 3840,
-          "height": 2160,
           "unit": "px",
           "posterWidthCm": 30,
           "posterHeightCm": 16.88
@@ -408,44 +623,14 @@
           "posterHeightCm": 12.56
         },
         {
-          "id": "wallpaper_samsung_galaxy_s24_ultra",
-          "name": "Galaxy S24 Ultra",
-          "description": "Vertical wallpaper format for Samsung Galaxy S24 Ultra.",
-          "width": 1440,
-          "height": 3120,
+          "id": "wallpaper_desktop_4k",
+          "name": "Desktop 4K",
+          "description": "4K UHD wallpaper with 16:9 ratio.",
+          "width": 3840,
+          "height": 2160,
           "unit": "px",
-          "posterWidthCm": 13.85,
-          "posterHeightCm": 30
-        },
-        {
-          "id": "wallpaper_ipad_pro_11",
-          "name": "iPad Pro 11\"",
-          "description": "Wallpaper format for iPad Pro 11-inch display.",
-          "width": 1668,
-          "height": 2388,
-          "unit": "px",
-          "posterWidthCm": 20.95,
-          "posterHeightCm": 30
-        },
-        {
-          "id": "wallpaper_ipad_pro_12_9",
-          "name": "iPad Pro 12.9\"",
-          "description": "Wallpaper format for iPad Pro 12.9-inch display.",
-          "width": 2048,
-          "height": 2732,
-          "unit": "px",
-          "posterWidthCm": 22.49,
-          "posterHeightCm": 30
-        },
-        {
-          "id": "wallpaper_xteink_x4",
-          "name": "Xteink X4 (E-Ink)",
-          "description": "Native Xteink X4 format (480x800) for E-Ink screen displays.",
-          "width": 480,
-          "height": 800,
-          "unit": "px",
-          "posterWidthCm": 4.06,
-          "posterHeightCm": 6.77
+          "posterWidthCm": 30,
+          "posterHeightCm": 16.88
         }
       ]
     },
@@ -456,7 +641,7 @@
         {
           "id": "wallpaper_iphone_15_pro",
           "name": "iPhone 15 Pro / 16",
-          "description": "1179 \u00d7 2556 px \u2014 iPhone 15 Pro and iPhone 16.",
+          "description": "1179 × 2556 px — iPhone 15 Pro and iPhone 16.",
           "width": 1179,
           "height": 2556,
           "unit": "px",
@@ -464,19 +649,9 @@
           "posterHeightCm": 30
         },
         {
-          "id": "wallpaper_iphone_15_pro_max",
-          "name": "iPhone 15 Pro Max / 16 Plus",
-          "description": "1290 \u00d7 2796 px \u2014 iPhone 15 Pro Max and iPhone 16 Plus.",
-          "width": 1290,
-          "height": 2796,
-          "unit": "px",
-          "posterWidthCm": 13.84,
-          "posterHeightCm": 30
-        },
-        {
           "id": "wallpaper_iphone_17",
-          "name": "iPhone 16/17 Pro \u00b7 17",
-          "description": "1206 \u00d7 2622 px \u2014 iPhone 16 Pro, iPhone 17 and iPhone 17 Pro.",
+          "name": "iPhone 16/17 Pro · 17",
+          "description": "1206 × 2622 px — iPhone 16 Pro, iPhone 17 and iPhone 17 Pro.",
           "width": 1206,
           "height": 2622,
           "unit": "px",
@@ -484,9 +659,19 @@
           "posterHeightCm": 30
         },
         {
+          "id": "wallpaper_iphone_15_pro_max",
+          "name": "iPhone 15 Pro Max / 16 Plus",
+          "description": "1290 × 2796 px — iPhone 15 Pro Max and iPhone 16 Plus.",
+          "width": 1290,
+          "height": 2796,
+          "unit": "px",
+          "posterWidthCm": 13.84,
+          "posterHeightCm": 30
+        },
+        {
           "id": "wallpaper_iphone_17_pro_max",
           "name": "iPhone 16/17 Pro Max",
-          "description": "1320 \u00d7 2868 px \u2014 iPhone 16 Pro Max and iPhone 17 Pro Max.",
+          "description": "1320 × 2868 px — iPhone 16 Pro Max and iPhone 17 Pro Max.",
           "width": 1320,
           "height": 2868,
           "unit": "px",
@@ -533,4 +718,3 @@
     }
   ]
 }
-

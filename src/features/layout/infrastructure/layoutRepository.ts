@@ -32,26 +32,40 @@ function formatDecimal(value: number): string {
 }
 
 function createSymbolFromRatio(width: number, height: number): string {
+  const isPortrait = height > width;
   const ratio = Math.max(0.15, Math.min(6, width / height));
-  const maxInnerWidth = 50;
-  const maxInnerHeight = 30;
 
-  let innerWidth = maxInnerWidth;
-  let innerHeight = innerWidth / ratio;
-
-  if (innerHeight > maxInnerHeight) {
-    innerHeight = maxInnerHeight;
-    innerWidth = innerHeight * ratio;
+  if (isPortrait) {
+    // ── PORTRAIT PAPER OUTLINE (ViewBox: 40 x 56) ──
+    const maxInnerWidth = 30;
+    const maxInnerHeight = 44;
+    let innerHeight = maxInnerHeight;
+    let innerWidth = innerHeight * ratio;
+    if (innerWidth > maxInnerWidth) {
+      innerWidth = maxInnerWidth;
+      innerHeight = innerWidth / ratio;
+    }
+    const x = Number(((40 - innerWidth) / 2).toFixed(2));
+    const y = Number(((56 - innerHeight) / 2).toFixed(2));
+    const w = Number(innerWidth.toFixed(2));
+    const h = Number(innerHeight.toFixed(2));
+    return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect x='2' y='2' width='36' height='52' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='${x}' y='${y}' width='${w}' height='${h}' rx='2.5' fill='#4B91B7'/></svg>`;
+  } else {
+    // ── LANDSCAPE PAPER OUTLINE (ViewBox: 56 x 40) ──
+    const maxInnerWidth = 44;
+    const maxInnerHeight = 30;
+    let innerWidth = maxInnerWidth;
+    let innerHeight = innerWidth / ratio;
+    if (innerHeight > maxInnerHeight) {
+      innerHeight = maxInnerHeight;
+      innerWidth = innerHeight * ratio;
+    }
+    const x = Number(((56 - innerWidth) / 2).toFixed(2));
+    const y = Number(((40 - innerHeight) / 2).toFixed(2));
+    const w = Number(innerWidth.toFixed(2));
+    const h = Number(innerHeight.toFixed(2));
+    return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 40'><rect x='2' y='2' width='52' height='36' rx='4' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='${x}' y='${y}' width='${w}' height='${h}' rx='2.5' fill='#4B91B7'/></svg>`;
   }
-
-  const x = (64 - innerWidth) / 2;
-  const y = (40 - innerHeight) / 2;
-  const roundedX = Number(x.toFixed(2));
-  const roundedY = Number(y.toFixed(2));
-  const roundedWidth = Number(innerWidth.toFixed(2));
-  const roundedHeight = Number(innerHeight.toFixed(2));
-
-  return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='${roundedX}' y='${roundedY}' width='${roundedWidth}' height='${roundedHeight}' rx='3' fill='#4B91B7'/></svg>`;
 }
 
 function normalizeLayout(
@@ -140,30 +154,54 @@ export function isMaparteSquareCaptionLayout(layoutId: string): boolean {
   return getMaparteCaptionVariant(layoutId) !== null;
 }
 
-export type MaparteCaptionVariant = "center-bottom" | "left-bottom" | "right-bottom" | "top-left";
+export type MaparteCaptionVariant =
+  | "center-bottom"
+  | "left-bottom"
+  | "right-bottom"
+  | "top-left"
+  | "top-center"
+  | "bottom-left";
 
 const maparteCaptionVariants: Record<string, MaparteCaptionVariant> = {
   [MAPARTE_SQUARE_CAPTION_LAYOUT_ID]: "center-bottom",
+  print_maparte_square_caption_a4_top: "top-center",
   print_maparte_left_caption_a4_portrait: "left-bottom",
   print_maparte_right_caption_a4_portrait: "right-bottom",
-  print_maparte_corner_caption_a4_portrait: "top-left",
   print_maparte_square_caption_a4_landscape: "center-bottom",
+  print_maparte_square_caption_a4_landscape_left: "center-bottom",
   print_maparte_left_caption_a4_landscape: "left-bottom",
   print_maparte_right_caption_a4_landscape: "right-bottom",
   print_maparte_circle_caption_a4_portrait: "center-bottom",
+  print_maparte_circle_caption_a4_top: "top-center",
   print_maparte_circle_caption_a4_landscape: "center-bottom",
+  print_maparte_circle_caption_a4_landscape_left: "center-bottom",
   print_maparte_circle_poster_a4_portrait: "center-bottom",
+  print_maparte_circle_poster_a4_top: "top-center",
   print_maparte_circle_poster_a4_landscape: "center-bottom",
+  print_maparte_circle_poster_a4_landscape_left: "center-bottom",
 };
+
+export function isMaparteLandscapeLeftLayout(layoutId: string): boolean {
+  return (
+    layoutId === "print_maparte_square_caption_a4_landscape_left" ||
+    layoutId === "print_maparte_circle_caption_a4_landscape_left" ||
+    layoutId === "print_maparte_circle_poster_a4_landscape_left" ||
+    layoutId === "print_maparte_left_caption_a4_landscape"
+  );
+}
 
 export const MAPARTE_CIRCLE_POSTER_LAYOUT_IDS = [
   "print_maparte_circle_poster_a4_portrait",
+  "print_maparte_circle_poster_a4_top",
   "print_maparte_circle_poster_a4_landscape",
+  "print_maparte_circle_poster_a4_landscape_left",
 ] as const;
 
 export const MAPARTE_CIRCLE_LAYOUT_IDS = [
   "print_maparte_circle_caption_a4_portrait",
+  "print_maparte_circle_caption_a4_top",
   "print_maparte_circle_caption_a4_landscape",
+  "print_maparte_circle_caption_a4_landscape_left",
   ...MAPARTE_CIRCLE_POSTER_LAYOUT_IDS,
 ] as const;
 

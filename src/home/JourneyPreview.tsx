@@ -9,10 +9,17 @@ import { EARTH_CIRCUMFERENCE_M, TILE_SIZE_PX } from "@/core/config";
 import { helpFaqs } from "@/shared/help/helpFaqs";
 import { DoodleCrewFooter } from "@/components/ui/doodle-crew-footer";
 import PerspectiveTunnelHero from "@/home/PerspectiveTunnelHero";
+import { getHeroProgress } from "@/home/heroProgress";
 import "@fontsource/dm-serif-display/400.css";
 import "@fontsource/dm-serif-display/400-italic.css";
+import "@fontsource/fraunces/400.css";
+import "@fontsource/fraunces/400-italic.css";
+import "@fontsource/fraunces/600-italic.css";
+import "@fontsource/bricolage-grotesque/700.css";
+import "@fontsource/bricolage-grotesque/800.css";
 import "./journeyPreview.css";
 import "@/components/ui/doodle-crew-footer.css";
+import "./journeyPolish.css";
 
 setWorkerUrl(workerUrl);
 
@@ -365,9 +372,8 @@ export default function JourneyPreview() {
         const top = story.getBoundingClientRect().top + window.scrollY;
         const storySpan = Math.max(1, story.offsetHeight - window.innerHeight);
         const pageSpan = Math.max(storySpan, page.offsetHeight - window.innerHeight);
-        const hero = document.querySelector<HTMLElement>(".maparte-tunnel");
-        const heroSpan = hero ? Math.max(1, hero.offsetHeight - window.innerHeight) : 1;
-        const heroProgress = hero ? clamp(-hero.getBoundingClientRect().top / heroSpan) : 0;
+        // The hero publishes its progress each frame, so no layout is measured here.
+        const heroProgress = getHeroProgress();
         const storyProgress = clamp((window.scrollY - top) / storySpan);
         const pageProgress = clamp((window.scrollY - top) / pageSpan);
         // Start the globe's eastward trip behind the opening title, then hand
@@ -392,6 +398,7 @@ export default function JourneyPreview() {
         }
         lastPageProgress = pageProgress;
         progressRef.current = mapProgress;
+        page.style.setProperty("--page-progress", String(pageProgress));
       });
     };
     update();
@@ -405,7 +412,12 @@ export default function JourneyPreview() {
       <div className="journey-world" aria-hidden="true"><JourneyMap theme={theme} progressRef={progressRef} destinationRef={destinationRef} /></div>
       <header className="journey-header">
         <a className="journey-wordmark" href="#start" aria-label="MapArte home"><img src="/assets/logo.svg" alt="" /><span>MAPARTE</span></a>
-        <div className="journey-header__right"><span>MAPS FOR THE PLACES THAT STAY</span><a className="journey-glass" href="/?editor=true">Make your map</a></div>
+        <div className="journey-header__right">
+          <a className="journey-header__grid" href="/?gallery=maps">Grid</a>
+          <a className="journey-header__guide" href="/?editor=true&guide=1">Guide</a>
+          <span>MAPS FOR THE PLACES THAT STAY</span><a className="journey-glass" href="/?editor=true">Make your map</a>
+        </div>
+        <div className="journey-progressbar" aria-hidden="true"><i /></div>
       </header>
       <PerspectiveTunnelHero />
       <main id="start" ref={storyRef} className="journey-track">

@@ -58,7 +58,10 @@
 .journey-footer a{font-weight:500;color:var(--ink)}.journey-footer a span{padding-left:18px;color:var(--muted);font-weight:400;letter-spacing:.03em}
 .journey-scrollhint{position:fixed;z-index:4;bottom:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;color:rgba(233,241,232,.6);font:9px "Spline Sans Mono",monospace;letter-spacing:.18em;transition:opacity .3s;pointer-events:none}.journey-scrollhint span{font-size:16px;color:var(--acid);animation:journeyDown 1.4s ease-in-out infinite}
 /* The map editor locks document scrolling on desktop; this standalone story needs normal page scroll. */
-html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height:100%;max-height:none!important;overflow-x:hidden!important;overflow-y:auto!important}
+html:has(.journey-page),body:has(.journey-page){height:auto!important;min-height:100%;max-height:none!important}
+html:has(.journey-page){overflow-x:hidden!important;overflow-y:auto!important}
+/* body must not become its own scroll container, otherwise the sticky hero stage cannot pin to the viewport */
+body:has(.journey-page){overflow:visible!important}
 #root:has(.journey-page){height:auto!important;min-height:100vh!important;max-height:none!important;overflow:visible!important}
 @keyframes journeyDown{0%,100%{transform:translateY(-3px)}50%{transform:translateY(4px)}}
 @keyframes journeyBeacon{0%,100%{box-shadow:0 0 8px rgba(214,255,107,.4);transform:scale(.85)}50%{box-shadow:0 0 18px rgba(214,255,107,.9);transform:scale(1.35)}}

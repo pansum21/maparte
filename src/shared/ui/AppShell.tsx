@@ -198,8 +198,8 @@ export default function AppShell() {
   const desktopSettingsPanelRef = useRef<HTMLDivElement | null>(null);
   const [desktopLocationRowVisible, setDesktopLocationRowVisible] =
     useState(false);
-  const [aboutOpen, setAboutOpen] = useState(false);
-  const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">("about");
+  const [aboutOpen, setAboutOpen] = useState(() => new URLSearchParams(window.location.search).get("guide") === "1");
+  const [aboutInitialTab, setAboutInitialTab] = useState<"about" | "guide">(() => new URLSearchParams(window.location.search).get("guide") === "1" ? "guide" : "about");
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [isCinemaMode, setIsCinemaMode] = useState(false);
   const [cinemaMapMovementLocked, setCinemaMapMovementLocked] = useState(true);
@@ -261,6 +261,7 @@ export default function AppShell() {
   }, [handleCinemaWallPhotoChange]);
   const [cinemaPosterPlacement, setCinemaPosterPlacement] = useState({ x: 0, y: 0, scale: 1 });
   const [allCitiesOpen, setAllCitiesOpen] = useState(false);
+  const [isDownloadOpen, setIsDownloadOpen] = useState(false);
   const [isPosterLayoutOpen, setIsPosterLayoutOpen] = useState(() => {
     if (typeof window === "undefined") return false;
     const params = new URLSearchParams(window.location.search);
@@ -644,6 +645,7 @@ export default function AppShell() {
           handleDesktopTabChange("settings");
         }}
         onToggleCinema={() => handleToggleCinema(true)}
+        onDownloadClick={() => setIsDownloadOpen(true)}
         onOpenAllCities={() => setAllCitiesOpen(true)}
         wallOpen={backdropOpen}
         onOpenWall={() => {
@@ -786,9 +788,15 @@ export default function AppShell() {
           setIsEditing((prev) => !prev);
         }}
       />
-      {isPosterLayoutOpen ? (
+      {isPosterLayoutOpen || isDownloadOpen ? (
         <Suspense fallback={null}>
-          <ExportFab isMobile={isMobileViewport} />
+          <ExportFab
+            isMobile={isMobileViewport}
+            showTrigger={isPosterLayoutOpen}
+            isOpen={isDownloadOpen}
+            onOpen={() => setIsDownloadOpen(true)}
+            onClose={() => setIsDownloadOpen(false)}
+          />
         </Suspense>
       ) : null}
 

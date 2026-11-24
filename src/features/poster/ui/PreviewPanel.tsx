@@ -50,6 +50,7 @@ import {
   isMaparteSquareCaptionLayout,
   isMaparteCircleLayout,
   isMaparteCirclePosterLayout,
+  isMaparteLandscapeLeftLayout,
   getMaparteCaptionVariant,
   getDoubleMapShape,
 } from "@/features/layout/infrastructure/layoutRepository";
@@ -370,6 +371,7 @@ export default function PreviewPanel({
   const captionVariant = getMaparteCaptionVariant(form.layout) ?? "center-bottom";
   const squareCaptionGeometry = useMemo(() => {
     if (!isSquareCaption) return null;
+    const isLandscapeLeft = isMaparteLandscapeLeftLayout(form.layout) || form.circleTextSide === "left";
     if (isCircleCaption) {
       return getCircleCaptionGeometry(
         widthCm * 100,
@@ -378,9 +380,10 @@ export default function PreviewPanel({
         heightCm,
         borderMetrics.mapInsetCm,
         borderMetrics.gapCm,
-        form.circleTextSide === "left" ? "left" : "right",
+        isLandscapeLeft ? "left" : "right",
         form.textAlign,
         isCirclePoster,
+        captionVariant,
       );
     }
     return getSquareCaptionGeometry(
@@ -392,14 +395,15 @@ export default function PreviewPanel({
       borderMetrics.gapCm,
       captionVariant,
       form.textAlign,
+      isLandscapeLeft ? "left" : "right",
     );
-  }, [isSquareCaption, isCircleCaption, isCirclePoster, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, captionVariant, form.textAlign, form.circleTextSide]);
+  }, [isSquareCaption, isCircleCaption, isCirclePoster, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, captionVariant, form.textAlign, form.circleTextSide, form.layout]);
   const minimapOptions = useMemo<MinimapOverlayOptions | null>(() => {
     if (!isSquareCaption) return null;
     return {
       shape: isCircleCaption ? "circle" : "square",
       ring: form.minimapRing !== false,
-      route: Boolean(form.minimapRoute),
+      route: false,
       marker: Boolean(form.navMarker),
       markerSize: form.navMarkerSize ?? 1,
       markerColor: form.navMarkerColor ?? DEFAULT_NAV_MARKER_COLOR,
@@ -407,7 +411,7 @@ export default function PreviewPanel({
       ringForeground: form.posterTextColor || effectiveTheme.ui.text,
       ringStyle: isCirclePoster ? "poster" : "band",
     };
-  }, [isSquareCaption, isCircleCaption, isCirclePoster, form.minimapRing, form.minimapRoute, form.navMarker, form.navMarkerSize, form.navMarkerColor, form.posterTextColor, effectiveTheme.ui.bg, effectiveTheme.ui.text]);
+  }, [isSquareCaption, isCircleCaption, isCirclePoster, form.minimapRing, form.navMarker, form.navMarkerSize, form.navMarkerColor, form.posterTextColor, effectiveTheme.ui.bg, effectiveTheme.ui.text]);
 
   const [baseGlobeZoom, setBaseGlobeZoom] = useState<number>(() => {
     if (typeof window === "undefined") return 1.0;
@@ -820,8 +824,8 @@ export default function PreviewPanel({
               zoom={(!form.displayCity && mapZoom < 3.5) ? baseGlobeZoom : mapZoom}
               baseGlobeZoom={baseGlobeZoom}
               mapRef={mapRef}
-              interactive={isCinemaMode ? !cinemaMapMovementLocked && !isMarkerEditorActive : (((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
-              allowRotation={isCinemaMode ? !cinemaMapMovementLocked : ((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing)}
+              interactive={isCinemaMode ? (!cinemaMapMovementLocked && !isMarkerEditorActive) : ((!isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
+              allowRotation={isCinemaMode ? !cinemaMapMovementLocked : (!isPosterLayoutOpen || isEditing)}
               autoRotate={!isCinemaMode}
               minZoom={mapMinZoom}
               maxZoom={mapMaxZoom}
@@ -887,10 +891,12 @@ export default function PreviewPanel({
               <MinimapOverlay options={minimapOptions} />
             </div>
           ) : null}
-          {previewFrameLayoutGeometry && previewFrameLayoutGeometry.style !== "full-map" ? (
+          {previewFrameLayoutGeometry && previewFrameLayoutGeometry.style !== "full-map" && previewFrameLayoutGeometry.style !== "box" ? (
             <div className={`frame-layout-caption-band frame-layout-caption-band--${previewFrameLayoutGeometry.style}`}
               aria-hidden="true"
               style={{
+                left: `${(previewFrameLayoutGeometry.x / previewFrameLayoutGeometry.posterWidth) * 100}%`,
+                width: `${(previewFrameLayoutGeometry.width / previewFrameLayoutGeometry.posterWidth) * 100}%`,
                 top: `${((previewFrameLayoutGeometry.y + previewFrameLayoutGeometry.height) / previewFrameLayoutGeometry.posterHeight) * 100}%`,
                 height: `${(previewFrameLayoutGeometry.captionHeight / previewFrameLayoutGeometry.posterHeight) * 100}%`,
               }}
@@ -900,9 +906,9 @@ export default function PreviewPanel({
             <div className="frame-layout-caption-card" aria-hidden="true"
               style={{
                 left: `${((previewFrameLayoutGeometry.captionX - previewFrameLayoutGeometry.captionWidth / 2) / previewFrameLayoutGeometry.posterWidth) * 100}%`,
-                top: `${((previewFrameLayoutGeometry.y + previewFrameLayoutGeometry.height - previewFrameLayoutGeometry.posterHeight * 0.075) / previewFrameLayoutGeometry.posterHeight) * 100}%`,
+                top: `${((previewFrameLayoutGeometry.captionY - previewFrameLayoutGeometry.captionHeight / 2) / previewFrameLayoutGeometry.posterHeight) * 100}%`,
                 width: `${(previewFrameLayoutGeometry.captionWidth / previewFrameLayoutGeometry.posterWidth) * 100}%`,
-                height: "12%",
+                height: `${(previewFrameLayoutGeometry.captionHeight / previewFrameLayoutGeometry.posterHeight) * 100}%`,
               }}
             />
           ) : null}
@@ -962,6 +968,7 @@ export default function PreviewPanel({
                   bottomLineFontFamily={form.bottomLineFontFamily}
                   bottomLineFontSize={Number(form.bottomLineFontSize) || undefined}
                   textAlign={previewFrameLayoutGeometry?.style === "left" || previewFrameLayoutGeometry?.style === "right" ? previewFrameLayoutGeometry.style : (form.textAlign ?? "center")}
+                  textPosition={form.textPosition ?? "bottom"}
                   textColor={posterTextColor}
                   landColor={effectiveTheme.map.land}
                   showPosterText={form.showPosterText && previewFrameLayoutGeometry?.style !== "full-map"}
@@ -971,6 +978,7 @@ export default function PreviewPanel({
                   squareCaption={isSquareCaption}
                   circleCaption={isCircleCaption}
                   squareCaptionGeometry={squareCaptionGeometry}
+                  frameLayoutGeometry={previewFrameLayoutGeometry}
                   isCustomColor={Boolean(form.posterTextColor)}
                   posterWidthCm={widthCm}
                   posterHeightCm={heightCm}

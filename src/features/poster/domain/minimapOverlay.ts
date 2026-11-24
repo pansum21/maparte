@@ -269,11 +269,10 @@ export function buildMinimapOverlayInner(options: MinimapOverlayOptions): string
   const color = clampHex(options.markerColor, DEFAULT_NAV_MARKER_COLOR);
   const parts: string[] = [];
   if (options.ringStyle === "poster") {
-    if (options.route) parts.push(buildPosterRoute());
     if (options.shape === "circle" && options.ring) parts.push(buildPosterRing(fg));
     if (options.marker) {
       parts.push(
-        buildMarker(color, options.markerSize, options.route ? POSTER_ROUTE_HEADING_DEG : 0, [
+        buildMarker(color, options.markerSize, 0, [
           MINIMAP_GRID / 2,
           MINIMAP_GRID / 2,
         ]),
@@ -281,16 +280,15 @@ export function buildMinimapOverlayInner(options: MinimapOverlayOptions): string
     }
     return parts.join("");
   }
-  if (options.route) parts.push(buildRoute());
   if (options.shape === "circle" && options.ring) parts.push(buildRing(fg, bg));
   if (options.marker) {
-    parts.push(buildMarker(color, options.markerSize, options.route ? getRouteEndHeadingDeg() : 0));
+    parts.push(buildMarker(color, options.markerSize, 0));
   }
   return parts.join("");
 }
 
 export function hasMinimapContent(options: MinimapOverlayOptions): boolean {
-  return options.route || options.marker || (options.shape === "circle" && options.ring);
+  return options.marker || (options.shape === "circle" && options.ring);
 }
 
 /** Standalone SVG document for DOM images and canvas drawing. */

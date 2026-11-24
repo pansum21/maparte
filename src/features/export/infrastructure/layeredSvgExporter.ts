@@ -63,6 +63,7 @@ interface LayeredSvgOptions {
   fontFamily?: string;
   fontSize?: number;
   textAlign?: "left" | "center" | "right";
+  textPosition?: "top" | "center" | "bottom";
   showPosterText: boolean;
   showOverlay: boolean;
   overlayTop?: boolean;
@@ -253,6 +254,7 @@ export async function createLayeredSvgBlobFromMap({
   fontFamily,
   fontSize = 16,
   textAlign = "center",
+  textPosition = "bottom",
   showPosterText,
   showOverlay,
   overlayTop = showOverlay,
@@ -588,7 +590,8 @@ export async function createLayeredSvgBlobFromMap({
       const lineX1 = textAlign === "left" ? exportWidth * 0.05 : textAlign === "right" ? exportWidth * 0.95 - dividerWidth : exportWidth * 0.5 - dividerWidth / 2;
       const lineX2 = lineX1 + dividerWidth;
 
-      const cityStartY = exportHeight * (cityLayout.isMultiLine ? TEXT_CITY_Y_RATIO - 0.015 : TEXT_CITY_Y_RATIO);
+      const yRatio = textPosition === "top" ? 0.14 : textPosition === "center" ? 0.50 : TEXT_CITY_Y_RATIO;
+      const cityStartY = exportHeight * (cityLayout.isMultiLine ? yRatio - 0.015 : yRatio);
       const lineSpacing = cityFontSize * 1.08;
 
       if (cityLayout.isMultiLine) {
@@ -639,8 +642,9 @@ export async function createLayeredSvgBlobFromMap({
     }
 
     let attributionFontSize = ATTRIBUTION_FONT_BASE_PX * dimScale * fontScale;
+    const osmText = "© OpenStreetMap contributors";
     const appText = APP_CREDIT_URL;
-    const approxOsmWidth = 0;
+    const approxOsmWidth = osmText.length * attributionFontSize * 0.6;
     const approxAppWidth = includeCredits ? appText.length * attributionFontSize * 0.6 : 0;
     const edgeMargin = exportWidth * TEXT_EDGE_MARGIN_RATIO;
     const availableAttrWidth = exportWidth - (edgeMargin * 2) - (includeCredits ? exportWidth * 0.04 : 0);
@@ -657,7 +661,11 @@ export async function createLayeredSvgBlobFromMap({
 
     const credX = borderInnerX + pointTwoMmPx;
     const attrY = exportHeight - (borderInnerY + pointTwoMmPx);
+    const osmX = exportWidth - (borderInnerX + pointTwoMmPx);
 
+    if (!squareCaptionGeometry) vectorTypographySvg += `
+  <text x="${osmX}" y="${attrY}" text-anchor="end" dominant-baseline="auto" font-family="${bodyFontFamily}" font-size="${attributionFontSize}" font-weight="300" opacity="${attributionAlpha}" fill="${attributionColor}">© OpenStreetMap contributors</text>
+`;
 
     if (includeCredits && !squareCaptionGeometry) {
       // Dedicated MapArte branding font size: at least 18pt / visible on sheet
@@ -807,9 +815,14 @@ export async function createLayeredSvgBlobFromMap({
   ${taglineSvg}
   ${coordsSvg}` : "";
 
+          const isLand = pageWidth > pageHeight;
+          const credAppX = isLand ? g.x + Math.max(8, g.size * 0.025) : g.safeInsetX;
+          const credAppY = isLand ? g.y + g.size - Math.max(6, g.size * 0.02) : creditY;
+
           return `<g id="square-caption-typography">${captionSvg}</g>
 <g id="square-caption-credits" font-family="${bodyFontFamily}" font-size="${Math.max(9, 13 * Math.min(pageWidth, pageHeight) / 1000)}" opacity="0.68">
-${includeCredits ? `<text x="${g.safeInsetX}" y="${creditY}" text-anchor="start" fill="${attributionColor}" font-size="${Math.max(18, Math.round(24 * Math.min(pageWidth, pageHeight) / 1000 * fontScale))}" font-weight="600" letter-spacing="0.1em">${escapeXml(APP_CREDIT_URL)}</text>` : ""}
+<text x="${pageWidth - g.safeInsetX}" y="${creditY}" text-anchor="end" fill="${attributionColor}">© OpenStreetMap contributors</text>
+${includeCredits ? `<text x="${credAppX}" y="${credAppY}" text-anchor="start" fill="${attributionColor}" font-size="${Math.max(18, Math.round(24 * Math.min(pageWidth, pageHeight) / 1000 * fontScale))}" font-weight="600" letter-spacing="0.1em">${escapeXml(APP_CREDIT_URL)}</text>` : ""}
 </g>`;
         })()
       : "";

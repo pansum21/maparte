@@ -76,9 +76,83 @@ function createImageIcon(id: string, label: string, sourcePath: string) {
   } satisfies MarkerIconDefinition;
 }
 
+const DEFAULT_GTA6_BLUE = "#2F7BFF";
+
+function mixHex(hex: string, target: number, amount: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  const channel = (shift: number) => {
+    const c = (n >> shift) & 255;
+    return Math.round(c + (target - c) * amount);
+  };
+  const out = (channel(16) << 16) | (channel(8) << 8) | channel(0);
+  return `#${out.toString(16).padStart(6, "0")}`;
+}
+
+export function buildGta6NavSvgMarkup(): string {
+  const color = DEFAULT_GTA6_BLUE;
+  const tip: [number, number] = [0, -60];
+  const right: [number, number] = [42, 48];
+  const notch: [number, number] = [0, 24];
+  const left: [number, number] = [-42, 48];
+
+  const outline: [number, number][] = [tip, right, notch, left];
+  const leftFacet: [number, number][] = [tip, notch, left];
+  const rightFacet: [number, number][] = [tip, right, notch];
+
+  const dark = mixHex(color, 0, 0.55);
+  const mid = mixHex(color, 0, 0.12);
+  const light = mixHex(color, 255, 0.32);
+  const depth = 14;
+
+  const pts = (list: [number, number][]) => list.map(([x, y]) => `${x},${y}`).join(" ");
+
+  const extrusion: string[] = [];
+  for (let i = depth; i >= 1; i -= 1) {
+    extrusion.push(
+      `<polygon points="${pts(outline.map(([x, y]) => [x, y + i]))}" fill="${dark}" stroke="${dark}" stroke-width="6" stroke-linejoin="round"/>`,
+    );
+  }
+
+  const shadowBase: [number, number][] = outline.map(([x, y]) => [x + 6, y + depth + 10]);
+
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-65 -75 130 165" width="130" height="165">` +
+    `<defs><filter id="marker-relief-gta6-shadow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter></defs>` +
+    `<polygon points="${pts(shadowBase)}" fill="#000000" fill-opacity="0.38" filter="url(#marker-relief-gta6-shadow)"/>` +
+    `<polygon points="${pts(outline.map(([x, y]) => [x, y + depth]))}" fill="none" stroke="#FFFFFF" stroke-width="13" stroke-linejoin="round"/>` +
+    extrusion.join("") +
+    `<polygon points="${pts(outline)}" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linejoin="round"/>` +
+    `<polygon points="${pts(leftFacet)}" fill="${light}"/>` +
+    `<polygon points="${pts(rightFacet)}" fill="${mid}"/>` +
+    `<polyline points="${pts([tip, notch])}" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="2"/>` +
+    `<polygon points="${pts(outline)}" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linejoin="round"/>` +
+    `</svg>`
+  );
+}
+
+const Gta6Nav3DIcon: IconType = (props) =>
+  createElement("span", {
+    className: "gta6-marker-icon-root",
+    style: { display: "inline-flex", width: "100%", height: "100%", alignItems: "center", justifyContent: "center" },
+    dangerouslySetInnerHTML: { __html: buildGta6NavSvgMarkup() },
+  });
+
+function createGta6NavIcon(): MarkerIconDefinition {
+  return {
+    id: "gta-6",
+    label: "GTA 6",
+    source: "predefined",
+    kind: "svg",
+    component: Gta6Nav3DIcon,
+    svgMarkup: buildGta6NavSvgMarkup(),
+    tintWithMarkerColor: false,
+  };
+}
+
 export const predefinedMarkerIcons: MarkerIconDefinition[] = [
   createImageIcon("app-marker", "MAPARTE", "/assets/marker-ma.png"),
   createImageIcon("app-marker-a", "ART", "/assets/marker-a-full.png"),
+  createGta6NavIcon(),
   createSvgIcon("pin", "Pin", FaLocationDot),
   createSvgIcon("heart", "Heart", FaHeart),
   createSvgIcon("ring", "Ring", FaRing),

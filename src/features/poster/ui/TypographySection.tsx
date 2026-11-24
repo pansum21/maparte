@@ -523,7 +523,7 @@ export default function TypographySection({
                   aria-expanded={fontPickerOpen}
                   aria-haspopup="listbox"
                   aria-label={`Font family: ${selectedFont?.label ?? "Default (Space Grotesk)"}`}
-                  className="font-picker-trigger form-control-tall"
+                  className="font-picker-trigger"
                   type="button"
                   onClick={() => setFontPickerOpen((open) => !open)}
                 >
@@ -595,7 +595,7 @@ export default function TypographySection({
               })}
             </div>
             <div className="poster-text-alignment" role="group" aria-label="Text alignment">
-              <span className="poster-text-alignment__label">Text alignment</span>
+              <span className="poster-text-alignment__label">Horizontal alignment</span>
               <div className="poster-text-alignment__options">
                 {(["left", "center", "right"] as const).map((alignment) => (
                   <button
@@ -606,6 +606,23 @@ export default function TypographySection({
                     onClick={() => dispatch({ type: "SET_FIELD", name: "textAlign", value: alignment })}
                   >
                     {alignment[0].toUpperCase() + alignment.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="poster-text-alignment" role="group" aria-label="Text position">
+              <span className="poster-text-alignment__label">Text position</span>
+              <div className="poster-text-alignment__options">
+                {(["top", "center", "bottom"] as const).map((position) => (
+                  <button
+                    key={position}
+                    type="button"
+                    className={`poster-text-alignment__option${(form.textPosition ?? "bottom") === position ? " is-selected" : ""}`}
+                    aria-pressed={(form.textPosition ?? "bottom") === position}
+                    onClick={() => dispatch({ type: "SET_FIELD", name: "textPosition", value: position })}
+                  >
+                    {position[0].toUpperCase() + position.slice(1)}
                   </button>
                 ))}
               </div>

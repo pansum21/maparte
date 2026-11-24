@@ -68,6 +68,7 @@ export const DEFAULT_FORM: PosterForm = {
   fontFamily: "",
   fontSize: "16",
   textAlign: "center",
+  textPosition: "bottom",
   circleTextSide: "right",
   minimapRing: true,
   minimapRoute: false,
