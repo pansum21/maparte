@@ -22,6 +22,8 @@ export interface ThemeMapColors {
   aeroway: string;
   rail: string;
   roads: ThemeRoadColors;
+  /** Multiplier for all road widths (1 = default). Optional for older themes. */
+  roadWidthScale?: number;
 }
 
 export interface ThemeColors {

@@ -130,6 +130,14 @@ const preferredThemeOrder = [
   "aurora"
 ];
 
+const ROAD_WIDTH_SCALE_MIN = 0.5;
+const ROAD_WIDTH_SCALE_MAX = 2.5;
+
+function normalizeRoadWidthScale(value: unknown): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 1;
+  return Math.min(ROAD_WIDTH_SCALE_MAX, Math.max(ROAD_WIDTH_SCALE_MIN, value));
+}
+
 function isObject(value: unknown): value is ThemeObject {
   return typeof value === "object" && value !== null;
 }
@@ -248,6 +256,10 @@ function normalizeTheme(themeInput: unknown): ResolvedTheme {
     resolveByCandidates(theme, themeColorLookup["map.aeroway"]) ||
     blendHex(land, water, 0.2);
 
+  const roadWidthScale = normalizeRoadWidthScale(
+    getPathValue(theme, "map.road_width_scale"),
+  );
+
   const rail = (() => {
     const explicitRail = resolveByCandidates(theme, themeColorLookup["map.rail"]);
     if (explicitRail) return explicitRail;
@@ -281,6 +293,7 @@ function normalizeTheme(themeInput: unknown): ResolvedTheme {
         path: roadPath,
         outline: roadOutline,
       },
+      roadWidthScale,
     },
   };
 }

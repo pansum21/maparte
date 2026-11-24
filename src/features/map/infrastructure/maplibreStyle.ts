@@ -255,36 +255,39 @@ export function generateMapStyle(
   const majorCasingStops = MAP_ROAD_MAJOR_WIDTH_STOPS;
   const waterwayWidthStops = compensateLineWidthStops(MAP_WATERWAY_WIDTH_STOPS);
   const railWidthStops = compensateLineWidthStops(MAP_RAIL_WIDTH_STOPS);
-  const roadMinorOverviewHighWidthStops = compensateLineWidthStops(
+  const roadWidthScale = theme.map.roadWidthScale ?? 1;
+  const roadWidthStops = (stops: [number, number][]): [number, number][] =>
+    scaledStops(stops, OVERZOOM_LINE_WIDTH_SCALE * roadWidthScale);
+  const roadMinorOverviewHighWidthStops = roadWidthStops(
     MAP_ROAD_MINOR_HIGH_OVERVIEW_WIDTH_STOPS,
   );
-  const roadMinorOverviewMidWidthStops = compensateLineWidthStops(
+  const roadMinorOverviewMidWidthStops = roadWidthStops(
     MAP_ROAD_MINOR_MID_OVERVIEW_WIDTH_STOPS,
   );
-  const roadMinorOverviewLowWidthStops = compensateLineWidthStops(
+  const roadMinorOverviewLowWidthStops = roadWidthStops(
     MAP_ROAD_MINOR_LOW_OVERVIEW_WIDTH_STOPS,
   );
-  const roadPathOverviewWidthStops = compensateLineWidthStops(
+  const roadPathOverviewWidthStops = roadWidthStops(
     MAP_ROAD_PATH_OVERVIEW_WIDTH_STOPS,
   );
-  const roadMinorDetailHighWidthStops = compensateLineWidthStops(
+  const roadMinorDetailHighWidthStops = roadWidthStops(
     MAP_ROAD_MINOR_HIGH_DETAIL_WIDTH_STOPS,
   );
-  const roadMinorDetailMidWidthStops = compensateLineWidthStops(
+  const roadMinorDetailMidWidthStops = roadWidthStops(
     MAP_ROAD_MINOR_MID_DETAIL_WIDTH_STOPS,
   );
-  const roadMinorDetailLowWidthStops = compensateLineWidthStops(
+  const roadMinorDetailLowWidthStops = roadWidthStops(
     MAP_ROAD_MINOR_LOW_DETAIL_WIDTH_STOPS,
   );
-  const roadPathDetailWidthStops = compensateLineWidthStops(
+  const roadPathDetailWidthStops = roadWidthStops(
     MAP_ROAD_PATH_DETAIL_WIDTH_STOPS,
   );
-  const roadMajorWidthStops = compensateLineWidthStops(
+  const roadMajorWidthStops = roadWidthStops(
     MAP_ROAD_MAJOR_WIDTH_STOPS,
   );
   const roadMinorHighCasingStops =
-    compensateLineWidthStops(minorHighCasingStops);
-  const roadMajorCasingStops = compensateLineWidthStops(majorCasingStops);
+    roadWidthStops(minorHighCasingStops);
+  const roadMajorCasingStops = roadWidthStops(majorCasingStops);
   const roadMinorHighColor = theme.map.roads.minor_high;
   const roadMinorMidColor = theme.map.roads.minor_mid;
   const roadMinorLowColor = theme.map.roads.minor_low;
