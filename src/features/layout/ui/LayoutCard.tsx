@@ -60,6 +60,10 @@ function getLayoutSymbolDataUri(layoutOption: Layout): string {
 
 function getLayoutCardLabel(layoutOption: Layout): string {
   const id = layoutOption.id.toLowerCase();
+  // Double-map layouts carry "_a4_" in their id, so name them before the size checks below.
+  if (id === "print_maparte_double_square_a4_landscape") return "Double Square";
+  if (id === "print_maparte_double_circle_a4_landscape") return "Double Circle";
+  if (id === "print_maparte_double_heart_a4_landscape") return "Double Heart";
   // Print sizes: A0 to A5, US formats, Posters
   if (id.includes("_a0_")) return "A0";
   if (id.includes("_a1_")) return "A1";

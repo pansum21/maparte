@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   createCustomLayoutOption,
   formatLayoutDimensions,
+  getDoubleMapShape,
   isMaparteCircleLayout,
   isMaparteSquareCaptionLayout,
 } from "@/features/layout/infrastructure/layoutRepository";
@@ -546,6 +547,9 @@ export default function MapSettingsSection({
         "print_maparte_circle_caption_a4_landscape_left",
         "print_maparte_circle_poster_a4_landscape",
         "print_maparte_circle_poster_a4_landscape_left",
+        "print_maparte_double_square_a4_landscape",
+        "print_maparte_double_circle_a4_landscape",
+        "print_maparte_double_heart_a4_landscape",
       ]),
     [],
   );
@@ -598,6 +602,7 @@ export default function MapSettingsSection({
           (l) =>
             framePaperLayoutIds.has(l.id) &&
             !isMaparteCircleLayout(l.id) &&
+            !getDoubleMapShape(l.id) &&
             (l.widthCm ?? l.width) > (l.heightCm ?? l.height),
         ),
       ),
@@ -626,6 +631,14 @@ export default function MapSettingsSection({
             isMaparteCircleLayout(l.id) &&
             (l.widthCm ?? l.width) > (l.heightCm ?? l.height),
         ),
+      ),
+    [framePaperLayoutIds, layoutGroups],
+  );
+
+  const frameDoubleLandscapeLayouts = useMemo(
+    () =>
+      layoutGroups.flatMap((group) =>
+        group.options.filter((l) => framePaperLayoutIds.has(l.id) && getDoubleMapShape(l.id) !== null),
       ),
     [framePaperLayoutIds, layoutGroups],
   );
@@ -919,6 +932,23 @@ export default function MapSettingsSection({
                     />
                   ))}
                 </div>
+                {frameDoubleLandscapeLayouts.length > 0 && (
+                  <>
+                    <div className="layout-subhead-row" style={{ marginTop: "14px" }}>
+                      <h3>Double Maps (Landscape)</h3>
+                    </div>
+                    <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-landscape-2">
+                      {frameDoubleLandscapeLayouts.map((layoutOption) => (
+                        <LayoutCard
+                          key={layoutOption.id}
+                          layoutOption={layoutOption}
+                          isSelected={layoutOption.id === form.layout}
+                          onClick={() => handleLayoutSelectInline(layoutOption.id)}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
                 <div className="frame-layout-style-section">
                   <h4 className="frame-layout-subheading">Frame Styles</h4>
                   <p className="frame-layout-help">Choose a frame style for your poster.</p>
