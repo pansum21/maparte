@@ -518,6 +518,33 @@
           "outline": "#EBE3CD"
         }
       }
+    },
+    "bold_night": {
+      "name": "Bold Night",
+      "description": "Deep violet-black base with thick sunflower and hot-pink arteries and bright UV-style side streets",
+      "ui": {
+        "bg": "#0A0820",
+        "text": "#E8FF5A"
+      },
+      "map": {
+        "land": "#0A0820",
+        "landcover": "#120E33",
+        "water": "#03040F",
+        "waterway": "#061A3A",
+        "parks": "#0E2B2E",
+        "buildings": "#1E1A4A",
+        "aeroway": "#1A1842",
+        "rail": "#FF7A1A",
+        "road_width_scale": 2.0,
+        "roads": {
+          "major": "#FFE14D",
+          "minor_high": "#FF3D9A",
+          "minor_mid": "#A66BFF",
+          "minor_low": "#38E1FF",
+          "path": "#2A86B8",
+          "outline": "#0A0820"
+        }
+      }
     }
   }
 }
