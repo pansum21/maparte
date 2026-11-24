@@ -14,56 +14,91 @@ interface OSRMResponse {
   message?: string;
 }
 
-/**
- * Fetch real street-snapped route coordinates via Open Source Routing Machine (OSRM).
- * 100% Free, OpenStreetMap data, zero API key required.
- */
-export async function fetchRoadRoute(
-  waypoints: Coordinate[],
-  profile: RoutingProfile = "walking",
-): Promise<{ coordinates: Coordinate[]; distanceMeters: number }> {
-  if (waypoints.length < 2) {
-    return { coordinates: waypoints, distanceMeters: 0 };
-  }
+export interface RoadRouteResult {
+  coordinates: Coordinate[];
+  distanceMeters: number;
+  /** false when no road routing server answered and straight segments were used instead */
+  snapped: boolean;
+}
 
+/**
+ * OSRM servers tried in order for each profile. The public demo server only
+ * routes by car: it ignores the profile name, so "walking" there is car routing.
+ * The OSM Germany servers run real foot and bike profiles with CORS enabled.
+ */
+const ROUTING_SERVERS: Record<RoutingProfile, string[]> = {
+  // The car-only demo server is a last resort: a road line beats a straight one.
+  walking: [
+    "https://routing.openstreetmap.de/routed-foot/route/v1/foot",
+    "https://router.project-osrm.org/route/v1/driving",
+  ],
+  driving: [
+    "https://router.project-osrm.org/route/v1/driving",
+    "https://routing.openstreetmap.de/routed-car/route/v1/driving",
+  ],
+  bike: ["https://routing.openstreetmap.de/routed-bike/route/v1/bike"],
+};
+
+const ROUTING_TIMEOUT_MS = 12_000;
+
+async function requestOsrmRoute(
+  baseUrl: string,
+  waypoints: Coordinate[],
+): Promise<{ coordinates: Coordinate[]; distanceMeters: number }> {
   // Format: {lon1},{lat1};{lon2},{lat2};...
   const coordsParam = waypoints
     .map((pt) => `${pt.lon.toFixed(6)},${pt.lat.toFixed(6)}`)
     .join(";");
+  const url = `${baseUrl}/${coordsParam}?overview=full&geometries=geojson`;
 
-  const url = `https://router.project-osrm.org/route/v1/${profile}/${coordsParam}?overview=full&geometries=geojson`;
-
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), ROUTING_TIMEOUT_MS);
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6500);
-
     const response = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeoutId);
-
     if (!response.ok) {
       throw new Error(`OSRM HTTP ${response.status}`);
     }
-
     const data: OSRMResponse = await response.json();
-    if (data.code === "Ok" && data.routes && data.routes.length > 0) {
-      const rawCoords = data.routes[0].geometry.coordinates;
-      const coordinates: Coordinate[] = rawCoords.map(([lon, lat]) => ({
-        lat,
-        lon,
-      }));
-      return {
-        coordinates,
-        distanceMeters: data.routes[0].distance,
-      };
+    const route = data.routes?.[0];
+    if (data.code !== "Ok" || !route || route.geometry.coordinates.length < 2) {
+      throw new Error(`OSRM code ${data.code}`);
     }
-  } catch (error) {
-    console.warn("OSRM routing fallback to interpolated curve:", error);
+    return {
+      coordinates: route.geometry.coordinates.map(([lon, lat]) => ({ lat, lon })),
+      distanceMeters: route.distance,
+    };
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+/**
+ * Fetch street-snapped route coordinates via OSRM (OpenStreetMap data, no API key).
+ * Tries each server for the profile in turn. Straight segments between the
+ * waypoints are used only when every server fails; `snapped` tells the caller.
+ */
+export async function fetchRoadRoute(
+  waypoints: Coordinate[],
+  profile: RoutingProfile = "walking",
+): Promise<RoadRouteResult> {
+  if (waypoints.length < 2) {
+    return { coordinates: waypoints, distanceMeters: 0, snapped: true };
   }
 
-  // Fallback: Generate smooth interpolated geodesic curve if network fails
+  for (const baseUrl of ROUTING_SERVERS[profile]) {
+    try {
+      const road = await requestOsrmRoute(baseUrl, waypoints);
+      return { ...road, snapped: true };
+    } catch (error) {
+      console.warn("Road routing server failed, trying next:", baseUrl, error);
+    }
+  }
+
+  console.warn("All road routing servers failed; drawing straight segments.");
   return {
     coordinates: generateInterpolatedPoints(waypoints),
     distanceMeters: 0,
+    snapped: false,
   };
 }
 

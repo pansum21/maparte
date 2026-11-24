@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import type { Map as MaplibreMap } from "maplibre-gl";
 import type { MapInstanceRef } from "@/features/map/domain/types";
 import type { Route } from "@/features/routes/domain/types";
 import type { MarkerIconDefinition } from "@/features/markers/domain/types";
@@ -10,6 +11,7 @@ interface RouteEndpointsOverlayProps {
   routes: Route[];
   customIcons: MarkerIconDefinition[];
   mapRef: MapInstanceRef;
+  mapInstance?: MaplibreMap | null;
   visible: boolean;
   overzoomScale: number;
 }
@@ -18,13 +20,14 @@ export default function RouteEndpointsOverlay({
   routes,
   customIcons,
   mapRef,
+  mapInstance,
   visible,
   overzoomScale,
 }: RouteEndpointsOverlayProps) {
   const [renderTick, setRenderTick] = useState(0);
 
   useEffect(() => {
-    const map = mapRef.current;
+    const map = mapInstance ?? mapRef.current;
     if (!map) return;
 
     const sync = () => setRenderTick((value) => value + 1);
@@ -34,6 +37,7 @@ export default function RouteEndpointsOverlay({
     map.on("rotate", sync);
     map.on("resize", sync);
     map.on("load", sync);
+    sync();
 
     return () => {
       map.off("move", sync);
@@ -42,9 +46,9 @@ export default function RouteEndpointsOverlay({
       map.off("resize", sync);
       map.off("load", sync);
     };
-  }, [mapRef]);
+  }, [mapRef, mapInstance]);
 
-  const map = mapRef.current;
+  const map = mapInstance ?? mapRef.current;
   const projected = useMemo(() => {
     if (!map || !visible) return [];
     return routes.flatMap((route) => {

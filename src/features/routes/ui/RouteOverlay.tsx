@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { Map as MaplibreMap } from "maplibre-gl";
 import type { MapInstanceRef } from "@/features/map/domain/types";
 import type { Route } from "@/features/routes/domain/types";
 import { drawRoutesWithProjector } from "@/features/routes/infrastructure/rendering";
@@ -6,6 +7,8 @@ import { drawRoutesWithProjector } from "@/features/routes/infrastructure/render
 interface RouteOverlayProps {
   routes: Route[];
   mapRef: MapInstanceRef;
+  /** Map instance once it exists. Passing it makes the listeners attach after the map is ready. */
+  mapInstance?: MaplibreMap | null;
   visible: boolean;
   overzoomScale: number;
 }
@@ -13,6 +16,7 @@ interface RouteOverlayProps {
 export default function RouteOverlay({
   routes,
   mapRef,
+  mapInstance,
   visible,
   overzoomScale,
 }: RouteOverlayProps) {
@@ -21,7 +25,7 @@ export default function RouteOverlay({
   const [renderTick, setRenderTick] = useState(0);
 
   useEffect(() => {
-    const map = mapRef.current;
+    const map = mapInstance ?? mapRef.current;
     if (!map) return;
 
     const sync = () => setRenderTick((value) => value + 1);
@@ -31,6 +35,8 @@ export default function RouteOverlay({
     map.on("rotate", sync);
     map.on("resize", sync);
     map.on("load", sync);
+    // Draw once right away: the map may already be loaded and fire no event.
+    sync();
 
     return () => {
       map.off("move", sync);
@@ -39,7 +45,7 @@ export default function RouteOverlay({
       map.off("resize", sync);
       map.off("load", sync);
     };
-  }, [mapRef]);
+  }, [mapRef, mapInstance]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -54,7 +60,7 @@ export default function RouteOverlay({
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
-    const map = mapRef.current;
+    const map = mapInstance ?? mapRef.current;
     if (!canvas || !container || !map) return;
 
     const cssWidth = container.clientWidth;
@@ -90,7 +96,7 @@ export default function RouteOverlay({
         }
       },
     );
-  }, [mapRef, routes, visible, overzoomScale, renderTick]);
+  }, [mapRef, mapInstance, routes, visible, overzoomScale, renderTick]);
 
   return (
     <div
