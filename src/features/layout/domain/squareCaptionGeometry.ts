@@ -359,7 +359,7 @@ export interface DoubleMapGeometry {
   safeInsetY: number;
   shape: "square" | "circle" | "heart" | "rectangle";
   slots: DoubleMapSlot[];
-  /** Caption region paired with each map slot (beside portrait maps, below landscape maps). */
+  /** Caption region paired with each map slot, below its map. */
   textBoxes: { x: number; y: number; w: number; h: number }[];
   captionAlign: "left" | "center" | "right";
 }
@@ -368,8 +368,7 @@ export interface DoubleMapGeometry {
 export const DOUBLE_NAME_BAND = 0.2;
 
 /**
- * Computes equal map slots and their matching caption boxes. Portrait compositions
- * place the caption beside each map; landscape compositions place it below.
+ * Portrait maps stay stacked with captions below; landscape maps sit side by side.
  */
 export function getDoubleMapGeometry(
   posterWidth: number,
@@ -381,51 +380,42 @@ export function getDoubleMapGeometry(
   shape: "square" | "circle" | "heart" | "rectangle",
   requestedAlign?: "left" | "center" | "right",
   count = 2,
-  captionSide: "left" | "right" = "right",
-  minimumInsetCm = 0,
 ): DoubleMapGeometry {
   const pxPerCmX = posterWidth / Math.max(1, widthCm);
   const pxPerCmY = posterHeight / Math.max(1, heightCm);
   const minDim = Math.min(posterWidth, posterHeight);
-  const safeInsetX = Math.max(0.035 * minDim, Math.max(minimumInsetCm, mapInsetCm + (gapCm || 0)) * pxPerCmX);
-  const safeInsetY = Math.max(0.035 * minDim, Math.max(minimumInsetCm, mapInsetCm + (gapCm || 0)) * pxPerCmY);
+  const safeInsetX = Math.max(0.035 * minDim, Math.max(0, mapInsetCm + (gapCm || 0)) * pxPerCmX);
+  const safeInsetY = Math.max(0.035 * minDim, Math.max(0, mapInsetCm + (gapCm || 0)) * pxPerCmY);
   const vertical = posterHeight > posterWidth;
   const total = Math.max(1, Math.min(3, Math.floor(count)));
   const gap = 0.025 * (vertical ? posterHeight : posterWidth);
   const usableW = Math.max(1, posterWidth - safeInsetX * 2);
   const usableH = Math.max(1, posterHeight - safeInsetY * 2);
-  const captionShare = 0.5;
-  const bandH = DOUBLE_NAME_BAND * posterHeight;
+  const bandH = vertical ? (usableH / total) * 0.22 : DOUBLE_NAME_BAND * posterHeight;
   const cellW = vertical ? usableW : (usableW - gap * (total - 1)) / total;
-  // Credits sit on the poster's bottom inset. Leave a dedicated footer strip
-  // below portrait rows so the final map/caption never collides with them.
-  const portraitCreditClearance = vertical ? Math.max(minimumInsetCm * pxPerCmY, 0.035 * minDim) : 0;
-  const compositionH = Math.max(1, usableH - portraitCreditClearance);
-  const cellH = vertical ? (compositionH - gap * (total - 1)) / total : usableH;
-  const mapCellW = vertical ? (usableW - gap) * (1 - captionShare) : cellW;
-  const mapCellH = vertical ? cellH : Math.max(1, usableH - bandH);
+  const cellH = vertical ? (usableH - gap * (total - 1)) / total : usableH;
+  const mapCellH = vertical ? Math.max(1, cellH - bandH) : Math.max(1, usableH - bandH);
   const slots: DoubleMapSlot[] = [];
   const textBoxes: { x: number; y: number; w: number; h: number }[] = [];
   for (let i = 0; i < total; i += 1) {
     if (vertical) {
       const rowTop = safeInsetY + i * (cellH + gap);
-      const mapX = captionSide === "right" ? safeInsetX : safeInsetX + mapCellW + gap;
-      const textX = captionSide === "right" ? safeInsetX + mapCellW + gap : safeInsetX;
-      const textW = Math.max(1, usableW - mapCellW - gap);
-      const width = shape === "rectangle" ? mapCellW : Math.min(mapCellW, cellH);
-      const height = shape === "rectangle" ? cellH : width;
-      const x = mapX + (mapCellW - width) / 2;
-      const y = rowTop + (cellH - height) / 2;
+      const size = Math.max(1, Math.min(cellW, cellH - bandH));
+      const width = shape === "rectangle" ? usableW : size;
+      const height = shape === "rectangle" ? Math.max(1, cellH - bandH) : size;
+      const x = safeInsetX + (usableW - width) / 2;
+      const y = rowTop + Math.max(0, (cellH - height - bandH) / 2);
       slots.push({ x, y, width, height, size: Math.min(width, height) });
-      textBoxes.push({ x: textX, y: rowTop, w: textW, h: cellH });
+      textBoxes.push({ x: safeInsetX, y: y + height, w: usableW, h: Math.max(1, rowTop + cellH - (y + height)) });
     } else {
       const cellX = safeInsetX + i * (cellW + gap);
-      const width = shape === "rectangle" ? cellW : Math.min(cellW, mapCellH);
-      const height = shape === "rectangle" ? mapCellH : width;
+      const size = Math.max(1, Math.min(cellW, mapCellH));
+      const width = shape === "rectangle" ? cellW : size;
+      const height = shape === "rectangle" ? mapCellH : size;
       const x = cellX + (cellW - width) / 2;
       const y = safeInsetY + (mapCellH - height) / 2;
       slots.push({ x, y, width, height, size: Math.min(width, height) });
-      textBoxes.push({ x: cellX, y: safeInsetY + mapCellH, w: cellW, h: Math.max(1, usableH - mapCellH) });
+      textBoxes.push({ x: cellX, y: y + height, w: cellW, h: Math.max(1, safeInsetY + usableH - (y + height)) });
     }
   }
   return {

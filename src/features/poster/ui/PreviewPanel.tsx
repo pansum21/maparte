@@ -319,10 +319,8 @@ export default function PreviewPanel({
       doubleShape,
       form.textAlign,
       multiMapLayout?.count ?? 2,
-      form.circleTextSide ?? "right",
-      1,
     );
-  }, [doubleShape, multiMapLayout?.count, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, form.textAlign, form.circleTextSide]);
+  }, [doubleShape, multiMapLayout?.count, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, form.textAlign]);
   const doubleViews = getDoubleSlotViews(form, state.doubleMap, multiMapLayout?.count ?? 2);
   const doubleActive = state.doubleMap.active;
   const doubleSeededRef = useRef(false);

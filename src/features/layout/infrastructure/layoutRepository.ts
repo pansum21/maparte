@@ -221,24 +221,25 @@ export type MaparteMultiMapLayout = {
   count: 1 | 2 | 3;
   orientation: "portrait" | "landscape";
 };
-const mapShapes = ["square", "circle", "heart", "rectangle"] as const;
-const orientations = ["portrait", "landscape"] as const;
-export const MAPARTE_MULTI_MAP_LAYOUTS: Record<string, MaparteMultiMapLayout> = Object.fromEntries(
-  mapShapes.flatMap((shape) => [1, 2, 3].flatMap((count) => orientations.map((orientation) => {
-    const id = count === 2 && orientation === "landscape" && shape !== "rectangle"
-      ? `print_maparte_double_${shape}_a4_landscape`
-      : count === 3 && shape !== "rectangle"
-        ? `frame_maparte_triple_${shape}_a4_${orientation}`
-        : `frame_maparte_${count === 1 ? "single" : count === 2 ? "double" : "triple"}_${shape}_a4_${orientation}`;
-    return [id, { shape, count: count as 1 | 2 | 3, orientation }];
-  }))),
-);
+export const MAPARTE_MULTI_MAP_LAYOUTS: Record<string, MaparteMultiMapLayout> = {
+  ...Object.fromEntries(Object.entries(MAPARTE_DOUBLE_MAP_LAYOUT_IDS).map(([id, shape]) => [id, { shape, count: 2 as const, orientation: "landscape" as const }])),
+  ...Object.fromEntries((["square", "circle", "heart"] as const).flatMap((shape) => (["portrait", "landscape"] as const).map((orientation) => [
+    `frame_maparte_triple_${shape}_a4_${orientation}`,
+    { shape, count: 3 as const, orientation },
+  ]))),
+  ...Object.fromEntries((["square", "circle", "heart", "rectangle"] as const).map((shape) => [
+    `frame_maparte_single_${shape}_a4_landscape`,
+    { shape, count: 1 as const, orientation: "landscape" as const },
+  ])),
+  frame_maparte_double_rectangle_a4_landscape: { shape: "rectangle", count: 2, orientation: "landscape" },
+  frame_maparte_triple_rectangle_a4_landscape: { shape: "rectangle", count: 3, orientation: "landscape" },
+};
 
 export function getMaparteMultiMapLayout(layoutId: string): MaparteMultiMapLayout | null {
   return MAPARTE_MULTI_MAP_LAYOUTS[layoutId] ?? null;
 }
 
-/** Returns the map shape for any MapArte single, double, or triple composition. */
+/** Returns the map shape for a supported MapArte multi-map composition. */
 export function getDoubleMapShape(layoutId: string): "square" | "circle" | "heart" | "rectangle" | null {
   return MAPARTE_MULTI_MAP_LAYOUTS[layoutId]?.shape ?? null;
 }

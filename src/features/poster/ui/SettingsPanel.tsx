@@ -230,8 +230,6 @@ export default function SettingsPanel({
                 onFontChange={handleFontChange}
                 onLayoutChange={handleLayoutChange}
                 onFrameLayoutChange={(frameLayout) => dispatch({ type: "SET_FIELD", name: "frameLayout", value: frameLayout })}
-                onTextSideChange={(side) => dispatch({ type: "SET_FIELD", name: "circleTextSide", value: side })}
-                circleTextSide={state.form.circleTextSide}
                 selectedTheme={selectedTheme}
                 themeOptions={themeOptions}
                 layoutGroups={layoutGroups}
@@ -273,8 +271,6 @@ export default function SettingsPanel({
                 onFontChange={handleFontChange}
                 onLayoutChange={handleLayoutChange}
                 onFrameLayoutChange={(frameLayout) => dispatch({ type: "SET_FIELD", name: "frameLayout", value: frameLayout })}
-                onTextSideChange={(side) => dispatch({ type: "SET_FIELD", name: "circleTextSide", value: side })}
-                circleTextSide={state.form.circleTextSide}
                 selectedTheme={selectedTheme}
                 themeOptions={themeOptions}
                 layoutGroups={layoutGroups}

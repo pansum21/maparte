@@ -74,7 +74,6 @@ const FALLBACK_COLOR = "#000000";
 interface MapSettingsForm {
   theme: string;
   layout: string;
-  circleTextSide?: "left" | "right";
   frameLayout?: string;
   width: string;
   height: string;
@@ -99,8 +98,6 @@ interface MapSettingsSectionProps {
   onThemeChange: (themeId: string) => void;
   onLayoutChange: (layoutId: string) => void;
   onFrameLayoutChange?: (frameLayout: string) => void;
-  onTextSideChange?: (side: "left" | "right") => void;
-  circleTextSide?: "left" | "right";
   onFontChange?: (font: string) => void;
   selectedTheme: ResolvedTheme;
   themeOptions: ThemeOption[];
@@ -121,8 +118,6 @@ export default function MapSettingsSection({
   onThemeChange,
   onLayoutChange,
   onFrameLayoutChange,
-  onTextSideChange,
-  circleTextSide = "right",
   onFontChange,
   selectedTheme,
   themeOptions,
@@ -555,12 +550,9 @@ export default function MapSettingsSection({
         "print_maparte_double_square_a4_landscape",
         "print_maparte_double_circle_a4_landscape",
         "print_maparte_double_heart_a4_landscape",
-        ...["square", "circle", "heart", "rectangle"].flatMap((shape) => [
-          ...["single", "double", "triple"].flatMap((count) => [
-            `frame_maparte_${count}_${shape}_a4_portrait`,
-            `frame_maparte_${count}_${shape}_a4_landscape`,
-          ]),
-        ]),
+        ...["square", "circle", "heart", "rectangle"].map((shape) => `frame_maparte_single_${shape}_a4_landscape`),
+        "frame_maparte_double_rectangle_a4_landscape",
+        "frame_maparte_triple_rectangle_a4_landscape",
       ]),
     [],
   );
@@ -652,16 +644,15 @@ export default function MapSettingsSection({
   const layoutsByShape = ["square", "circle", "heart", "rectangle"].map((shape) => ({
     shape,
     label: shape[0].toUpperCase() + shape.slice(1),
-    portrait: layoutGroups.flatMap((group) => group.options).filter((option) => {
-      const descriptor = getMaparteMultiMapLayout(option.id);
-      return descriptor?.shape === shape && descriptor.orientation === "portrait";
-    }),
     landscape: layoutGroups.flatMap((group) => group.options).filter((option) => {
       const descriptor = getMaparteMultiMapLayout(option.id);
       return descriptor?.shape === shape && descriptor.orientation === "landscape";
     }),
   }));
-  const selectedMultiMapLayout = getMaparteMultiMapLayout(form.layout);
+  const portraitTripleLayouts = layoutGroups.flatMap((group) => group.options).filter((option) => {
+    const descriptor = getMaparteMultiMapLayout(option.id);
+    return descriptor?.count === 3 && descriptor.orientation === "portrait";
+  });
 
   const printPortraitLayouts = useMemo(
     () =>
@@ -901,36 +892,20 @@ export default function MapSettingsSection({
               <section className="layout-inline-group frame-layout-group" aria-label="Frame layouts">
                 {layoutsByShape.map((group) => (
                   <div key={group.shape} className="frame-shape-layout-section">
-                    <div className="layout-subhead-row"><h3>{group.label} Maps</h3></div>
-                    <h4 className="frame-layout-subheading">Portrait · map and caption side by side</h4>
-                    <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-portrait-4">
-                      {group.portrait.map((layoutOption) => <LayoutCard key={layoutOption.id} layoutOption={layoutOption} isSelected={layoutOption.id === form.layout} onClick={() => handleLayoutSelectInline(layoutOption.id)} />)}
-                    </div>
-                    <h4 className="frame-layout-subheading">Landscape</h4>
+                    <div className="layout-subhead-row"><h3>{group.label} Maps · Landscape</h3></div>
                     <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-landscape-2">
                       {group.landscape.map((layoutOption) => <LayoutCard key={layoutOption.id} layoutOption={layoutOption} isSelected={layoutOption.id === form.layout} onClick={() => handleLayoutSelectInline(layoutOption.id)} />)}
                     </div>
                   </div>
                 ))}
-                {selectedMultiMapLayout?.orientation === "portrait" ? (
-                  <div className="frame-layout-style-section">
-                    <h4 className="frame-layout-subheading">Caption position</h4>
-                    <div className="frame-layout-grid">
-                      {([
-                        ["right", "Map left · Text right"],
-                        ["left", "Text left · Map right"],
-                      ] as const).map(([side, label]) => (
-                        <button key={side} type="button" className={`frame-layout-option${circleTextSide === side ? " is-selected" : ""}`} aria-pressed={circleTextSide === side} onClick={() => onTextSideChange?.(side)}>
-                          <span>{label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
                 <div className="layout-subhead-row" style={{ marginTop: "18px" }}><h3>Classic Compositions</h3></div>
                 <h4 className="frame-layout-subheading">Portrait</h4>
                 <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-portrait-4">
                   {[...frameRectPortraitLayouts, ...frameCirclePortraitLayouts].map((layoutOption) => <LayoutCard key={layoutOption.id} layoutOption={layoutOption} isSelected={layoutOption.id === form.layout} onClick={() => handleLayoutSelectInline(layoutOption.id)} />)}
+                </div>
+                <h4 className="frame-layout-subheading">Portrait · Existing stacked map compositions</h4>
+                <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-portrait-4">
+                  {portraitTripleLayouts.map((layoutOption) => <LayoutCard key={layoutOption.id} layoutOption={layoutOption} isSelected={layoutOption.id === form.layout} onClick={() => handleLayoutSelectInline(layoutOption.id)} />)}
                 </div>
                 <h4 className="frame-layout-subheading">Landscape</h4>
                 <div className="layout-inline-list card-scroll-list frame-paper-layout-list layout-grid-landscape-2">
