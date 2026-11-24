@@ -409,6 +409,8 @@ export function useExport() {
             doubleShape,
             form.textAlign,
             mapCount,
+            form.circleTextSide ?? "right",
+            1,
           );
           const views = getDoubleSlotViews(form, state.doubleMap, mapCount);
           fullCanvas = await renderDoublePoster({

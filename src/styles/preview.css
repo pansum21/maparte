@@ -1728,6 +1728,11 @@
   clip-path: url(#poster-heart-clip);
 }
 
+.poster-frame.is-double-map .poster-double-window.is-rectangle {
+  border-radius: 0;
+  clip-path: none;
+}
+
 .poster-double-select {
   position: absolute;
   inset: 0;

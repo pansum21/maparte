@@ -4,7 +4,7 @@ import { formatCoordinates } from "@/shared/geo/posterBounds";
 import type { DoubleMapGeometry } from "@/features/layout/domain/squareCaptionGeometry";
 import { createCanvasMeasure } from "@/features/poster/domain/circlePosterCaption";
 import { layoutDoubleMapCaption } from "@/features/poster/domain/doubleMapCaption";
-import { heartPath2D } from "@/features/poster/domain/heartShape";
+import { HEART_PATH_UNIT } from "@/features/poster/domain/heartShape";
 import { posterFontStack } from "@/features/poster/domain/posterFontStack";
 import { getPosterFontScale } from "@/features/poster/domain/textLayout";
 import { captureMapAsCanvas } from "./mapExporter";
@@ -41,17 +41,21 @@ function clipShape(
   shape: DoubleMapGeometry["shape"],
   x: number,
   y: number,
-  size: number,
+  width: number,
+  height: number,
 ) {
   if (shape === "circle") {
     ctx.beginPath();
-    ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
+    ctx.ellipse(x + width / 2, y + height / 2, width / 2, height / 2, 0, 0, Math.PI * 2);
     ctx.clip();
   } else if (shape === "heart") {
-    ctx.clip(heartPath2D(x, y, size));
+    const unitPath = new Path2D(HEART_PATH_UNIT);
+    const stretchedHeart = new Path2D();
+    stretchedHeart.addPath(unitPath, new DOMMatrix([width, 0, 0, height, x, y]));
+    ctx.clip(stretchedHeart);
   } else {
     ctx.beginPath();
-    ctx.rect(x, y, size, size);
+    ctx.rect(x, y, width, height);
     ctx.clip();
   }
 }
@@ -73,11 +77,12 @@ export async function renderDoublePoster(opts: DoublePosterExportOptions): Promi
 
   for (let i = 0; i < opts.maps.length; i += 1) {
     const slot = geometry.slots[i];
-    const side = Math.max(1, Math.round(slot.size));
-    const { canvas: mapCanvas } = await captureMapAsCanvas(opts.maps[i], side, side, false, 0, 0);
+    const width = Math.max(1, Math.round(slot.width));
+    const height = Math.max(1, Math.round(slot.height));
+    const { canvas: mapCanvas } = await captureMapAsCanvas(opts.maps[i], width, height, false, 0, 0);
     ctx.save();
-    clipShape(ctx, geometry.shape, slot.x, slot.y, slot.size);
-    ctx.drawImage(mapCanvas, slot.x, slot.y, slot.size, slot.size);
+    clipShape(ctx, geometry.shape, slot.x, slot.y, width, height);
+    ctx.drawImage(mapCanvas, slot.x, slot.y, width, height);
     ctx.restore();
   }
 

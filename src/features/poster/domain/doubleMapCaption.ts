@@ -28,7 +28,7 @@ export interface DoubleMapCaptionInput {
   bottomScale: number;
 }
 
-/** Heading size of a double layout relative to a single name block, so two names fit the column. */
+/** Multi-map headings scale to the available caption box while retaining legibility. */
 export const DOUBLE_HEADING_FACTOR = 0.5;
 
 /**
@@ -40,6 +40,9 @@ export function layoutDoubleMapCaption(
   measure: MeasureText,
 ): CirclePosterCaptionLayout {
   const out: CirclePosterCaptionLayout = { runs: [], rules: [], credits: [] };
+  const headingFactor = input.slots.length >= 3 ? 0.38 : input.slots.length === 2 ? DOUBLE_HEADING_FACTOR : 1;
+  const midlineFactor = input.slots.length >= 3 ? 0.48 : input.slots.length === 2 ? 0.62 : 1;
+  const bottomFactor = input.slots.length >= 3 ? 0.54 : input.slots.length === 2 ? 0.7 : 1;
   input.slots.forEach((text, i) => {
     const base: CirclePosterCaptionInput = {
       geometry: doubleSlotCaptionGeometry(input.geometry, i),
@@ -54,9 +57,9 @@ export function layoutDoubleMapCaption(
       midlineFamily: input.midlineFamily,
       bottomFamily: input.bottomFamily,
       creditFamily: input.creditFamily,
-      headingScale: input.headingScale * (input.slots.length > 2 ? 0.38 : DOUBLE_HEADING_FACTOR),
-      midlineScale: input.midlineScale * (input.slots.length > 2 ? 0.48 : 0.62),
-      bottomScale: input.bottomScale * (input.slots.length > 2 ? 0.54 : 0.7),
+      headingScale: input.headingScale * headingFactor,
+      midlineScale: input.midlineScale * midlineFactor,
+      bottomScale: input.bottomScale * bottomFactor,
     };
     const part = layoutCirclePosterCaption(base, measure);
     out.runs.push(...part.runs);

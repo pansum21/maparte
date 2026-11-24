@@ -319,8 +319,10 @@ export default function PreviewPanel({
       doubleShape,
       form.textAlign,
       multiMapLayout?.count ?? 2,
+      form.circleTextSide ?? "right",
+      1,
     );
-  }, [doubleShape, multiMapLayout?.count, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, form.textAlign]);
+  }, [doubleShape, multiMapLayout?.count, widthCm, heightCm, borderMetrics.mapInsetCm, borderMetrics.gapCm, form.textAlign, form.circleTextSide]);
   const doubleViews = getDoubleSlotViews(form, state.doubleMap, multiMapLayout?.count ?? 2);
   const doubleActive = state.doubleMap.active;
   const doubleSeededRef = useRef(false);
@@ -735,8 +737,8 @@ export default function PreviewPanel({
                 const box = {
                   left: `${(slot.x / doubleGeometry.posterWidth) * 100}%`,
                   top: `${(slot.y / doubleGeometry.posterHeight) * 100}%`,
-                  width: `${(slot.size / doubleGeometry.posterWidth) * 100}%`,
-                  height: `${(slot.size / doubleGeometry.posterHeight) * 100}%`,
+                  width: `${(slot.width / doubleGeometry.posterWidth) * 100}%`,
+                  height: `${(slot.height / doubleGeometry.posterHeight) * 100}%`,
                 };
                 return (
                   <div key={p}>

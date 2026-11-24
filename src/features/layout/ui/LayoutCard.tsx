@@ -60,9 +60,9 @@ function getLayoutSymbolDataUri(layoutOption: Layout): string {
 
 function getLayoutCardLabel(layoutOption: Layout): string {
   const id = layoutOption.id.toLowerCase();
-  const multi = id.match(/(?:double|triple)_(square|circle|heart)/);
+  const multi = id.match(/(?:single|double|triple)_(square|circle|heart|rectangle)/);
   if (multi) {
-    const count = id.includes("triple") ? "Triple" : "Double";
+    const count = id.includes("triple") ? "Triple" : id.includes("double") ? "Double" : "Single";
     const orientation = id.endsWith("_portrait") ? "P" : "L";
     return `${count} ${multi[1][0].toUpperCase()}${multi[1].slice(1)} ${orientation}`;
   }
