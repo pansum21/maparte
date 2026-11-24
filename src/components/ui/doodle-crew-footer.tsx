@@ -186,6 +186,7 @@ export function DoodleCrewFooter() {
 			<div className="doodle-footer__bottom">
 				<span>© {new Date().getFullYear()} MAPARTE. Made for places that stay with you.</span>
 				<div className="doodle-footer__bottom-links">
+					<a href="/about">About</a>
 					<a className="doodle-footer__back" href="#top">Back to top <MoveUpRight aria-hidden="true" /></a>
 				</div>
 			</div>

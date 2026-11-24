@@ -4,10 +4,14 @@ import DownloadModal from "./DownloadModal";
 
 interface ExportFabProps {
   isMobile: boolean;
+  /** Phone-only floating trigger; the desktop Download control lives in the editor's left rail. */
+  showTrigger: boolean;
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
 }
 
-export default function ExportFab({ isMobile }: ExportFabProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function ExportFab({ isMobile, showTrigger, isOpen, onOpen, onClose }: ExportFabProps) {
   const [isTriggerVisible, setIsTriggerVisible] = useState(true);
 
   useEffect(() => {
@@ -32,26 +36,23 @@ export default function ExportFab({ isMobile }: ExportFabProps) {
     };
   }, [isMobile]);
 
-  const triggerClass = isMobile
-    ? `mobile-export-fab-trigger${isTriggerVisible ? "" : " is-hidden"}`
-    : "export-fab-trigger-desktop";
-
   return (
     <>
-      <button
-        type="button"
-        className={triggerClass}
-        aria-label="Export poster"
-        title="Export poster"
-        onClick={() => setIsOpen(true)}
-        tabIndex={isMobile && !isTriggerVisible ? -1 : 0}
-        aria-hidden={isMobile && !isTriggerVisible}
-      >
-        <DownloadIcon />
-        {!isMobile && <span>Download</span>}
-      </button>
+      {isMobile && showTrigger ? (
+        <button
+          type="button"
+          className={`mobile-export-fab-trigger${isTriggerVisible ? "" : " is-hidden"}`}
+          aria-label="Export poster"
+          title="Export poster"
+          onClick={onOpen}
+          tabIndex={isTriggerVisible ? 0 : -1}
+          aria-hidden={!isTriggerVisible}
+        >
+          <DownloadIcon />
+        </button>
+      ) : null}
 
-      <DownloadModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <DownloadModal isOpen={isOpen} onClose={onClose} />
     </>
   );
 }

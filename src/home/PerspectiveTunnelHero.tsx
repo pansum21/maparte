@@ -1,42 +1,52 @@
 import { useEffect, useRef } from "react";
+import { setHeroProgress } from "./heroProgress";
 import "./perspectiveTunnelHero.css";
 
 const slides = [
-	{ title: "Where we met", src: "where-we-met", offset: 0.5 },
-	{ title: "Paris, terracotta", src: "paris-terracotta", offset: 0.22 },
-	{ title: "She said yes", src: "she-said-yes", offset: 0.38 },
-	{ title: "Hometown roots", src: "hometown-roots", offset: 0.12 },
-	{ title: "Wedding day", src: "wedding-day", offset: 0.64 },
-	{ title: "New York, terracotta", src: "new-york-terracotta", offset: 0.3 },
-	{ title: "Travel memories", src: "travel-memories", offset: 0.08 },
-	{ title: "First home", src: "first-home", offset: 0.56 },
-	{ title: "Paris, sandstone", src: "paris-sandstone", offset: 0.44 },
+	{ title: "Where we met", src: "where-we-met" },
+	{ title: "Paris, terracotta", src: "paris-terracotta" },
+	{ title: "She said yes", src: "she-said-yes" },
+	{ title: "Hometown roots", src: "hometown-roots" },
+	{ title: "Wedding day", src: "wedding-day" },
+	{ title: "New York, terracotta", src: "new-york-terracotta" },
+	{ title: "Travel memories", src: "travel-memories" },
+	{ title: "First home", src: "first-home" },
+	{ title: "Paris, sandstone", src: "paris-sandstone" },
 ];
-
-const cards = slides.map((item, index) => ({
-	...item,
-	index,
-	rotation: (index % 2 === 0 ? 1 : -1) * (2 + (index % 5) * 1.6),
-}));
 
 const clamp = (value: number, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 const smooth = (value: number) => value * value * (3 - 2 * value);
+const easeOutCubic = (value: number) => 1 - (1 - value) ** 3;
 
-// Scroll timeline (0 = top of the hero, 1 = end of the pinned hero):
-//   0.00 - 0.46  every poster flies in and settles fully inside the screen
-//   0.46 - 0.56  hold: all posters in front, heading still in place
-//   0.56 - 0.92  heading block scrolls up and away, posters stay fully visible
-//   0.92 - 1.00  hold on the finished poster wall before the page moves on
-const ARRIVE_END = 0.46;
-const LEAVE_START = 0.56;
-const LEAVE_END = 0.92;
-// Which grid cell (3 columns x 3 rows, read left to right) each poster settles into.
-const CELL = [4, 1, 6, 2, 8, 0, 5, 7, 3];
-// Small fixed nudges so the settled posters look like a scattered pile, not a strict grid.
-const NUDGE = [
-	[0.04, -0.06], [-0.05, 0.05], [0.06, 0.03], [-0.03, -0.05], [0.02, 0.06],
-	[-0.06, 0.02], [0.05, -0.03], [-0.02, 0.04], [0.03, -0.02],
+// Scroll timeline (0 = top of the hero, 1 = end of the pinned hero).
+// Desktop: the posters hang as a stack on the right, open one by one into a circle like
+// petals, the circle holds, then the heading lifts away while the circle moves to the middle.
+// Phones: the stack hangs under the heading, the heading lifts away while the stack moves
+// to the middle, then the petals open around it.
+const TIMELINE = {
+	desktop: { openStart: 0.06, openStep: 0.035, openLength: 0.15, moveStart: 0.58, moveEnd: 0.92 },
+	mobile: { openStart: 0.26, openStep: 0.03, openLength: 0.12, moveStart: 0.04, moveEnd: 0.26 },
+};
+
+// Ring radius in poster widths. Desktop is wide enough that no two posters overlap;
+// on phones the petals overlap a little at their inner ends, like real petals.
+const RING_DESKTOP = 2.2;
+const RING_MOBILE = 1.6;
+const POSTER_RATIO = 734 / 520;
+const MOBILE_TITLE_LIFT = 113.4; // 3 cm, matches the copy position in the stylesheet
+const TILT_CLOSED = -32; // degrees the stacked posters lean back before they open
+
+// Resting offsets of the stacked posters in pixels and degrees, so the pile looks hand placed.
+const JITTER: [number, number, number][] = [
+	[-6, -4, -4], [5, 3, 3], [-3, 6, -2], [4, -5, 5], [-5, 2, -5],
+	[6, -2, 2], [-2, -6, -3], [3, 4, 4], [0, 0, -1],
 ];
+// Petal angle per poster in degrees, clockwise from the top. Kept within -180..180 so an
+// opening poster never spins the long way round.
+const ANGLE = slides.map((_, index) => {
+	const deg = index * (360 / slides.length);
+	return deg > 180 ? deg - 360 : deg;
+});
 
 export default function PerspectiveTunnelHero() {
 	const sectionRef = useRef<HTMLElement>(null);
@@ -46,107 +56,168 @@ export default function PerspectiveTunnelHero() {
 		if (!section) return;
 
 		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+		const mobileQuery = window.matchMedia("(max-width: 767px)");
 		const cardElements = Array.from(section.querySelectorAll<HTMLElement>(".maparte-tunnel__card"));
 		const stage = section.querySelector<HTMLElement>(".maparte-tunnel__stage");
 		const title = section.querySelector<HTMLElement>(".maparte-tunnel__title");
 		const prompt = section.querySelector<HTMLElement>(".maparte-tunnel__prompt");
-		let frame = 0;
+
+		// Layout numbers are measured on resize only, never on every scroll frame.
+		const geo = {
+			span: 1,
+			mobile: false,
+			baseW: 1,
+			fit: 1,
+			cardW: 1,
+			ring: 1,
+			travel: 1,
+			fromX: 0,
+			fromY: 0,
+		};
+		// Last value written to each element, so unchanged styles are not written again.
+		const written = new Map<HTMLElement, Record<string, string>>();
 		let pointerX = 0;
-		let pointerY = 0;
+		let frame = 0;
 
-		const render = () => {
-			cancelAnimationFrame(frame);
-			frame = requestAnimationFrame(() => {
-				const bounds = section.getBoundingClientRect();
-				const scrollSpan = Math.max(1, section.offsetHeight - window.innerHeight);
-				const progress = reduceMotion.matches ? 0 : clamp(-bounds.top / scrollSpan);
-				section.style.setProperty("--tunnel-progress", String(progress));
-
-				const mobileView = window.innerWidth < 768;
-				const stageW = section.clientWidth;
-				const stageH = stage ? stage.clientHeight : window.innerHeight;
-				const titleH = title ? title.offsetHeight : 0;
-				const mobileTitleLift = 113.4; // 3cm, matches the copy position set below
-				const titleTop = stageH / 2 - titleH / 2 - (mobileView ? mobileTitleLift : 0);
-
-				// Area the posters settle in: right side on desktop, below the copy on phones.
-				const pointerPan = mobileView ? 0 : 34;
-				const pad = mobileView ? 10 : 36 + pointerPan;
-				const region = mobileView
-					? { left: pad, right: stageW - pad, top: titleTop + titleH + 16, bottom: stageH - 30 }
-					: { left: stageW * 0.47, right: stageW - pad, top: 84 + pointerPan, bottom: stageH - 24 - pointerPan };
-				const rowPitch = mobileView ? 0.65 : 0.8;
-				const farZ = mobileView ? -1050 : -1550;
-				// Once the heading is almost gone, the finished poster wall glides to the middle of the screen.
-				const leaveAmount = reduceMotion.matches ? 0 : clamp((progress - LEAVE_START) / (LEAVE_END - LEAVE_START));
-				const centre = smooth(clamp((leaveAmount - 0.7) / 0.3));
-				const centreX = mobileView ? 0 : (stageW / 2 - (region.left + region.right) / 2) * centre;
-				const centreY = mobileView ? (stageH / 2 - (region.top + region.bottom) / 2) * centre : 0;
-
-				cardElements.forEach((element, index) => {
-					const card = cards[index];
-					if (reduceMotion.matches) return;
-					const cardW = element.offsetWidth;
-					const cardH = element.offsetHeight;
-					// Shrink the posters a little on short screens so the whole 3 x 3 pile always fits.
-					const fit = clamp((region.bottom - region.top) / (cardH * (1 + 2 * rowPitch)), 0.5, 1);
-					const w = cardW * fit;
-					const h = cardH * fit;
-					const cell = CELL[index];
-					const col = cell % 3;
-					const row = Math.floor(cell / 3);
-					const spanX = Math.max(0, region.right - region.left - w);
-					const spanY = Math.max(0, region.bottom - region.top - h);
-					const nudge = NUDGE[index];
-					const cx = region.left + w / 2 + (col / 2) * spanX + nudge[0] * w * 0.6;
-					const cy = region.top + h / 2 + (row / 2) * spanY + nudge[1] * h * 0.6;
-					const restX = Math.max(region.left + w / 2, Math.min(region.right - w / 2, cx)) - stageW / 2 + centreX;
-					const restY = Math.max(region.top + h / 2, Math.min(region.bottom - h / 2, cy)) - stageH / 2 + centreY;
-
-					// Posters start far down the tunnel and fly to z = 0, where they sit flat on the
-					// screen with no perspective growth, so they can never be cut by the screen edge.
-					const start = (card.offset / 0.64) * 0.14;
-					const arrival = smooth(clamp((progress - start) / (ARRIVE_END - 0.14)));
-					const local = 0.04 + 0.96 * arrival;
-					const z = farZ * (1 - local);
-					const opacity = clamp(arrival / 0.35);
-					element.style.transform = `translate3d(calc(-50% + ${restX - pointerX * pointerPan * arrival}px), calc(-50% + ${restY - pointerY * pointerPan * arrival}px), ${z}px) rotateZ(${card.rotation}deg) scale(${fit})`;
-					element.style.opacity = String(opacity);
-				});
-
-				if (title) {
-					// The heading block stays put until every poster is in, then scrolls up out of view.
-					const leave = leaveAmount;
-					const travel = titleTop + titleH + 40;
-					const lift = leave * travel;
-					title.style.opacity = String(reduceMotion.matches ? 1 : 1 - smooth(clamp((leave - 0.55) / 0.45)));
-					title.style.transform = mobileView
-						? `translate(-50%, calc(-50% - 3cm - ${lift}px))`
-						: `translateY(calc(-50% - ${lift}px))`;
-				}
-				if (prompt) prompt.style.opacity = String(reduceMotion.matches ? 0 : clamp(1 - Math.max(0, -bounds.top) / 90));
-			});
+		const setStyle = (element: HTMLElement, key: "transform" | "opacity", value: string) => {
+			let memo = written.get(element);
+			if (!memo) {
+				memo = {};
+				written.set(element, memo);
+			}
+			if (memo[key] === value) return;
+			memo[key] = value;
+			element.style[key] = value;
 		};
 
+		const refresh = () => {
+			geo.mobile = mobileQuery.matches;
+			const stageW = section.clientWidth;
+			const stageH = stage ? stage.clientHeight : window.innerHeight;
+			geo.span = Math.max(1, section.offsetHeight - window.innerHeight);
+			geo.baseW = cardElements[0]?.offsetWidth || 1;
+			const titleH = title ? title.offsetHeight : 0;
+			// Bottom edge of the heading block when it sits in its resting place.
+			const titleBottom = stageH / 2 + titleH / 2 - (geo.mobile ? MOBILE_TITLE_LIFT : 0);
+			geo.travel = titleBottom + 40;
+
+			let regionW: number;
+			let regionH: number;
+			let ring: number;
+			if (geo.mobile) {
+				// The flower opens in the middle of the screen, so it may use the whole width.
+				regionW = stageW - 20;
+				regionH = stageH - 40;
+				ring = RING_MOBILE;
+				// The stack rests in the space under the heading.
+				const stackTop = titleBottom + 16;
+				const stackBottom = stageH - 40;
+				geo.fromX = 0;
+				geo.fromY = (stackTop + stackBottom) / 2 - stageH / 2;
+			} else {
+				const left = stageW * 0.47;
+				const right = stageW - 36;
+				const top = 84;
+				const bottom = stageH - 24;
+				regionW = right - left;
+				regionH = bottom - top;
+				ring = RING_DESKTOP;
+				geo.fromX = (left + right) / 2 - stageW / 2;
+				geo.fromY = (top + bottom) / 2 - stageH / 2;
+			}
+			const diameter = 2 * Math.hypot(0.5, ring + POSTER_RATIO / 2);
+			geo.fit = clamp(Math.min(regionW, regionH) / (diameter * geo.baseW), 0.35, 1);
+			geo.cardW = geo.baseW * geo.fit;
+			geo.ring = ring * geo.cardW;
+
+			if (reduceMotion.matches) {
+				// Reduced motion uses the static stylesheet layout; clear anything written earlier.
+				cardElements.forEach((element) => { element.style.transform = ""; element.style.opacity = ""; });
+				if (title) { title.style.transform = ""; title.style.opacity = ""; }
+				if (prompt) prompt.style.opacity = "";
+				written.clear();
+			}
+		};
+
+		const render = () => {
+			frame = 0;
+			if (reduceMotion.matches) {
+				setHeroProgress(0);
+				return;
+			}
+			// One read per frame, before any style is written in this frame.
+			const top = section.getBoundingClientRect().top;
+			const progress = clamp(-top / geo.span);
+			setHeroProgress(progress);
+
+			const timing = geo.mobile ? TIMELINE.mobile : TIMELINE.desktop;
+			const move = smooth(clamp((progress - timing.moveStart) / (timing.moveEnd - timing.moveStart)));
+			// On desktop the flower drifts slightly with the mouse while it is on the right.
+			const panX = geo.mobile ? 0 : pointerX * 12;
+			const groupX = (geo.fromX + panX) * (1 - move);
+			const groupY = geo.fromY * (1 - move);
+
+			cardElements.forEach((element, index) => {
+				const [jitterX, jitterY, jitterDeg] = JITTER[index];
+				const local = clamp((progress - (timing.openStart + index * timing.openStep)) / timing.openLength);
+				const open = easeOutCubic(local);
+				const theta = (ANGLE[index] * Math.PI) / 180;
+				const x = groupX + (1 - open) * jitterX + open * geo.ring * Math.sin(theta);
+				const y = groupY + (1 - open) * jitterY - open * geo.ring * Math.cos(theta);
+				const rotateZ = (1 - open) * jitterDeg + open * ANGLE[index];
+				const rotateX = (1 - open) * TILT_CLOSED;
+				const scale = geo.fit * (0.94 + 0.06 * open);
+				setStyle(
+					element,
+					"transform",
+					`translate3d(calc(-50% + ${x.toFixed(1)}px), calc(-50% + ${y.toFixed(1)}px), 0) perspective(900px) rotateX(${rotateX.toFixed(2)}deg) rotateZ(${rotateZ.toFixed(2)}deg) scale(${scale.toFixed(4)})`,
+				);
+				setStyle(element, "opacity", "1");
+			});
+
+			if (title) {
+				const lift = move * geo.travel;
+				setStyle(
+					title,
+					"transform",
+					geo.mobile
+						? `translate(-50%, calc(-50% - 3cm - ${lift.toFixed(1)}px))`
+						: `translateY(calc(-50% - ${lift.toFixed(1)}px))`,
+				);
+				setStyle(title, "opacity", (1 - move).toFixed(3));
+			}
+			if (prompt) setStyle(prompt, "opacity", clamp(1 - Math.max(0, -top) / 90).toFixed(3));
+		};
+
+		const schedule = () => {
+			if (!frame) frame = requestAnimationFrame(render);
+		};
+		const refreshAndRender = () => {
+			refresh();
+			schedule();
+		};
 		const onPointerMove = (event: PointerEvent) => {
 			if (event.pointerType !== "mouse" || reduceMotion.matches) return;
 			pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
-			pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
-			render();
+			schedule();
 		};
-		const onPreferenceChange = () => render();
 
-		render();
-		window.addEventListener("scroll", render, { passive: true });
-		window.addEventListener("resize", render);
+		const resizeObserver = new ResizeObserver(refreshAndRender);
+		resizeObserver.observe(section);
+		if (title) resizeObserver.observe(title);
+		refreshAndRender();
+		window.addEventListener("scroll", schedule, { passive: true });
+		window.addEventListener("resize", refreshAndRender);
 		window.addEventListener("pointermove", onPointerMove, { passive: true });
-		reduceMotion.addEventListener("change", onPreferenceChange);
+		reduceMotion.addEventListener("change", refreshAndRender);
 		return () => {
 			cancelAnimationFrame(frame);
-			window.removeEventListener("scroll", render);
-			window.removeEventListener("resize", render);
+			resizeObserver.disconnect();
+			window.removeEventListener("scroll", schedule);
+			window.removeEventListener("resize", refreshAndRender);
 			window.removeEventListener("pointermove", onPointerMove);
-			reduceMotion.removeEventListener("change", onPreferenceChange);
+			reduceMotion.removeEventListener("change", refreshAndRender);
+			setHeroProgress(0);
 		};
 	}, []);
 
@@ -155,7 +226,7 @@ export default function PerspectiveTunnelHero() {
 			<div className="maparte-tunnel__stage">
 				<div className="maparte-tunnel__grid" aria-hidden="true" />
 				<div className="maparte-tunnel__cards" aria-hidden="true">
-					{cards.map((card) => (
+					{slides.map((card) => (
 						<figure className="maparte-tunnel__card" key={card.src}>
 							<img className="maparte-tunnel__poster" src={`/assets/landing-posters/${card.src}.webp`} alt="" width={520} height={734} decoding="async" draggable={false} />
 						</figure>
