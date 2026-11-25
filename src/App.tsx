@@ -7,6 +7,7 @@ import { checkPaymentReturnUrl } from "@/features/export/infrastructure/planTier
 import { ErrorBoundary } from "@/shared/ui/ErrorBoundary";
 import JourneyPreview from "@/home/JourneyPreview";
 import GalleryLanding from "@/home/GalleryLanding";
+import MaparteScrollLanding from "@/home/scroll/MaparteScrollLanding";
 import AboutPage from "@/home/AboutPage";
 
 export default function App() {
@@ -24,7 +25,9 @@ export default function App() {
   }
   const editorQueryKeys = ["editor", "dist", "city", "country", "lat", "lng", "lon", "zoom", "theme", "payment", "checkout", "status", "order", "success"];
   const hasEditorQuery = editorQueryKeys.some((key) => search.has(key));
-  if (pathname === "/" && !hasEditorQuery) return <JourneyPreview />;
+  // The home route is the scroll landing; the older journey page stays
+    // reachable at /journey-preview for comparison.
+    if (pathname === "/" && !hasEditorQuery) return <MaparteScrollLanding />;
 
   return (
     <ErrorBoundary name="AppRoot">

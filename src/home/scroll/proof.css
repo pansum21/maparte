@@ -1,0 +1,114 @@
+#maparte-landing .proof {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(70px, 11vh, 132px) clamp(16px, 4vw, 56px);
+  background: var(--paper);
+}
+
+#maparte-landing .proof__inner {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+#maparte-landing .proof__head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 58ch;
+}
+
+#maparte-landing .proof__title {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(30px, 4.6vw, 64px);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+}
+
+#maparte-landing .proof__lead {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+#maparte-landing .proof__stage {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-rows: auto auto;
+  gap: clamp(14px, 2vw, 26px);
+  margin-top: clamp(26px, 5vh, 48px);
+}
+
+#maparte-landing .proof__frame {
+  position: relative;
+  margin: 0;
+  padding: 10px 10px 0;
+  background: #f7f1e4;
+  box-shadow: 0 30px 50px -40px rgba(20, 17, 13, 0.65),
+    0 0 0 1px rgba(20, 17, 13, 0.08);
+}
+
+#maparte-landing .proof__mat {
+  display: block;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+
+#maparte-landing .proof__mat img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.06);
+}
+
+#maparte-landing .proof__frame--wall {
+  grid-row: span 2;
+}
+
+#maparte-landing .proof__frame--wall .proof__mat {
+  aspect-ratio: 4 / 5;
+}
+
+#maparte-landing .proof__frame--detail .proof__mat {
+  aspect-ratio: 3 / 2;
+}
+
+#maparte-landing .proof__frame--wall-of-three .proof__mat {
+  aspect-ratio: 16 / 9;
+}
+
+#maparte-landing .proof__cap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 11px 4px 13px;
+}
+
+#maparte-landing .proof__cap b {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+#maparte-landing .proof__cap span {
+  font: 500 8.5px/1.5 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  #maparte-landing .proof__stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #maparte-landing .proof__frame--wall {
+    grid-row: auto;
+  }
+
+  #maparte-landing .proof__frame--wall .proof__mat {
+    aspect-ratio: 4 / 3;
+  }
+}
