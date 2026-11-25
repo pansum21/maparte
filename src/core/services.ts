@@ -42,7 +42,11 @@ export { compositeExport } from "@/features/poster/infrastructure/renderer";
 
 export { createPngBlob } from "@/features/export/infrastructure/pngExporter";
 export { createJpgBlob } from "@/features/export/infrastructure/jpgExporter";
-export { createPdfBlobFromCanvas } from "@/features/export/infrastructure/pdfExporter";
+export {
+  createPdfBlobFromCanvas,
+  createPdfBlobFromSvg,
+  PDF_BLEED_MM,
+} from "@/features/export/infrastructure/pdfExporter";
 
 export { createPosterFilename } from "@/features/export/infrastructure/filenameGenerator";
 

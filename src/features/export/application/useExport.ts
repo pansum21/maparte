@@ -31,7 +31,6 @@ import { ensureFont } from "@/core/services";
 import {
   createPngBlob,
   createJpgBlob,
-  createPdfBlobFromCanvas,
   createPosterFilename,
   triggerDownloadBlob,
 } from "@/core/services";
@@ -42,6 +41,7 @@ import {
 } from "@/core/config";
 import { trackEvent, setUserProperty } from "@/core/services";
 import { dispatchTelemetryAlert } from "@/core/telemetry/sentinel";
+import { createPdfBlobFromSvg } from "@/features/export/infrastructure/pdfExporter";
 
 export { SUPPORT_PROMPT_EVENT } from "@/features/export/application/supportPrompt";
 export type {
@@ -529,11 +529,8 @@ export function useExport() {
         );
         const rasterFilename = addPpiToFilename(filename, effectiveDpi);
 
-        if (format === "tiff") {
-          const tiffBlob = await createTiffBlob(canvas, density);
-          await triggerDownloadBlob(tiffBlob, rasterFilename.replace(/\.[^.]+$/, ".tif"));
-        } else if (format === "zip") {
-          const svgBlob = await createLayeredSvgBlobFromMap({
+        const buildLayeredSvg = () =>
+          createLayeredSvgBlobFromMap({
             map,
             exportWidth: mapRenderWidth,
             exportHeight: mapRenderHeight,
@@ -567,9 +564,16 @@ export function useExport() {
             minimapOverlay,
           });
 
+        if (format === "tiff") {
+          const tiffBlob = await createTiffBlob(canvas, density);
+          await triggerDownloadBlob(tiffBlob, rasterFilename.replace(/\.[^.]+$/, ".tif"));
+        } else if (format === "zip") {
+          const svgBlob = await buildLayeredSvg();
+
           const pngBlob = await createPngBlob(canvas, density);
           const jpgBlob = await createJpgBlob(canvas, 0.95, density);
-          const pdfBlob = createPdfBlobFromCanvas(canvas, {
+          const svgText = await svgBlob.text();
+          const pdfBlob = await createPdfBlobFromSvg(svgText, {
             widthCm,
             heightCm,
           });
@@ -601,7 +605,9 @@ export function useExport() {
           const zipBlob = await zip.generateAsync({ type: "blob" });
           await triggerDownloadBlob(zipBlob, `${baseName}_ImageDuo_Pack.zip`);
         } else if (format === "pdf") {
-          const pdfBlob = createPdfBlobFromCanvas(canvas, {
+          const svgBlob = await buildLayeredSvg();
+          const svgText = await svgBlob.text();
+          const pdfBlob = await createPdfBlobFromSvg(svgText, {
             widthCm,
             heightCm,
           });
