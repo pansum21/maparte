@@ -178,3 +178,9 @@
     transform: none;
   }
 }
+
+/* The wall-set cards sit on light mat board inside the dark section, so their
+   caption label has to take the ink colour back. */
+#maparte-landing .walls__cap b {
+  color: var(--ink);
+}
