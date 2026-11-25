@@ -1,0 +1,86 @@
+/* ============================================================== NOIR SHELL */
+/* The editor shipped as a navy-glass shell. This layer turns it black: neutral
+   surfaces, white-alpha hairlines and a single warm accent (the landing's
+   orange) instead of the blue one. Tokens are overridden once here so the
+   panels, sheets, menus and overlays all inherit the same shell. */
+
+:root {
+  --ink: #f5f5f3;
+  --panel: rgba(8, 8, 8, 0.92);
+  --sheet-bg: rgba(10, 10, 10, 0.96);
+  --item-bg: rgba(22, 22, 22, 0.92);
+  --overlay-bg: rgba(0, 0, 0, 0.82);
+  --line: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.15);
+  --strong-line: rgba(255, 255, 255, 0.26);
+  --focus-ring: rgba(228, 85, 42, 0.8);
+  --positive: #7ee2a8;
+  --negative: #ff8a7a;
+}
+
+html,
+body {
+  background-color: #000;
+  background-image: radial-gradient(
+    120% 90% at 50% 0%,
+    rgba(255, 255, 255, 0.045),
+    transparent 60%
+  );
+  color: var(--ink);
+}
+
+/* Structural shell: header, icon rail, footer, preview stage. */
+
+.general-header {
+  background: #000 !important;
+  border-bottom: 1px solid var(--line);
+}
+
+.desktop-nav-bar {
+  background: #000 !important;
+  border-right: 1px solid var(--line);
+}
+
+.app-footer.desktop-footer {
+  background: #000 !important;
+  border-top: 1px solid var(--line);
+}
+
+.preview-panel {
+  background: #000 !important;
+}
+
+.header-steps-guide {
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid var(--line);
+  color: rgba(245, 245, 243, 0.9);
+}
+
+/* Left tool panel cards and any glass sheet inside the shell. */
+
+.desktop-left-panel {
+  background: #050505;
+  border-right: 1px solid var(--line);
+}
+
+.desktop-nav-row {
+  color: rgba(245, 245, 243, 0.72);
+}
+
+.desktop-nav-row:hover,
+.desktop-nav-row.is-active {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+/* Accent: the blue glow becomes the landing's orange, so the shell and the
+   marketing page read as one product. */
+
+.desktop-nav-row.is-active::before,
+.desktop-nav-row:hover::before {
+  background: #e4552a;
+}
+
+:focus-visible {
+  outline-color: rgba(228, 85, 42, 0.85);
+}
