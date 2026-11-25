@@ -18,7 +18,7 @@ type Frame = {
   rate: number;
 };
 
-const FRAMES: Frame[] = [
+const PRINTED: Frame[] = [
   {
     id: "wall",
     src: "/landing/wall-print.jpg",
@@ -36,38 +36,67 @@ const FRAMES: Frame[] = [
     rate: -40,
   },
   {
-    id: "wall-of-three",
-    src: "/landing/studio-wall.jpg",
-    alt: "Three framed city map posters in different palettes hung in a row on a bright studio wall.",
-    label: "Three plates, one wall",
-    note: "Same streets, three palettes — hung as a set.",
-    rate: 30,
+    id: "corner",
+    src: "/landing/frame-corner.jpg",
+    alt: "Macro of a black frame corner, white mat and the printed map running into it.",
+    label: "The mat does the framing",
+    note: "Bevelled mat, black profile, print sitting flush inside.",
+    rate: 26,
   },
 ];
 
-function ProofFrame({
+const SETS: Frame[] = [
+  {
+    id: "living",
+    src: "/landing/living-room.jpg",
+    alt: "A large framed map poster above a linen sofa in a warm minimal living room.",
+    label: "Above the sofa",
+    note: "One city, read from across the room.",
+    rate: 44,
+  },
+  {
+    id: "pair",
+    src: "/landing/framed-pair.jpg",
+    alt: "Two framed city map posters hung side by side in matching black frames.",
+    label: "Two cities, one pair",
+    note: "Where you met, and where you landed.",
+    rate: -52,
+  },
+  {
+    id: "grid",
+    src: "/landing/gallery-grid.jpg",
+    alt: "Six framed city map posters in different palettes arranged in a grid on a green wall.",
+    label: "Six plates, one grid",
+    note: "A wall of places you have actually been.",
+    rate: 32,
+  },
+];
+
+function PhotoFrame({
   frame,
   index,
   progress,
   reduced,
+  variant,
 }: {
   frame: Frame;
   index: number;
   progress: MotionValue<number>;
   reduced: boolean;
+  variant: "proof" | "walls";
 }) {
   const y = useTransform(progress, [0, 1], [frame.rate, -frame.rate]);
 
   return (
     <motion.figure
-      className={`proof__frame proof__frame--${frame.id}`}
+      className={`${variant}__frame ${variant}__frame--${frame.id}`}
       initial={reduced ? undefined : { opacity: 0, y: 44 }}
       whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.8, delay: index * 0.09, ease: [0.22, 0.61, 0.36, 1] }}
       whileHover={reduced ? undefined : { y: -8 }}
     >
-      <span className="proof__mat">
+      <span className={`${variant}__mat`}>
         <motion.img
           src={frame.src}
           alt={frame.alt}
@@ -76,7 +105,7 @@ function ProofFrame({
           style={reduced ? undefined : { y }}
         />
       </span>
-      <figcaption className="proof__cap">
+      <figcaption className={`${variant}__cap`}>
         <b>{frame.label}</b>
         <span>{frame.note}</span>
       </figcaption>
@@ -84,20 +113,22 @@ function ProofFrame({
   );
 }
 
+/** One scroll value per section, spring-damped so the drift never snaps. */
+function useSectionDrift(target: React.RefObject<HTMLElement | null>) {
+  const { scrollYProgress } = useScroll({ target, offset: ["start end", "end start"] });
+  return useSpring(scrollYProgress, { stiffness: 90, damping: 26, mass: 0.4 });
+}
+
 /**
- * The page has shown renders; this is the part where it shows prints. Each
- * frame drifts at its own rate and lifts on hover, so the section reads as
- * depth instead of a grid of thumbnails.
+ * The page has shown renders; this is the part where it shows prints: a framed
+ * plate, the paper at 1:1, and the corner where the mat meets the sheet. Each
+ * frame drifts at its own rate and lifts on hover.
  */
-export default function WallProof() {
+export function WallProof() {
   const ref = useRef<HTMLElement>(null);
   const prefersReduced = useReducedMotion();
   const reduced = prefersReduced === true;
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const eased = useSpring(scrollYProgress, { stiffness: 90, damping: 26, mass: 0.4 });
+  const eased = useSectionDrift(ref);
 
   return (
     <section className="proof" id="prints" ref={ref} aria-labelledby="proof-title">
@@ -118,13 +149,14 @@ export default function WallProof() {
         </div>
 
         <div className="proof__stage">
-          {FRAMES.map((frame, index) => (
-            <ProofFrame
+          {PRINTED.map((frame, index) => (
+            <PhotoFrame
               key={frame.id}
               frame={frame}
               index={index}
               progress={eased}
               reduced={reduced}
+              variant="proof"
             />
           ))}
         </div>
@@ -132,3 +164,50 @@ export default function WallProof() {
     </section>
   );
 }
+
+/**
+ * The same idea at room scale: how a single sheet, a pair and a grid behave on
+ * a wall. Dark ground, so the paper reads as paper.
+ */
+export function WallSets() {
+  const ref = useRef<HTMLElement>(null);
+  const prefersReduced = useReducedMotion();
+  const reduced = prefersReduced === true;
+  const eased = useSectionDrift(ref);
+
+  return (
+    <section className="walls" id="wall-sets" ref={ref} aria-labelledby="walls-title">
+      <div className="walls__inner">
+        <div className="walls__head" data-reveal>
+          <p className="kicker kicker--light">
+            <span className="dot" />
+            10 — Wall sets
+          </p>
+          <h2 className="walls__title" id="walls-title">
+            One sheet, or a whole wall.
+          </h2>
+          <p className="walls__lead">
+            A single city reads as a portrait. A pair reads as a story. A grid
+            reads as a map of everywhere you have lived — same streets, different
+            palettes.
+          </p>
+        </div>
+
+        <div className="walls__stage">
+          {SETS.map((frame, index) => (
+            <PhotoFrame
+              key={frame.id}
+              frame={frame}
+              index={index}
+              progress={eased}
+              reduced={reduced}
+              variant="walls"
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default WallProof;

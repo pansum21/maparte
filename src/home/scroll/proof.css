@@ -1,23 +1,34 @@
-#maparte-landing .proof {
+/* ============================================================ print proof */
+/* Both sections are scoped to the landing root, so the app keeps its own
+   `.card`, `.grid` and image rules. */
+
+#maparte-landing .proof,
+#maparte-landing .walls {
   position: relative;
   overflow: hidden;
   padding: clamp(70px, 11vh, 132px) clamp(16px, 4vw, 56px);
+}
+
+#maparte-landing .proof {
   background: var(--paper);
 }
 
-#maparte-landing .proof__inner {
+#maparte-landing .proof__inner,
+#maparte-landing .walls__inner {
   width: min(1180px, 100%);
   margin: 0 auto;
 }
 
-#maparte-landing .proof__head {
+#maparte-landing .proof__head,
+#maparte-landing .walls__head {
   display: flex;
   flex-direction: column;
   gap: 12px;
   max-width: 58ch;
 }
 
-#maparte-landing .proof__title {
+#maparte-landing .proof__title,
+#maparte-landing .walls__title {
   font-family: var(--display);
   font-weight: 800;
   font-size: clamp(30px, 4.6vw, 64px);
@@ -25,7 +36,8 @@
   letter-spacing: -0.04em;
 }
 
-#maparte-landing .proof__lead {
+#maparte-landing .proof__lead,
+#maparte-landing .walls__lead {
   font-size: 14.5px;
   line-height: 1.6;
   color: var(--ink-soft);
@@ -34,12 +46,12 @@
 #maparte-landing .proof__stage {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
-  grid-template-rows: auto auto;
   gap: clamp(14px, 2vw, 26px);
   margin-top: clamp(26px, 5vh, 48px);
 }
 
-#maparte-landing .proof__frame {
+#maparte-landing .proof__frame,
+#maparte-landing .walls__frame {
   position: relative;
   margin: 0;
   padding: 10px 10px 0;
@@ -48,18 +60,20 @@
     0 0 0 1px rgba(20, 17, 13, 0.08);
 }
 
-#maparte-landing .proof__mat {
+#maparte-landing .proof__mat,
+#maparte-landing .walls__mat {
   display: block;
   overflow: hidden;
   background: var(--paper-deep);
 }
 
-#maparte-landing .proof__mat img {
+#maparte-landing .proof__mat img,
+#maparte-landing .walls__mat img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.06);
+  transform: scale(1.07);
 }
 
 #maparte-landing .proof__frame--wall {
@@ -74,41 +88,93 @@
   aspect-ratio: 3 / 2;
 }
 
-#maparte-landing .proof__frame--wall-of-three .proof__mat {
-  aspect-ratio: 16 / 9;
+#maparte-landing .proof__frame--corner .proof__mat {
+  aspect-ratio: 1 / 1;
 }
 
-#maparte-landing .proof__cap {
+#maparte-landing .proof__cap,
+#maparte-landing .walls__cap {
   display: flex;
   flex-direction: column;
   gap: 2px;
   padding: 11px 4px 13px;
 }
 
-#maparte-landing .proof__cap b {
+#maparte-landing .proof__cap b,
+#maparte-landing .walls__cap b {
   font-family: var(--serif);
   font-weight: 500;
   font-size: 16px;
   letter-spacing: -0.01em;
 }
 
-#maparte-landing .proof__cap span {
+#maparte-landing .proof__cap span,
+#maparte-landing .walls__cap span {
   font: 500 8.5px/1.5 var(--mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
+/* ------------------------------------------------------------- wall sets */
+
+#maparte-landing .walls {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+#maparte-landing .walls__lead {
+  color: rgba(245, 239, 226, 0.66);
+}
+
+#maparte-landing .walls__stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(14px, 2vw, 26px);
+  margin-top: clamp(26px, 5vh, 48px);
+}
+
+#maparte-landing .walls__frame {
+  background: #efe6d4;
+}
+
+#maparte-landing .walls__frame--living {
+  grid-column: span 2;
+}
+
+#maparte-landing .walls__frame--living .walls__mat {
+  aspect-ratio: 16 / 9;
+}
+
+#maparte-landing .walls__frame--pair .walls__mat,
+#maparte-landing .walls__frame--grid .walls__mat {
+  aspect-ratio: 4 / 3;
+}
+
+#maparte-landing .walls__cap span {
+  color: rgba(20, 17, 13, 0.55);
+}
+
 @media (max-width: 900px) {
-  #maparte-landing .proof__stage {
+  #maparte-landing .proof__stage,
+  #maparte-landing .walls__stage {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  #maparte-landing .proof__frame--wall {
+  #maparte-landing .proof__frame--wall,
+  #maparte-landing .walls__frame--living {
     grid-row: auto;
+    grid-column: auto;
   }
 
   #maparte-landing .proof__frame--wall .proof__mat {
     aspect-ratio: 4 / 3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #maparte-landing .proof__mat img,
+  #maparte-landing .walls__mat img {
+    transform: none;
   }
 }

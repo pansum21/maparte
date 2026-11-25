@@ -4,7 +4,7 @@ import { getOsm } from "./osm";
 import Poster from "./Poster";
 import { Steps, Ticker, ToolsBento } from "./Extras";
 import Globe from "./Globe";
-import WallProof from "./WallProof";
+import WallProof, { WallSets } from "./WallProof";
 import "./fonts";
 import { setColumns, setCoverflow, setFan, setRail, setStaircase } from "./motion";
 import { clamp01, ramp, useScrollScene } from "./useScrollScene";
@@ -780,6 +780,7 @@ export default function MaparteScrollLanding() {
       </section>
 
       <WallProof />
+      <WallSets />
 
       {/* ------------------------------------------------------------ footer */}
       <footer className="footer">
