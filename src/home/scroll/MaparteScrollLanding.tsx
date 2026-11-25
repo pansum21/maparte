@@ -362,7 +362,7 @@ export default function MaparteScrollLanding() {
           <a href="#borders">Borders</a>
           <a href="#presets">Presets</a>
         </nav>
-        <a className="nav__cta" href="https://maparte.vercel.app">
+        <a className="nav__cta" href="/?editor=true">
           Open editor <span aria-hidden="true">↗</span>
         </a>
         <span className="nav__progress" aria-hidden="true" />
@@ -395,10 +395,12 @@ export default function MaparteScrollLanding() {
             Custom city posters · real OpenStreetMap data
           </p>
           <h1 className="hero__title">
-            <span>Your city,</span>
+            {/* The three spans are layout lines; the spaces between them keep
+                the accessible name and the indexed text readable as sentences. */}
+            <span>Your city,</span>{" "}
             <span>
               <em>drawn</em> line
-            </span>
+            </span>{" "}
             <span>by line.</span>
           </h1>
           <p className="hero__lead">
@@ -758,7 +760,7 @@ export default function MaparteScrollLanding() {
                 <span>every layer, still editable</span>
               </li>
             </ul>
-            <a className="btn btn--primary" href="https://maparte.vercel.app">
+            <a className="btn btn--primary" href="/?editor=true">
               Design yours <span aria-hidden="true">↗</span>
             </a>
           </div>
