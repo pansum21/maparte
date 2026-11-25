@@ -51,10 +51,35 @@ npm run osm lisbon     # one place
 Source: OpenFreeMap vector tiles (Protomaps schema, OSM data, ODbL).
 Map data © OpenStreetMap contributors.
 
-## Deploy
+## Deploy on Vercel
 
-Any static host works: build command `npm run build`, output directory `dist`.
-On Vercel, use this folder as the project root.
+This folder is a complete static site, so it gets its own Vercel project. The
+existing Maparte project keeps building the app from the repository root and
+ignores this folder completely.
+
+`vercel.json` already pins everything, so the import screen only needs the
+root directory changed:
+
+1. Open <https://vercel.com/new/import?s=https://github.com/pansum21/maparte>
+   and pick the `maparte` repository.
+2. On the configure screen, set **Root Directory** to `landing-scroll`.
+3. Leave the detected settings alone — they come from `vercel.json`:
+   framework **Vite**, install `npm ci`, build `npm run build`, output `dist`.
+   There are no environment variables to add.
+4. Press **Deploy**. The project gets its own `*.vercel.app` URL.
+5. Optional: add a domain such as `landing.maparte.com` in the project's
+   Domains tab.
+
+Every later push to `main` that touches `landing-scroll/` rebuilds only this
+project.
+
+### Any other static host
+
+Build command `npm run build`, output directory `dist`. Nothing else is needed:
+the fonts are bundled and the map data is committed, so the build never calls
+the network.
+
+`package-lock.json` is committed so `npm ci` resolves exactly these versions.
 
 ## Notes
 
