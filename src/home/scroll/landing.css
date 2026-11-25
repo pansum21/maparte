@@ -2245,3 +2245,24 @@
 
 }
 
+/* ---------------------------------------------------------- page scroll */
+/* The editor shell locks the document on desktop (`overflow: hidden` on
+   html/body/#root, with !important) because the map app fills the viewport.
+   This page is a scroll story, so the document has to scroll again while it
+   is mounted. `:has()` keeps the lock intact on every other route. */
+
+@media (min-width: 769px) {
+  html:has(#maparte-landing),
+  body:has(#maparte-landing) {
+    height: auto !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  #root:has(#maparte-landing) {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}

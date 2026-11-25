@@ -70,6 +70,14 @@ const SETS: Frame[] = [
     note: "A wall of places you have actually been.",
     rate: 32,
   },
+  {
+    id: "studio",
+    src: "/landing/studio-wall.jpg",
+    alt: "Three framed city map posters in different palettes hung in a row on a bright studio wall.",
+    label: "Three plates, one wall",
+    note: "Same streets, three palettes — hung as a set.",
+    rate: -34,
+  },
 ];
 
 function PhotoFrame({

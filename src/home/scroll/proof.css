@@ -146,6 +146,14 @@
   aspect-ratio: 16 / 9;
 }
 
+#maparte-landing .walls__frame--studio {
+  grid-column: span 2;
+}
+
+#maparte-landing .walls__frame--studio .walls__mat {
+  aspect-ratio: 16 / 9;
+}
+
 #maparte-landing .walls__frame--pair .walls__mat,
 #maparte-landing .walls__frame--grid .walls__mat {
   aspect-ratio: 4 / 3;
@@ -162,7 +170,8 @@
   }
 
   #maparte-landing .proof__frame--wall,
-  #maparte-landing .walls__frame--living {
+  #maparte-landing .walls__frame--living,
+  #maparte-landing .walls__frame--studio {
     grid-row: auto;
     grid-column: auto;
   }
