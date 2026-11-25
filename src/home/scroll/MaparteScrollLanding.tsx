@@ -6,6 +6,7 @@ import { Steps, Ticker, ToolsBento } from "./Extras";
 import Globe from "./Globe";
 import WallProof, { WallSets } from "./WallProof";
 import "./fonts";
+import "./landing.css";
 import { setColumns, setCoverflow, setFan, setRail, setStaircase } from "./motion";
 import { clamp01, ramp, useScrollScene } from "./useScrollScene";
 import {

@@ -4,6 +4,9 @@
    MAPARTE — scroll motion landing
    ============================================================== */
 #maparte-landing {
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100svh;
   --paper: #f5efe2;
   --paper-deep: #ece3d1;
   --ink: #14110d;
