@@ -1,0 +1,17 @@
+/* Shared by the scroll landing and the gallery pages, so nothing here is
+   scoped to the landing root. */
+
+.fx-spot {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.fx-magnet {
+  display: inline-flex;
+  vertical-align: top;
+  will-change: transform;
+}

@@ -8,6 +8,7 @@ import {
   type MotionValue,
 } from "motion/react";
 import "./proof.css";
+import { Spotlight, useScrollMask } from "./motionFx";
 
 type Frame = {
   id: string;
@@ -97,9 +98,13 @@ function PhotoFrame({
   // The photo is over-scanned by its own drift (plus a hair of slack), so the
   // frame stays filled edge to edge at every scroll position.
   const over = { "--over": `${Math.abs(frame.rate) + 8}px` } as CSSProperties;
+  const figure = useRef<HTMLElement>(null);
+  // The print is wiped open as the frame travels up the page.
+  const clipPath = useScrollMask(figure);
 
   return (
     <motion.figure
+      ref={figure}
       className={`${variant}__frame ${variant}__frame--${frame.id}`}
       style={over}
       initial={reduced ? undefined : { opacity: 0, y: 44 }}
@@ -108,13 +113,17 @@ function PhotoFrame({
       transition={{ duration: 0.8, delay: index * 0.09, ease: [0.22, 0.61, 0.36, 1] }}
       whileHover={reduced ? undefined : { y: -8 }}
     >
+      <Spotlight
+        radius={290}
+        tint={variant === "walls" ? "rgba(255, 228, 190, 0.17)" : "rgba(228, 85, 42, 0.16)"}
+      />
       <span className={`${variant}__mat`}>
         <motion.img
           src={frame.src}
           alt={frame.alt}
           loading="lazy"
           decoding="async"
-          style={reduced ? undefined : { y }}
+          style={reduced ? undefined : { y, clipPath }}
         />
       </span>
       <figcaption className={`${variant}__cap`}>

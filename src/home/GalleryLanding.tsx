@@ -4,6 +4,8 @@ import { themeOptions } from "@/features/theme/infrastructure/themeRepository";
 import { layoutGroups } from "@/features/layout/infrastructure/layoutRepository";
 import { lineStyles } from "@/features/layout/ui/NeatlinePicker";
 import "./galleryLanding.css";
+import { motion, useReducedMotion } from "motion/react";
+import { Magnetic, Spotlight } from "./scroll/motionFx";
 
 type GalleryKey = "maps" | "themes" | "layouts" | "borders";
 type GalleryItem = { id: string; title: string; detail: string; href: string; colors?: string[]; ratio?: number; border?: string };
@@ -44,13 +46,20 @@ function getItems(category: GalleryKey): GalleryItem[] {
 }
 
 function SlideArtwork({ category, item }: { category: GalleryKey; item: GalleryItem }) {
-  return <div className={`gallery-art gallery-art--${category}`} aria-hidden="true">
+  const reduced = useReducedMotion();
+  return <motion.div
+    className={`gallery-art gallery-art--${category}`}
+    aria-hidden="true"
+    initial={reduced ? undefined : { clipPath: "inset(100% 0 0 0)" }}
+    animate={reduced ? undefined : { clipPath: "inset(0% 0 0 0)" }}
+    transition={{ duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }}
+  >
     {category === "themes" && <div className="gallery-art__palette">{(item.colors || []).map((color, index) => <i key={`${color}-${index}`} style={{ background: color }} />)}</div>}
     {category === "layouts" && <div className="gallery-art__paper" style={{ aspectRatio: String(item.ratio || 1) }}><i /></div>}
     {category === "borders" && <div className={`gallery-art__frame gallery-art__frame--${item.border || "single"}`}><i /></div>}
     {category === "maps" && <div className="gallery-art__streets"><i /><i /><i /><i /><i /><i /></div>}
     <span className="gallery-art__index">{item.id.replace(/-/g, " ").toUpperCase()}</span>
-  </div>;
+  </motion.div>;
 }
 
 export default function GalleryLanding() {
@@ -118,7 +127,9 @@ export default function GalleryLanding() {
   return <main className={`gallery-page gallery-page--${category}`}>
     <header className="gallery-page__header">
       <a className="gallery-page__brand" href="/">MAPARTE</a>
-      <a className="gallery-page__back" href="/">← Back</a>
+      <Magnetic strength={0.16} pull={7}>
+        <a className="gallery-page__back" href="/">← Back</a>
+      </Magnetic>
     </header>
     <section className="gallery-page__content" aria-labelledby="gallery-title">
       <div className="gallery-page__intro">
@@ -144,11 +155,14 @@ export default function GalleryLanding() {
         tabIndex={0}
       >
         <div className="gallery-stage__slide" key={current.id}>
+          <Spotlight radius={420} tint="rgba(214, 255, 107, 0.14)" />
           <SlideArtwork category={category} item={current} />
           <div className="gallery-stage__caption">
             <span>{current.detail}</span>
             <h2>{current.title}</h2>
-            <a href={current.href}>Open this in the editor <i aria-hidden="true">↗</i></a>
+            <Magnetic>
+              <a href={current.href}>Open this in the editor <i aria-hidden="true">↗</i></a>
+            </Magnetic>
           </div>
         </div>
         <div className="gallery-stage__progress" aria-hidden="true">

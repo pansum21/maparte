@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import CityMap, { type Palette } from "./CityMap";
+import { RevealMask, Spotlight } from "./motionFx";
 import type { OsmCity as CityData } from "./osmTypes";
 import type { FrameKind, LayoutKind } from "./galleryData";
 
@@ -41,7 +42,8 @@ export default function Poster({
       className={`card card--${layout} card--f-${frame}${className ? ` ${className}` : ""}`}
       style={{ "--n": index } as CSSProperties}
     >
-      <div className="card__sheet">
+      <Spotlight radius={210} />
+      <RevealMask className="card__sheet">
         <div className="card__map">
           <CityMap data={data} palette={palette} />
         </div>
@@ -52,7 +54,7 @@ export default function Poster({
         ) : null}
         <span className="card__perf card__perf--l" aria-hidden="true" />
         <span className="card__perf card__perf--r" aria-hidden="true" />
-      </div>
+      </RevealMask>
 
       <figcaption className="card__cap">
         <span className="card__name">{city}</span>

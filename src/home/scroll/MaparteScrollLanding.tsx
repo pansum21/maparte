@@ -5,6 +5,7 @@ import Poster from "./Poster";
 import { Steps, Ticker, ToolsBento } from "./Extras";
 import Globe from "./Globe";
 import WallProof, { WallSets } from "./WallProof";
+import { Magnetic, RevealMask } from "./motionFx";
 import "./fonts";
 import "./landing.css";
 import { setColumns, setCoverflow, setFan, setRail, setStaircase } from "./motion";
@@ -408,12 +409,16 @@ export default function MaparteScrollLanding() {
             print-ready poster you style yourself.
           </p>
           <div className="hero__actions">
-            <a className="btn btn--primary" href="#maps">
-              See the gallery <span aria-hidden="true">↗</span>
-            </a>
-            <a className="btn btn--ghost" href="#themes">
-              Browse themes
-            </a>
+            <Magnetic>
+              <a className="btn btn--primary" href="#maps">
+                See the gallery <span aria-hidden="true">↗</span>
+              </a>
+            </Magnetic>
+            <Magnetic strength={0.16} pull={8}>
+              <a className="btn btn--ghost" href="#themes">
+                Browse themes
+              </a>
+            </Magnetic>
           </div>
           <div className="hero__foot">
             <ul className="hero__facts">
@@ -760,22 +765,24 @@ export default function MaparteScrollLanding() {
                 <span>every layer, still editable</span>
               </li>
             </ul>
-            <a className="btn btn--primary" href="/?editor=true">
-              Design yours <span aria-hidden="true">↗</span>
-            </a>
+            <Magnetic>
+              <a className="btn btn--primary" href="/?editor=true">
+                Design yours <span aria-hidden="true">↗</span>
+              </a>
+            </Magnetic>
           </div>
 
           <div className="export__stage" data-reveal>
             <div className="poster poster--export">
               <Corners />
-              <div className="poster__sheet">
+              <RevealMask className="poster__sheet">
                 <CityMap data={EXPORT_CITY} palette={PALETTES.terracotta} />
                 <div className="poster__caption">
                   <span className="poster__city">Lisbon</span>
                   <span className="poster__meta">Portugal</span>
                   <span className="poster__meta">38.7130° N · 9.1380° W</span>
                 </div>
-              </div>
+              </RevealMask>
             </div>
             <span className="export__tag">Plate no. 006 · 50 × 70 cm</span>
           </div>
