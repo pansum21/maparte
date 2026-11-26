@@ -708,7 +708,7 @@ const PARTS: Part[] = [
     id: "cascade",
     name: "Tilted card carousel",
     origin: "kedhareswer",
-    note: "Pointer tilt on the stack, with the spread opening up as the part is scrolled.",
+    note: "Pointer tilt on the stack, the cards stepping back as the part is scrolled.",
     render: (props) => <TiltCascade {...props} />,
   },
   {
@@ -785,14 +785,14 @@ const PARTS: Part[] = [
     id: "helix",
     name: "Dither helix carousel",
     origin: "crafterui",
-    note: "A helix of seven prints turning around a vertical axis — a scroll-driven spiral.",
+    note: "A helix of six prints turning around a vertical axis — a scroll-driven spiral.",
     render: (props) => <DitherHelix {...props} />,
   },
   {
     id: "glassy",
     name: "Glassy cover flow",
     origin: "automateflows",
-    note: "Cover flow behind a glass pane: depth blur, a sheen across each print and a soft frost overlay.",
+    note: "Cover flow behind a glass pane: side prints fall away in depth, a sheen across each print.",
     render: (props) => <GlassyCoverflow {...props} />,
   },
   {
