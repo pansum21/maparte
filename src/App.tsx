@@ -7,6 +7,7 @@ import { checkPaymentReturnUrl } from "@/features/export/infrastructure/planTier
 import { ErrorBoundary } from "@/shared/ui/ErrorBoundary";
 import JourneyPreview from "@/home/JourneyPreview";
 import GalleryLanding from "@/home/GalleryLanding";
+import MotionLab from "@/home/MotionLab";
 import MaparteScrollLanding from "@/home/scroll/MaparteScrollLanding";
 import AboutPage from "@/home/AboutPage";
 
@@ -20,6 +21,7 @@ export default function App() {
   if (pathname === "/about") return <AboutPage />;
 
   const search = new URLSearchParams(window.location.search);
+  if (search.get("lab") === "motion") return <MotionLab />;
   if (["maps", "themes", "layouts", "borders", "presets"].includes(search.get("gallery") || "")) {
     return <GalleryLanding />;
   }
