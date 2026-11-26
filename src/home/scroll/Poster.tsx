@@ -42,7 +42,7 @@ export default function Poster({
       className={`card card--${layout} card--f-${frame}${className ? ` ${className}` : ""}`}
       style={{ "--n": index } as CSSProperties}
     >
-      <Spotlight radius={210} />
+      <Spotlight radius={240} tint="rgba(228, 85, 42, 0.24)" ring="rgba(228, 85, 42, 0.95)" />
       <RevealMask className="card__sheet">
         <div className="card__map">
           <CityMap data={data} palette={palette} />

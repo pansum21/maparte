@@ -36,6 +36,8 @@ type SpotlightProps = {
   radius?: number;
   /** The colour at the centre of the pool; it fades to transparent. */
   tint?: string;
+  /** The colour the border burns with where the cursor is; false hides it. */
+  ring?: string | false;
   className?: string;
 };
 
@@ -47,6 +49,7 @@ type SpotlightProps = {
 export function Spotlight({
   radius = 320,
   tint = "rgba(228, 85, 42, 0.2)",
+  ring = "rgba(255, 206, 170, 0.9)",
   className = "",
 }: SpotlightProps) {
   const reduced = useReducedMotion();
@@ -57,6 +60,9 @@ export function Spotlight({
   const softX = useSpring(x, { stiffness: 190, damping: 26, mass: 0.36 });
   const softY = useSpring(y, { stiffness: 190, damping: 26, mass: 0.36 });
   const glow = useMotionTemplate`radial-gradient(${radius}px circle at ${softX}px ${softY}px, ${tint}, transparent 72%)`;
+  // The edge sits further from the pointer than the fill does, so the border
+  // light is given a wider falloff or it never reaches the corners.
+  const ringGlow = useMotionTemplate`radial-gradient(${radius * 1.8}px circle at ${softX}px ${softY}px, ${ring || "transparent"}, transparent 100%)`;
 
   const lit = useMotionValue(0);
   const fade = useSpring(lit, { stiffness: 150, damping: 24 });
@@ -101,12 +107,21 @@ export function Spotlight({
   if (reduced) return null;
 
   return (
-    <motion.span
-      ref={node}
-      aria-hidden="true"
-      className={`fx-spot${className ? ` ${className}` : ""}`}
-      style={{ background: glow, opacity: fade }}
-    />
+    <>
+      <motion.span
+        ref={node}
+        aria-hidden="true"
+        className={`fx-spot${className ? ` ${className}` : ""}`}
+        style={{ background: glow, opacity: fade }}
+      />
+      {ring ? (
+        <motion.span
+          aria-hidden="true"
+          className={`fx-spot-ring${className ? ` ${className}` : ""}`}
+          style={{ background: ringGlow, opacity: fade }}
+        />
+      ) : null}
+    </>
   );
 }
 

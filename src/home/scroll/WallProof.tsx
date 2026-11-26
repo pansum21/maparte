@@ -116,6 +116,7 @@ function PhotoFrame({
       <Spotlight
         radius={290}
         tint={variant === "walls" ? "rgba(255, 228, 190, 0.17)" : "rgba(228, 85, 42, 0.16)"}
+        ring={variant === "walls" ? "rgba(255, 232, 197, 0.9)" : "rgba(228, 85, 42, 0.9)"}
       />
       <span className={`${variant}__mat`}>
         <motion.img

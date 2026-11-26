@@ -155,7 +155,11 @@ export default function GalleryLanding() {
         tabIndex={0}
       >
         <div className="gallery-stage__slide" key={current.id}>
-          <Spotlight radius={420} tint="rgba(214, 255, 107, 0.14)" />
+          <Spotlight
+            radius={420}
+            tint="rgba(214, 255, 107, 0.14)"
+            ring="rgba(214, 255, 107, 0.85)"
+          />
           <SlideArtwork category={category} item={current} />
           <div className="gallery-stage__caption">
             <span>{current.detail}</span>
