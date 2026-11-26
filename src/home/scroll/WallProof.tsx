@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, type CSSProperties } from "react";
 import {
   motion,
   useReducedMotion,
@@ -94,10 +94,14 @@ function PhotoFrame({
   variant: "proof" | "walls";
 }) {
   const y = useTransform(progress, [0, 1], [frame.rate, -frame.rate]);
+  // The photo is over-scanned by its own drift (plus a hair of slack), so the
+  // frame stays filled edge to edge at every scroll position.
+  const over = { "--over": `${Math.abs(frame.rate) + 8}px` } as CSSProperties;
 
   return (
     <motion.figure
       className={`${variant}__frame ${variant}__frame--${frame.id}`}
+      style={over}
       initial={reduced ? undefined : { opacity: 0, y: 44 }}
       whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
