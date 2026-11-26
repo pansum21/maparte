@@ -15,6 +15,7 @@ export default function AboutPage() {
           <span>MAPARTE</span>
         </a>
         <nav className="about-page__nav" aria-label="Page links">
+          <a href="/blog">Blog</a>
           <a href="/?editor=true&guide=1">Guide</a>
           <a href="/?editor=true">Make your map</a>
         </nav>

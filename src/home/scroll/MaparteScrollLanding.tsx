@@ -362,6 +362,7 @@ export default function MaparteScrollLanding() {
           <a href="#layouts">Layouts</a>
           <a href="#borders">Borders</a>
           <a href="#presets">Presets</a>
+          <a href="/blog">Blog</a>
         </nav>
         <a className="nav__cta" href="/?editor=true">
           Open editor <span aria-hidden="true">↗</span>
@@ -806,6 +807,7 @@ export default function MaparteScrollLanding() {
             <a href="#tools">Everything</a>
             <a href="#how">How it works</a>
             <a href="#export">Editor</a>
+            <a href="/blog">Blog</a>
           </nav>
         </div>
         <div className="footer__bottom">
