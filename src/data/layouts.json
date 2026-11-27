@@ -484,39 +484,6 @@
           "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><path d='M10 17h16M10 22h12' stroke='#9CC3DA' stroke-width='1.5' stroke-linecap='round'/><circle cx='44' cy='20' r='11' fill='#4B91B7'/><circle cx='44' cy='20' r='14.5' fill='none' stroke='#9CC3DA' stroke-width='1' stroke-dasharray='1 2'/></svg>"
         },
         {
-          "id": "print_maparte_double_square_a4_landscape",
-          "name": "Double Square · A4 Landscape",
-          "description": "Two square maps side by side, each with its own place. Each place name and its coordinates sit below its own map, on A4 landscape paper.",
-          "width": 29.7,
-          "height": 21,
-          "unit": "cm",
-          "posterWidthCm": 29.7,
-          "posterHeightCm": 21,
-          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='8' y='9' width='20' height='20' fill='#4B91B7'/><rect x='36' y='9' width='20' height='20' fill='#4B91B7'/></svg>"
-        },
-        {
-          "id": "print_maparte_double_circle_a4_landscape",
-          "name": "Double Circle · A4 Landscape",
-          "description": "Two round maps side by side, each with its own place. Each place name and its coordinates sit below its own map, on A4 landscape paper.",
-          "width": 29.7,
-          "height": 21,
-          "unit": "cm",
-          "posterWidthCm": 29.7,
-          "posterHeightCm": 21,
-          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='18' cy='20' r='10' fill='#4B91B7'/><circle cx='46' cy='20' r='10' fill='#4B91B7'/></svg>"
-        },
-        {
-          "id": "print_maparte_double_heart_a4_landscape",
-          "name": "Double Heart · A4 Landscape",
-          "description": "Two heart shaped maps side by side, each with its own place. Each place name and its coordinates sit below its own map, on A4 landscape paper.",
-          "width": 29.7,
-          "height": 21,
-          "unit": "cm",
-          "posterWidthCm": 29.7,
-          "posterHeightCm": 21,
-          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><path transform='translate(8 9) scale(1)' d='M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z' fill='#4B91B7'/><path transform='translate(36 9) scale(1)' d='M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z' fill='#4B91B7'/></svg>"
-        },
-        {
           "id": "frame_maparte_triple_square_a4_portrait",
           "name": "Triple Square · A4 Portrait",
           "description": "Three independent square-shaped city maps with individual captions in an A4 portrait composition.",
@@ -581,6 +548,45 @@
           "posterWidthCm": 29.7,
           "posterHeightCm": 21,
           "symbol": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 40\"><rect x=\"2\" y=\"6\" width=\"60\" height=\"28\" rx=\"4\" fill=\"none\" stroke=\"#9CC3DA\" stroke-width=\"2\"/><path transform=\"translate(8 12) scale(.7)\" d=\"M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z\" fill=\"#4B91B7\"/><path transform=\"translate(26 12) scale(.7)\" d=\"M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z\" fill=\"#4B91B7\"/><path transform=\"translate(44 12) scale(.7)\" d=\"M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z\" fill=\"#4B91B7\"/></svg>"
+        }
+      ]
+    },
+    {
+      "id": "frame",
+      "name": "Frame",
+      "layouts": [
+        {
+          "id": "print_maparte_double_square_a4_landscape",
+          "name": "Double Square · A4 Landscape",
+          "description": "Two square maps side by side, each with its own place. Each place name and its coordinates sit below its own map, on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><rect x='8' y='9' width='20' height='20' fill='#4B91B7'/><rect x='36' y='9' width='20' height='20' fill='#4B91B7'/></svg>"
+        },
+        {
+          "id": "print_maparte_double_circle_a4_landscape",
+          "name": "Double Circle · A4 Landscape",
+          "description": "Two round maps side by side, each with its own place. Each place name and its coordinates sit below its own map, on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><circle cx='18' cy='20' r='10' fill='#4B91B7'/><circle cx='46' cy='20' r='10' fill='#4B91B7'/></svg>"
+        },
+        {
+          "id": "print_maparte_double_heart_a4_landscape",
+          "name": "Double Heart · A4 Landscape",
+          "description": "Two heart shaped maps side by side, each with its own place. Each place name and its coordinates sit below its own map, on A4 landscape paper.",
+          "width": 29.7,
+          "height": 21,
+          "unit": "cm",
+          "posterWidthCm": 29.7,
+          "posterHeightCm": 21,
+          "symbol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='2' width='60' height='36' rx='5' fill='none' stroke='#9CC3DA' stroke-width='2'/><path transform='translate(8 9) scale(1)' d='M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z' fill='#4B91B7'/><path transform='translate(36 9) scale(1)' d='M10 20 L2 11 C-1 7 2 1 7 1 C9 1 10 2 10 3 C10 2 11 1 13 1 C18 1 21 7 18 11 Z' fill='#4B91B7'/></svg>"
         }
       ]
     },
