@@ -70,6 +70,26 @@
   ],
   "rewrites": [
     {
+      "source": "/layouts",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/themes",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/themes/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/journey-preview",
+      "destination": "/index.html"
+    },
+    {
       "source": "/cities",
       "destination": "/cities/index.html"
     },
