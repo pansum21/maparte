@@ -22,7 +22,7 @@ const POSTER_SLIDES = [
 const slidesFor = (index: number) =>
   Array.from({ length: 5 }, (_, step) => POSTER_SLIDES[(index + step) % POSTER_SLIDES.length]);
 
-const shotSrc = (id: string) => `/theme-previews/${id}.webp`;
+const shotSrc = (layoutId: string, step: number) => `/layout-previews/${layoutId}-${step}.webp`;
 
 const shapeLabel = (ratio: number) =>
   ratio >= 1 ? `${ratio.toFixed(2)} : 1` : `1 : ${(1 / ratio).toFixed(2)}`;
@@ -186,8 +186,8 @@ export default function LayoutsPage() {
                         style={frameStyle(clampRatio(layout.widthCm, layout.heightCm))}
                       >
                         <img
-                          src={shotSrc(first.id)}
-                          alt={`City map in the ${first.theme} theme, set in the ${layout.name} layout`}
+                          src={shotSrc(layout.id, 0)}
+                          alt={`Paris street map in the ${first.theme} theme, set in the ${layout.name} layout`}
                           loading="lazy"
                           decoding="async"
                         />
@@ -235,8 +235,8 @@ export default function LayoutsPage() {
                 >
                   <img
                     key={slides[slide].id}
-                    src={shotSrc(slides[slide].id)}
-                    alt={`City map in the ${slides[slide].theme} theme, set in the ${active.layout.name} layout`}
+                    src={shotSrc(active.layout.id, slide)}
+                    alt={`Paris street map in the ${slides[slide].theme} theme, set in the ${active.layout.name} layout`}
                   />
                 </span>
               </div>
