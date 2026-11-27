@@ -203,6 +203,68 @@
   transform: scaleX(1);
   transform-origin: left;
 }
+#maparte-landing .nav__menu {
+  display: none;
+  justify-items: center;
+  align-content: center;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+#maparte-landing .nav__menu span {
+  display: block;
+  width: 15px;
+  height: 1.5px;
+  background: var(--ink);
+  transition: transform 0.26s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+#maparte-landing .nav__menu[aria-expanded="true"] span:first-child {
+  transform: translateY(3.25px) rotate(45deg);
+}
+#maparte-landing .nav__menu[aria-expanded="true"] span:last-child {
+  transform: translateY(-3.25px) rotate(-45deg);
+}
+#maparte-landing .nav__drawer {
+  position: absolute;
+  inset: calc(100% + 8px) clamp(16px, 4vw, 48px) auto;
+  display: grid;
+  padding: 6px;
+  background: var(--paper, #f5efe2);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 22px 50px rgba(20, 17, 13, 0.16);
+  animation: nav-drawer-in 0.22s ease both;
+}
+#maparte-landing .nav__drawer a {
+  padding: 13px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 10px;
+}
+#maparte-landing .nav__drawer a + a {
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 10px 10px;
+}
+#maparte-landing .nav__drawer a:active {
+  background: rgba(20, 17, 13, 0.06);
+}
+@keyframes nav-drawer-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 #maparte-landing .nav__cta {
   display: inline-flex;
   align-items: center;
@@ -1468,8 +1530,12 @@
 @media (max-width: 900px) {#maparte-landing .nav__links {
     display: none;
   }
-#maparte-landing .nav__cta {
+#maparte-landing .nav__menu {
+    display: grid;
     margin-left: auto;
+  }
+#maparte-landing .nav__cta {
+    margin-left: 10px;
   }
 #maparte-landing .hero {
     padding-top: 84px;

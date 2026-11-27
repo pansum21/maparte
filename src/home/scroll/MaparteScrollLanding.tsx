@@ -113,6 +113,23 @@ const Corners = () => (
 /* ------------------------------------------------------------------ page */
 
 export default function MaparteScrollLanding() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    const onResize = () => {
+      if (window.innerWidth > 900) setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [menuOpen]);
   const heroRef = useRef<HTMLElement>(null);
   const coordsRef = useRef<HTMLSpanElement>(null);
 
@@ -364,10 +381,43 @@ export default function MaparteScrollLanding() {
           <a href="#presets">Presets</a>
           <a href="/blog">Blog</a>
         </nav>
+        <button
+          className="nav__menu"
+          type="button"
+          aria-expanded={menuOpen}
+          aria-controls="nav-drawer"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+        </button>
         <a className="nav__cta" href="/?editor=true">
           Open editor <span aria-hidden="true">↗</span>
         </a>
         <span className="nav__progress" aria-hidden="true" />
+        {menuOpen && (
+          <nav className="nav__drawer" id="nav-drawer" aria-label="Sections">
+            <a href="#maps" onClick={() => setMenuOpen(false)}>
+              Map gallery
+            </a>
+            <a href="#themes" onClick={() => setMenuOpen(false)}>
+              Themes
+            </a>
+            <a href="#layouts" onClick={() => setMenuOpen(false)}>
+              Layouts
+            </a>
+            <a href="#borders" onClick={() => setMenuOpen(false)}>
+              Borders
+            </a>
+            <a href="#presets" onClick={() => setMenuOpen(false)}>
+              Presets
+            </a>
+            <a href="/blog" onClick={() => setMenuOpen(false)}>
+              Blog
+            </a>
+          </nav>
+        )}
       </header>
 
       {/* ------------------------------------------------------------ hero */}
