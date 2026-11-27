@@ -28,22 +28,11 @@ async function fetchNominatimData(
   params: string,
   signal?: AbortSignal
 ): Promise<any> {
-  const isBrowser = typeof window !== 'undefined';
-  if (isBrowser) {
-    try {
-      const proxyUrl = `/api/nominatim/${path}?${params}`;
-      const res = await http.get(proxyUrl, { headers: { Accept: 'application/json' }, signal }, 8000);
-      if (res && res.ok) {
-        return await res.json();
-      }
-      throw new Error(`Nominatim proxy failed with status: ${res?.status}`);
-    } catch {
-      // Fall through to direct nominatim fetch
-    }
-  }
-
   const directUrl = `https://nominatim.openstreetmap.org/${path}?${params}`;
   const directRes = await http.get(directUrl, { headers: { Accept: 'application/json' }, signal }, 14000);
+  if (!directRes.ok) {
+    throw new Error(`Nominatim request failed with status: ${directRes.status}`);
+  }
   return await directRes.json();
 }
 

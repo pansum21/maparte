@@ -334,11 +334,27 @@ function serviceWorkerBuildIdPlugin() {
 
 
 function googleMapsResolverPlugin() {
+  const allowedHosts = new Set([
+    "maps.app.goo.gl",
+    "goo.gl",
+    "maps.google.com",
+    "google.com",
+    "www.google.com",
+    "maps.google.co.in",
+    "www.google.co.in",
+  ]);
+
   return {
     name: "google-maps-resolver",
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         if (req.url && req.url.startsWith("/api/resolve-maps-url")) {
+          if (req.method !== "GET") {
+            res.statusCode = 405;
+            res.setHeader("Allow", "GET");
+            res.end();
+            return;
+          }
           const parsedUrl = new URL(req.url, "http://localhost");
           const targetUrl = parsedUrl.searchParams.get("url");
           if (!targetUrl) {
@@ -347,56 +363,67 @@ function googleMapsResolverPlugin() {
             res.end(JSON.stringify({ error: "Missing url parameter" }));
             return;
           }
+          let target;
           try {
-            const fetchRes = await fetch(targetUrl, {
-              method: "GET",
-              redirect: "follow",
-              headers: {
-                "User-Agent":
-                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-              },
-            });
+            target = new URL(targetUrl);
+          } catch {
+            res.statusCode = 400;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: "Invalid Google Maps URL" }));
+            return;
+          }
+          const isGoogleShortLink =
+            target.protocol === "https:" &&
+            ((target.hostname === "maps.app.goo.gl") ||
+              (target.hostname === "goo.gl" && target.pathname.startsWith("/maps")));
+          if (!isGoogleShortLink || targetUrl.length > 2048) {
+            res.statusCode = 400;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: "Only Google Maps share links are supported" }));
+            return;
+          }
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 4000);
+          try {
+            let current = target;
+            let resolved = null;
+            for (let hop = 0; hop <= 5; hop += 1) {
+              if (current.protocol !== "https:" || !allowedHosts.has(current.hostname)) {
+                break;
+              }
+              const fetchRes = await fetch(current, {
+                method: "GET",
+                redirect: "manual",
+                signal: controller.signal,
+                headers: {
+                  "User-Agent": "MapArte link resolver/1.0 (https://www.maparte.com)",
+                },
+              });
+              if (fetchRes.status >= 300 && fetchRes.status < 400) {
+                const location = fetchRes.headers.get("location");
+                if (!location || hop === 5) break;
+                current = new URL(location, current);
+                continue;
+              }
+              if (fetchRes.ok && current.pathname.includes("/maps")) resolved = current;
+              break;
+            }
+            if (!resolved) {
+              res.statusCode = 400;
+              res.setHeader("Content-Type", "application/json");
+              res.end(JSON.stringify({ error: "The link did not resolve to Google Maps" }));
+              return;
+            }
             res.statusCode = 200;
             res.setHeader("Content-Type", "application/json");
-            res.end(JSON.stringify({ expandedUrl: fetchRes.url }));
+            res.setHeader("Cache-Control", "private, max-age=300");
+            res.end(JSON.stringify({ expandedUrl: resolved.toString() }));
           } catch (err) {
-            res.statusCode = 500;
+            res.statusCode = 400;
             res.setHeader("Content-Type", "application/json");
-            res.end(JSON.stringify({ error: "Failed to resolve", message: err.message }));
-          }
-          return;
-        }
-        next();
-      });
-    },
-  };
-}
-
-
-function nominatimProxyPlugin() {
-  return {
-    name: "nominatim-proxy",
-    configureServer(server) {
-      server.middlewares.use(async (req, res, next) => {
-        if (req.url && req.url.startsWith("/api/nominatim")) {
-          const parsedUrl = new URL(req.url, "http://localhost");
-          const targetPath = parsedUrl.pathname.replace(/^\/api\/nominatim/, "");
-          const targetUrl = `https://nominatim.openstreetmap.org${targetPath}${parsedUrl.search}`;
-          try {
-            const fetchRes = await fetch(targetUrl, {
-              headers: {
-                "User-Agent": "MapArte/0.4.8 (support@maparte.com)",
-                Accept: "application/json",
-              },
-            });
-            const data = await fetchRes.text();
-            res.statusCode = fetchRes.status;
-            res.setHeader("Content-Type", "application/json");
-            res.end(data);
-          } catch (err) {
-            res.statusCode = 500;
-            res.setHeader("Content-Type", "application/json");
-            res.end(JSON.stringify({ error: err.message }));
+            res.end(JSON.stringify({ error: "Unable to resolve Google Maps link" }));
+          } finally {
+            clearTimeout(timeout);
           }
           return;
         }
@@ -443,7 +470,6 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    nominatimProxyPlugin(),
     adsensePlugin(),
     legalPagesPlugin(),
     marketingPagesPlugin(),

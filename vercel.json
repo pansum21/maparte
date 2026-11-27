@@ -94,10 +94,6 @@
       "destination": "/cities/index.html"
     },
     {
-      "source": "/api/nominatim/(.*)",
-      "destination": "https://nominatim.openstreetmap.org/$1"
-    },
-    {
       "source": "/where-we-met",
       "destination": "/where-we-met/index.html"
     },
