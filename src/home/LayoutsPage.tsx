@@ -39,7 +39,17 @@ const PREVIEW_CITIES = [
   "Stockholm",
 ];
 
-const cityFor = (index: number) => PREVIEW_CITIES[index % PREVIEW_CITIES.length];
+/** Must match the hash in scripts/generate_layout_previews.cjs: the city is a
+    property of the layout id, so reordering the catalog cannot desync it. */
+const hashId = (id: string) => {
+  let hash = 0;
+  for (let index = 0; index < id.length; index += 1) {
+    hash = (hash * 31 + id.charCodeAt(index)) >>> 0;
+  }
+  return hash;
+};
+
+const cityFor = (layoutId: string) => PREVIEW_CITIES[hashId(layoutId) % PREVIEW_CITIES.length];
 
 const shotSrc = (layoutId: string, step: number) => `/layout-previews/${layoutId}-${step}`;
 
@@ -213,7 +223,7 @@ export default function LayoutsPage() {
             at real size.
           </h1>
           <p className="cx-lead">
-            {total} formats across five groups: print sheets, social crops, desktop and phone
+            {total} formats across {layoutGroups.length} groups: print sheets, social crops, desktop and phone
             wallpapers, and web banners. Each one opens with five real map posters in its own
             shape, so you can see how much of a city actually fits before you choose.
           </p>
@@ -330,7 +340,7 @@ export default function LayoutsPage() {
                         <Shot
                           layoutId={layout.id}
                           step={0}
-                          alt={`${cityFor(index)} street map in the ${first.theme} theme, set in the ${layout.name} layout`}
+                          alt={`${cityFor(layout.id)} street map in the ${first.theme} theme, set in the ${layout.name} layout`}
                           sizes="(min-width: 1100px) 240px, (min-width: 620px) 30vw, 42vw"
                         />
                       </span>
@@ -379,7 +389,7 @@ export default function LayoutsPage() {
                     layoutId={active.layout.id}
                     step={slide}
                     eager
-                    alt={`${cityFor(activeIndex)} street map in the ${slides[slide].theme} theme, set in the ${active.layout.name} layout`}
+                    alt={`${cityFor(active.layout.id)} street map in the ${slides[slide].theme} theme, set in the ${active.layout.name} layout`}
                     sizes="(min-width: 880px) 55vw, 88vw"
                   />
                 </span>

@@ -43,7 +43,16 @@ const CITIES = [
   { city: "Amsterdam", country: "Netherlands", lat: 52.3676, lon: 4.9041, distance: "4000" },
   { city: "Stockholm", country: "Sweden", lat: 59.3293, lon: 18.0686, distance: "4200" },
 ];
-const cityFor = (index) => CITIES[index % CITIES.length];
+/** Chosen from the layout id, not its position, so reordering the catalog never
+    changes which city an already rendered preview shows. */
+const hashId = (id) => {
+  let hash = 0;
+  for (let index = 0; index < id.length; index += 1) {
+    hash = (hash * 31 + id.charCodeAt(index)) >>> 0;
+  }
+  return hash;
+};
+const cityFor = (layout) => CITIES[hashId(layout.id) % CITIES.length];
 const DISTANCE = "4900";
 
 // Must match POSTER_SLIDES in src/home/LayoutsPage.tsx.
@@ -192,7 +201,7 @@ const dpiFor = (layout, longEdge = 950) => {
   const jobsByKey = new Map();
   layouts.forEach((layout, index) => {
     const slides = slidesFor(index);
-    const city = cityFor(index);
+    const city = cityFor(layout);
     if (ONLY_THEME && !slides.includes(ONLY_THEME)) return;
     slides.forEach((theme, step) => {
       if (ONLY_THEME && theme !== ONLY_THEME) return;
