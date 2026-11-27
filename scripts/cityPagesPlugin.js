@@ -23,6 +23,17 @@ function escapeXml(str) {
     .replace(/>/g, '&gt;');
 }
 
+// One indexable page per colour theme, read straight from the theme manifests.
+const themeIds = (() => {
+  try {
+    const read = (file) =>
+      JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/data', file), 'utf8')).themes || {};
+    return Object.keys({ ...read('themes.json'), ...read('additional_themes.json') });
+  } catch {
+    return [];
+  }
+})();
+
 // Blog pages are static files in public/blog; list them here so the generated sitemap keeps them.
 const BLOG_PAGES = [
   { path: '', freq: 'weekly', priority: '0.8' },
@@ -317,6 +328,12 @@ export function cityPagesPlugin() {
         `  <url>\n    <loc>https://maparte.com</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Custom Map Poster &amp; Wallpaper Maker</image:title>\n    </image:image>\n  </url>`,
         '  <url>\n    <loc>https://maparte.com/cities</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.9</priority>\n  </url>',
         ...BLOG_PAGES.map((page) => `  <url>\n    <loc>https://www.maparte.com/blog${page.path}</loc>\n    <lastmod>2026-11-20</lastmod>\n    <changefreq>${page.freq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`),
+        '  <url>\n    <loc>https://www.maparte.com/layouts</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>',
+        '  <url>\n    <loc>https://www.maparte.com/themes</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>',
+        ...themeIds.map(
+          (id) =>
+            `  <url>\n    <loc>https://www.maparte.com/themes/${escapeXml(id)}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`,
+        ),
         `  <url>\n    <loc>https://maparte.com/where-we-met-map</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.95</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>Where We Met Custom Map Poster &amp; Wall Art | MAPARTE</image:title>\n    </image:image>\n  </url>`,
         `  <url>\n    <loc>https://maparte.com/privacy</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
         `  <url>\n    <loc>https://maparte.com/terms</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,

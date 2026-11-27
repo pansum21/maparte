@@ -523,6 +523,9 @@ export default function MaparteScrollLanding() {
             <div className="gal__bar" aria-hidden="true">
               <i />
             </div>
+            <a className="gal__link" href="/themes">
+              all 22 themes <span aria-hidden="true">↗</span>
+            </a>
             <span className="gal__hint">scroll ↔ travel</span>
           </div>
         </div>
@@ -580,6 +583,9 @@ export default function MaparteScrollLanding() {
             <div className="gal__bar" aria-hidden="true">
               <i />
             </div>
+            <a className="gal__link" href="/layouts">
+              all 79 layouts <span aria-hidden="true">↗</span>
+            </a>
             <span className="gal__hint">scroll ↔ travel</span>
           </div>
         </div>

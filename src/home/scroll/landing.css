@@ -203,6 +203,22 @@
   transform: scaleX(1);
   transform-origin: left;
 }
+#maparte-landing .gal__link {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: 2px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+#maparte-landing .gal__link:hover {
+  color: var(--orange);
+  border-color: var(--orange);
+}
 #maparte-landing .nav__menu {
   display: none;
   justify-items: center;

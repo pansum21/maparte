@@ -10,6 +10,8 @@ import GalleryLanding from "@/home/GalleryLanding";
 import MotionLab from "@/home/MotionLab";
 import MaparteScrollLanding from "@/home/scroll/MaparteScrollLanding";
 import AboutPage from "@/home/AboutPage";
+import LayoutsPage from "@/home/LayoutsPage";
+import ThemesPage from "@/home/ThemesPage";
 
 export default function App() {
   useEffect(() => {
@@ -19,13 +21,18 @@ export default function App() {
   const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
   if (pathname === "/journey-preview") return <JourneyPreview />;
   if (pathname === "/about") return <AboutPage />;
+  if (pathname === "/layouts") return <LayoutsPage />;
+  if (pathname === "/themes") return <ThemesPage />;
+  if (pathname.startsWith("/themes/")) {
+    return <ThemesPage themeId={pathname.slice("/themes/".length)} />;
+  }
 
   const search = new URLSearchParams(window.location.search);
   if (search.get("lab") === "motion") return <MotionLab />;
   if (["maps", "themes", "layouts", "borders", "presets"].includes(search.get("gallery") || "")) {
     return <GalleryLanding />;
   }
-  const editorQueryKeys = ["editor", "dist", "city", "country", "lat", "lng", "lon", "zoom", "theme", "payment", "checkout", "status", "order", "success"];
+  const editorQueryKeys = ["editor", "dist", "city", "country", "lat", "lng", "lon", "zoom", "theme", "layout", "title", "payment", "checkout", "status", "order", "success"];
   const hasEditorQuery = editorQueryKeys.some((key) => search.has(key));
   // The home route is the scroll landing; the older journey page stays
     // reachable at /journey-preview for comparison.
