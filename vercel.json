@@ -71,23 +71,23 @@
   "rewrites": [
     {
       "source": "/layouts",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/themes",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/themes/(.*)",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/about",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/journey-preview",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/cities",
@@ -139,7 +139,7 @@
     },
     {
       "source": "/((?!api/|assets/|docs/|blog/|blog$|mapiful-alternative|privacy|imprint|terms|refund|cities/|where-we-met|she-said-yes|our-wedding-day|our-first-home|travel-memories|marathon-race|baby-arrival|hometown-roots|mountain-summit|robots\\.txt|sitemap\\.xml|ads\\.txt|site\\.webmanifest|sw\\.js|llms\\.txt|google.*|BingSiteAuth.*|favicon|icon).*)$",
-      "destination": "/index.html"
+      "destination": "/"
     }
   ]
 }
