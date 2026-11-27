@@ -10,18 +10,15 @@ import "./fonts";
 import "./landing.css";
 import { setColumns, setCoverflow, setFan, setRail, setStaircase } from "./motion";
 import { clamp01, ramp, useScrollScene } from "./useScrollScene";
+import MotionLab from "@/home/MotionLab";
 import {
   FRAME_GALLERY,
   LAYOUT_GALLERY,
   MAP_COUNT,
   MAP_GALLERY,
-  MOTION_LABEL,
   PRESET_GALLERY,
   THEME_GALLERY,
-  type MotionId,
 } from "./galleryData";
-
-const PICK_KEY = "maparte:motions";
 
 /* ------------------------------------------------------------------ data */
 
@@ -75,32 +72,6 @@ const Mark = () => (
   </svg>
 );
 
-/** The tick you leave on the motion you want to keep. */
-const Pick = ({
-  id,
-  label,
-  on,
-  onToggle,
-}: {
-  id: MotionId;
-  label: string;
-  on: boolean;
-  onToggle: (id: MotionId) => void;
-}) => (
-  <button
-    type="button"
-    className={`pick${on ? " is-on" : ""}`}
-    aria-pressed={on}
-    onClick={() => onToggle(id)}
-    title={`Tick “${label}” to keep this motion`}
-  >
-    <span className="pick__box" aria-hidden="true">
-      {on ? "✓" : ""}
-    </span>
-    <span className="pick__text">{on ? `Ticked · ${label}` : `Tick to keep · ${label}`}</span>
-  </button>
-);
-
 const Corners = () => (
   <>
     <span className="poster__mark poster__mark--tl" aria-hidden="true" />
@@ -152,30 +123,6 @@ export default function MaparteScrollLanding() {
 
   const presetRef = useRef<HTMLElement>(null);
   const presetView = useRef<HTMLDivElement>(null);
-
-  /* the ticked motions, so a choice survives a reload while we tune it */
-  const [picked, setPicked] = useState<Partial<Record<MotionId, boolean>>>({});
-
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(PICK_KEY);
-      if (raw) setPicked(JSON.parse(raw) as Partial<Record<MotionId, boolean>>);
-    } catch {
-      /* private mode: the ticks simply do not persist */
-    }
-  }, []);
-
-  const togglePick = useCallback((id: MotionId) => {
-    setPicked((prev) => {
-      const next = { ...prev, [id]: !prev[id] };
-      try {
-        window.localStorage.setItem(PICK_KEY, JSON.stringify(next));
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  }, []);
 
   const exportRef = useRef<HTMLElement>(null);
 
@@ -487,6 +434,9 @@ export default function MaparteScrollLanding() {
 
       <Ticker />
 
+      {/* Gallery motion studies sit on the homepage, directly after the hero. */}
+      <MotionLab embedded />
+
       {/* ----------------------------------------------- 01 · map gallery */}
       <section className="gal gal--map" id="maps" ref={mapRef}>
         <div className="gal__pin">
@@ -507,7 +457,6 @@ export default function MaparteScrollLanding() {
                 One shelf, twenty plates, each framed with a double rule. Scroll
                 and the whole gallery travels with you — no arrows, no clicking.
               </p>
-              <Pick id="rail" label={MOTION_LABEL.rail} on={!!picked.rail} onToggle={togglePick} />
             </div>
           </div>
 
@@ -554,12 +503,6 @@ export default function MaparteScrollLanding() {
                 Roads, water, parks and blocks are recoloured independently, then
                 saved as a palette you can lock.
               </p>
-              <Pick
-                id="coverflow"
-                label={MOTION_LABEL.coverflow}
-                on={!!picked.coverflow}
-                onToggle={togglePick}
-              />
             </div>
           </div>
 
@@ -608,12 +551,6 @@ export default function MaparteScrollLanding() {
                 Full bleed, gallery margin, title stack, diptych, corner mark and a
                 wide band crop. Same map, six completely different posters.
               </p>
-              <Pick
-                id="columns"
-                label={MOTION_LABEL.columns}
-                on={!!picked.columns}
-                onToggle={togglePick}
-              />
             </div>
           </div>
 
@@ -668,7 +605,6 @@ export default function MaparteScrollLanding() {
                 Double rules, hairlines, museum mats, perforated tickets, caption
                 bars and arched heads — one rule per print, no extra sheet.
               </p>
-              <Pick id="fan" label={MOTION_LABEL.fan} on={!!picked.fan} onToggle={togglePick} />
             </div>
           </div>
 
@@ -714,12 +650,6 @@ export default function MaparteScrollLanding() {
                 Studio, gallery, desk and oversize — each with its own stock and
                 finish. Same plate, four different walls.
               </p>
-              <Pick
-                id="staircase"
-                label={MOTION_LABEL.staircase}
-                on={!!picked.staircase}
-                onToggle={togglePick}
-              />
             </div>
           </div>
 

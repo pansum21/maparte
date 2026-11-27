@@ -39,6 +39,16 @@ html:has(.rl-page) {
   justify-content: center;
 }
 
+.rl-intro--embedded {
+  min-height: 0;
+  max-width: 1120px;
+  padding: clamp(34px, 5vw, 68px) 28px 24px;
+}
+
+.rl-page--embedded .rl-outro {
+  min-height: 34svh;
+}
+
 .rl-back {
   position: absolute;
   top: 26px;
@@ -155,7 +165,7 @@ html:has(.rl-page) {
 
 .rl-part {
   position: relative;
-  height: 210svh;
+  height: 360svh;
 }
 
 .rl-pin {
@@ -496,13 +506,9 @@ html:has(.rl-page) {
   top: 13%;
   width: 33%;
   height: 58%;
+  left: 33.5%;
   transform-origin: 50% -6%;
 }
-
-.ml-rail__hang:nth-of-type(2) { left: 4%; }
-.ml-rail__hang:nth-of-type(3) { left: 26%; }
-.ml-rail__hang:nth-of-type(4) { left: 48%; }
-.ml-rail__hang:nth-of-type(5) { left: 68%; }
 
 .ml-rail__wire {
   position: absolute;
@@ -557,6 +563,37 @@ html:has(.rl-page) {
   box-shadow: 0 10px 22px rgba(23, 20, 15, 0.18);
 }
 
+.ml-frosted-lookbook {
+  perspective: 1000px;
+}
+
+.ml-frosted-lookbook__stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.ml-frosted-lookbook__folder {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56%;
+  height: 68%;
+  margin: -34% 0 0 -28%;
+  transform-style: preserve-3d;
+}
+
+.ml-frosted-lookbook__folder .ml-folder__body {
+  inset: 8% 0 0;
+  background: rgba(248, 246, 240, 0.68);
+  backdrop-filter: blur(10px);
+}
+
+.ml-frosted-lookbook__folder .ml-photo {
+  mix-blend-mode: multiply;
+}
+
 /* endless ------------------------------------------------------------ */
 
 .ml-endless {
@@ -589,6 +626,18 @@ html:has(.rl-page) {
   margin: 0;
   flex: none;
   box-shadow: none;
+}
+
+.ml-scroll-stack {
+  perspective: 1100px;
+}
+
+.ml-card--scroll-stack {
+  width: 58%;
+  height: 70%;
+  margin-left: -29%;
+  margin-top: -35%;
+  transform-origin: 50% 100%;
 }
 
 @keyframes ml-marquee {
@@ -670,9 +719,9 @@ html:has(.rl-page) {
   box-shadow: 0 12px 26px rgba(23, 20, 15, 0.22);
   transform-style: preserve-3d;
   transform:
-    rotateY(calc(var(--slot) * 44deg))
-    translateZ(112px)
-    translateY(calc((var(--slot) - 2.5) * 32px));
+    rotateY(var(--angle))
+    translateZ(150px)
+    translateY(var(--rise));
 }
 
 /* glassy coverflow --------------------------------------------------- */
@@ -827,6 +876,25 @@ html:has(.rl-page) {
   pointer-events: none;
 }
 
+.ml-screenshot-deck {
+  perspective: 1200px;
+}
+
+.ml-screenshot-deck__frame {
+  position: absolute;
+  inset: 8% 8%;
+  transform-style: preserve-3d;
+}
+
+.ml-screenshot-deck__page {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  box-shadow: 0 18px 42px rgba(23, 20, 15, 0.24);
+}
+
 /* folder cards ------------------------------------------------------- */
 
 .ml-folders {
@@ -921,6 +989,38 @@ html:has(.rl-page) {
   background: rgba(23, 20, 15, 0.16);
 }
 
+.ml-chain-arc .ml-card--chain {
+  width: 44%;
+  height: 54%;
+  margin-left: -22%;
+  margin-top: -27%;
+  transform-origin: 50% 118%;
+}
+
+.ml-curved-3d {
+  perspective: 1100px;
+  transform-style: preserve-3d;
+}
+
+.ml-curved-3d__ring {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.ml-curved-3d__slot {
+  position: absolute;
+  left: 34%;
+  top: 26%;
+  width: 32%;
+  height: 48%;
+  overflow: hidden;
+  border: 5px solid #f7f3eb;
+  border-radius: 3px;
+  box-shadow: 0 16px 34px rgba(23, 20, 15, 0.24);
+  backface-visibility: hidden;
+}
+
 /* drum --------------------------------------------------------------- */
 
 .ml-drum {
@@ -939,10 +1039,10 @@ html:has(.rl-page) {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 42%;
-  height: 58%;
-  margin-left: -21%;
-  margin-top: -29%;
+  width: 23%;
+  height: 52%;
+  margin-left: -11.5%;
+  margin-top: -26%;
   overflow: hidden;
   border-radius: 2px;
   box-shadow: 0 14px 30px rgba(23, 20, 15, 0.22);
@@ -952,6 +1052,9 @@ html:has(.rl-page) {
 /* ------------------------------------------------------------------ narrow */
 
 @media (max-width: 820px) {
+  .rl-part {
+    height: 310svh;
+  }
   .rl-pin {
     padding: 18px 16px 20px;
   }
@@ -993,6 +1096,26 @@ html:has(.rl-page) {
 
   .rl-intro {
     padding: 64px 18px 48px;
+  }
+
+  .rl-intro--embedded {
+    min-height: 0;
+    padding: 38px 18px 20px;
+  }
+
+  .ml-curved-3d__slot {
+    left: 36%;
+    width: 28%;
+    transform-origin: 50% 50%;
+  }
+
+  .ml-drum__slot {
+    width: 28%;
+    margin-left: -14%;
+  }
+
+  .ml-helix__slot {
+    transform: rotateY(var(--angle)) translateZ(100px) translateY(var(--rise));
   }
 }
 
