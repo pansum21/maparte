@@ -31,13 +31,16 @@ function ThemeShot({ id, palette, name }: { id: string; palette: string[]; name:
     );
   }
   return (
-    <img
-      src={previewSrc(id)}
-      alt={`Map of Tokyo in the ${name} theme`}
-      loading="lazy"
-      decoding="async"
-      onError={() => setFailed(true)}
-    />
+    <picture>
+      <source type="image/avif" srcSet={`${previewSrc(id).replace(/\.webp$/, ".avif")}`} />
+      <img
+        src={previewSrc(id)}
+        alt={`Map of Tokyo in the ${name} theme`}
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+      />
+    </picture>
   );
 }
 
@@ -190,11 +193,17 @@ function ThemeImage({ theme }: { theme: ThemeOption }) {
     );
   }
   return (
-    <img
-      src={previewSrc(theme.id)}
-      alt={`Tokyo street map rendered in the ${theme.name} theme`}
-      onError={() => setFailed(true)}
-    />
+    <picture>
+      <source
+        type="image/avif"
+        srcSet={previewSrc(theme.id).replace(/\.webp$/, ".avif")}
+      />
+      <img
+        src={previewSrc(theme.id)}
+        alt={`Tokyo street map rendered in the ${theme.name} theme`}
+        onError={() => setFailed(true)}
+      />
+    </picture>
   );
 }
 

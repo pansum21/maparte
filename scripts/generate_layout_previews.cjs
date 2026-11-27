@@ -26,7 +26,24 @@ const OUT_DIR = path.join(__dirname, "../public/layout-previews");
 const THEME_OUT = path.join(__dirname, "../public/theme-previews");
 const BLOG_OUT = path.join(__dirname, "../public/blog/img");
 
-const CITY = { city: "Paris", country: "France", lat: 48.8566, lon: 2.3522 };
+/** One city per layout, so the gallery is not 79 versions of Paris. The order is
+    fixed: the same layout always renders the same city, and the gallery's alt
+    text uses the same list. */
+const CITIES = [
+  { city: "Paris", country: "France", lat: 48.8566, lon: 2.3522, distance: "4900" },
+  { city: "Tokyo", country: "Japan", lat: 35.6812, lon: 139.7671, distance: "7000" },
+  { city: "Lisbon", country: "Portugal", lat: 38.7223, lon: -9.1393, distance: "4200" },
+  { city: "New York", country: "United States", lat: 40.7128, lon: -74.006, distance: "6000" },
+  { city: "Copenhagen", country: "Denmark", lat: 55.6761, lon: 12.5683, distance: "3800" },
+  { city: "Barcelona", country: "Spain", lat: 41.3874, lon: 2.1686, distance: "4500" },
+  { city: "Istanbul", country: "Turkey", lat: 41.0082, lon: 28.9784, distance: "6500" },
+  { city: "Mexico City", country: "Mexico", lat: 19.4326, lon: -99.1332, distance: "7000" },
+  { city: "Cape Town", country: "South Africa", lat: -33.9249, lon: 18.4241, distance: "6000" },
+  { city: "Seoul", country: "South Korea", lat: 37.5665, lon: 126.978, distance: "6500" },
+  { city: "Amsterdam", country: "Netherlands", lat: 52.3676, lon: 4.9041, distance: "4000" },
+  { city: "Stockholm", country: "Sweden", lat: 59.3293, lon: 18.0686, distance: "4200" },
+];
+const cityFor = (index) => CITIES[index % CITIES.length];
 const DISTANCE = "4900";
 
 // Must match POSTER_SLIDES in src/home/LayoutsPage.tsx.
@@ -68,15 +85,9 @@ const ONLY_THEME = onlyThemeArg >= 0 ? args[onlyThemeArg + 1] : null;
 const onlyArg = args.indexOf("--only");
 const ONLY = onlyArg >= 0 ? args[onlyArg + 1].split(",").map((v) => v.trim()) : null;
 const SINGLE = args.includes("--single");
+const FORCE = args.includes("--force");
 
-async function openEditor(page, theme) {
-  await page.goto(`${BASE}?layout=print_a4_portrait&theme=${theme}`, { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".poster-frame");
-  await page.waitForFunction(
-    () => window.posterDispatch && window.map && typeof window.exportPoster === "function",
-    { timeout: 30000 },
-  );
-  await page.waitForTimeout(1000);
+async function setCity(page, city) {
   await page.evaluate(
     ({ city, distance }) => {
       window.posterDispatch({
@@ -103,13 +114,28 @@ async function openEditor(page, theme) {
         },
       });
     },
-    { city: CITY, distance: DISTANCE },
+    { city, distance: city.distance || DISTANCE },
   );
-  await page.waitForFunction(
-    () => window.posterState?.form?.displayCity === "Paris" && window.posterState?.form?.distance === "4900",
-    { timeout: 15000 },
-  );
+  const deadline = Date.now() + 20000;
+  let current = "";
+  while (Date.now() < deadline) {
+    current = await page.evaluate(() => window.posterState?.form?.displayCity ?? "");
+    if (current === city.city) break;
+    await page.waitForTimeout(250);
+  }
+  if (current !== city.city) console.log(`city did not settle on ${city.city} (state says "${current}")`);
   await page.waitForTimeout(800);
+}
+
+async function openEditor(page, theme, city = CITIES[0]) {
+  await page.goto(`${BASE}?layout=print_a4_portrait&theme=${theme}`, { waitUntil: "domcontentloaded" });
+  await page.waitForSelector(".poster-frame");
+  await page.waitForFunction(
+    () => window.posterDispatch && window.map && typeof window.exportPoster === "function",
+    { timeout: 30000 },
+  );
+  await page.waitForTimeout(1000);
+  await setCity(page, city);
 }
 
 async function exportPng(page, dpi) {
@@ -161,16 +187,19 @@ const dpiFor = (layout, longEdge = 950) => {
     return;
   }
 
-  // ---- group the work by theme so each page load covers many layouts
-  const byTheme = new Map();
+  // ---- group by theme + city so one page load covers many layouts without
+  //      walking the map between cities for every single render
+  const jobsByKey = new Map();
   layouts.forEach((layout, index) => {
     const slides = slidesFor(index);
+    const city = cityFor(index);
     if (ONLY_THEME && !slides.includes(ONLY_THEME)) return;
     slides.forEach((theme, step) => {
       if (ONLY_THEME && theme !== ONLY_THEME) return;
       if (ONLY && !ONLY.includes(layout.id)) return;
-      if (!byTheme.has(theme)) byTheme.set(theme, []);
-      byTheme.get(theme).push({ layout, step });
+      const key = `${theme}|${city.city}`;
+      if (!jobsByKey.has(key)) jobsByKey.set(key, { theme, city, jobs: [] });
+      jobsByKey.get(key).jobs.push({ layout, step });
     });
   });
 
@@ -178,16 +207,20 @@ const dpiFor = (layout, longEdge = 950) => {
   let skipped = 0;
   const started = Date.now();
 
-  for (const [theme, jobs] of byTheme) {
+  for (const { theme, city, jobs } of jobsByKey.values()) {
     const queue = LIMIT ? jobs.slice(0, LIMIT) : jobs;
-    await openEditor(page, theme);
+    const pending = FORCE
+      ? queue
+      : queue.filter(({ layout, step }) => {
+          const out = path.join(OUT_DIR, `${layout.id}-${step}.webp`);
+          return !(fs.existsSync(out) && fs.statSync(out).size > 2000);
+        });
+    skipped += queue.length - pending.length;
+    if (pending.length === 0) continue;
+    await openEditor(page, theme, city);
 
-    for (const { layout, step } of queue) {
+    for (const { layout, step } of pending) {
       const out = path.join(OUT_DIR, `${layout.id}-${step}.webp`);
-      if (fs.existsSync(out) && fs.statSync(out).size > 2000) {
-        skipped += 1;
-        continue;
-      }
       await page.evaluate(
         ({ id, widthCm, heightCm }) => {
           window.posterDispatch({ type: "SET_LAYOUT", layoutId: id, widthCm, heightCm });
@@ -195,11 +228,9 @@ const dpiFor = (layout, longEdge = 950) => {
         { id: layout.id, widthCm: layout.widthCm, heightCm: layout.heightCm },
       );
       await page.waitForTimeout(900);
-      await page.evaluate(() => {
-        if (window.map && window.map.getZoom() < 3.5) {
-          window.map.jumpTo({ center: [2.3522, 48.8566], zoom: 11.4 });
-        }
-      });
+      await page.evaluate(({ lon, lat }) => {
+        if (window.map) window.map.jumpTo({ center: [lon, lat], zoom: 11.4 });
+      }, city);
       await page.waitForTimeout(700);
       const png = await exportPng(page, dpiFor(layout));
       await sharp(png)

@@ -30,6 +30,11 @@
   box-sizing: border-box;
 }
 
+/* <picture> only picks a source; the frame styles belong to the image. */
+.cx picture {
+  display: contents;
+}
+
 /* ------------------------------------------------------------------ head */
 
 .cx-head {
@@ -228,6 +233,141 @@
   font-size: 10.5px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------- filters */
+
+.cx-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 14px clamp(16px, 4vw, 48px) 18px;
+  border-top: 1px solid var(--line);
+}
+
+.cx-tools__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cx-search {
+  position: relative;
+  flex: 1 1 260px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 44px;
+  padding: 0 8px 0 15px;
+  background: #fffdf7;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cx-search:focus-within {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(20, 17, 13, 0.06);
+}
+
+.cx-search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+}
+
+.cx-search input::placeholder {
+  color: var(--muted);
+}
+
+.cx-search input::-webkit-search-cancel-button,
+.cx-search input::-webkit-search-decoration {
+  display: none;
+}
+
+.cx-search__clear {
+  padding: 6px 9px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.cx-search__clear:hover {
+  color: var(--ink);
+}
+
+.cx-tools__count {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.cx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.cx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.cx-chip span {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.cx-chip:hover {
+  border-color: var(--line-strong);
+}
+
+.cx-chip[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.cx-chip[aria-pressed="true"] span {
+  color: rgba(245, 239, 226, 0.62);
+}
+
+.cx-empty p {
+  max-width: 52ch;
+  margin: 10px 0 18px;
   color: var(--muted);
 }
 

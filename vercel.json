@@ -71,15 +71,15 @@
   "rewrites": [
     {
       "source": "/layouts",
-      "destination": "/"
+      "destination": "/layouts/index.html"
     },
     {
       "source": "/themes",
-      "destination": "/"
+      "destination": "/themes/index.html"
     },
     {
       "source": "/themes/(.*)",
-      "destination": "/"
+      "destination": "/themes/$1/index.html"
     },
     {
       "source": "/about",

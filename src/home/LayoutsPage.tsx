@@ -22,7 +22,55 @@ const POSTER_SLIDES = [
 const slidesFor = (index: number) =>
   Array.from({ length: 5 }, (_, step) => POSTER_SLIDES[(index + step) % POSTER_SLIDES.length]);
 
-const shotSrc = (layoutId: string, step: number) => `/layout-previews/${layoutId}-${step}.webp`;
+/** One city per layout, in the same order scripts/generate_layout_previews.cjs
+    renders them, so the alt text names the city that is actually in the image. */
+const PREVIEW_CITIES = [
+  "Paris",
+  "Tokyo",
+  "Lisbon",
+  "New York",
+  "Copenhagen",
+  "Barcelona",
+  "Istanbul",
+  "Mexico City",
+  "Cape Town",
+  "Seoul",
+  "Amsterdam",
+  "Stockholm",
+];
+
+const cityFor = (index: number) => PREVIEW_CITIES[index % PREVIEW_CITIES.length];
+
+const shotSrc = (layoutId: string, step: number) => `/layout-previews/${layoutId}-${step}`;
+
+/** Same frame at two widths: 360px for the cards, 720px once the sheet opens it. */
+function Shot({
+  layoutId,
+  step,
+  alt,
+  sizes,
+  eager,
+}: {
+  layoutId: string;
+  step: number;
+  alt: string;
+  sizes: string;
+  eager?: boolean;
+}) {
+  const base = shotSrc(layoutId, step);
+  return (
+    <picture>
+      <source type="image/avif" srcSet={`${base}-360.avif 360w, ${base}.avif 720w`} sizes={sizes} />
+      <img
+        src={`${base}.webp`}
+        alt={alt}
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        draggable={false}
+      />
+    </picture>
+  );
+}
 
 const shapeLabel = (ratio: number) =>
   ratio >= 1 ? `${ratio.toFixed(2)} : 1` : `1 : ${(1 / ratio).toFixed(2)}`;
@@ -50,6 +98,31 @@ export default function LayoutsPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [slide, setSlide] = useState(0);
   const backRef = useRef<HTMLButtonElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const [query, setQuery] = useState("");
+  const [group, setGroup] = useState("all");
+  const needle = query.trim().toLowerCase();
+
+  const sections = useMemo(
+    () =>
+      layoutGroups
+        .filter((entry) => group === "all" || entry.id === group)
+        .map((entry) => ({
+          group: entry,
+          options: needle
+            ? entry.options.filter((layout) =>
+                `${layout.name} ${layout.description} ${entry.name} ${layout.width} × ${layout.height} ${layout.unit}`
+                  .toLowerCase()
+                  .includes(needle),
+              )
+            : entry.options,
+        }))
+        .filter((section) => section.options.length > 0),
+    [group, needle],
+  );
+  const shown = sections.reduce((count, section) => count + section.options.length, 0);
+  const filtering = needle.length > 0 || group !== "all";
 
   const activeIndex = activeId ? (indexById.get(activeId) ?? -1) : -1;
   const active = activeIndex >= 0 ? entries[activeIndex] : null;
@@ -70,6 +143,12 @@ export default function LayoutsPage() {
     },
     [activeIndex, entries],
   );
+
+  const reset = useCallback(() => {
+    setQuery("");
+    setGroup("all");
+    searchRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     document.title = "Map poster, wallpaper and web layouts — MAPARTE";
@@ -154,18 +233,81 @@ export default function LayoutsPage() {
           </div>
         </section>
 
-        {layoutGroups.map((group) => (
-          <section className="cx-sec" key={group.id} aria-labelledby={`group-${group.id}`}>
+        <section className="cx-tools" aria-label="Find a layout">
+          <div className="cx-tools__row">
+            <div className="cx-search">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+                <path d="m16.5 16.5 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+              <input
+                ref={searchRef}
+                id="layout-search"
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search a size, a shape or a name — A3, story, ultrawide…"
+                aria-label="Search layouts"
+                autoComplete="off"
+              />
+              {query && (
+                <button type="button" className="cx-search__clear" onClick={() => setQuery("")}>
+                  Clear<span aria-hidden="true"> ×</span>
+                </button>
+              )}
+            </div>
+            <p className="cx-tools__count" aria-live="polite">
+              {filtering ? `${shown} of ${total} layouts` : `${total} layouts`}
+            </p>
+          </div>
+          <div className="cx-chips" role="group" aria-label="Filter by group">
+            <button
+              type="button"
+              className="cx-chip"
+              aria-pressed={group === "all"}
+              onClick={() => setGroup("all")}
+            >
+              All <span>{total}</span>
+            </button>
+            {layoutGroups.map((entry) => (
+              <button
+                type="button"
+                key={entry.id}
+                className="cx-chip"
+                aria-pressed={group === entry.id}
+                onClick={() => setGroup(entry.id)}
+              >
+                {entry.name} <span>{entry.options.length}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {sections.length === 0 && (
+          <section className="cx-sec cx-empty" aria-live="polite">
+            <h2 className="cx-sec__title">Nothing matches “{query.trim()}”.</h2>
+            <p>
+              Try a paper size (A4, 24 × 36), a shape (square, story, circle) or a kind of screen
+              (phone, desktop).
+            </p>
+            <button type="button" className="cx-btn cx-btn--ghost" onClick={reset}>
+              Show all {total} layouts
+            </button>
+          </section>
+        )}
+
+        {sections.map(({ group: entry, options }) => (
+          <section className="cx-sec" key={entry.id} aria-labelledby={`group-${entry.id}`}>
             <div className="cx-sec__head">
-              <h2 className="cx-sec__title" id={`group-${group.id}`}>
-                {group.name}
+              <h2 className="cx-sec__title" id={`group-${entry.id}`}>
+                {entry.name}
               </h2>
               <span className="cx-sec__count">
-                {group.options.length} {group.options.length === 1 ? "layout" : "layouts"}
+                {options.length} {options.length === 1 ? "layout" : "layouts"}
               </span>
             </div>
             <div className="cx-grid">
-              {group.options.map((layout) => {
+              {options.map((layout) => {
                 const index = indexById.get(layout.id) ?? 0;
                 const first = slidesFor(index)[0];
                 const size =
@@ -185,16 +327,16 @@ export default function LayoutsPage() {
                         className="cx-card__frame"
                         style={frameStyle(clampRatio(layout.widthCm, layout.heightCm))}
                       >
-                        <img
-                          src={shotSrc(layout.id, 0)}
-                          alt={`Paris street map in the ${first.theme} theme, set in the ${layout.name} layout`}
-                          loading="lazy"
-                          decoding="async"
+                        <Shot
+                          layoutId={layout.id}
+                          step={0}
+                          alt={`${cityFor(index)} street map in the ${first.theme} theme, set in the ${layout.name} layout`}
+                          sizes="(min-width: 1100px) 240px, (min-width: 620px) 30vw, 42vw"
                         />
                       </span>
                     </span>
                     <span className="cx-card__meta">
-                      {group.name} · {size}
+                      {entry.name} · {size}
                     </span>
                     <span className="cx-card__name">{layout.name}</span>
                     <span className="cx-card__note">{layout.description}</span>
@@ -233,10 +375,12 @@ export default function LayoutsPage() {
                   className="cx-stage__frame"
                   style={frameStyle(clampRatio(active.layout.widthCm, active.layout.heightCm))}
                 >
-                  <img
-                    key={slides[slide].id}
-                    src={shotSrc(active.layout.id, slide)}
-                    alt={`Paris street map in the ${slides[slide].theme} theme, set in the ${active.layout.name} layout`}
+                  <Shot
+                    layoutId={active.layout.id}
+                    step={slide}
+                    eager
+                    alt={`${cityFor(activeIndex)} street map in the ${slides[slide].theme} theme, set in the ${active.layout.name} layout`}
+                    sizes="(min-width: 880px) 55vw, 88vw"
                   />
                 </span>
               </div>
