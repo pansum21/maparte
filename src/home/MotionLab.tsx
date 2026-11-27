@@ -55,19 +55,61 @@ function art(start: number, count = 20): Poster[] {
 
 function PosterArt({ poster, className = "" }: { poster: Poster; className?: string }) {
   return (
-    <img
-      className={`ml-photo ${className}`}
-      src={poster.src}
-      alt={`${poster.city} print in ${poster.theme}`}
-      draggable={false}
-      loading="lazy"
-    />
+    <span className="ml-photo-frame">
+      <img
+        className={`ml-photo ${className}`}
+        src={poster.src}
+        alt={`${poster.city} print in ${poster.theme}`}
+        draggable={false}
+        loading="lazy"
+      />
+    </span>
   );
 }
 
-function useCard(ref: React.RefObject<HTMLElement | null>) {
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  return scrollYProgress;
+function useGalleryProgress(section: React.RefObject<HTMLElement | null>, pin: React.RefObject<HTMLElement | null>, reduced: boolean) {
+  const { scrollYProgress } = useScroll({ target: section, offset: ["start start", "end end"] });
+  const progress = useMotionValue(0);
+  const previousScroll = useRef<number | null>(null);
+  const scrollRemainder = useRef(0);
+  const lastManualScroll = useRef(0);
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    const element = pin.current;
+    if (!element || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => setIsActive(entry.isIntersecting), { threshold: 0.55 });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [pin]);
+
+  useMotionValueEvent(scrollYProgress, "change", (value) => {
+    const previous = previousScroll.current;
+    previousScroll.current = value;
+    if (previous === null) return;
+    const delta = value - previous;
+    if (Math.abs(delta) < 0.0001) return;
+
+    lastManualScroll.current = Date.now();
+    scrollRemainder.current += delta * 24;
+    const steps = Math.trunc(scrollRemainder.current);
+    if (steps === 0) return;
+    scrollRemainder.current -= steps;
+    const next = (Math.round(progress.get() * 19) + steps + 20) % 20;
+    progress.set(next / 19);
+  });
+
+  useEffect(() => {
+    if (!isActive || reduced) return;
+    const timer = window.setInterval(() => {
+      if (document.hidden || Date.now() - lastManualScroll.current < 550) return;
+      const next = (Math.round(progress.get() * 19) + 1) % 20;
+      progress.set(next / 19);
+    }, 1500);
+    return () => window.clearInterval(timer);
+  }, [isActive, progress, reduced]);
+
+  return progress;
 }
 
 /** Turns a 0–1 scroll window into the poster the part is currently showing. */
@@ -893,13 +935,14 @@ const PARTS: Part[] = [
 
 function PartSection({ part, index, total }: { part: Part; index: number; total: number }) {
   const ref = useRef<HTMLElement>(null);
-  const progress = useCard(ref);
+  const pinRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+  const progress = useGalleryProgress(ref, pinRef, Boolean(reduced));
   const number = String(index + 1).padStart(2, "0");
 
   return (
     <section className="rl-part" ref={ref} id={`part-${part.id}`} aria-label={part.name}>
-      <div className="rl-pin">
+      <div className="rl-pin" ref={pinRef}>
         <header className="rl-head">
           <span className="rl-count">
             {number} <i>/ {total}</i>
@@ -1011,3 +1054,4 @@ export default function MotionLab({ embedded = false }: { embedded?: boolean }) 
     </div>
   );
 }
+
