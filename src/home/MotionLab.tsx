@@ -274,11 +274,11 @@ function CoverFlow({ progress }: PartProps) {
             key={poster.src}
             className="ml-card ml-card--flow"
             animate={{
-              x: offset * 58,
+              x: `${offset * 68}%`,
               z: reduced ? 0 : -depth * 90,
               rotateY: reduced ? 0 : offset * -26,
-              scale: Math.max(0.78, 1 - depth * 0.08),
-              opacity: depth > 2 ? 0 : 1,
+              scale: Math.max(0.76, 1 - depth * 0.12),
+              opacity: depth > 1 ? 0 : 1,
               zIndex: 10 - Math.round(depth),
             }}
             transition={{ type: "spring", stiffness: 150, damping: 20 }}
@@ -323,7 +323,7 @@ function WheelCarousel({ progress }: PartProps) {
         let offset = index - active;
         if (offset > posters.length / 2) offset -= posters.length;
         if (offset < -posters.length / 2) offset += posters.length;
-        const angle = offset * 8;
+        const angle = offset * 6;
         return (
           <motion.div
             key={poster.src}
@@ -383,11 +383,11 @@ function CurvedArc({ progress }: PartProps) {
             key={poster.src}
             className="ml-card ml-card--arc"
             animate={{
-              rotate: offset * 10,
-              x: offset * 40,
-              y: Math.abs(offset) * 9,
+              rotate: offset * 8,
+              x: `${offset * 58}%`,
+              y: Math.abs(offset) * 8,
               scale: 1 - Math.min(distance, 4) * 0.07,
-              opacity: distance > 4 ? 0 : 1,
+              opacity: distance > 2 ? 0 : 1,
               zIndex: 20 - distance,
             }}
             transition={{ type: "spring", stiffness: 150, damping: 20 }}
@@ -411,11 +411,11 @@ function ChainedSpringArc({ progress }: PartProps) {
       if (offset < -posters.length / 2) offset += posters.length;
       const distance = Math.abs(offset);
       return <motion.div key={poster.src} className="ml-card ml-card--chain" animate={{
-        x: offset * 34,
-        y: distance * 13 + offset * offset * 1.5,
-        rotate: offset * 7,
-        scale: 1 - Math.min(distance, 5) * 0.055,
-        opacity: distance > 4 ? 0 : 1,
+        x: `${offset * 72}%`,
+        y: distance * 11 + offset * offset * 1.2,
+        rotate: offset * 5,
+        scale: 1 - Math.min(distance, 3) * 0.06,
+        opacity: distance > 2 ? 0 : 1,
         zIndex: 20 - distance,
       }} transition={{ type: "spring", stiffness: 95, damping: 17, mass: 0.8 }}><PosterArt poster={poster} /></motion.div>;
     })}
@@ -425,14 +425,34 @@ function ChainedSpringArc({ progress }: PartProps) {
 /** A true perspective carousel with the print ring turning as the page moves. */
 function CurvedCarousel3D({ progress }: PartProps) {
   const posters = art(20);
-  const rotation = useTransform(progress, [0, 1], [0, -360]);
-  return <div className="ml-stage ml-curved-3d">
-    <motion.div className="ml-curved-3d__ring" style={{ rotateY: rotation }}>
-      {posters.map((poster, index) => <div key={poster.src} className="ml-curved-3d__slot" style={{
-        transform: `rotateY(${index * (360 / posters.length)}deg) translateZ(270px)`,
-      }}><PosterArt poster={poster} /></div>)}
-    </motion.div>
-  </div>;
+  const active = useScrollIndex(progress, posters.length);
+  return (
+    <div className="ml-stage ml-curved-3d">
+      {posters.map((poster, index) => {
+        let offset = index - active;
+        if (offset > posters.length / 2) offset -= posters.length;
+        if (offset < -posters.length / 2) offset += posters.length;
+        const distance = Math.abs(offset);
+        return (
+          <motion.div
+            key={poster.src}
+            className="ml-curved-3d__slot"
+            animate={{
+              x: `${offset * 82}%`,
+              rotateY: offset * -28,
+              scale: offset === 0 ? 1 : 0.82,
+              z: -distance * 48,
+              opacity: distance > 1 ? 0 : 1,
+              zIndex: 20 - distance,
+            }}
+            transition={{ type: "spring", stiffness: 150, damping: 22 }}
+          >
+            <PosterArt poster={poster} />
+          </motion.div>
+        );
+      })}
+    </div>
+  );
 }
 
 function FrostedFolderLookbook({ progress }: PartProps) {
@@ -506,31 +526,26 @@ function ScrollStackingCards({ progress }: PartProps) {
   );
 }
 
-function OrbitCard({ poster, spin }: { poster: Poster; spin: MotionValue<number> }) {
-  const counter = useTransform(spin, (value) => -value);
-  return (
-    <motion.div className="ml-card ml-card--orbit" style={{ rotate: counter }}>
-      <PosterArt poster={poster} />
-    </motion.div>
-  );
-}
-
 function WorksWheel({ progress }: PartProps) {
   const posters = art(12);
-  const spin = useTransform(progress, [0, 1], [0, 300]);
+  const active = useScrollIndex(progress, posters.length);
   return (
     <div className="ml-stage ml-orbit">
-      <motion.div className="ml-orbit__ring" style={{ rotate: spin }}>
-        {posters.map((poster, index) => (
-          <div
-            key={poster.src}
-            className="ml-orbit__slot"
-            style={{ transform: `rotate(${(360 / posters.length) * index}deg) translateY(-235px)` }}
-          >
-            <OrbitCard poster={poster} spin={spin} />
-          </div>
-        ))}
-      </motion.div>
+      {posters.map((poster, index) => {
+        let offset = index - active;
+        if (offset > posters.length / 2) offset -= posters.length;
+        if (offset < -posters.length / 2) offset += posters.length;
+        const distance = Math.abs(offset);
+        return <motion.div key={poster.src} className="ml-card ml-card--orbit" animate={{
+          x: `${offset * 68}%`,
+          scale: offset === 0 ? 1 : 0.84,
+          rotate: offset * -4,
+          opacity: distance > 1 ? 0 : 1,
+          zIndex: 20 - distance,
+        }} transition={{ type: "spring", stiffness: 145, damping: 20 }}>
+          <PosterArt poster={poster} />
+        </motion.div>;
+      })}
       <span className="ml-orbit__glow" />
     </div>
   );
@@ -552,7 +567,7 @@ function WarpCarousel({ progress }: PartProps) {
             key={poster.src}
             className="ml-card ml-card--warp"
             animate={{
-              x: offset * 34,
+        x: `${offset * 64}%`,
               y: offset * -18,
               rotate: offset * -6,
               skewY: offset * -3,
@@ -622,43 +637,6 @@ function GlassyCoverflow({ progress }: PartProps) {
   );
 }
 
-/** aloksivastava1025/cue-3d-book-carousel-reading-mode — an open book that turns. */
-function BookPage({
-  poster,
-  turn,
-  index,
-}: {
-  poster: Poster;
-  turn: MotionValue<number>;
-  index: number;
-}) {
-  const rotateY = useTransform(turn, (value) => -Math.min(180, Math.max(0, value - index * 180)));
-  return (
-    <motion.div className="ml-book__page" style={{ rotateY, zIndex: 20 - index }}>
-      <PosterArt poster={poster} />
-      <span className="ml-book__fold" />
-    </motion.div>
-  );
-}
-
-function BookCarousel({ progress }: PartProps) {
-  const posters = art(16);
-  const turn = useTransform(progress, [0, 1], [0, (posters.length - 1) * 180]);
-  return (
-    <div className="ml-stage ml-book">
-      <div className="ml-book__shell">
-        <span className="ml-book__turned ml-book__turned--1" aria-hidden />
-        <span className="ml-book__turned ml-book__turned--2" aria-hidden />
-        {posters.map((poster, index) => (
-          <BookPage key={poster.src} poster={poster} turn={turn} index={index} />
-        ))}
-        <span className="ml-book__spine" />
-      </div>
-      <span className="ml-book__shadow" />
-    </div>
-  );
-}
-
 /** Flipping Website Screenshot Deck — one full print flips per scroll step. */
 function ScreenshotFlipDeck({ progress }: PartProps) {
   const posters = art(17);
@@ -680,17 +658,21 @@ function GlassFolderCards({ progress }: PartProps) {
   return (
     <div className="ml-stage ml-folders">
       {posters.map((poster, index) => {
-        const lift = index === active ? 0 : index < active ? -1 : 1;
+        let offset = index - active;
+        if (offset > posters.length / 2) offset -= posters.length;
+        if (offset < -posters.length / 2) offset += posters.length;
+        const distance = Math.abs(offset);
         return (
           <motion.div
             key={poster.src}
             className="ml-folder"
             animate={{
-              y: index * -9 + (index === active ? -18 : 0),
-              scale: index === active ? 1 : 0.95,
-              rotate: lift * 1.4,
-              zIndex: index === active ? 9 : 4 - index,
-              opacity: index === active ? 1 : 0.88,
+              x: `${offset * 58}%`,
+              y: distance * 12 + (offset === 0 ? -8 : 0),
+              scale: offset === 0 ? 1 : 0.86,
+              rotate: offset * 1.4,
+              zIndex: 20 - distance,
+              opacity: distance > 2 ? 0 : 1,
             }}
             transition={{ type: "spring", stiffness: 150, damping: 22 }}
           >
@@ -741,20 +723,32 @@ function EditorialCollage({ progress }: PartProps) {
 /** cult-ui/3d-carousel — a drum of posters turning around the viewer. */
 function DrumCarousel({ progress }: PartProps) {
   const posters = art(2);
-  const angle = useTransform(progress, [0, 1], [0, 360]);
+  const active = useScrollIndex(progress, posters.length);
   return (
     <div className="ml-stage ml-drum">
-      <motion.div className="ml-drum__ring" style={{ rotateY: angle }}>
-        {posters.map((poster, index) => (
-          <span
+      {posters.map((poster, index) => {
+        let offset = index - active;
+        if (offset > posters.length / 2) offset -= posters.length;
+        if (offset < -posters.length / 2) offset += posters.length;
+        const distance = Math.abs(offset);
+        return (
+          <motion.div
             key={poster.src}
             className="ml-drum__slot"
-            style={{ transform: `rotateY(${index * (360 / posters.length)}deg) translateZ(330px)` }}
+            animate={{
+              x: `${offset * 72}%`,
+              rotateY: offset * -24,
+              scale: offset === 0 ? 1 : 0.84,
+              z: -distance * 36,
+              opacity: distance > 2 ? 0 : 1,
+              zIndex: 20 - distance,
+            }}
+            transition={{ type: "spring", stiffness: 150, damping: 22 }}
           >
             <PosterArt poster={poster} />
-          </span>
-        ))}
-      </motion.div>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
@@ -764,6 +758,7 @@ function DrumCarousel({ progress }: PartProps) {
 type Part = {
   id: string;
   name: string;
+  slot?: number;
   origin: string;
   note: string;
   render: (props: PartProps) => ReactNode;
@@ -802,7 +797,7 @@ const PARTS: Part[] = [
     id: "coverflow",
     name: "Cover flow",
     origin: "louisstudios",
-    note: "The classic shelf: side prints rotate away in perspective as the middle one takes the light.",
+    note: "The active print takes the centre while one neighbour on each side turns away in perspective.",
     render: (props) => <CoverFlow {...props} />,
   },
   {
@@ -876,14 +871,8 @@ const PARTS: Part[] = [
     render: (props) => <GlassyCoverflow {...props} />,
   },
   {
-    id: "book",
-    name: "3D book carousel",
-    origin: "aloksivastava1025",
-    note: "An open book whose right-hand pages turn one after another with the scroll.",
-    render: (props) => <BookCarousel {...props} />,
-  },
-  {
     id: "journal",
+    slot: 17,
     name: "Flipping Website Screenshot Deck",
     origin: "21st.dev bookmark",
     note: "A full-frame print flips like a website screenshot deck, advancing through the whole collection with the page.",
@@ -891,6 +880,7 @@ const PARTS: Part[] = [
   },
   {
     id: "folders",
+    slot: 18,
     name: "Glass folder cards",
     origin: "kedhareswer",
     note: "Tabbed folder cards stacked in glass; the open one lifts clear of the pile.",
@@ -898,6 +888,7 @@ const PARTS: Part[] = [
   },
   {
     id: "collage",
+    slot: 19,
     name: "Editorial collage hero",
     origin: "felipemenezes098",
     note: "Four prints pinned like a magazine layout, sliding against each other in layers.",
@@ -905,13 +896,15 @@ const PARTS: Part[] = [
   },
   {
     id: "drum",
+    slot: 20,
     name: "3D Carousel",
     origin: "cult-ui",
-    note: "Twenty prints turn around the viewer in a 3D drum as you scroll.",
+    note: "Full portrait prints travel side to side across a wide, shallow 3D stage.",
     render: (props) => <DrumCarousel {...props} />,
   },
   {
     id: "chain-arc",
+    slot: 21,
     name: "Chained Spring Arc Carousel",
     origin: "21st.dev bookmark",
     note: "A linked spring motion carries each print along a gentle arc as the active one changes.",
@@ -919,19 +912,22 @@ const PARTS: Part[] = [
   },
   {
     id: "curved-3d",
+    slot: 22,
     name: "3D Curved Carousel",
     origin: "kedhareswer",
-    note: "A curved ring of MapArte prints turns in perspective through a full revolution as you scroll.",
+    note: "A large portrait print stays in the centre as its neighbours bend away in perspective.",
     render: (props) => <CurvedCarousel3D {...props} />,
   },
 ];
+
+const PART_SLOT_COUNT = 22;
 
 function PartSection({ part, index, total }: { part: Part; index: number; total: number }) {
   const ref = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const progress = useGalleryProgress(ref, pinRef, Boolean(reduced));
-  const number = String(index + 1).padStart(2, "0");
+  const number = String(part.slot ?? index + 1).padStart(2, "0");
 
   return (
     <section className="rl-part" ref={ref} id={`part-${part.id}`} aria-label={part.name}>
@@ -946,7 +942,7 @@ function PartSection({ part, index, total }: { part: Part; index: number; total:
           </div>
         </header>
 
-        <div className={`rl-stage${reduced ? " is-still" : ""}`}>{part.render({ progress })}</div>
+        <div className={`rl-stage rl-stage--${part.id}${reduced ? " is-still" : ""}`}>{part.render({ progress })}</div>
 
         <footer className="rl-foot">
           <span className="rl-origin">@{part.origin}</span>
@@ -1022,7 +1018,7 @@ export default function MotionLab({ embedded = false }: { embedded?: boolean }) 
             {PARTS.map((part, index) => (
               <li key={part.id}>
                 <button type="button" onClick={() => goTo(part.id)}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <span>{String(part.slot ?? index + 1).padStart(2, "0")}</span>
                   {part.name}
                   <i>@{part.origin}</i>
                 </button>
@@ -1033,7 +1029,7 @@ export default function MotionLab({ embedded = false }: { embedded?: boolean }) 
       </header>
 
       {PARTS.map((part, index) => (
-        <PartSection key={part.id} part={part} index={index} total={PARTS.length} />
+        <PartSection key={part.id} part={part} index={index} total={PART_SLOT_COUNT} />
       ))}
 
       <footer className="rl-outro">

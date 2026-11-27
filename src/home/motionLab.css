@@ -260,9 +260,31 @@ html:has(.rl-page) {
   position: relative;
   align-self: center;
   justify-self: center;
-  width: min(64vh, 34vw, 500px);
+  width: min(64vh, 44vw, 680px);
   aspect-ratio: 4 / 5;
   margin: 12px 0;
+}
+
+.rl-stage--elastic,
+.rl-stage--drum {
+  width: min(84vw, 76vh, 760px);
+  aspect-ratio: 16 / 10;
+}
+
+.rl-stage--orbit,
+.rl-stage--warp {
+  width: min(76vh, 54vw, 760px);
+  aspect-ratio: 16 / 10;
+}
+
+.rl-stage--collage,
+.rl-stage--rail {
+  width: min(72vh, 50vw, 700px);
+}
+
+.rl-stage--curved-3d {
+  width: min(72vh, 48vw, 700px);
+  aspect-ratio: 4 / 5;
 }
 
 .rl-foot {
@@ -466,10 +488,10 @@ html:has(.rl-page) {
 }
 
 .ml-card--flow {
-  width: 50%;
-  height: 66%;
-  margin-left: -25%;
-  margin-top: -33%;
+  width: 70%;
+  height: 80%;
+  margin-left: -35%;
+  margin-top: -40%;
 }
 
 /* elastic ------------------------------------------------------------ */
@@ -477,8 +499,8 @@ html:has(.rl-page) {
 .ml-elastic {
   display: flex;
   align-items: stretch;
-  gap: 4px;
-  padding: 4% 3%;
+  gap: 3px;
+  padding: 1.5%;
 }
 
 .ml-elastic__column {
@@ -499,10 +521,10 @@ html:has(.rl-page) {
 /* wheel -------------------------------------------------------------- */
 
 .ml-wheel .ml-card--wheel {
-  width: 46%;
-  height: 58%;
-  margin-left: -23%;
-  margin-top: -29%;
+  width: 56%;
+  height: 48%;
+  margin-left: -28%;
+  margin-top: -24%;
   transform-origin: 50% 148%;
 }
 
@@ -526,9 +548,9 @@ html:has(.rl-page) {
 .ml-rail__hang {
   position: absolute;
   top: 13%;
-  width: 33%;
-  height: 58%;
-  left: 33.5%;
+  width: 40%;
+  height: 64%;
+  left: 30%;
   transform-origin: 50% -6%;
 }
 
@@ -557,10 +579,10 @@ html:has(.rl-page) {
 /* arc ---------------------------------------------------------------- */
 
 .ml-arc .ml-card--arc {
-  width: 44%;
-  height: 50%;
-  margin-left: -22%;
-  margin-top: -25%;
+  width: 56%;
+  height: 66%;
+  margin-left: -28%;
+  margin-top: -33%;
   transform-origin: 50% 118%;
 }
 
@@ -673,6 +695,13 @@ html:has(.rl-page) {
   place-items: center;
 }
 
+.ml-orbit .ml-card--orbit {
+  width: 50%;
+  height: 72%;
+  margin-left: -25%;
+  margin-top: -36%;
+}
+
 .ml-orbit__ring {
   position: relative;
   width: 0;
@@ -711,10 +740,10 @@ html:has(.rl-page) {
 }
 
 .ml-card--warp {
-  width: 56%;
-  height: 68%;
-  margin-left: -28%;
-  margin-top: -34%;
+  width: 72%;
+  height: 86%;
+  margin-left: -36%;
+  margin-top: -43%;
 }
 
 /* dither helix ------------------------------------------------------- */
@@ -794,74 +823,6 @@ html:has(.rl-page) {
 
 /* book --------------------------------------------------------------- */
 
-.ml-book {
-  perspective: 1500px;
-}
-
-.ml-book__shell {
-  position: relative;
-  width: 50%;
-  height: 72%;
-  margin-left: 24%;
-  transform-style: preserve-3d;
-  transform: rotateX(8deg) rotateY(-14deg);
-}
-
-/* The pages already read, lying open to the left of the spine. */
-.ml-book__turned {
-  position: absolute;
-  right: 99%;
-  top: 1.5%;
-  bottom: 1.5%;
-  width: 96%;
-  border-radius: 3px 1px 1px 3px;
-  background: #f7f2e7;
-  box-shadow: inset -14px 0 18px -12px rgba(23, 20, 15, 0.35), 0 12px 26px rgba(23, 20, 15, 0.14);
-  transform-origin: 100% 50%;
-}
-
-.ml-book__turned--1 { transform: rotateY(14deg); }
-.ml-book__turned--2 { transform: translateX(-3%) rotateY(9deg); }
-
-.ml-book__page {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: 2px 4px 4px 2px;
-  background: #f7f2e7;
-  transform-origin: 0% 50%;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  box-shadow: 0 16px 32px rgba(23, 20, 15, 0.24);
-}
-
-.ml-book__fold {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 12%;
-  background: linear-gradient(90deg, rgba(23, 20, 15, 0.28), transparent);
-  pointer-events: none;
-}
-
-.ml-book__spine {
-  position: absolute;
-  left: -1px;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: linear-gradient(90deg, rgba(23, 20, 15, 0.35), rgba(23, 20, 15, 0.05));
-}
-
-.ml-book__shadow {
-  position: absolute;
-  bottom: 16%;
-  width: 52%;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(23, 20, 15, 0.2);
-  filter: blur(12px);
-}
-
 /* journal spread ----------------------------------------------------- */
 
 .ml-journal {
@@ -927,10 +888,10 @@ html:has(.rl-page) {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 60%;
-  height: 64%;
-  margin-left: -30%;
-  margin-top: -34%;
+  width: 74%;
+  height: 74%;
+  margin-left: -37%;
+  margin-top: -39%;
   transform-style: preserve-3d;
 }
 
@@ -972,33 +933,33 @@ html:has(.rl-page) {
 
 .ml-collage__tile--0 {
   left: 0;
-  top: 8%;
-  width: 46%;
-  height: 54%;
+  top: 5%;
+  width: 49%;
+  height: 58%;
   transform: rotate(-3.4deg);
 }
 
 .ml-collage__tile--1 {
   right: 0;
   top: 0;
-  width: 42%;
-  height: 50%;
+  width: 47%;
+  height: 56%;
   transform: rotate(2.6deg);
 }
 
 .ml-collage__tile--2 {
-  left: 8%;
-  bottom: 4%;
-  width: 44%;
-  height: 50%;
+  left: 4%;
+  bottom: 1%;
+  width: 48%;
+  height: 56%;
   transform: rotate(1.8deg);
 }
 
 .ml-collage__tile--3 {
-  right: 4%;
+  right: 2%;
   bottom: 0;
-  width: 40%;
-  height: 46%;
+  width: 47%;
+  height: 54%;
   transform: rotate(-2.2deg);
 }
 
@@ -1012,10 +973,10 @@ html:has(.rl-page) {
 }
 
 .ml-chain-arc .ml-card--chain {
-  width: 44%;
-  height: 54%;
-  margin-left: -22%;
-  margin-top: -27%;
+  width: 62%;
+  height: 74%;
+  margin-left: -31%;
+  margin-top: -37%;
   transform-origin: 50% 118%;
 }
 
@@ -1024,23 +985,21 @@ html:has(.rl-page) {
   transform-style: preserve-3d;
 }
 
-.ml-curved-3d__ring {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-}
-
 .ml-curved-3d__slot {
   position: absolute;
-  left: 34%;
-  top: 26%;
-  width: 32%;
-  height: 48%;
+  left: 50%;
+  top: 50%;
+  width: 58%;
+  aspect-ratio: 1268 / 1788;
+  height: auto;
+  margin-left: -29%;
+  margin-top: -40.9%;
   overflow: hidden;
-  border: 5px solid #f7f3eb;
+  border: 0;
   border-radius: 3px;
   box-shadow: 0 16px 34px rgba(23, 20, 15, 0.24);
   backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
 /* drum --------------------------------------------------------------- */
@@ -1050,25 +1009,20 @@ html:has(.rl-page) {
   transform-style: preserve-3d;
 }
 
-.ml-drum__ring {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  transform: rotateX(-4deg);
-}
-
 .ml-drum__slot {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 23%;
-  height: 52%;
-  margin-left: -11.5%;
-  margin-top: -26%;
+  width: 38%;
+  aspect-ratio: 1268 / 1788;
+  height: auto;
+  margin-left: -19%;
+  margin-top: -26.8%;
   overflow: hidden;
   border-radius: 2px;
   box-shadow: 0 14px 30px rgba(23, 20, 15, 0.22);
   backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
 /* ------------------------------------------------------------------ narrow */
@@ -1100,7 +1054,24 @@ html:has(.rl-page) {
   }
 
   .rl-stage {
-    width: min(78vw, 58vh, 360px);
+    width: min(90vw, 64vh, 520px);
+  }
+
+  .rl-stage--elastic,
+  .rl-stage--orbit,
+  .rl-stage--warp,
+  .rl-stage--drum {
+    width: min(94vw, 70vh, 600px);
+    aspect-ratio: 16 / 10;
+  }
+
+  .rl-stage--collage,
+  .rl-stage--rail {
+    width: min(90vw, 64vh, 520px);
+  }
+
+  .rl-stage--drum {
+    width: min(94vw, 70vh, 600px);
   }
 
   .rl-foot {
@@ -1126,14 +1097,15 @@ html:has(.rl-page) {
   }
 
   .ml-curved-3d__slot {
-    left: 36%;
-    width: 28%;
-    transform-origin: 50% 50%;
+    width: 70%;
+    margin-left: -35%;
+    margin-top: -49.3%;
   }
 
   .ml-drum__slot {
-    width: 28%;
-    margin-left: -14%;
+    width: 46%;
+    margin-left: -23%;
+    margin-top: -32.4%;
   }
 
   .ml-helix__slot {
