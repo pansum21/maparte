@@ -73,15 +73,6 @@ function useGalleryProgress(section: React.RefObject<HTMLElement | null>, pin: R
   const previousScroll = useRef<number | null>(null);
   const scrollRemainder = useRef(0);
   const lastManualScroll = useRef(0);
-  const [isActive, setIsActive] = useState(false);
-
-  useEffect(() => {
-    const element = pin.current;
-    if (!element || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(([entry]) => setIsActive(entry.isIntersecting), { threshold: 0.55 });
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [pin]);
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     const previous = previousScroll.current;
@@ -100,14 +91,16 @@ function useGalleryProgress(section: React.RefObject<HTMLElement | null>, pin: R
   });
 
   useEffect(() => {
-    if (!isActive || reduced) return;
     const timer = window.setInterval(() => {
-      if (document.hidden || Date.now() - lastManualScroll.current < 550) return;
+      const element = pin.current;
+      const bounds = element?.getBoundingClientRect();
+      const onScreen = bounds && bounds.top < window.innerHeight * 0.55 && bounds.bottom > window.innerHeight * 0.45;
+      if (!onScreen || document.hidden || Date.now() - lastManualScroll.current < 550) return;
       const next = (Math.round(progress.get() * 19) + 1) % 20;
       progress.set(next / 19);
-    }, 1500);
+    }, reduced ? 2600 : 1500);
     return () => window.clearInterval(timer);
-  }, [isActive, progress, reduced]);
+  }, [pin, progress, reduced]);
 
   return progress;
 }
