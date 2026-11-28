@@ -74,7 +74,7 @@ export default function ThemeCard({
       ) : (
         <img
           className="theme-card-map-image"
-          src={`/theme-previews/${themeOption.id}.webp`}
+          src={`/theme-previews/thumbs/${themeOption.id}.webp`}
           alt=""
           loading="lazy"
           decoding="async"
