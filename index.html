@@ -311,8 +311,9 @@
       });
     </script>
 
-    <!-- Google tag (gtag.js) - GA4 Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M71BCP33S2"></script>
+    <!-- Google tag (gtag.js) - GA4 Analytics. The tag script itself is fetched
+         by the deferred loader at the end of the body. -->
+
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
@@ -320,12 +321,7 @@
       gtag("config", "G-M71BCP33S2", { anonymize_ip: true });
     </script>
 
-    <!-- Google AdSense -->
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6768042074394876"
-      crossorigin="anonymous"
-    ></script>
+    <!-- Google AdSense is fetched by the deferred loader below. -->
   </head>
   <body>
     <div id="root"></div>
@@ -336,7 +332,45 @@
       </div>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>
-    <script src="https://analytics.ahrefs.com/analytics.js" data-key="Cf1lOo2F55JuFqr/0XxKcg" defer></script>
+    <script>
+      // Analytics and ads wait for the load event plus an idle slot. On a slow
+      // phone their ~440 KB competed with the app bundle for a 1.6 Mbps link.
+      (function () {
+        var started = false;
+        var tags = [
+          { src: "https://www.googletagmanager.com/gtag/js?id=G-M71BCP33S2" },
+          {
+            src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6768042074394876",
+            attrs: { crossorigin: "anonymous" },
+          },
+          {
+            src: "https://analytics.ahrefs.com/analytics.js",
+            attrs: { "data-key": "Cf1lOo2F55JuFqr/0XxKcg" },
+          },
+        ];
+        function load() {
+          if (started) return;
+          started = true;
+          tags.forEach(function (tag) {
+            var script = document.createElement("script");
+            script.async = true;
+            script.src = tag.src;
+            if (tag.attrs) {
+              Object.keys(tag.attrs).forEach(function (key) {
+                script.setAttribute(key, tag.attrs[key]);
+              });
+            }
+            document.head.appendChild(script);
+          });
+        }
+        if (document.readyState === "complete") load();
+        else
+          window.addEventListener("load", function () {
+            if ("requestIdleCallback" in window) window.requestIdleCallback(load, { timeout: 3000 });
+            else window.setTimeout(load, 1500);
+          });
+      })();
+    </script>
     <!-- Adsterra Social Bar Ad Unit -->
     <!-- Adsterra Social Bar disabled on Maparte to preserve full canvas UX -->
   </body>

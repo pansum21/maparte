@@ -19,6 +19,11 @@ import "@fontsource/ibm-plex-mono/400.css";
 
 import "./styles/index.css";
 
+// The gallery shells paint their hero from static HTML, so the collection
+// styles belong to the entry CSS rather than a route chunk. Their fonts stay
+// with the route: the full font-family sheet is 400 KB of render-blocking CSS.
+import "@/home/collections.css";
+
 const syncDisplayMode = () => {
   const isStandalone =
     isNativePlatform() ||

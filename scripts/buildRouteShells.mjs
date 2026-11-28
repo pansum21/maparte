@@ -36,6 +36,36 @@ const themes = {
   ...JSON.parse(readFileSync(join(root, "src/data/additional_themes.json"), "utf8")).themes,
 };
 const themeIds = Object.keys(themes);
+const layoutGroupCount = layouts.categories.length;
+
+/** The galleries used to paint nothing until React booted. The shells now
+    carry the header and hero so the first paint is the real page, and React
+    replaces the same markup when the route chunk arrives. */
+const collectionHead = (current) => `<header class="cx-head">
+  <a class="cx-head__logo" href="/"><span class="cx-head__dot" aria-hidden="true"></span>Maparte</a>
+  <nav class="cx-head__nav" aria-label="Collections">
+    <a href="/layouts"${current === "layouts" ? ' aria-current="page"' : ""}>Layouts</a>
+    <a href="/themes"${current === "themes" ? ' aria-current="page"' : ""}>Themes</a>
+    <a href="/blog">Blog</a>
+  </nav>
+  <a class="cx-head__cta" href="/?editor=true">Create a map <span aria-hidden="true">↗</span></a>
+</header>`;
+
+const layoutsHero = `<div class="cx">${collectionHead("layouts")}
+<main><section class="cx-hero">
+  <p class="cx-kicker"><i aria-hidden="true"></i> 04 — The layout gallery</p>
+  <h1 class="cx-title">Every layout,<br>at real size.</h1>
+  <p class="cx-lead">${layoutTotal} formats across ${layoutGroupCount} groups: print sheets, social crops, desktop and phone wallpapers, and web banners. Each one opens with five real map posters in its own shape, so you can see how much of a city actually fits before you choose.</p>
+  <div class="cx-stats"><span><b>${layoutTotal}</b> layouts</span><span><b>${layoutGroupCount}</b> groups</span><span><b>5</b> maps per layout</span><span><b>300</b> dpi print export</span></div>
+</section></main></div>`;
+
+const themesHero = `<div class="cx">${collectionHead("themes")}
+<main><section class="cx-hero">
+  <p class="cx-kicker"><i aria-hidden="true"></i> 03 — The theme gallery</p>
+  <h1 class="cx-title">One city,<br><em>${themeIds.length}</em> moods.</h1>
+  <p class="cx-lead">Every palette recolours roads, water, parks and blocks independently, so the same streets can read as a blueprint, a newsprint page, a neon night or a watercolour. Open any theme to see its full palette and start the editor with it already applied.</p>
+  <div class="cx-stats"><span><b>${themeIds.length}</b> themes</span><span><b>13</b> colour roles each</span><span><b>0</b> extra cost</span><span><b>CMYK</b>-safe print exports</span></div>
+</section></main></div>`;
 
 const esc = (text) =>
   String(text)
@@ -46,7 +76,7 @@ const esc = (text) =>
 
 const replaceAll = (html, from, to) => html.split(from).join(to);
 
-function render({ path, title, description, image, imageAlt, ld }) {
+function render({ path, title, description, image, imageAlt, ld, hero }) {
   let html = base;
   html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
   html = replaceAll(html, HOME_TITLE, title);
@@ -59,6 +89,9 @@ function render({ path, title, description, image, imageAlt, ld }) {
     /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
     `<script type="application/ld+json">\n${JSON.stringify(ld, null, 2)}\n</script>`,
   );
+  if (hero) {
+    html = html.replace('<div id="root"></div>', `<div id="root">${hero}</div>`);
+  }
   const out = join(dist, path.replace(/^\//, ""), "index.html");
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, html);
@@ -87,6 +120,7 @@ const written = [];
 written.push(
   render({
     path: "/layouts",
+    hero: layoutsHero,
     title: `Map poster, wallpaper and web layouts — all ${layoutTotal} formats — MAPARTE`,
     description: `Every Maparte layout at real size: ${layoutTotal} formats across print sheets, social crops, phone and desktop wallpapers and web banners, each shown as a real map poster.`,
     image: "/assets/og-layouts.jpg",
@@ -104,6 +138,7 @@ written.push(
 written.push(
   render({
     path: "/themes",
+    hero: themesHero,
     title: `Map colour themes — all ${themeIds.length} palettes — MAPARTE`,
     description: `${themeIds.length} map colour themes, from blueprint and noir to watercolour and neon. See every palette on a real city map and open the editor with it applied.`,
     image: "/assets/og-themes.jpg",
