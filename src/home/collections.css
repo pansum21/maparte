@@ -787,6 +787,10 @@
 .cx-theme__shot img {
   display: block;
   width: 100%;
+  /* Every theme preview is 396x492; reserving the box stops the text beside it
+     from jumping when the image finally decodes. */
+  aspect-ratio: 396 / 492;
+  height: auto;
   box-shadow: 0 22px 50px rgba(20, 17, 13, 0.2);
 }
 
