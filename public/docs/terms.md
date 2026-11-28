@@ -2,7 +2,7 @@
 
 Last updated: November 17, 2026
 
-These terms describe use of MAPARTE at [maparte.com](https://maparte.com). By using the site, you agree to these terms. If you do not agree, please stop using the site.
+These terms describe use of MAPARTE at [maparte.com](https://www.maparte.com). By using the site, you agree to these terms. If you do not agree, please stop using the site.
 
 ## What MAPARTE provides
 

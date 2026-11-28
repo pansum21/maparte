@@ -8,7 +8,7 @@ Interactive map tiles are provided by OpenFreeMap using OpenStreetMap-based data
 
 ## Main links
 
-- [MAPARTE editor](https://maparte.com/)
+- [MAPARTE editor](https://www.maparte.com/)
 - [Blog: map poster and wallpaper guides](https://www.maparte.com/blog)
 - [Map Poster Layouts and Sizes: A Complete Guide](https://www.maparte.com/blog/map-poster-layouts-and-sizes)
 - [Map Poster Themes and Colour Palettes: All 22 Themes Compared](https://www.maparte.com/blog/map-poster-themes-colour-palettes)
@@ -19,9 +19,9 @@ Interactive map tiles are provided by OpenFreeMap using OpenStreetMap-based data
 - [The Where We Met Map: A Complete Guide to a Place Worth Framing](https://www.maparte.com/blog/where-we-met-map-gift)
 - [First Anniversary Map Gift: Ideas, Steps and Words](https://www.maparte.com/blog/first-anniversary-map-gift)
 - [Marathon and GPX Route Poster: Turn Your Run into Map Art](https://www.maparte.com/blog/marathon-gpx-route-poster)
-- [Privacy Policy](https://maparte.com/privacy)
-- [Terms](https://maparte.com/terms)
-- [Refund Policy](https://maparte.com/refund)
+- [Privacy Policy](https://www.maparte.com/privacy)
+- [Terms](https://www.maparte.com/terms)
+- [Refund Policy](https://www.maparte.com/refund)
 - [Source repository](https://github.com/pansum21/maparte)
 
 ## Map credits and technology
