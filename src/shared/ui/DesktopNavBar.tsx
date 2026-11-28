@@ -71,6 +71,7 @@ export default function DesktopNavBar({
           title="Location Search & Top 100 Cities"
           aria-label="Location"
           aria-pressed={isLocationActive}
+          data-warm-city-list="true"
         >
           <LocationIcon className="desktop-nav-icon" />
           <span className="desktop-nav-label">Location</span>

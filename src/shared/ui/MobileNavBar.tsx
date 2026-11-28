@@ -95,6 +95,7 @@ export default function MobileNavBar({
                   aria-label={label}
                   aria-current={!isLocationTab && id !== "edit-map" && activeTab === id ? "page" : undefined}
                   aria-pressed={isActive}
+                  data-warm-city-list={isLocationTab ? "true" : undefined}
                 >
                   <Icon className="mobile-nav-icon" />
                   <span className="mobile-nav-label">{label}</span>

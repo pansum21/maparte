@@ -416,7 +416,6 @@ export default function AppShell() {
     const preload = () => {
       void import("@/features/poster/ui/SettingsPanel");
       void import("@/shared/ui/DesktopLocationBar");
-      void loadAllCitiesModal();
       void import("@/features/export/ui/ExportFab");
       void import("@/features/updates/ui/AnnouncementModal");
     };
@@ -428,6 +427,35 @@ export default function AppShell() {
 
     const timer = setTimeout(preload, 300);
     return () => clearTimeout(timer);
+  }, []);
+
+  /**
+   * The city list is a 438 KB chunk. It used to be warmed on idle for every
+   * editor load, so phones downloaded it even when nobody opened the location
+   * search. Warm it on intent instead: on the first pointer or focus that
+   * reaches a location control.
+   */
+  useEffect(() => {
+    const selector = '[data-warm-city-list="true"]';
+    let warmed = false;
+
+    const warm = () => {
+      if (warmed) return;
+      warmed = true;
+      void loadAllCitiesModal();
+    };
+
+    const handleIntent = (event: Event) => {
+      const target = event.target as Element | null;
+      if (target?.closest?.(selector)) warm();
+    };
+
+    document.addEventListener("pointerover", handleIntent, { passive: true });
+    document.addEventListener("focusin", handleIntent);
+    return () => {
+      document.removeEventListener("pointerover", handleIntent);
+      document.removeEventListener("focusin", handleIntent);
+    };
   }, []);
 
   useEffect(() => {
