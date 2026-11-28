@@ -261,6 +261,11 @@ export default function AppShell() {
   }, [handleCinemaWallPhotoChange]);
   const [cinemaPosterPlacement, setCinemaPosterPlacement] = useState({ x: 0, y: 0, scale: 1 });
   const [allCitiesOpen, setAllCitiesOpen] = useState(false);
+  // The city list is a 438 KB chunk. Opening the panel before that chunk
+  // arrives parks the tree on a Suspense fallback whose retry competes with the
+  // map's continuous updates; under CPU pressure that retry can lag for many
+  // seconds. Track readiness so the modal only renders once the module is here.
+  const [cityListReady, setCityListReady] = useState(false);
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
   const [isPosterLayoutOpen, setIsPosterLayoutOpen] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -442,7 +447,7 @@ export default function AppShell() {
     const warm = () => {
       if (warmed) return;
       warmed = true;
-      void loadAllCitiesModal();
+      void loadAllCitiesModal().then(() => setCityListReady(true));
     };
 
     const handleIntent = (event: Event) => {
@@ -546,11 +551,15 @@ export default function AppShell() {
 
   const handleDesktopLocationToggle = () => {
     void loadDesktopLocationBar();
-    void loadAllCitiesModal();
     setDesktopLocationRowVisible(false);
     setBackdropOpen(false);
     setDesktopPanelOpen(false);
-    setAllCitiesOpen((open) => !open);
+    if (allCitiesOpen) {
+      setAllCitiesOpen(false);
+      return;
+    }
+    void loadAllCitiesModal().then(() => setCityListReady(true));
+    setAllCitiesOpen(true);
   };
 
   const handleEditMapToggle = () => {
@@ -862,12 +871,18 @@ export default function AppShell() {
 
       
       {allCitiesOpen ? (
-        <Suspense fallback={<section className="all-cities-modal all-cities-modal--loading" role="status">Loading locations…</section>}>
-          <AllCitiesModal
-            isOpen={allCitiesOpen}
-            onClose={() => setAllCitiesOpen(false)}
-          />
-        </Suspense>
+        cityListReady ? (
+          <Suspense fallback={<section className="all-cities-modal all-cities-modal--loading" role="status">Loading locations…</section>}>
+            <AllCitiesModal
+              isOpen={allCitiesOpen}
+              onClose={() => setAllCitiesOpen(false)}
+            />
+          </Suspense>
+        ) : (
+          <section className="all-cities-modal all-cities-modal--loading" role="status">
+            Loading locations…
+          </section>
+        )
       ) : null}
     </div>
   );
