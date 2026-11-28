@@ -53,7 +53,29 @@ const hashId = (id) => {
   return hash;
 };
 const cityFor = (layout) => CITIES[hashId(layout.id) % CITIES.length];
+/** Double and triple frame layouts draw more than one map, and the editor seeds
+    the spare slots with Paris and Tokyo, so every one of them looked the same.
+    Each extra map now gets its own city, again derived from the layout id and
+    never repeating the city already used by the first map. */
+const slotCountFor = (layoutId) =>
+  layoutId.includes("_triple_") ? 3 : layoutId.includes("_double_") ? 2 : 1;
+const SLOT_CITY_STEP = 5;
+const extraCitiesFor = (layoutId) => {
+  const base = hashId(layoutId);
+  const taken = [CITIES[base % CITIES.length].city];
+  const extra = [];
+  for (let slot = 1; slot < slotCountFor(layoutId); slot += 1) {
+    let index = (base + slot * SLOT_CITY_STEP) % CITIES.length;
+    while (taken.includes(CITIES[index].city)) index = (index + 1) % CITIES.length;
+    taken.push(CITIES[index].city);
+    extra.push(CITIES[index]);
+  }
+  return extra;
+};
 const DISTANCE = "4900";
+/** Extra maps fly to their city with the editor's 5.2s cinematic camera move,
+    so give them that long before the poster is captured. */
+const SLOT_SETTLE = Number(process.env.SLOT_SETTLE || 6500);
 
 // Must match POSTER_SLIDES in src/home/LayoutsPage.tsx.
 const POSTER_SLIDES = [
@@ -134,6 +156,39 @@ async function setCity(page, city) {
   }
   if (current !== city.city) console.log(`city did not settle on ${city.city} (state says "${current}")`);
   await page.waitForTimeout(800);
+}
+
+/** The editor seeds spare maps with Paris and Tokyo; swap those for the
+    layout's own cities so a double or triple composition is not Paris twice. */
+async function setExtraCities(page, cities) {
+  if (cities.length === 0) return;
+  await page.evaluate((list) => {
+    list.forEach((city, index) => {
+      window.posterDispatch({
+        type: "SET_DOUBLE_SLOT",
+        slot: index + 1,
+        data: {
+          location: `${city.city}, ${city.country}`,
+          latitude: String(city.lat),
+          longitude: String(city.lon),
+          distance: city.distance,
+          displayCity: city.city,
+          displayCountry: city.country,
+          displayContinent: "Europe",
+          selectedLocation: {
+            id: `city:${city.city.toLowerCase()}`,
+            label: `${city.city}, ${city.country}`,
+            lat: city.lat,
+            lon: city.lon,
+            city: city.city,
+            country: city.country,
+            continent: "Europe",
+          },
+        },
+      });
+    });
+  }, cities);
+  await page.waitForTimeout(SLOT_SETTLE);
 }
 
 async function openEditor(page, theme, city = CITIES[0]) {
@@ -237,6 +292,7 @@ const dpiFor = (layout, longEdge = 950) => {
         { id: layout.id, widthCm: layout.widthCm, heightCm: layout.heightCm },
       );
       await page.waitForTimeout(900);
+      await setExtraCities(page, extraCitiesFor(layout.id));
       await page.evaluate(({ lon, lat }) => {
         if (window.map) window.map.jumpTo({ center: [lon, lat], zoom: 11.4 });
       }, city);

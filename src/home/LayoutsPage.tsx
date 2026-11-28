@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { layoutGroups } from "@/features/layout/infrastructure/layoutRepository";
+import {
+  getMaparteMultiMapLayout,
+  layoutGroups,
+} from "@/features/layout/infrastructure/layoutRepository";
 import "@/home/scroll/fonts";
 import "./collections.css";
 
@@ -50,6 +53,30 @@ const hashId = (id: string) => {
 };
 
 const cityFor = (layoutId: string) => PREVIEW_CITIES[hashId(layoutId) % PREVIEW_CITIES.length];
+
+/** Extra maps in the double and triple compositions, picked exactly like
+    scripts/generate_layout_previews.cjs so the alt text can name them. */
+const SLOT_CITY_STEP = 5;
+const extraPreviewCities = (layoutId: string) => {
+  const count = getMaparteMultiMapLayout(layoutId)?.count ?? 1;
+  const base = hashId(layoutId);
+  const taken = [PREVIEW_CITIES[base % PREVIEW_CITIES.length]];
+  const extra: string[] = [];
+  for (let slot = 1; slot < count; slot += 1) {
+    let index = (base + slot * SLOT_CITY_STEP) % PREVIEW_CITIES.length;
+    while (taken.includes(PREVIEW_CITIES[index])) index = (index + 1) % PREVIEW_CITIES.length;
+    taken.push(PREVIEW_CITIES[index]);
+    extra.push(PREVIEW_CITIES[index]);
+  }
+  return extra;
+};
+
+const previewAlt = (layoutId: string, layoutName: string, theme: string) => {
+  const main = cityFor(layoutId);
+  const extra = extraPreviewCities(layoutId);
+  const companion = extra.length ? ` with ${extra.join(" and ")} beside it` : "";
+  return `${main} street map${companion} in the ${theme} theme, set in the ${layoutName} layout`;
+};
 
 const shotSrc = (layoutId: string, step: number) => `/layout-previews/${layoutId}-${step}`;
 
@@ -340,7 +367,7 @@ export default function LayoutsPage() {
                         <Shot
                           layoutId={layout.id}
                           step={0}
-                          alt={`${cityFor(layout.id)} street map in the ${first.theme} theme, set in the ${layout.name} layout`}
+                          alt={previewAlt(layout.id, layout.name, first.theme)}
                           sizes="(min-width: 1100px) 240px, (min-width: 620px) 30vw, 42vw"
                         />
                       </span>
@@ -389,7 +416,7 @@ export default function LayoutsPage() {
                     layoutId={active.layout.id}
                     step={slide}
                     eager
-                    alt={`${cityFor(active.layout.id)} street map in the ${slides[slide].theme} theme, set in the ${active.layout.name} layout`}
+                    alt={previewAlt(active.layout.id, active.layout.name, slides[slide].theme)}
                     sizes="(min-width: 880px) 55vw, 88vw"
                   />
                 </span>
