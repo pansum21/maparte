@@ -150,8 +150,8 @@ function createGta6NavIcon(): MarkerIconDefinition {
 }
 
 export const predefinedMarkerIcons: MarkerIconDefinition[] = [
-  createImageIcon("app-marker", "MAPARTE", "/assets/marker-ma.png"),
-  createImageIcon("app-marker-a", "ART", "/assets/marker-a-full.png"),
+  createImageIcon("app-marker", "MAPARTE", "/assets/marker-ma.webp"),
+  createImageIcon("app-marker-a", "ART", "/assets/marker-a-full.webp"),
   createGta6NavIcon(),
   createSvgIcon("pin", "Pin", FaLocationDot),
   createSvgIcon("heart", "Heart", FaHeart),
