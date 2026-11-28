@@ -53,8 +53,8 @@ export function transformHtmlForCity(html, city) {
   const cityDesc = String(city.description ?? '');
   const cityBodyDescription = escapeAttr(city.description ?? '');
   const cityMetaDesc = escapeAttr(city.metaDescription || city.description);
-  const cityUrl = `https://maparte.com/cities/${city.slug}`;
-  const cityPhotoUrl = `https://maparte.com/assets/city-photos/${city.slug}.webp`;
+  const cityUrl = `https://www.maparte.com/cities/${city.slug}`;
+  const cityPhotoUrl = `https://www.maparte.com/assets/city-photos/${city.slug}.webp`;
   const cityPhotoAlt = `${escapeAttr(city.city)} custom map art poster and wallpaper preview`;
 
   let result = html;
@@ -122,8 +122,8 @@ export function transformHtmlForCity(html, city) {
           {
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://maparte.com/" },
-              { "@type": "ListItem", "position": 2, "name": "Cities", "item": "https://maparte.com/cities" },
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.maparte.com/" },
+              { "@type": "ListItem", "position": 2, "name": "Cities", "item": "https://www.maparte.com/cities" },
               { "@type": "ListItem", "position": 3, "name": ${JSON.stringify(`${city.city} Map Poster`)}, "item": "${cityUrl}" }
             ]
           },
@@ -219,7 +219,7 @@ function renderCityDirectoryPage(cities) {
     '<title>City Map Posters | Browse ' + cities.length + ' Places | MAPARTE</title>',
     '<meta name="description" content="Browse custom map poster pages for ' + cities.length + ' cities and places. Choose a location, personalize its map, and make a digital map design with MAPARTE." />',
     '<meta name="robots" content="index,follow" />',
-    '<link rel="canonical" href="https://maparte.com/cities" />',
+    '<link rel="canonical" href="https://www.maparte.com/cities" />',
     '<style>body{margin:0;background:#f6f4ed;color:#182523;font:16px/1.55 Arial,sans-serif}main{max-width:1180px;margin:0 auto;padding:clamp(24px,5vw,64px) clamp(18px,4vw,48px)}a{color:#148b78}header{max-width:800px;margin-bottom:32px}h1{font-size:clamp(2rem,4vw,3.25rem);line-height:1.08;margin:0 0 14px;letter-spacing:-.04em}header p{color:#60706b;font-size:1.1rem;max-width:65ch}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0 36px}.action{display:inline-flex;padding:11px 16px;border-radius:12px;border:1px solid #d9ded5;background:#fffdf8;font-weight:700;text-decoration:none}.action.primary{background:#173c37;color:white;border-color:#173c37}.country{border-top:1px solid #d9ded5;padding:18px 0}.country h2{font-size:1rem;margin:0 0 12px}ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px 18px;margin:0;padding:0}li a{display:block;padding:7px 9px;border-radius:8px;text-decoration:none}li a:hover,li a:focus-visible{background:#e8eee7;text-decoration:underline}footer{margin-top:48px;padding-top:20px;border-top:1px solid #d9ded5;color:#60706b;font-size:.9rem}</style>',
     '</head><body><main><header>',
     '<a href="/" aria-label="MAPARTE home">MAPARTE</a>',
@@ -325,8 +325,8 @@ export function cityPagesPlugin() {
 
       // Generate sitemap.xml for the editor, directory, legal pages, blog pages, and city pages.
       const sitemapEntries = [
-        `  <url>\n    <loc>https://maparte.com</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Custom Map Poster &amp; Wallpaper Maker</image:title>\n    </image:image>\n  </url>`,
-        '  <url>\n    <loc>https://maparte.com/cities</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.9</priority>\n  </url>',
+        `  <url>\n    <loc>https://www.maparte.com</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n    <image:image>\n      <image:loc>https://www.maparte.com/assets/banner.jpg</image:loc>\n      <image:title>MAPARTE Custom Map Poster &amp; Wallpaper Maker</image:title>\n    </image:image>\n  </url>`,
+        '  <url>\n    <loc>https://www.maparte.com/cities</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.9</priority>\n  </url>',
         ...BLOG_PAGES.map((page) => `  <url>\n    <loc>https://www.maparte.com/blog${page.path}</loc>\n    <lastmod>2026-11-20</lastmod>\n    <changefreq>${page.freq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`),
         '  <url>\n    <loc>https://www.maparte.com/layouts</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>',
         '  <url>\n    <loc>https://www.maparte.com/themes</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>',
@@ -334,16 +334,16 @@ export function cityPagesPlugin() {
           (id) =>
             `  <url>\n    <loc>https://www.maparte.com/themes/${escapeXml(id)}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`,
         ),
-        `  <url>\n    <loc>https://maparte.com/where-we-met-map</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.95</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/banner.jpg</image:loc>\n      <image:title>Where We Met Custom Map Poster &amp; Wall Art | MAPARTE</image:title>\n    </image:image>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.com/privacy</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.com/terms</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.com/refund</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
-        `  <url>\n    <loc>https://maparte.com/imprint</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://www.maparte.com/where-we-met-map</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.95</priority>\n    <image:image>\n      <image:loc>https://www.maparte.com/assets/banner.jpg</image:loc>\n      <image:title>Where We Met Custom Map Poster &amp; Wall Art | MAPARTE</image:title>\n    </image:image>\n  </url>`,
+        `  <url>\n    <loc>https://www.maparte.com/privacy</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://www.maparte.com/terms</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://www.maparte.com/refund</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
+        `  <url>\n    <loc>https://www.maparte.com/imprint</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`,
       ];
 
       for (const city of cities) {
         sitemapEntries.push(
-          `  <url>\n    <loc>https://maparte.com/cities/${city.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://maparte.com/assets/city-photos/${city.slug}.webp</image:loc>\n      <image:title>${escapeXml(city.city)} map design by MAPARTE</image:title>\n      <image:caption>City photo preview for the ${escapeXml(city.city)}, ${escapeXml(city.country)} map design page</image:caption>\n    </image:image>\n  </url>`,
+          `  <url>\n    <loc>https://www.maparte.com/cities/${city.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <image:image>\n      <image:loc>https://www.maparte.com/assets/city-photos/${city.slug}.webp</image:loc>\n      <image:title>${escapeXml(city.city)} map design by MAPARTE</image:title>\n      <image:caption>City photo preview for the ${escapeXml(city.city)}, ${escapeXml(city.country)} map design page</image:caption>\n    </image:image>\n  </url>`,
         );
       }
 
