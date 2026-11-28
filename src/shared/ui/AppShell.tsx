@@ -1,6 +1,7 @@
 import {
   lazy,
   Suspense,
+  type ReactElement,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -49,7 +50,6 @@ const DesktopLocationBar = lazy(loadDesktopLocationBar);
 const AppSettingsModal = lazy(() => import("@/shared/ui/AppSettingsModal"));
 const EditMapPanel = lazy(() => import("@/features/map/ui/EditMapPanel"));
 const loadAllCitiesModal = () => import("@/features/location/ui/AllCitiesModal");
-const AllCitiesModal = lazy(loadAllCitiesModal);
 
 function SettingsDrawer({
   mobileTab,
@@ -144,6 +144,58 @@ function AppUpdateNotice({
         ×
       </button>
     </div>
+  );
+}
+
+type CityModalComponent = (props: {
+  isOpen: boolean;
+  onClose: () => void;
+}) => ReactElement;
+
+/**
+ * React.lazy waits on its own promise before it will commit, and in this shell
+ * that retry can be starved by the map's continuous re-renders: with the chunk
+ * already fetched (both requests 200), the modal still sat on the fallback for
+ * 45 s at 4x CPU while the component rendered 300+ times without committing.
+ * Importing the module here and rendering the resolved component commits on the
+ * next ordinary update instead, so the guard cannot park on the fallback.
+ */
+function CityModalLoader({ onClose }: { onClose: () => void }) {
+  const [Modal, setModal] = useState<CityModalComponent | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    loadAllCitiesModal().then(
+      (mod) => {
+        if (active) setModal(() => mod.default as unknown as CityModalComponent);
+      },
+      () => {
+        if (active) setFailed(true);
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (failed) {
+    return (
+      <section className="all-cities-modal all-cities-modal--loading" role="alert">
+        Couldn’t load the city list — close this and try again.
+      </section>
+    );
+  }
+
+  if (!Modal) return <CityModalFallback />;
+  return <Modal isOpen onClose={onClose} />;
+}
+
+function CityModalFallback() {
+  return (
+    <section className="all-cities-modal all-cities-modal--loading" role="status">
+      Loading locations…
+    </section>
   );
 }
 
@@ -862,12 +914,7 @@ export default function AppShell() {
 
       
       {allCitiesOpen ? (
-        <Suspense fallback={<section className="all-cities-modal all-cities-modal--loading" role="status">Loading locations…</section>}>
-          <AllCitiesModal
-            isOpen={allCitiesOpen}
-            onClose={() => setAllCitiesOpen(false)}
-          />
-        </Suspense>
+        <CityModalLoader onClose={() => setAllCitiesOpen(false)} />
       ) : null}
     </div>
   );

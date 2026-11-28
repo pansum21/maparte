@@ -137,8 +137,7 @@ export default function AllCitiesModal({ isOpen, onClose }: AllCitiesModalProps)
   } = useFormHandlers();
   const { locationSuggestions, isLocationSearching, searchNow } =
     useLocationAutocomplete(state.form.location, state.isLocationFocused);
-  const { handleUseCurrentLocation, isLocatingUser, locationPermissionMessage } =
-    useCurrentLocation(flyToLocation);
+  const { handleUseCurrentLocation, isLocatingUser, locationPermissionMessage   } = useCurrentLocation(flyToLocation);
 
   const [typedQuery, setTypedQuery] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string>("North Asia");
