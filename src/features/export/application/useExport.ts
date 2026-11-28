@@ -5,6 +5,7 @@ import {
   SUPPORT_PROMPT_EVENT,
   type SupportPromptVariant,
 } from "@/features/export/application/supportPrompt";
+import type { Map as MaplibreMap } from "maplibre-gl";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
 import {
@@ -45,6 +46,25 @@ export type {
 } from "@/features/export/application/supportPrompt";
 
 const EXPORT_COUNT_STORAGE_KEY = "maparte.poster.count";
+
+const MAP_WAIT_TIMEOUT_MS = 20_000;
+
+/**
+ * The poster preview mounts a couple of frames after the shell paints, so an
+ * export started in that window has no map yet. Wait for it instead of failing
+ * with "Map is not ready." the moment the editor appears.
+ */
+async function waitForMapInstance(
+  mapRef: { current: MaplibreMap | null },
+  timeoutMs: number,
+): Promise<MaplibreMap | null> {
+  const deadline = performance.now() + timeoutMs;
+  while (!mapRef.current) {
+    if (performance.now() >= deadline) return null;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  return mapRef.current;
+}
 
 function getExportTextLabels(form: import("@/features/poster/application/posterReducer").PosterForm) {
   const labels = getActivePosterLabels(form);
@@ -204,13 +224,13 @@ export function useExport() {
         targetDpi?: number;
       },
     ) => {
-      const map = mapRef.current;
+      dispatch({ type: "SET_EXPORT_STATUS", exporting: true });
+      const map = await waitForMapInstance(mapRef, MAP_WAIT_TIMEOUT_MS);
       if (!map) {
+        dispatch({ type: "SET_EXPORT_STATUS", exporting: false });
         dispatch({ type: "SET_ERROR", error: "Map is not ready." });
         return;
       }
-
-      dispatch({ type: "SET_EXPORT_STATUS", exporting: true });
 
       try {
         // Export-only machinery (map capture, SVG layering, ZIP, TIFF) is loaded

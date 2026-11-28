@@ -13,6 +13,7 @@ type ThemeMapPreviewComponent = typeof import("./ThemeMapPreview").default;
  */
 function CustomThemePreview({ theme }: { theme: ResolvedTheme }) {
   const [Preview, setPreview] = useState<ThemeMapPreviewComponent | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -20,18 +21,35 @@ function CustomThemePreview({ theme }: { theme: ResolvedTheme }) {
       (mod) => {
         if (active) setPreview(() => mod.default);
       },
-      () => {},
+      () => {
+        if (active) setFailed(true);
+      },
     );
     return () => {
       active = false;
     };
   }, []);
 
+  if (failed) {
+    return (
+      <div className="theme-card-palette-preview" aria-hidden="true">
+        <span style={{ backgroundColor: theme.map.land }} />
+        <span style={{ backgroundColor: theme.map.water }} />
+        <span style={{ backgroundColor: theme.map.parks }} />
+        <span style={{ backgroundColor: theme.map.roads.major }} />
+        <span style={{ backgroundColor: theme.map.roads.minor_mid }} />
+      </div>
+    );
+  }
+
   if (!Preview) {
     return (
       <div
         aria-hidden="true"
-        style={{ width: "100%", height: "100%", backgroundColor: theme.map.land }}
+        className="theme-card-custom-map-skeleton"
+        style={{
+          backgroundImage: `linear-gradient(150deg, ${theme.map.water} 0%, ${theme.map.land} 52%, ${theme.map.parks} 100%)`,
+        }}
       />
     );
   }

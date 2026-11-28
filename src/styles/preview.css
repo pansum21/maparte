@@ -569,12 +569,45 @@
 }
 
 .map-preview-loading {
+  position: relative;
   display: grid;
   place-items: center;
-  background: rgba(8, 22, 34, 0.76);
-  color: rgba(196, 216, 232, 0.78);
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(26, 52, 74, 0.62), rgba(6, 15, 24, 0.96) 72%),
+    #08131f;
+  color: rgba(196, 216, 232, 0.8);
   font-size: 0.84rem;
   letter-spacing: 0.02em;
+}
+
+/* A slow sweep reads as "rendering", so the empty frame is not mistaken for
+   a broken or missing map while the preview chunk arrives. */
+.map-preview-loading::after {
+  content: "";
+  position: absolute;
+  inset: -30% -55%;
+  background: linear-gradient(102deg, transparent 42%, rgba(150, 196, 230, 0.08) 50%, transparent 58%);
+  transform: translateX(-35%);
+  animation: map-preview-sweep 1.9s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes map-preview-sweep {
+  from {
+    transform: translateX(-35%);
+  }
+  to {
+    transform: translateX(35%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-preview-loading::after {
+    animation: none;
+    opacity: 0.4;
+  }
 }
 
 .map-preview-unavailable strong {
