@@ -4,7 +4,7 @@ import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { generateMapStyle } from "@/features/map/infrastructure/maplibreStyle";
 import { getTheme } from "@/features/theme/infrastructure/themeRepository";
-import { SEO_CITIES } from "@/features/location/domain/cityRouteResolver";
+import { SEO_CITIES } from "@/features/location/domain/seoCityPages";
 import { EARTH_CIRCUMFERENCE_M, TILE_SIZE_PX } from "@/core/config";
 import { helpFaqs } from "@/shared/help/helpFaqs";
 import { DoodleCrewFooter } from "@/components/ui/doodle-crew-footer";

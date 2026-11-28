@@ -1,5 +1,5 @@
 import type { PosterForm } from "@/features/poster/application/posterReducer";
-import type { MatchedCity } from "@/features/location/domain/cityRouteResolver";
+import type { CityMatch } from "@/features/location/domain/cityRouteResolver";
 import { defaultThemeName } from "@/features/theme/infrastructure/themeRepository";
 import { defaultLayoutId, getLayoutOption } from "@/features/layout/infrastructure/layoutRepository";
 import {
@@ -185,7 +185,7 @@ export function parsePosterStateFromUrl(search: string): ParsedUrlPosterState {
  */
 export function serializePosterStateToUrl(
   form: PosterForm,
-  matchedCity: MatchedCity | null,
+  matchedCity: CityMatch | null,
 ): { path: string; search: string; fullUrl: string } {
   const path = matchedCity ? `/cities/${matchedCity.slug}` : "/";
   const params = new URLSearchParams();

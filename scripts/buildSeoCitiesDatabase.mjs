@@ -532,3 +532,23 @@ for (let i = 0; i < cityDirectory.length; i++) {
 const targetPath = path.resolve(__dirname, '../src/data/seoCities.json');
 fs.writeFileSync(targetPath, JSON.stringify(output), 'utf8');
 console.log(`Generated complete SEO cities database with ${output.length} cities at: ${targetPath}`);
+
+// Compact lookup index for the editor. The full records above carry SEO copy
+// (description, metaDescription, tagline, landmarks) that only the city landing
+// pages render; importing them into the editor put ~465 KB of prose on its
+// critical path. This file is regenerated with the full database so the two
+// can never drift.
+const lookupIndex = output.map(
+  ({ slug, city, country, continent, lat, lon, distanceMeters }) => ({
+    slug,
+    city,
+    country,
+    continent,
+    lat,
+    lon,
+    distanceMeters,
+  }),
+);
+const indexTargetPath = path.resolve(__dirname, '../src/data/seoCitiesIndex.json');
+fs.writeFileSync(indexTargetPath, JSON.stringify(lookupIndex), 'utf8');
+console.log(`Generated city lookup index with ${lookupIndex.length} entries at: ${indexTargetPath}`);

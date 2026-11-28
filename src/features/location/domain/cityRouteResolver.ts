@@ -1,19 +1,32 @@
-import seoCitiesData from "@/data/seoCities.json";
+import seoCitiesIndex from "@/data/seoCitiesIndex.json";
 
-export interface MatchedCity {
+/**
+ * The fields URL resolution needs. The full city records carry SEO copy
+ * (description, metaDescription, tagline, landmarks) that only the city
+ * landing pages render, so the editor reads this compact index instead of
+ * downloading ~465 KB of prose it never shows.
+ */
+export interface CityMatch {
   slug: string;
   city: string;
   country: string;
+  countryCode?: string;
   continent: string;
   lat: number;
   lon: number;
   distanceMeters: number;
+}
+
+/** Full SEO record, including the copy used on the city landing pages. */
+export interface MatchedCity extends CityMatch {
   landmarks: string[];
   tagline: string;
   description: string;
+  rank?: number;
+  metaDescription?: string;
 }
 
-export const SEO_CITIES: MatchedCity[] = seoCitiesData as MatchedCity[];
+export const CITY_MATCHES: CityMatch[] = seoCitiesIndex as CityMatch[];
 
 /**
  * Normalizes city strings for matching (e.g. "New York" -> "new-york", "San Francisco" -> "san-francisco")
@@ -31,13 +44,13 @@ function normalizeCityName(str: string): string {
 export function resolveCityFromUrl(
   pathname: string = "",
   search: string = "",
-): MatchedCity | null {
+): CityMatch | null {
   // 1. Check pathname: /cities/<slug>
   const citiesPrefix = "/cities/";
   if (pathname.includes(citiesPrefix)) {
     const rawSlug = pathname.split(citiesPrefix)[1]?.split("/")[0]?.toLowerCase();
     if (rawSlug) {
-      const match = SEO_CITIES.find(
+      const match = CITY_MATCHES.find(
         (c) =>
           c.slug === rawSlug ||
           c.slug === `${rawSlug}-map-poster` ||
@@ -54,7 +67,7 @@ export function resolveCityFromUrl(
       const cityQuery = params.get("city");
       if (cityQuery) {
         const normalized = normalizeCityName(cityQuery);
-        const match = SEO_CITIES.find(
+        const match = CITY_MATCHES.find(
           (c) =>
             normalizeCityName(c.city) === normalized ||
             c.city.toLowerCase() === cityQuery.toLowerCase() ||
@@ -76,7 +89,7 @@ export function resolveCityFromUrl(
 export function findCityMatch(
   cityName: string = "",
   countryName?: string,
-): MatchedCity | null {
+): CityMatch | null {
   if (!cityName || typeof cityName !== "string") return null;
   const cleanCity = cityName.trim();
   if (!cleanCity) return null;
@@ -85,7 +98,7 @@ export function findCityMatch(
   // 1. Exact city + country match
   if (countryName) {
     const normCountry = normalizeCityName(countryName);
-    const exactBoth = SEO_CITIES.find(
+    const exactBoth = CITY_MATCHES.find(
       (c) =>
         normalizeCityName(c.city) === normCity &&
         (normalizeCityName(c.country) === normCountry ||
@@ -95,7 +108,7 @@ export function findCityMatch(
   }
 
   // 2. Exact city match
-  const exactCity = SEO_CITIES.find(
+  const exactCity = CITY_MATCHES.find(
     (c) =>
       normalizeCityName(c.city) === normCity ||
       c.slug === `${normCity}-map-poster` ||
@@ -107,7 +120,7 @@ export function findCityMatch(
   const firstSegment = cleanCity.split(",")[0]?.trim();
   if (firstSegment && firstSegment !== cleanCity) {
     const normFirst = normalizeCityName(firstSegment);
-    const prefixMatch = SEO_CITIES.find(
+    const prefixMatch = CITY_MATCHES.find(
       (c) =>
         normalizeCityName(c.city) === normFirst ||
         c.slug === `${normFirst}-map-poster` ||
