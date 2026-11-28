@@ -8,12 +8,44 @@ import {
   useState,
   Suspense,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 import { usePosterContext } from "./PosterContext";
 import AdUnit from "@/shared/ui/AdUnit";
 import { AD_SLOT_SIDEBAR, ADS_SIDEBAR_ENABLED } from "@/core/config";
 import { useMapSync, distanceToZoom } from "@/features/map/application/useMapSync";
 const MapPreview = lazy(() => import("@/features/map/ui/MapPreview"));
+
+function MapPreviewPlaceholder() {
+  return (
+    <div className="map-container map-preview-loading" role="status" aria-live="polite">
+      Loading map preview…
+    </div>
+  );
+}
+
+/**
+ * Holds the preview back until the shell has painted once. Rendering it during
+ * the first pass starts the 1 MB MapLibre download while the shell chunks and
+ * stylesheet are still on a slow connection, so the poster frame is what the
+ * user sees first and the map follows a frame later.
+ */
+function DeferredMapPreview({ children }: { children: ReactNode }) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    let second = 0;
+    const first = requestAnimationFrame(() => {
+      second = requestAnimationFrame(() => setReady(true));
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      cancelAnimationFrame(second);
+    };
+  }, []);
+
+  return <>{ready ? children : <MapPreviewPlaceholder />}</>;
+}
 import MarkerOverlay from "@/features/markers/ui/MarkerOverlay";
 import RouteOverlay from "@/features/routes/ui/RouteOverlay";
 import RouteEndpointsOverlay from "@/features/routes/ui/RouteEndpointsOverlay";
@@ -753,22 +785,24 @@ export default function PreviewPanel({
                           </div>
                         }
                       >
-                        <MapPreview
-                          style={mapStyle}
-                          center={isActive ? mapCenter : [view.lon, view.lat]}
-                          zoom={noPlace && slotZoom < 3.5 ? baseGlobeZoom : slotZoom}
-                          baseGlobeZoom={noPlace ? baseGlobeZoom : undefined}
-                          mapRef={doubleMapRefs[p]}
-                          interactive={isActive && (((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
-                          allowRotation={isActive && ((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing)}
-                          autoRotate={isActive}
-                          minZoom={mapMinZoom}
-                          maxZoom={mapMaxZoom}
-                          overzoomScale={1}
-                          onMove={isActive ? handleMove : undefined}
-                          onMoveEnd={isActive ? handleMoveEnd : undefined}
-                          onMapReady={(map) => setDoubleMaps((prev) => { const next = [...prev]; next[p] = map; return next; })}
-                        />
+                        <DeferredMapPreview>
+                          <MapPreview
+                            style={mapStyle}
+                            center={isActive ? mapCenter : [view.lon, view.lat]}
+                            zoom={noPlace && slotZoom < 3.5 ? baseGlobeZoom : slotZoom}
+                            baseGlobeZoom={noPlace ? baseGlobeZoom : undefined}
+                            mapRef={doubleMapRefs[p]}
+                            interactive={isActive && (((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
+                            allowRotation={isActive && ((!form.displayCity || mapZoom < 3.5) || !isPosterLayoutOpen || isEditing)}
+                            autoRotate={isActive}
+                            minZoom={mapMinZoom}
+                            maxZoom={mapMaxZoom}
+                            overzoomScale={1}
+                            onMove={isActive ? handleMove : undefined}
+                            onMoveEnd={isActive ? handleMoveEnd : undefined}
+                            onMapReady={(map) => setDoubleMaps((prev) => { const next = [...prev]; next[p] = map; return next; })}
+                          />
+                        </DeferredMapPreview>
                       </Suspense>
                       {!isActive ? (
                         <button
@@ -818,22 +852,24 @@ export default function PreviewPanel({
               </div>
             }
           >
-            <MapPreview
-              style={mapStyle}
-              center={mapCenter}
-              zoom={(!form.displayCity && mapZoom < 3.5) ? baseGlobeZoom : mapZoom}
-              baseGlobeZoom={baseGlobeZoom}
-              mapRef={mapRef}
-              interactive={isCinemaMode ? (!cinemaMapMovementLocked && !isMarkerEditorActive) : ((!isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
-              allowRotation={isCinemaMode ? !cinemaMapMovementLocked : (!isPosterLayoutOpen || isEditing)}
-              autoRotate={!isCinemaMode}
-              minZoom={mapMinZoom}
-              maxZoom={mapMaxZoom}
-              overzoomScale={1}
-              onMove={handleMove}
-              onMoveEnd={handleMoveEnd}
-              onMapReady={setMapInstance}
-            />
+            <DeferredMapPreview>
+              <MapPreview
+                style={mapStyle}
+                center={mapCenter}
+                zoom={(!form.displayCity && mapZoom < 3.5) ? baseGlobeZoom : mapZoom}
+                baseGlobeZoom={baseGlobeZoom}
+                mapRef={mapRef}
+                interactive={isCinemaMode ? (!cinemaMapMovementLocked && !isMarkerEditorActive) : ((!isPosterLayoutOpen || isEditing) && !isMarkerEditorActive)}
+                allowRotation={isCinemaMode ? !cinemaMapMovementLocked : (!isPosterLayoutOpen || isEditing)}
+                autoRotate={!isCinemaMode}
+                minZoom={mapMinZoom}
+                maxZoom={mapMaxZoom}
+                overzoomScale={1}
+                onMove={handleMove}
+                onMoveEnd={handleMoveEnd}
+                onMapReady={setMapInstance}
+              />
+            </DeferredMapPreview>
           </Suspense>
           {isPosterLayoutOpen ? (
             <GradientFades color={effectiveTheme.ui.bg} top={form.overlayTop ?? form.showMarkers} bottom={form.overlayBottom ?? form.showMarkers} />

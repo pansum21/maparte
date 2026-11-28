@@ -5,12 +5,8 @@ import {
   SUPPORT_PROMPT_EVENT,
   type SupportPromptVariant,
 } from "@/features/export/application/supportPrompt";
-import { captureMapAsCanvas } from "@/features/export/infrastructure/mapExporter";
-import { createLayeredSvgBlobFromMap } from "@/features/export/infrastructure/layeredSvgExporter";
-import JSZip from "jszip";
 import { localStorageCache } from "@/core/cache/localStorageCache";
 import type { ExportFormat } from "@/features/export/domain/types";
-import { createTiffBlob } from "@/features/export/infrastructure/tiffExporter";
 import {
   isProUser,
   applyFreeTier,
@@ -18,7 +14,6 @@ import {
   consumeProCredit,
 } from "@/features/export/infrastructure/planTier";
 import { compositeExport } from "@/features/poster/infrastructure/renderer";
-import { renderDoublePoster } from "@/features/export/infrastructure/doublePosterExporter";
 import { getDoubleSlotViews } from "@/features/poster/domain/doubleMapSlots";
 import { resolveCanvasSize } from "@/features/poster/infrastructure/renderer/canvas";
 import { readNeatlineSelection, getPosterBorderMetrics } from "@/features/layout/ui/NeatlinePicker";
@@ -218,6 +213,24 @@ export function useExport() {
       dispatch({ type: "SET_EXPORT_STATUS", exporting: true });
 
       try {
+        // Export-only machinery (map capture, SVG layering, ZIP, TIFF) is loaded
+        // here on demand. Importing it statically pulled the 1 MB MapLibre core
+        // and its worker into AppShell's module graph, so the editor shell could
+        // not paint until MapLibre had downloaded and parsed.
+        const [
+          { captureMapAsCanvas },
+          { createLayeredSvgBlobFromMap },
+          { default: JSZip },
+          { createTiffBlob },
+          { renderDoublePoster },
+        ] = await Promise.all([
+          import("@/features/export/infrastructure/mapExporter"),
+          import("@/features/export/infrastructure/layeredSvgExporter"),
+          import("jszip"),
+          import("@/features/export/infrastructure/tiffExporter"),
+          import("@/features/export/infrastructure/doublePosterExporter"),
+        ]);
+
         // Ensure font is loaded before compositing text
         if (form.showPosterText) {
           const selectedFonts = [

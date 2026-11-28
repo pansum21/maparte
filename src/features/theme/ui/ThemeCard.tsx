@@ -1,6 +1,49 @@
+import { useEffect, useState } from "react";
 import type { ThemeOption, ResolvedTheme } from "../domain/types";
-import ThemeMapPreview from "./ThemeMapPreview";
 import "./themeMapPreview.css";
+
+type ThemeMapPreviewComponent = typeof import("./ThemeMapPreview").default;
+
+/**
+ * The custom-theme card is the only other place the editor draws a live map, and
+ * importing its preview statically put the 1 MB MapLibre core in AppShell's
+ * module graph, so the shell could not paint until MapLibre had parsed. Load it
+ * when the card actually renders a custom theme, and show the theme's land
+ * colour until the component is in hand.
+ */
+function CustomThemePreview({ theme }: { theme: ResolvedTheme }) {
+  const [Preview, setPreview] = useState<ThemeMapPreviewComponent | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    import("./ThemeMapPreview").then(
+      (mod) => {
+        if (active) setPreview(() => mod.default);
+      },
+      () => {},
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (!Preview) {
+    return (
+      <div
+        aria-hidden="true"
+        style={{ width: "100%", height: "100%", backgroundColor: theme.map.land }}
+      />
+    );
+  }
+
+  return (
+    <Preview
+      theme={theme}
+      center={CUSTOM_THEME_PREVIEW_CENTER}
+      mapOptions={CUSTOM_THEME_PREVIEW_OPTIONS}
+    />
+  );
+}
 
 const CUSTOM_THEME_PREVIEW_CENTER: [number, number] = [-0.1276, 51.5072];
 const CUSTOM_THEME_PREVIEW_OPTIONS = {
@@ -64,11 +107,7 @@ export default function ThemeCard({
             <span style={{ backgroundColor: previewTheme.map.roads.minor_mid }} />
           </div>
           <div className="theme-card-custom-map-preview">
-            <ThemeMapPreview
-              theme={previewTheme}
-              center={CUSTOM_THEME_PREVIEW_CENTER}
-              mapOptions={CUSTOM_THEME_PREVIEW_OPTIONS}
-            />
+            <CustomThemePreview theme={previewTheme} />
           </div>
         </>
       ) : (
